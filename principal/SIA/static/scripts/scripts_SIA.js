@@ -1,0 +1,3 @@
+$gmx(document).ready(function() {
+   
+});

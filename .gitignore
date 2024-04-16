@@ -5,3 +5,8 @@ __pycache__/
 #Rutas ignoradas
 /.venv/
 /.vscode/
+app/nomina/docs
+app/nomina/CFDI
+app/nomina/plantillas/~$Plantilla_Reporte_Incidencias.xlsx
+app/rh/empleado/docs
+app/SIA.code-workspace

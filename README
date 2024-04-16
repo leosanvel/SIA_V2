@@ -1,11 +1,11 @@
-#Crear entorno virtual (Si no existe)
-    python3 -m venv .venv
-
+#Crear entorno virtual
+python -m venv .venv
 # Activar entorno virtual
     Usar botón run de VSC
     .venv/Scripts/activate
 # Instalar paquetes mediente el archivo requirements.txt
     pip install -r requirements.txt
+    pip install -r requirements.txt --upgrade
 
 # Ejecutar las siguientes variables de entorno
     set FLASK_APP=app

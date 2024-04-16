@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% if current_user.usuario is not none %}
+
+<div class="col-md-12">
+    <label>Bienvenid@ <span>{{ empleado.Nombre }}</span> </label>      
+</div>
+{% endif %}
+
+{% endblock %}

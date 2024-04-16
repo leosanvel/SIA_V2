@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <!-- CSS -->
+    <link href="../static/image/favicon.ico" rel="shortcut icon">
+    <link href="https://framework-gb.cdn.gob.mx/assets/styles/main.css" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    {% block css %}{% endblock %}
+    <style>
+        .flatpickr-day.selected {
+            background-color: #9F2241 !important;
+            background: #9F2241 !important;
+            /* Cambia el color de fondo de las fechas seleccionadas */
+            border-color: #9F2241 !important;
+            /* Cambia el color del texto de las fechas seleccionadas */
+        }
+
+        .flatpickr-day.selected:hover {
+            background-color: #9F2241 !important;
+        }
+
+        .flatpickr-day:hover {
+            background-color: #9F2241 !important;
+            /* Cambia el color de fondo al pasar el mouse */
+            color: #ffffff !important;
+        }
+
+        .flatpickr-day.today {
+            border-color: #9F2241;
+        }
+
+        .flatpickr-months,
+        .flatpickr-years {
+            background-color: #545454;
+            /* Cambia el color de fondo del selector de mes/año */
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #ffffff;
+        }
+
+        .flatpickr-current-month input.cur-year {
+            background: #ffffff;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown:hover {
+            color: #ffffff !important;
+        }
+    </style>
+
+    <!-- CSS Spinner -->
+    <style>
+        .spinner {
+            width: 15px;
+            height: 15px;
+            border: 3px solid #333;
+            border-top: 3px solid #fff;
+            border-radius: 100%;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .spinner-text {
+            margin-left: 5px;
+            /* Espacio entre el spinner y el texto */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .ui-datepicker-month {
+            color: #000;
+            /* Cambiar el color del texto del mes */
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse sub-navbar navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#subenlaces">
+                    <span class="sr-only">Interruptor de Navegación</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="Principal/SIA">SIA</a>
+            </div>
+            <div class="collapse navbar-collapse" id="subenlaces">
+                <ul class="nav navbar-nav navbar-right">
+                    {%block menu%}
+                    <!-- ---------------------------MENÚ--------------------------->
+                    {% if current_user.is_authenticated and current_user.estatus == 1 %}
+                    <div id="current-user-rol" data-rol="{{ current_user.idRol }}"></div>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-expanded="false">Recursos Humanos<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-header">
+                                <h6>Gestión de Empleados</h6>
+                            </li>
+                            {% if current_user.idRol == 0 %}
+                            <li><a href="/RH/agregarEmpleado">Agregar empleado</a></li>
+                            {% endif %}
+                            <li><a href="/RH/modificarEmpleado">Buscar empleado</a></li>
+                            <li><a href="/RH/generarContratosHonorarios">Generar contratos de honorarios</a></li>
+                            <li><a href="/RH/clabe">Clabe Interbancaria</a></li>
+
+                            <li class="divider"></li>
+
+                            <li class="text-dark dropdown-header">
+                                <h6>Gestión de Asistencias</h6>
+                            </li>
+                            <li><a href="/RH/politicas">Políticas</a></li>
+                            <li><a href="/RH/checador">Generar Checador</a></li>
+                            <li><a href="/RH/sanciones">Sanciones</a></li>
+                            <li><a href="/RH/incidencias">Incidencias</a></li>
+                            <li><a href="/RH/justificantes">Justificantes</a></li>
+                            <li><a href="/Nomina/enviarNomina">Envío a nómina</a></li>
+
+                            <li class="divider"></li>
+
+                            <li class="text-dark dropdown-header">
+                                <h6>Gestión de tiempo no laboral</h6>
+                            </li>
+                            <li><a href="/RH/vacacionesGanadas">Vacaciones Ganadas</a></li>
+                            <li><a href="/RH/diasFestivos">Días Festivos</a></li>
+                            <li><a href="/RH/diasPersona">Días persona</a></li>
+                            <li><a href="/RH/periodoVacacional">Periodo Vacacional</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-expanded="false">Prestaciones<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/Prestaciones/prestaciones">Prestaciones</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-expanded="false">Informática<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/Informatica/Solicitudes">Solicitudes</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-expanded="false">Consultas<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/consulta_incidencias"> Consulta de incidencias </a></li>
+                            </ul>
+                        
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-expanded="false">Nómina<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/Nomina/enviarNomina">Envío a nómina</a></li>
+                            <li><a href="/Nomina/generarCFDI">Generar CFDI</a></li>
+                            <li><a href="/Nomina/validarClabe">Validar Clabe</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-expanded="false"><span class="icon-user" aria-hidden="true">
+                            </span>{{current_user.usuario}}<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="/cambia_contrasena">Cambiar contraseña</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/logout">Cerrar</a></li>
+                    {% endif %}
+                    {%endblock%}
+
+                </ul>
+            </div>
+        </div>
+
+        {% if current_user.is_authenticated and current_user.estatus == 1 %}
+        <div id="start-time" data-start-time="{{ session.hora_inicio }}" style="display: none;"></div>
+
+        <div style="display: none;" class="alert alert-warning alert-dismissible" role="alert" id="AlertTiempo">
+            <button type="button" class="close" id="cierraAlertaTiempo" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+            <strong>¡Precaución!</strong> La sesión expirará por inactividad en: <span id="time-remaining"></span>
+        </div>
+        <script>
+            function updateTimer(startTime, tiempo_sesion) {
+                const now = new Date();
+                const start = new Date(startTime);
+                const elapsedSeconds = Math.floor((now - start) / 1000);
+                const minutesRemaining = Math.floor((tiempo_sesion - elapsedSeconds) / 60);
+                const secondsRemaining = (tiempo_sesion - elapsedSeconds) % 60;
+
+                let timeRemainingString = "";
+
+                if (minutesRemaining > 0) {
+                    // Formatea los minutos y segundos para mostrarlos con dos dígitos
+                    const formattedMinutes = String(minutesRemaining).padStart(2, '0');
+                    const formattedSeconds = String(secondsRemaining).padStart(2, '0');
+                    timeRemainingString = `${formattedMinutes} minutos y ${formattedSeconds} segundos`;
+                } else {
+                    // Si los minutos son 0, muestra solo los segundos
+                    const formattedSeconds = String(secondsRemaining).padStart(2, '0');
+                    timeRemainingString = `${formattedSeconds} segundos`;
+                }
+                if (minutesRemaining < 1) {
+                    $("#AlertTiempo").css("display", "block");
+                    document.getElementById('time-remaining').textContent = timeRemainingString;
+                } else {
+                    $("#AlertTiempo").css("display", "none");
+                }
+                if ((minutesRemaining <= 0) && (secondsRemaining < 0)) {
+                    window.location.href = '/';
+                }
+            }
+            // Actualiza el temporizador cuando se carga la página
+            window.addEventListener('load', function () {
+
+                const tiempo_sesion = "{{session.tiempo_sesion}}"
+                // Actualiza el temporizador cada segundo
+                setInterval(function () {
+                    const startTimeElement = document.getElementById('start-time');
+                    const startTime = startTimeElement.getAttribute('data-start-time');
+                    updateTimer(startTime, tiempo_sesion);
+                }, 1000);
+            });
+        </script>
+        {% endif %}
+
+
+    </nav>
+
+
+    <div class="container body-content" style="padding-top:80px;">
+
+        <div class="row">
+            <div class="col-md-12">
+                <h3>{{ title }}</h3>
+                <hr class="red" />
+            </div>
+        </div>
+        {% block content %}{% endblock %}
+
+        <!-- Ventana Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tituloModal">Título del Modal</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div id="contenidoModal">Contenido del modal aquí...</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnCierreModal" class="btn btn-primary" data-dismiss="modal"
+                            data-comportamiento="nada">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal para buscar empleado -->
+        <div class="modal fade" id="ModalBuscaEmpleado" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+            <div class="modal-dialog" style="width: 70%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tituloModal">Buscar empleado</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div id="contenidoModal">
+
+
+                            <form id="frmBuscarEmpleado">
+                                <input type="hidden" id="esModal" name="esModal" value="true">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="lblCURP">Ingrese CURP, nombre o número de Empleado*:</label><span
+                                            id="AParametro"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <input type="text" id="WParametro" name="WParametro"
+                                                class="obligatorio form-control">
+                                            <small id="EParametro"
+                                                class="etiquetaError form-text form-text-error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-primary btn-sm" id="btnBuscaEmpleado">
+                                            <span class="bootstrap-icons" aria-hidden="true"><i
+                                                    class="bi bi-search"></i></span>
+                                            Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <hr>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped" id="tablaEmpleados"
+                                    style="max-height: 300px; overflow-y: auto; display: none;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>
+                                                <h6># Emp</h6>
+                                            </th>
+                                            <th>
+                                                <h6>CURP</h6>
+                                            </th>
+                                            <th>
+                                                <h6>Nombre(s)</h6>
+                                            </th>
+                                            <th>
+                                                <h6>Apellidos</h6>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"
+                            data-comportamiento="nada">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://framework-gb.cdn.gob.mx/qa/gobmx.js"></script>
+    <script src="https://framework-gb.cdn.gob.mx/assets/scripts/jquery-ui-datepicker.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    <script>
+        flatpickr.localize(flatpickr.l10ns.es);
+    </script>
+
+    <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+
+
+</body>
+
+</html>

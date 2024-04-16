@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="row">                   
+            <div class="col-md-12">  
+                
+                <img src="{{ url_for('auth.static', filename='imagen/GobiernoDeMexico.jpg') }}" class="img-responsive" alt="Gobierno de México">                
+                <h5>SISTEMA INTEGRAL ADMINISTRATIVO</h5>
+                <hr class="red" />
+            </div>
+        </div>
+    </div>            
+    <div class="col-md-6">
+    <form name="frmUsuario" id="frmUsuario" method="post">
+        <div class="row">                   
+            <div class="col-md-12">
+                <h3>Iniciar sesión</h3>
+                <hr class="red" />
+            </div>
+        </div>
+        <div class="row">                   
+            <div class=" col-md-offset-2 col-md-8">                
+                <div class="form-group">   
+                    <input type="text" name="Usuario" id="Usuario" placeholder="Usuario" class="obligatorio form-control">
+                    <small id="EUsuario" class="etiquetaError form-text form-text-error"></small>
+                </div>
+                <div class="form-group">   
+                    <input type="password" name="Contrasena" id="Contrasena" placeholder="Contraseña" class="obligatorio form-control">
+                    <small id="EContrasena" class="etiquetaError form-text form-text-error"></small>
+                </div>                        
+            </div>            
+        </div>
+        <div class="row"> 
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary pull-right">Ingresar</button>
+            </div>
+        </div>
+        <hr />
+        <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong> verificar los campos capturados.</div>
+    </form>
+    </div>            
+</div>
+
+{% endblock %}
+
+
+
+    {% block scripts %}
+    {{ super() }}
+
+    <script src="{{ url_for('auth.static', filename='scripts/scripts_public.js') }}"></script>
+    {% endblock %}
