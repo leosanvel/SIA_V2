@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "plantilla_base.html" %}
 
 {% block content %}
 
@@ -7,7 +7,8 @@
         <div class="row">                   
             <div class="col-md-12">  
                 
-                <img src="{{ url_for('auth.static', filename='imagen/GobiernoDeMexico.jpg') }}" class="img-responsive" alt="Gobierno de México">                
+             
+                <img src="{{ url_for('autenticacion.static', filename='imagen/GobiernoDeMexico.jpg') }}" class="img-responsive" alt="Gobierno de México">        
                 <h5>SISTEMA INTEGRAL ADMINISTRATIVO</h5>
                 <hr class="red" />
             </div>
@@ -51,5 +52,5 @@
     {% block scripts %}
     {{ super() }}
 
-    <script src="{{ url_for('auth.static', filename='scripts/scripts_public.js') }}"></script>
+    <script src="{{ url_for('autenticacion.static', filename='scripts/inicio_sesion.js') }}"></script>
     {% endblock %}

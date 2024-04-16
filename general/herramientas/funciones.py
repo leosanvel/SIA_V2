@@ -22,7 +22,7 @@ def permisos_de_edicion(view_func):
             if current_user.idRol == 0:
                 return view_func(**kwargs)
             else: # Pedir iniciar sesion de nuevo
-                return redirect(url_for('auth.index'))
+                return redirect(url_for('autenticacion.index'))
     return admin_view
 
 
@@ -32,7 +32,7 @@ def permisos_de_consulta(view_func):
         if current_user.is_authenticated and current_user.estatus == 1:
             return view_func(*args, **kwargs)
         elif not current_user.is_authenticated:
-            return redirect(url_for('auth.index'))
+            return redirect(url_for('autenticacion.index'))
         else:
             return "Usuario INACTIVO"
     return decorated_view

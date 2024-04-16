@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "plantilla_base.html" %}
 
 {% block content %}
 
@@ -47,5 +47,5 @@
 {% block scripts %}
 {{ super() }}
 
-<script src="{{ url_for('auth.static', filename='scripts/cambiar_contrasena_script.js') }}"></script>
+<script src="{{ url_for('autenticacion.static', filename='scripts/cambiar_contrasena.js') }}"></script>
 {% endblock %}

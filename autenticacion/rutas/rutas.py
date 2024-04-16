@@ -3,20 +3,20 @@ from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from app import db
-from auth.models import User, Tusuario
+from autenticacion.modelos.modelos import User, Tusuario
 # from app import app_instance
 from sqlalchemy.orm.exc import NoResultFound
-from general.utils.funciones import permisos_de_consulta
+from general.herramientas.funciones import permisos_de_consulta
 from app import app
 
-auth = Blueprint('auth', __name__, template_folder = 'templates', static_folder='static', static_url_path='/scripts')
+autenticacion = Blueprint('autenticacion', __name__, template_folder = '../plantillas', static_folder='../estatico', static_url_path='/scripts')
 
 
-@auth.route('/')
-def index():
-    return render_template('/index.html', tittle = 'Sistema Integral Administrativo')
+@autenticacion.route('/')
+def inicio_sesion():
+    return render_template('/inicio_sesion.html', tittle = 'Sistema Integral Administrativo')
 
-@auth.route('/login', methods = ['POST'])
+@autenticacion.route('/login', methods = ['POST'])
 def login():
     usuario = request.form['Usuario']
     contrasena = request.form['Contrasena']
@@ -38,7 +38,7 @@ def login():
             return jsonify({"logged": "UsuarioIncorrecto"})
 
 # Agregar usuarios (falta plantilla)      
-# @auth.route('/sign', methods = ['POST'])
+# @autenticacion.route('/sign', methods = ['POST'])
 # def sign_in():
 #     usuario = request.form['Usuario']
 #     contrasena = request.form['Contrasena']
@@ -52,27 +52,27 @@ def login():
 #     db.session.commit()
 #     return jsonify({"logged": True})
 
-@auth.route('/logout')
+@autenticacion.route('/logout')
 @login_required
 def logout():
     session["idPersona"] = None
     logout_user()
-    return redirect(url_for('auth.index'))
+    return redirect(url_for('autenticacion.inicio_sesion'))
 
-@auth.route('/actualiza_sesion', methods=['POST'])
+@autenticacion.route('/actualiza_sesion', methods=['POST'])
 def actualiza_sesion():
     session['hora_inicio'] = datetime.now(timezone.utc).isoformat()
     return jsonify({"actualizado": True, 'nueva_hora_inicio': session['hora_inicio']})
 
 
-@auth.route('/cambia_contrasena', methods=['POST', 'GET'])
+@autenticacion.route('/cambia_contrasena', methods=['POST', 'GET'])
 @permisos_de_consulta
 def cambia_contrasena():
     print(current_user.idPersona)
-    return render_template('/cambiaContrasena.html', title='Cambia contraseña',
+    return render_template('/cambia_contrasena.html', title='Cambia contraseña',
                            current_user=current_user)
 
-@auth.route('/cambiar_contrasena', methods=['POST', 'GET'])
+@autenticacion.route('/cambiar_contrasena', methods=['POST', 'GET'])
 @permisos_de_consulta
 def cambiar_contrasena():
     respuesta = {}

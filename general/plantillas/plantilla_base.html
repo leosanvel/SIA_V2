@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
     <!-- CSS -->
-    <link href="../static/image/favicon.ico" rel="shortcut icon">
+    <link href="../estatico/imagenes/favicon.ico" rel="shortcut icon">
     <link href="https://framework-gb.cdn.gob.mx/assets/styles/main.css" rel="stylesheet">
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -104,7 +104,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="Principal/SIA">SIA</a>
+                <a class="navbar-brand" href="{{ url_for('principal.SIA' )}}">SIA</a>
             </div>
             <div class="collapse navbar-collapse" id="subenlaces">
                 <ul class="nav navbar-nav navbar-right">
@@ -369,7 +369,7 @@
         flatpickr.localize(flatpickr.l10ns.es);
     </script>
 
-    <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/general.js') }}"></script>
 
     {% block scripts %}{% endblock %}
 
