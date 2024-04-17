@@ -29,7 +29,7 @@ def permisos_de_edicion(view_func):
 def permisos_de_consulta(view_func):
     @wraps(view_func)
     def decorated_view(*args, **kwargs):
-        if current_user.is_authenticated and current_user.estatus == 1:
+        if current_user.is_authenticated and current_user.Activo == 1:
             return view_func(*args, **kwargs)
         elif not current_user.is_authenticated:
             return redirect(url_for('autenticacion.index'))

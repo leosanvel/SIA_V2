@@ -2,39 +2,30 @@ from flask_login import UserMixin
 
 from app import db
 
-class Tusuario(db.Model):
+class rUsuario(db.Model):
     __bind_key__ = 'db2'
-    __tablename__ = 'tusuario'
+    __tablename__ = 'rusuario'
     __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
-    idPersona = db.Column(db.Integer, primary_key = True, unique = True)
-    usuario = db.Column(db.String(32), nullable = False)
-    contrasena = db.Column(db.String(32), nullable = False)
-    estatus = db.Column(db.Integer, nullable = False)
-    ultimacontrasena = db.Column(db.String(32), nullable = False)
-    fechaalta = db.Column(db.Date, nullable = False)
-    idRol = db.Column(db.Integer, nullable = False)
-    idPerfil = db.Column(db.Integer, nullable = False)
+    idPersona = db.Column(db.Integer, primary_key = True, nullable = False)
+    Usuario = db.Column(db.String(32), primary_key = True, nullable = False)
+    Contrasena = db.Column(db.String(32), nullable = False)
+    PrimerIngreso = db.Column(db.Date, nullable = False)
+    Activo = db.Column(db.Integer, nullable = False)
+   
     	
-    def __init__(self,idPersona, usuario, contrasena, estatus, ultimacontrasena, fechaalta,idRol,idPerfil):
+    def __init__(self,idPersona, Usuario, Contrasena, PrimerIngreso, Activo):
         self.idPersona = idPersona
-        self.usuario = usuario
-        self.contrasena = contrasena
-        self.estatus = estatus
-        self.ultimacontrasena = ultimacontrasena
-        self.fechaalta = fechaalta
-        self.idRol = idRol
-        self.idPerfil = idPerfil
-
-
+        self.Usuario = Usuario
+        self.Contrasena = Contrasena
+        self.PrimerIngreso = PrimerIngreso
+        self.Activo = Activo
+        
         # Define la clase User usada para administrar la sesión
 class User(UserMixin):
     def __init__(self, user_db):
         self.id = user_db.idPersona
         self.idPersona = user_db.idPersona
-        self.usuario = user_db.usuario
-        self.contrasena = user_db.contrasena
-        self.estatus = user_db.estatus
-        self.ultimacontrasena = user_db.ultimacontrasena
-        self.fechaalta = user_db.fechaalta
-        self.idRol = user_db.idRol
-        self.idPerfil = user_db.idPerfil
+        self.Usuario = user_db.Usuario
+        self.Contrasena = user_db.Contrasena
+        self.PrimerIngreso = user_db.PrimerIngreso
+        self.Activo = user_db.Activo

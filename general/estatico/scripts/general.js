@@ -248,54 +248,6 @@ function convertirFechaParaVisualizacion(fecha) {
     return dia + '/' + mes + '/' + anio;
 }
 
-// "oculta-empleado" es la clase que ayuda a ocultar los elementos de acuerdo a los permisos del usuario.
-function actualizarVisibilidadElementos() {
-
-    // Obtener todos los elementos con la clase "elemento-ocultable/desactivable"
-    var rol = $("#current-user-rol").data("rol");
-
-    switch (rol) {
-        case 0:
-            var elementos_ocultos = $(".oculta-tester");
-            var elementos_desactivados = $(".desactiva-tester");
-            break;
-        case 1:
-            var elementos_ocultos = $(".oculta-rh");
-            var elementos_desactivados = $(".desactiva-rh");
-            break;
-        case 2:
-            var elementos_ocultos = $(".oculta-nomina");
-            var elementos_desactivados = $(".desactiva-nomina");
-            break;
-        case 3:
-            var elementos_ocultos = $(".oculta-informatica");
-            var elementos_desactivados = $(".desactiva-informatica");
-            break;
-        case 4:
-            var elementos_ocultos = $(".oculta-empleado");
-            var elementos_desactivados = $(".desactiva-empleado");
-            break;
-        default:
-            break;
-    }
-
-    // Iterar sobre los elementos y mostrar u ocultar según los permisos
-    elementos_ocultos.each(function () {
-        var elemento = $(this);
-        if (rol === 0) {
-            elemento.show();
-        } else {
-            elemento.hide();
-        }
-    });
-    elementos_desactivados.each(function () {
-        var elemento = $(this);
-        if (rol === 4) {
-            elemento.prop('readonly', true);
-            elemento.prop('disabled', true);
-        }
-    });
-}
 
 $gmx(document).ready(function () {
 
@@ -310,7 +262,7 @@ $gmx(document).ready(function () {
     $("#cierraAlertaTiempo").click(function (event) {
         $.ajax({
             type: "POST",  // Puedes usar "GET" si es apropiado
-            url: "/actualiza_sesion",  // La URL de la ruta que manejará la petición
+            url: "autenticacion/actualiza-sesion",  // La URL de la ruta que manejará la petición
             success: function (response) {
 
                 $("#start-time").attr('data-start-time', response.nueva_hora_inicio);
@@ -347,6 +299,10 @@ $gmx(document).ready(function () {
             // Recargar la página
             window.location.href = "/RH/modificarEmpleado";
         }
+        if (comportamiento === 'inicio') {
+            // Recargar la página
+            window.location.href = "/Principal/SIA";
+        }
 
     });
 
@@ -368,9 +324,6 @@ $gmx(document).ready(function () {
         yearSuffix: ''
     };
     $.datepicker.setDefaults($.datepicker.regional.es);
-
-    actualizarVisibilidadElementos();
-
 
     // // Recupera el identificador de la última pestaña activa desde el almacenamiento local
     // var activeTabId = localStorage.getItem("activeTabId");

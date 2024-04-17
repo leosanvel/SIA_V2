@@ -110,8 +110,8 @@
                 <ul class="nav navbar-nav navbar-right">
                     {%block menu%}
                     <!-- ---------------------------MENÚ--------------------------->
-                    {% if current_user.is_authenticated and current_user.estatus == 1 %}
-                    <div id="current-user-rol" data-rol="{{ current_user.idRol }}"></div>
+                    {% if current_user.is_authenticated and current_user.Activo == 1 %}
+                    <div id="current-user-rol" data-rol="{{ current_user.PrimerIngreso }}"></div>
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
@@ -152,48 +152,19 @@
                         </ul>
                     </li>
 
+
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                            aria-expanded="false">Prestaciones<span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <span class="icon-user" aria-hidden="true"></span>
+                            <span style="text-transform: uppercase;">{{current_user.Usuario}}</span>
+                            <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="/Prestaciones/prestaciones">Prestaciones</a></li>
+                            <li><a href="/autenticacion/cambia-contrasena">Cambiar contraseña</a></li>
                         </ul>
                     </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                            aria-expanded="false">Informática<span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/Informatica/Solicitudes">Solicitudes</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                            aria-expanded="false">Consultas<span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="/consulta_incidencias"> Consulta de incidencias </a></li>
-                            </ul>
-                        
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                            aria-expanded="false">Nómina<span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/Nomina/enviarNomina">Envío a nómina</a></li>
-                            <li><a href="/Nomina/generarCFDI">Generar CFDI</a></li>
-                            <li><a href="/Nomina/validarClabe">Validar Clabe</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                            aria-expanded="false"><span class="icon-user" aria-hidden="true">
-                            </span>{{current_user.usuario}}<span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="/cambia_contrasena">Cambiar contraseña</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="/logout">Cerrar</a></li>
+                    <li><a href="/autenticacion/cerrar-sesion">Cerrar</a></li>
                     {% endif %}
                     {%endblock%}
 

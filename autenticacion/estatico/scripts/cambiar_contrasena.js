@@ -4,13 +4,13 @@ $gmx(document).ready(function () {
         if (validarFormulario($("#frmContrasenas")).valido) {
             $.ajax({
                 type: "POST",
-                url: "/cambiar_contrasena",
+                url: "/autenticacion/cambiar-contrasena",
                 data: $("#frmContrasenas").serialize(),
                 success: function (data) {
                     if (data.ContrasenaActual) {
                         if (data.NuevasContrasenasCoinciden) {
                             if (data.CambioContrasena) {
-                                abrirModal("Contraseña modificada", "La contraseña ha sido cambiada correctamente.", "recargar");
+                                abrirModal("Contraseña modificada", "La contraseña ha sido cambiada correctamente.", "inicio");
                             }
                         } else {
                             abrirModal("Contraseñas no coinciden", "La nueva contraseña no coincide en ambos campos.", "");

@@ -1,7 +1,7 @@
 from flask import Flask, session
 from config import Config
 from general.herramientas.bd import db
-from autenticacion.modelos.modelos import User, Tusuario
+from autenticacion.modelos.modelos import User, rUsuario
 
 from datetime import datetime, timezone
 
@@ -29,7 +29,7 @@ def update_last_activity():
 # Función para recargar el objeto de usuario
 @login_manager.user_loader
 def load_user(user_id):
-    user_db = db.session.query(Tusuario).filter_by(idPersona=user_id).first()
+    user_db = db.session.query(rUsuario).filter_by(idPersona=user_id).first()
     if user_db:
         return User(user_db)
     return None
