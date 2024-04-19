@@ -43,3 +43,9 @@ app.register_blueprint(autenticacion)
 # MÓDULO PRINCIPAL
 from principal.rutas.rutas import moduloSIA
 app.register_blueprint(moduloSIA)
+
+from rh.empleado.rutas.rutas import empleado
+app.register_blueprint(empleado)
+
+with app.app_context():
+    db.create_all()
