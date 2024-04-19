@@ -38,19 +38,17 @@ def login():
             # CREAR MENU
             for PaginaUsuario in idPaginasUsuario:
                 
-
-                menu = db.session.query(kMenu).filter_by(idMenu=PaginaUsuario.idMenu).first()
-                submenu = db.session.query(kSubMenu).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu).first()
-                pag = db.session.query(kPagina).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu, idPagina = PaginaUsuario.idPagina).first()
+                # menu = db.session.query(kMenu).filter_by(idMenu=PaginaUsuario.idMenu).first()
+                # submenu = db.session.query(kSubMenu).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu).first()
+                # pag = db.session.query(kPagina).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu, idPagina = PaginaUsuario.idPagina).first()
 
                 pagina={}
-                pagina["Menu"] = menu.Menu
-                pagina["SubMenu"] = submenu.SubMenu
-                pagina["Pagina"] = pag.Pagina
-                pagina["URL"] = pag.URL
-                pagina["Activo"] = pag.Activo
+                pagina["Menu"] = PaginaUsuario.Pagina.SubMenu.Menu.Menu
+                pagina["SubMenu"] = PaginaUsuario.Pagina.SubMenu.SubMenu
+                pagina["Pagina"] = PaginaUsuario.Pagina.Pagina
+                pagina["URL"] = PaginaUsuario.Pagina.URL
+                pagina["Activo"] = PaginaUsuario.Pagina.Activo
                 pagina["idPermiso"] = 1
-
                 paginas_usuario.append(pagina)
             session['paginas_usuario'] = paginas_usuario
             
@@ -96,7 +94,6 @@ def actualiza_sesion():
 @autenticacion.route('/autenticacion/cambia-contrasena', methods=['POST', 'GET'])
 @permisos_de_consulta
 def cambia_contrasena():
-    print(current_user.idPersona)
     return render_template('/cambia_contrasena.html', title='Cambia contraseña',
                            current_user=current_user)
 
@@ -131,48 +128,11 @@ def carga_menu():
     else:
         return ("")
 
-
-# def generar_menu():
-#     menu_html = '<ul class="nav navbar-nav navbar-right" id="MenuUsuario">'
-#     menu_html += '<!-- ---------------------------MENÚ--------------------------->'
-
-#     # Aquí empieza la lógica para generar el menú basado en la información de la sesión
-#     if 'paginas_usuario' in session:
-#         paginas_usuario = session['paginas_usuario']
-
-#         # Recorremos las páginas del usuario
-#         for pagina in paginas_usuario:
-#             # Comprobamos si la página está activa y si el usuario tiene acceso
-#             if pagina['Activo'] == 1 and pagina['idPermiso'] == 1:
-#                 # Si el elemento tiene submenús, generamos un dropdown
-#                 if pagina['SubMenu']:
-#                     menu_html += '<li class="dropdown">'
-#                     menu_html += '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">' + pagina['Menu'] + '<span class="caret"></span></a>'
-#                     menu_html += '<ul class="dropdown-menu" role="menu">'
-#                     menu_html += '<li class="dropdown-header"><h6>' + pagina['SubMenu'] + '</h6></li>'
-
-#                     # Recorremos las páginas del submenú
-#                     for subpagina in paginas_usuario:
-#                         # Comprobamos si la subpágina pertenece al mismo menú y submenú
-#                         if subpagina['Menu'] == pagina['Menu'] and subpagina['SubMenu'] == pagina['SubMenu']:
-#                             menu_html += '<li><a href="' + subpagina['URL'] + '">' + subpagina['Pagina'] + '</a></li>'
-
-#                     menu_html += '</ul></li>'
-#                 # Si no tiene submenús, generamos un simple enlace
-#                 else:
-#                     menu_html += '<li><a href="' + pagina['URL'] + '">' + pagina['Pagina'] + '</a></li>'
-
-#     # Aquí termina la lógica para generar el menú
-
-#     menu_html += '</ul>'
-#     return menu_html
-
 def generar_menu():
     menu_html = ''  # Inicializamos el string del menú
 
     # Diccionario para almacenar menús agrupados por nombre
     menus = {}
-
     # Recorre las páginas del usuario almacenadas en la sesión
     if 'paginas_usuario' in session:
         paginas_usuario = session['paginas_usuario']
@@ -181,7 +141,6 @@ def generar_menu():
             submenu = pagina['SubMenu']
             nombre = pagina['Pagina']
             url = pagina['URL']
-
             # Agrupa las páginas por menú
             if menu not in menus:
                 menus[menu] = {}

@@ -277,9 +277,6 @@ def procesar_nomina(nomina_data, VistaPrevia = None):
     else:
         respuesta["Creado"] = True
 
-    print("Respuesta")
-    print(respuesta)
-
     if respuesta["Existente"] or respuesta["Creado"]:
         respuesta["lista_nomina"] = lista_nomina
     
