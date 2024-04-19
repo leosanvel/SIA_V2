@@ -14,17 +14,6 @@ from app import db
 import smtplib
 from email.message import EmailMessage
 
-# Decorador personalizado para verificar roles
-def permisos_de_edicion(view_func):
-    @wraps(view_func)
-    def admin_view(**kwargs):
-        if current_user.is_authenticated and current_user.estatus == 1:
-            if current_user.idRol == 0:
-                return view_func(**kwargs)
-            else: # Pedir iniciar sesion de nuevo
-                return redirect(url_for('autenticacion.index'))
-    return admin_view
-
 
 def permisos_de_consulta(view_func):
     @wraps(view_func)
@@ -32,7 +21,7 @@ def permisos_de_consulta(view_func):
         if current_user.is_authenticated and current_user.Activo == 1:
             return view_func(*args, **kwargs)
         elif not current_user.is_authenticated:
-            return redirect(url_for('autenticacion.index'))
+            return redirect(url_for('autenticacion.inicio_sesion'))
         else:
             return "Usuario INACTIVO"
     return decorated_view

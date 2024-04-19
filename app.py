@@ -37,9 +37,9 @@ def load_user(user_id):
 # MODULOS BLUEPRINT
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO AUTENTICACIÓN
-from autenticacion.rutas.rutas import autenticacion
+from autenticacion.rutas.autenticacion import autenticacion
 app.register_blueprint(autenticacion)
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO PRINCIPAL
-from principal.rutas.rutas import moduloSIA
+from principal.rutas.principal import moduloSIA
 app.register_blueprint(moduloSIA)

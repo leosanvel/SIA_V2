@@ -248,8 +248,18 @@ function convertirFechaParaVisualizacion(fecha) {
     return dia + '/' + mes + '/' + anio;
 }
 
-
+function cargarMenu(){
+    $.ajax({
+        type: "POST",
+        url: "/autenticacion/cargar-menu",
+        success: function (data) {
+            var MenuUsuario = document.getElementById('MenuUsuario');
+            MenuUsuario.insertAdjacentHTML('afterbegin', data);
+        }
+    });
+}
 $gmx(document).ready(function () {
+    cargarMenu();
 
     $(".botonModalBuscaEmpleado").click(function (event) {
         $('#ModalBuscaEmpleado').modal('show');
@@ -271,18 +281,6 @@ $gmx(document).ready(function () {
             error: function (xhr, status, error) {
                 // Maneja errores si es necesario
                 console.error('Error en la petición vacía:', status, error);
-            }
-        });
-    });
-
-
-    $("#agregarEmpleado").click(function (event) {
-        event.preventDefault(); // Evita la navegación predeterminada
-        $.ajax({
-            type: "POST",
-            url: "/RH/reinicia",
-            success: function (response) {
-                window.location.href = "/RH/administraEmpleado";
             }
         });
     });
@@ -325,26 +323,4 @@ $gmx(document).ready(function () {
     };
     $.datepicker.setDefaults($.datepicker.regional.es);
 
-    // // Recupera el identificador de la última pestaña activa desde el almacenamiento local
-    // var activeTabId = localStorage.getItem("activeTabId");
-
-    // // Si hay un identificador almacenado en el almacenamiento local, activa esa pestaña
-    // if (activeTabId) {
-    //     var activeTab = document.getElementById(activeTabId);
-    //     if (activeTab) {
-    //         activeTab.click();
-    //     }
-    // }
-
-    // // Escucha el evento de cambio de pestaña y almacena el identificador de la pestaña activa en el almacenamiento local
-    // var tabLinks = document.querySelectorAll(".nav-link");
-    // tabLinks.forEach(function (tabLink) {
-    //     tabLink.addEventListener("click", function () {
-    //         var tabId = this.getAttribute("id");
-    //         localStorage.setItem("activeTabId", tabId);
-    //     });
-    // });
 });
-
-
-
