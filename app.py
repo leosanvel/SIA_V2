@@ -40,6 +40,10 @@ def load_user(user_id):
 from autenticacion.rutas.autenticacion import autenticacion
 app.register_blueprint(autenticacion)
 #----------------------------------------------------------------------------------------------------------------------
+# MÓDULO GENERAL
+from general.rutas.general import general
+app.register_blueprint(general)
+
 # MÓDULO PRINCIPAL
 from principal.rutas.principal import moduloSIA
 app.register_blueprint(moduloSIA)

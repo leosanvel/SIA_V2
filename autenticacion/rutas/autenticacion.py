@@ -32,24 +32,37 @@ def login():
             session['tiempo_sesion'] = app.config["PERMANENT_SESSION_LIFETIME"].total_seconds()
             login_user(user)
 
-            idPaginasUsuario = db.session.query(rPPUsuario).filter_by(idUsuario=user_db.idUsuario).all()
+            idPaginasUsuario = db.session.query(rPPUsuario).filter(rPPUsuario.idUsuario==user_db.idUsuario).all()
+            print(len(idPaginasUsuario))
+            print((idPaginasUsuario))
             paginas_usuario = []
             pagina={}
             # CREAR MENU
             for PaginaUsuario in idPaginasUsuario:
-                
-                # menu = db.session.query(kMenu).filter_by(idMenu=PaginaUsuario.idMenu).first()
-                # submenu = db.session.query(kSubMenu).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu).first()
-                # pag = db.session.query(kPagina).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu, idPagina = PaginaUsuario.idPagina).first()
+                try:
+                    menu = db.session.query(kMenu).filter_by(idMenu=PaginaUsuario.idMenu).one() #
+                    submenu = db.session.query(kSubMenu).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu).one() #
+                    pag = db.session.query(kPagina).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu, idPagina = PaginaUsuario.idPagina).one() #
 
-                pagina={}
-                pagina["Menu"] = PaginaUsuario.Pagina.SubMenu.Menu.Menu
-                pagina["SubMenu"] = PaginaUsuario.Pagina.SubMenu.SubMenu
-                pagina["Pagina"] = PaginaUsuario.Pagina.Pagina
-                pagina["URL"] = PaginaUsuario.Pagina.URL
-                pagina["Activo"] = PaginaUsuario.Pagina.Activo
-                pagina["idPermiso"] = 1
-                paginas_usuario.append(pagina)
+                    pagina={}
+                    pagina["Menu"] = menu.Menu
+                    pagina["SubMenu"] = submenu.SubMenu
+                    pagina["Pagina"] = pag.Pagina
+                    pagina["URL"] = pag.URL
+                    pagina["Activo"] = pag.Activo
+                    # pagina["Menu"] = PaginaUsuario.Pagina.SubMenu.Menu.Menu
+                    # pagina["SubMenu"] = PaginaUsuario.Pagina.SubMenu.SubMenu
+                    # pagina["Pagina"] = PaginaUsuario.Pagina.Pagina
+                    # pagina["URL"] = PaginaUsuario.Pagina.URL
+                    # pagina["Activo"] = PaginaUsuario.Pagina.Activo
+                    pagina["idPermiso"] = 1
+
+                    print(PaginaUsuario.Pagina.SubMenu.idSubMenu)
+
+                    paginas_usuario.append(pagina)
+                except NoResultFound:
+                    pass
+                
             session['paginas_usuario'] = paginas_usuario
             
             if user_db.PrimerIngreso == 0:
@@ -121,44 +134,8 @@ def cambiar_contrasena():
 
     return jsonify(respuesta)
 
-@autenticacion.route('/autenticacion/cargar-menu', methods=['POST'])
-def carga_menu():
-    if current_user.is_authenticated and current_user.Activo == 1:
-        return (generar_menu())
-    else:
-        return ("")
 
-def generar_menu():
-    menu_html = ''  # Inicializamos el string del menú
-
-    # Diccionario para almacenar menús agrupados por nombre
-    menus = {}
-    # Recorre las páginas del usuario almacenadas en la sesión
-    if 'paginas_usuario' in session:
-        paginas_usuario = session['paginas_usuario']
-        for pagina in paginas_usuario:
-            menu = pagina['Menu']
-            submenu = pagina['SubMenu']
-            nombre = pagina['Pagina']
-            url = pagina['URL']
-            # Agrupa las páginas por menú
-            if menu not in menus:
-                menus[menu] = {}
-            if submenu not in menus[menu]:
-                menus[menu][submenu] = []
-            menus[menu][submenu].append({'nombre': nombre, 'url': url})
-
-    # Genera el HTML del menú agrupado por menús y submenús
-    for menu, submenus in menus.items():
-        menu_html += f'<li class="dropdown">'  # Abre el dropdown del menú
-        menu_html += f'<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{menu}<span class="caret"></span></a>'  # Genera el botón del menú
-        menu_html += '<ul class="dropdown-menu" role="menu">'  # Abre la lista de opciones del menú
-
-        # Recorre los submenús dentro del menú
-        for submenu, paginas in submenus.items():
-            menu_html += f'<li class="dropdown-header"><h6>{submenu}</h6></li>'  # Agrega el título del submenú
-            for pagina in paginas:
-                menu_html += f'<li><a href="{pagina["url"]}">{pagina["nombre"]}</a></li>'  # Agrega las páginas del submenú
-
-        menu_html += '</ul></li>'  # Cierra la lista de opciones del menú
-    return menu_html
+@autenticacion.route('/permisos-usuario', methods=['POST', 'GET'])
+def permisos_usuario():
+    return render_template('/permisos_usuario.html', title='Usuario',
+                           current_user=current_user)

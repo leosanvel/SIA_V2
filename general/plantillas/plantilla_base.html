@@ -113,46 +113,6 @@
                     {% if current_user.is_authenticated and current_user.Activo == 1 %}
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                            aria-expanded="false">MENU ANTERIOR<span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li class="dropdown-header">
-                                <h6>Gestión de Empleados</h6>
-                            </li>
-                            {% if current_user.idRol == 0 %}
-                            <li><a href="/RH/agregarEmpleado">Agregar empleado</a></li>
-                            {% endif %}
-                            <li><a href="/RH/modificarEmpleado">Buscar empleado</a></li>
-                            <li><a href="/RH/generarContratosHonorarios">Generar contratos de honorarios</a></li>
-                            <li><a href="/RH/clabe">Clabe Interbancaria</a></li>
-
-                            <li class="divider"></li>
-
-                            <li class="text-dark dropdown-header">
-                                <h6>Gestión de Asistencias</h6>
-                            </li>
-                            <li><a href="/RH/politicas">Políticas</a></li>
-                            <li><a href="/RH/checador">Generar Checador</a></li>
-                            <li><a href="/RH/sanciones">Sanciones</a></li>
-                            <li><a href="/RH/incidencias">Incidencias</a></li>
-                            <li><a href="/RH/justificantes">Justificantes</a></li>
-                            <li><a href="/Nomina/enviarNomina">Envío a nómina</a></li>
-
-                            <li class="divider"></li>
-
-                            <li class="text-dark dropdown-header">
-                                <h6>Gestión de tiempo no laboral</h6>
-                            </li>
-                            <li><a href="/RH/vacacionesGanadas">Vacaciones Ganadas</a></li>
-                            <li><a href="/RH/diasFestivos">Días Festivos</a></li>
-                            <li><a href="/RH/diasPersona">Días persona</a></li>
-                            <li><a href="/RH/periodoVacacional">Periodo Vacacional</a></li>
-
-                        </ul>
-                    </li>
-
-
-                    <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                             <span class="icon-user" aria-hidden="true"></span>
                             <span style="text-transform: uppercase;">{{current_user.Usuario}}</span>
@@ -160,6 +120,7 @@
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="/autenticacion/cambia-contrasena">Cambiar contraseña</a></li>
+                            <li><a href="/autenticacion/cerrar-sesion">Cerrar sesión</a></li>
                         </ul>
                     </li>
 

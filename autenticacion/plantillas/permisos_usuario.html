@@ -1,0 +1,161 @@
+{% extends "plantilla_base.html" %}
+
+{% block content %}
+
+
+
+
+
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+        <tr>
+            <th colspan="4">EMPLEADO SELECCIONADO</th>
+        </tr>
+        <tr>
+            <th>No. Empleado:</th>
+            <th>CURP:</th>
+            <th>Nombre(s):</th>
+            <th>Apellidos</th>
+        </tr>
+        <tr>
+            <input type="hidden" id="idPersona" name="idPersona" value="">
+            <td id="NumeroEmpleado"></td>
+            <td id="CurpEmpleado"></td>
+            <td id="NombreEmpleado"></td>
+            <td id="ApellidosEmpleado"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+
+
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Agregar">Agregar usuario</a></li>
+        <li class="nav-item "><a class="nav-link" data-toggle="tab" href="#Permisos">Permisos de usuario</a></li>
+    </ul>
+    <div class="tab-content">
+        <style>
+            .tab-content form .form-control {
+                margin-bottom: 0 !important;
+                /* Anula el margen inferior */
+            }
+        </style>
+
+        <div class="tab-pane active oculta-empleado" id="Agregar">
+        
+        </div>
+        <div class="tab-pane" id="Permisos">
+            <!-- Contenido de la pestaña -->
+            
+            <div class="row">
+                <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                    <label for="lblNumEmp">Usuario</label>
+                    <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                        class="form-control botonModalBuscaEmpleado" type="text">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+
+                <div class="row">
+                
+                    <div class="tree">
+                        <ul>
+                            <li>
+                                <input type="checkbox" id="folder1">
+                                <label for="folder1" class="folder">Menú 1</label>
+                                <ul>
+                                    <li>
+                                        <input type="checkbox" id="submenu1-1">
+                                        <label for="submenu1-1" class="folder">Submenú 1-1</label>
+                                        <ul>
+                                            <li>
+                                                <input type="checkbox" id="subsubmenu1-1-1">
+                                                <label for="subsubmenu1-1-1" class="file">Sub-submenú 1-1-1</label>
+                                            </li>
+                                            <li>
+                                                <input type="checkbox" id="subsubmenu1-1-2">
+                                                <label for="subsubmenu1-1-2" class="file">Sub-submenú 1-1-2</label>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="submenu1-2">
+                                        <label for="submenu1-2" class="file">Submenú 1-2</label>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="folder2">
+                                <label for="folder2" class="folder">Menú 2</label>
+                                <ul>
+                                    <li>
+                                        <input type="checkbox" id="submenu2-1">
+                                        <label for="submenu2-1" class="file">Submenú 2-1</label>
+                                    </li>
+                                    <li>
+                                        <input type="checkbox" id="submenu2-2">
+                                        <label for="submenu2-2" class="file">Submenú 2-2</label>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                
+                
+                </div>
+        </div>
+    </div>
+</div>
+
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
+        Verificar los campos capturados.</div>
+</div>
+
+
+<style>
+    .tree ul {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+
+    .tree .folder {
+        cursor: pointer;
+    }
+
+    .tree .file {
+        cursor: pointer;
+    }
+
+    .tree .folder:before {
+        content: "▸ ";
+    }
+
+    .tree .folder.collapsed:before {
+        content: "▾ ";
+    }
+
+    .tree ul.collapsed {
+        display: none;
+    }
+</style>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ super() }}
+
+<script src="{{ url_for('autenticacion.static', filename='scripts/permisos_usuario.js') }}"></script>
+{% endblock %}

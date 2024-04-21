@@ -69,7 +69,7 @@ class kSubMenu(db.Model):
 class kPagina(db.Model):
     __tablename__ = 'kpagina'
     __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
-    # idMenu = db.Column(db.Integer, primary_key = True, nullable = False)
+    idMenu = db.Column(db.Integer, db.ForeignKey(kMenu.idMenu), primary_key = True, nullable = False)
     idSubMenu = db.Column(db.Integer, db.ForeignKey(kSubMenu.idSubMenu), nullable = False)
     # idSubMenu = db.Column(db.Integer, nullable = False)
     idPagina = db.Column(db.Integer, primary_key = True, nullable = False, unique = True)
@@ -93,9 +93,9 @@ class rPPUsuario(db.Model):
     __bind_key__ = 'db2'
     __tablename__ = 'rppusuario'
     __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
-    idUsuario = db.Column(db.Integer, primary_key = True, nullable = False)
-    # idMenu = db.Column(db.Integer, primary_key = True, nullable = False)
-    # idSubMenu = db.Column(db.Integer, primary_key = True, nullable = False)
+    idUsuario = db.Column(db.Integer, db.ForeignKey(rUsuario.idUsuario), primary_key = True, nullable = False)
+    idMenu = db.Column(db.Integer, db.ForeignKey(kMenu.idMenu), primary_key = True, nullable = False)
+    idSubMenu = db.Column(db.Integer, db.ForeignKey(kSubMenu.idSubMenu), primary_key = True, nullable = False)
     idPagina = db.Column(db.Integer, db.ForeignKey(kPagina.idPagina), primary_key = True, nullable = False)
     # idPagina = db.Column(db.Integer, primary_key = True, nullable = False)
     idPermiso = db.Column(db.Integer, nullable = False)

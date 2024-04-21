@@ -251,7 +251,7 @@ function convertirFechaParaVisualizacion(fecha) {
 function cargarMenu(){
     $.ajax({
         type: "POST",
-        url: "/autenticacion/cargar-menu",
+        url: "/general/cargar-menu",
         success: function (data) {
             var MenuUsuario = document.getElementById('MenuUsuario');
             MenuUsuario.insertAdjacentHTML('afterbegin', data);
