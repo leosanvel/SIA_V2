@@ -44,6 +44,12 @@ app.register_blueprint(autenticacion)
 from general.rutas.general import general
 app.register_blueprint(general)
 
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO INFORMATICA
+from informatica.rutas.informatica import informatica
+app.register_blueprint(informatica)
+
+
 # MÓDULO PRINCIPAL
 from principal.rutas.principal import moduloSIA
 app.register_blueprint(moduloSIA)

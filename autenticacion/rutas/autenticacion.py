@@ -3,7 +3,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from app import db
-from autenticacion.modelos.modelos import User, rUsuario, rPPUsuario, kMenu, kSubMenu, kPagina
+from autenticacion.modelos.modelos import User, rUsuario
+from general.modelos.modelos import rPPUsuario, kMenu, kSubMenu, kPagina
 # from app import app_instance
 from sqlalchemy.orm.exc import NoResultFound
 from general.herramientas.funciones import permisos_de_consulta
@@ -32,14 +33,16 @@ def login():
             session['tiempo_sesion'] = app.config["PERMANENT_SESSION_LIFETIME"].total_seconds()
             login_user(user)
 
-            idPaginasUsuario = db.session.query(rPPUsuario).filter(rPPUsuario.idUsuario==user_db.idUsuario).all()
-            print(len(idPaginasUsuario))
-            print((idPaginasUsuario))
+            # idPaginasUsuario = db.session.query(rPPUsuario).filter(rPPUsuario.idUsuario==user_db.idUsuario).all()
+            idPaginasUsuario = db.session.query(rPPUsuario).filter_by(idUsuario=user_db.idUsuario).all()
+
             paginas_usuario = []
             pagina={}
+
             # CREAR MENU
             for PaginaUsuario in idPaginasUsuario:
                 try:
+
                     menu = db.session.query(kMenu).filter_by(idMenu=PaginaUsuario.idMenu).one() #
                     submenu = db.session.query(kSubMenu).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu).one() #
                     pag = db.session.query(kPagina).filter_by(idMenu=PaginaUsuario.idMenu, idSubMenu=PaginaUsuario.idSubMenu, idPagina = PaginaUsuario.idPagina).one() #
@@ -50,14 +53,7 @@ def login():
                     pagina["Pagina"] = pag.Pagina
                     pagina["URL"] = pag.URL
                     pagina["Activo"] = pag.Activo
-                    # pagina["Menu"] = PaginaUsuario.Pagina.SubMenu.Menu.Menu
-                    # pagina["SubMenu"] = PaginaUsuario.Pagina.SubMenu.SubMenu
-                    # pagina["Pagina"] = PaginaUsuario.Pagina.Pagina
-                    # pagina["URL"] = PaginaUsuario.Pagina.URL
-                    # pagina["Activo"] = PaginaUsuario.Pagina.Activo
                     pagina["idPermiso"] = 1
-
-                    print(PaginaUsuario.Pagina.SubMenu.idSubMenu)
 
                     paginas_usuario.append(pagina)
                 except NoResultFound:
@@ -77,20 +73,6 @@ def login():
             return jsonify({"logged": "UsuarioIncorrecto"})
 
 
-
-# Agregar usuarios (falta plantilla)      
-# @autenticacion.route('/sign', methods = ['POST'])
-# def sign_in():
-#     usuario = request.form['Usuario']
-#     contrasena = request.form['Contrasena']
-
-#     user = User()
-#     user.Usuario = usuario
-#     user.Contrasenia = contrasena
-    
-#     db.session.add(user)
-#     db.session.commit()
-#     return jsonify({"logged": True})
 
 @autenticacion.route('/autenticacion/cerrar-sesion')
 def logout():
@@ -133,9 +115,3 @@ def cambiar_contrasena():
             respuesta["CambioContrasena"] = True
 
     return jsonify(respuesta)
-
-
-@autenticacion.route('/permisos-usuario', methods=['POST', 'GET'])
-def permisos_usuario():
-    return render_template('/permisos_usuario.html', title='Usuario',
-                           current_user=current_user)
