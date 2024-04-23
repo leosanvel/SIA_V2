@@ -1,0 +1,144 @@
+{% extends "plantilla_base.html" %}
+
+{% block content %}
+
+
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+        <tr>
+            <th colspan="4">EMPLEADO SELECCIONADO</th>
+        </tr>
+        <tr>
+            <th>No. Empleado:</th>
+            <th>CURP:</th>
+            <th>Nombre(s):</th>
+            <th>Apellidos</th>
+        </tr>
+        <tr>
+            <input type="hidden" id="idPersona" name="idPersona" value="">
+            <input type="hidden" id="idUsuario" name="idUsuario" value="">
+            <td id="NumeroEmpleado"></td>
+            <td id="CurpEmpleado"></td>
+            <td id="NombreEmpleado"></td>
+            <td id="ApellidosEmpleado"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Agregar">Crear</a></li>
+        {% block titulo_pestanas %}{% endblock %}
+    </ul>
+    <div class="tab-content">
+        <style>
+            .tab-content form .form-control {
+                margin-bottom: 0 !important;
+                /* Anula el margen inferior */
+            }
+        </style>
+
+        <div class="tab-pane active oculta-empleado" id="Agregar">
+
+
+            <form name="frmCrearUsuario" id="frmCrearUsuario" method="post">
+                <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                                <label for="lblNumEmp">No. Empleado</label>
+                                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                    class="form-control no-botonModalBuscaEmpleado" type="text">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="lblUsuario">Nombre de Usuario<span id="AUsuario"
+                                    class="form-text">*</span>:</label>
+                            <input type="text" name="Usuario" id="Usuario" placeholder=""
+                                class="obligatorio form-control">
+                            <small id="EUsuario" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                        </div>
+                        <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="lblContrasena">Contraseña<span id="AContrasena"
+                                    class="form-text">*</span>:</label>
+                            <input type="password" name="Contrasena" id="Contrasena" placeholder=""
+                                class="obligatorio form-control">
+                            <small id="EContrasena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                        </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="button" id="btnCrearUsuario" class="btn btn-primary pull-right">Crear
+                            usuario</button>
+                    </div>
+                </div>
+                <hr />
+                <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
+                    <strong>Error:</strong>
+                    verificar los campos capturados.
+                </div>
+            </form>
+
+
+        </div>
+        {% block contenido_pestanas %}{% endblock %}
+
+    </div>
+</div>
+
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
+        Verificar los campos capturados.</div>
+</div>
+
+
+<style>
+    .tree ul {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+
+    .tree .folder {
+        cursor: pointer;
+    }
+
+    .tree .file {
+        cursor: pointer;
+    }
+
+    .tree .folder:before {
+        content: "▸ ";
+    }
+
+    .tree .folder.collapsed:before {
+        content: "▾ ";
+    }
+
+    .tree ul.collapsed {
+        display: none;
+    }
+</style>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ super() }}
+
+<script src="{{ url_for('informatica.static', filename='scripts/crear_usuario.js') }}"></script>
+{% endblock %}

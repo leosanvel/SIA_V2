@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import func
 from app import db
-from rh.gestion_empleado.modelos.empleado import Puesto
+from rh.gestion_empleados.modelos.empleado import Puesto
 
 class CentroCosto(db.Model):
     __tablename__ = "kcentrocosto"

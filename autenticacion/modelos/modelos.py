@@ -16,16 +16,17 @@ class rUsuario(db.Model):
     __bind_key__ = 'db2'
     __tablename__ = 'rusuario'
     __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
-    idPersona = db.Column(db.Integer, primary_key = True, nullable = False)
+    idPersona = db.Column(db.Integer, nullable = False)
     idUsuario = db.Column(db.Integer, primary_key = True, nullable = False)
     Usuario = db.Column(db.String(32), nullable = False)
     Contrasenia = db.Column(db.String(32), nullable = False)
     PrimerIngreso = db.Column(db.Date, nullable = False)
     Activo = db.Column(db.Integer, nullable = False)
                      
-    def __init__(self,idPersona, Usuario, Contrasena, PrimerIngreso, Activo):
+    def __init__(self, idUsuario, idPersona, Usuario, Contrasenia, PrimerIngreso, Activo):
+        self.idUsuario = idUsuario
         self.idPersona = idPersona
         self.Usuario = Usuario
-        self.Contrasenia = Contrasena
+        self.Contrasenia = Contrasenia
         self.PrimerIngreso = PrimerIngreso
         self.Activo = Activo
