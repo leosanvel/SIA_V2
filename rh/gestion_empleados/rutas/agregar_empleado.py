@@ -10,8 +10,8 @@ from docx2pdf import convert
 import pythoncom
 import os
 
-from .gestion_empleado import gestion_empleados
-from rh.gestion_empleado.modelos.empleado import *
+from .gestion_empleados import gestion_empleados
+from rh.gestion_empleados.modelos.empleado import *
 from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
