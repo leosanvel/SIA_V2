@@ -45,14 +45,15 @@
         </style>
 
         <div class="tab-pane active" id="Crear">
-            <!-- Contenido de la pestaña Datos Personales -->
-            <form name="frmCrearUsuario" id="frmCrearUsuario" method="post">
+            <!-- Contenido de la pestaña -->
+            <form name="frmCrearConceptoEmpleado" id="frmCrearConceptoEmpleado" method="post">
                 <div class="row">
 
                     <div class="col-md-4">
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
                                 class="form-text">*</span>:</label>
                         <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                            <option value="0">-- Seleccione --</option>
                             {% if TipoConcepto %}
                             {% for row in TipoConcepto %}
                             <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
@@ -66,41 +67,23 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="Concepto" id="Concepto" placeholder=""
-                                class="obligatorio form-control">
+                            <input type="text" name="Concepto" id="Concepto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblClaveSAT">Clave SAT<span id="AClaveSAT" class="form-text">*</span>:</label>
-                            <input type="text" name="ClaveSAT" id="ClaveSAT" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                    
+
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <label for="lblTipoPago">Tipo de Pago<span id="ATipoPago"
-                                class="form-text">*</span>:</label>
-                        <select id="TipoPago" name="TipoPago" class="obligatorio form-control">
-                            {% if TipoPago %}
-                            {% for row in TipoPago %}
-                            <option value="{{row.idTipoPago}}">{{row.TipoPago}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
+
 
                     <div class="col-md-6">
                         <div class="form-group">
                             <input type="checkbox" id="porcentaje"> Porcentaje
-                        </div>            
+                        </div>
                     </div>
+                </div>
 
+                <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblClaveSAT">Porcentaje<span id="AClaveSAT" class="form-text">*</span>:</label>
@@ -143,6 +126,7 @@
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
                                 class="form-text">*</span>:</label>
                         <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                            <option value="0">-- Seleccione --</option>
                             {% if TipoConcepto %}
                             {% for row in TipoConcepto %}
                             <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>

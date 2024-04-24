@@ -16,7 +16,7 @@ autenticacion = Blueprint('autenticacion', __name__, template_folder = '../plant
 @autenticacion.route('/')
 def inicio_sesion():
     if current_user.is_authenticated:
-        return redirect(url_for('principal.SIA'))
+        return redirect(url_for('principal.sia'))
     return render_template('/inicio_sesion.html', tittle = 'Sistema Integral Administrativo',
                            current_user = None)
 
