@@ -30,3 +30,14 @@ def conceptos():
     return render_template('/conceptos.html', title ='Conceptos',
                             current_user=current_user,
                             TipoConcepto = None)
+
+@moduloSIA.route('/empleado-conceptos')
+@permisos_de_consulta
+def empleado_conceptos():
+    # try:
+    #     empleado = db.session.query(Empleados).filter_by(idPersona=current_user.idPersona, Activo=1).one()
+    # except NoResultFound:
+    #     empleado = None
+    return render_template('/empleado_conceptos.html', title ='Empleado Conceptos',
+                            current_user=current_user,
+                            TipoConcepto = None)
