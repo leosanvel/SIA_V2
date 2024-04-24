@@ -52,14 +52,14 @@ class rPPUsuario(db.Model):
     __bind_key__ = 'db2'
     __tablename__ = 'rppusuario'
     __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
-    idUsuario = db.Column(db.Integer,db.ForeignKey(rUsuario.idUsuario),  primary_key=True, nullable=False)
+    Usuario = db.Column(db.String(32),db.ForeignKey(rUsuario.Usuario),  primary_key=True, nullable=False)
     idMenu = db.Column(db.Integer, db.ForeignKey(kMenu.idMenu),  primary_key=True, nullable=False)  # Definir ForeignKey para establecer la relación
     idSubMenu = db.Column(db.Integer, db.ForeignKey(kSubMenu.idSubMenu),  primary_key=True, nullable=False)
     idPagina = db.Column(db.Integer, db.ForeignKey(kPagina.idPagina),  primary_key=True, nullable=False)
     idPermiso = db.Column(db.Integer, nullable=False)
    
-    def __init__(self,idUsuario, idMenu, idSubMenu, idPagina, idPermiso):
-        self.idUsuario = idUsuario
+    def __init__(self,Usuario, idMenu, idSubMenu, idPagina, idPermiso):
+        self.Usuario = Usuario
         self.idMenu = idMenu
         self.idSubMenu = idSubMenu
         self.idPagina = idPagina

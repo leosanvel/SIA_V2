@@ -33,8 +33,7 @@ def login():
             session['tiempo_sesion'] = app.config["PERMANENT_SESSION_LIFETIME"].total_seconds()
             login_user(user)
 
-            # idPaginasUsuario = db.session.query(rPPUsuario).filter(rPPUsuario.idUsuario==user_db.idUsuario).all()
-            idPaginasUsuario = db.session.query(rPPUsuario).filter_by(idUsuario=user_db.idUsuario).all()
+            idPaginasUsuario = db.session.query(rPPUsuario).filter_by(Usuario=user_db.Usuario).all()
 
             paginas_usuario = []
             pagina={}

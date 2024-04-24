@@ -13,7 +13,7 @@ $gmx(document).ready(function () {
                             $("#AlertaError").hide();
                         }
                         else {
-                            window.location.href = "/Principal/SIA";
+                            window.location.href = "/principal/sia";
                             $("#AlertaError").hide();
                         }
                     } else if (data.logged === "Inactivo") {

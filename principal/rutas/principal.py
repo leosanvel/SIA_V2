@@ -8,9 +8,9 @@ from app import db
 
 moduloSIA = Blueprint('principal', __name__, template_folder = '../plantillas', static_folder='../estatico', static_url_path='/principal/estatico') #por ej. 
 
-@moduloSIA.route('/Principal/SIA')
+@moduloSIA.route('/principal/sia')
 @permisos_de_consulta
-def SIA():
+def sia():
     # try:
     #     empleado = db.session.query(Empleados).filter_by(idPersona=current_user.idPersona, Activo=1).one()
     # except NoResultFound:
@@ -19,3 +19,14 @@ def SIA():
     return render_template('/SIA.html', title ='Sistema Integral Administrativo',
                             current_user=current_user,
                             empleado = empleado)
+
+@moduloSIA.route('/conceptos')
+@permisos_de_consulta
+def conceptos():
+    # try:
+    #     empleado = db.session.query(Empleados).filter_by(idPersona=current_user.idPersona, Activo=1).one()
+    # except NoResultFound:
+    #     empleado = None
+    return render_template('/conceptos.html', title ='Conceptos',
+                            current_user=current_user,
+                            TipoConcepto = None)

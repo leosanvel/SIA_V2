@@ -21,7 +21,6 @@ def crear_usuario():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         
         'idPersona' : 'idPersona',
-        'idUsuario' : 'idUsuario',
         'Usuario' : 'Usuario',
         'Contrasena' : 'Contrasenia',
         'PrimerIngreso' : 'PrimerIngreso',
@@ -29,41 +28,33 @@ def crear_usuario():
     }
     usuario_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     usuario_data["idPersona"] = 0
-    usuario_data["PrimerIngreso"] = 1
+    usuario_data["PrimerIngreso"] = 0
     usuario_data["Activo"] = 1
-    idUsuario = usuario_data.get("idUsuario", None)
+    nombre_usuario = usuario_data.get("Usuario", None)
     
     respuesta = {}
     try:
-        usuario_a_modificar = db.session.query(rUsuario).filter_by(idUsuario = idUsuario).one()
+        usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = Usuario).one()
         for key, value in usuario_data.items():
             setattr(usuario_a_modificar, key, value)
         respuesta["modificado"] = True
     except NoResultFound:
-        
-        ultimo_idUsuario = db.session.query(func.max(rUsuario.idUsuario)).scalar()
-        if ultimo_idUsuario:
-            idUsuario = ultimo_idUsuario + 1
-        else:
-            idUsuario = 1
-        usuario_data["idUsuario"] = idUsuario
-
         usuario = rUsuario(**usuario_data)
         db.session.add(usuario)
         respuesta["creado"] = True
 
+    dar_todos_los_permisos(nombre_usuario)
+
     # Realizar cambios en la base de datos
     db.session.commit()
 
-    dar_todos_los_permisos(idUsuario)
-
     return jsonify(respuesta)
 
-def dar_todos_los_permisos(idUsuario):
+def dar_todos_los_permisos(Usuario):
     paginas = db.session.query(kPagina).all()
 
     pagina_data = {}
-    pagina_data["idUsuario"] = idUsuario
+    pagina_data["Usuario"] = Usuario
     pagina_data["idPermiso"] = 1
     for pagina in paginas:
         pagina_data["idMenu"] = pagina.idMenu
@@ -72,5 +63,4 @@ def dar_todos_los_permisos(idUsuario):
 
         nueva_pagina = rPPUsuario(**pagina_data)
         db.session.add(nueva_pagina)
-    db.session.commit()
     print("permisos agregados")

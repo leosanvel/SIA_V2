@@ -299,7 +299,7 @@ $gmx(document).ready(function () {
         }
         if (comportamiento === 'inicio') {
             // Recargar la página
-            window.location.href = "/Principal/SIA";
+            window.location.href = "/principal/sia";
         }
 
     });
