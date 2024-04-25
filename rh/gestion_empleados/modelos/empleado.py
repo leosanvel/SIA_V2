@@ -1,7 +1,7 @@
 from app import db
 from catalogos.modelos.modelos import *
 
-class Persona(db.Model):
+class TPersona(db.Model):
     __tablename__ = "tpersona"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}

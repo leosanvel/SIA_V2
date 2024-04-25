@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "plantilla_base.html" %}
 {% block content %}
 <div class="container">
 
@@ -10,9 +10,12 @@
                             class="form-text">*</span>:</label>
                     <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
                         <option value="0">-- Seleccione --</option>
+
+                        {% if Quincenas %}
                         {% for Quincena in Quincenas %}
-                        <option value="{{Quincena.Quincena}}">{{Quincena.Quincena}}-----{{Quincena.Fechas}}</option>
+                        <option value="{{Quincena.idQuincena}}">{{Quincena.Descripcion}}</option>
                         {% endfor %}
+                        {% endif %}
                     </select>
                     <small id="ENumQuincena" class="etiquetaError form-text form-text-error"></small>
                 </div>

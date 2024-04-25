@@ -7,8 +7,8 @@ from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
 
-from rh.gestion_empleados.modelos.empleado import Empleado, Rbancopersona
-from rh.gestion_empleados.modelos.domicilio import Rdomicilio
+from rh.gestion_empleados.modelos.empleado import TPersona, BancoPersona
+from rh.gestion_empleados.modelos.domicilio import rDomicilio
 
 import os, zipfile
 
@@ -16,8 +16,9 @@ import os, zipfile
 @nomina.route('/nomina/generar-cfdi', methods = ['POST', 'GET'])
 @permisos_de_consulta
 def generar_CFDI():
+    Quincenas = db.session.query(Quincena).all()
     return render_template('/generarCFDI.html', title='Generar CFDI',
-                           Quincenas = None,
+                           Quincenas = Quincenas,
                            )
 
 @nomina.route('/Nomina/crearCFDI', methods = ['POST', 'GET'])
@@ -25,12 +26,12 @@ def generar_CFDI():
 def crear_CFDI():
     
     strQuincena = request.form.get("NumQuincena")
-    Quincenas = db.session.query(Kquincena).filter_by(idQuincena = strQuincena).first()
+    Quincenas = db.session.query(Quincena).filter_by(idQuincena = strQuincena).first()
     strMes = Quincenas.FechaInicio.strftime("%m")
     strAnio = Quincenas.FechaInicio.strftime("%y")
     # Definir la ruta y nombre del archivo
     nombre_archivo = nombre_carpeta = strMes + strQuincena + strAnio
-    directorio = "app/nomina/CFDI/" + nombre_carpeta + "/"
+    directorio = "nomina/CFDI/" + nombre_carpeta + "/"
     #lista para guardar las rutas y crear el ZIP
     rutas_archivos = []
     
@@ -40,7 +41,7 @@ def crear_CFDI():
         respuesta = "creado"
         os.makedirs(directorio)
         
-        Personas = db.session.query(Empleados).filter_by(Activo=1).all()
+        Personas = db.session.query(TPersona).all()
 
         fecha_hora_actual = datetime.now()
         # Formatear la fecha y hora en el formato deseado
@@ -48,16 +49,16 @@ def crear_CFDI():
         consecutivo = 0
 
         for Persona in Personas:
-            Nombre_completo = Persona.Paterno + " " + Persona.Materno + " " + Persona.Nombre
+            Nombre_completo = Persona.ApPaterno + " " + Persona.ApMaterno + " " + Persona.Nombre
 
-            domicilioFiscal = db.session.query(Rdomicilio).filter_by(idTipoDomicilio=2, idPersona = Persona.idPersona).first()
+            domicilioFiscal = db.session.query(rDomicilio).filter_by(idTipoDomicilio=2, idPersona = Persona.idPersona).first()
             if domicilioFiscal:
                 CodigoPostal = str(domicilioFiscal.idCP)
             else:
                 CodigoPostal = "NO REGISTRADO"
 
 
-            Banco_persona = db.session.query(Rbancopersona).filter_by(idPersona = Persona.idPersona, Activo = 1).first()
+            Banco_persona = db.session.query(BancoPersona).filter_by(idPersona = Persona.idPersona, Activo = 1).first()
             if Banco_persona:
                 CLABE = Banco_persona.Clabe
             else:
@@ -65,6 +66,10 @@ def crear_CFDI():
 
 
             #Falta generar: 
+            NumeroEmpleado = "NoEmpleado"
+            idCentroCosto = "idCentroCosto"
+            idPuesto = "idPuesto"
+            correoPersonal = "CORREO"
             consecutivo = consecutivo + 1
             NumQui = "X"
             TotalEmpP = "X"
@@ -91,17 +96,17 @@ def crear_CFDI():
             rutas_archivos.append(ruta_completa)
             Observaciones = "OBSERVACIONES"
             Descripcion = "DESCRIPCIÓN"
-
+            
             with open(ruta_completa, "w") as archivo:
                 archivo.write("Lote|7.0\n" )
-                archivo.write("DOCUMENTO|CFDI_4.0|SI|SI|Recibo Nomina|ID_CONTROL|" + NumQui + "|ENVIO_RECEPTOR|" + Nombre_completo + "|" + Persona.CorreoPersonal + "|DATOSDECONTROL|DATODECONTROL|FILENAME|INAES_I00" + str(consecutivo) + "_" + NumQui + "_" + Persona.RFC + "\n")
+                archivo.write("DOCUMENTO|CFDI_4.0|SI|SI|Recibo Nomina|ID_CONTROL|" + NumQui + "|ENVIO_RECEPTOR|" + Nombre_completo + "|" + correoPersonal + "|DATOSDECONTROL|DATODECONTROL|FILENAME|INAES_I00" + str(consecutivo) + "_" + NumQui + "_" + Persona.RFC + "\n")
                 archivo.write("COMPROBANTE|4.0|NOM-INS|I00109256|" + fecha_hora_formateada + "|99|||" + TotalEmpP + "|" + TotalEmpD + "|MXN||" + TotalEmp + "|N|01|PUE|04100|\n" )
                 archivo.write("EMISOR|CGP911204QU3|INSTITUTO NACIONAL DE LA ECONOMIA SOCIAL|603\n" )
                 archivo.write("RECEPTOR|" + Persona.RFC + "|" + Nombre_completo + "|" + "|" + CodigoPostal + "|MEX||605|CN01\n" )
                 archivo.write("CONCEPTO|84111505||1|ACT||Pago de nómina|" + TotalEmpP + "|" + TotalEmpP + "|" + TotalEmpD + "|03\n" )
                 archivo.write("COMPLEMENTO|Nomina12|O|" + FECPAGA + "|" + FECINI + "|" + FECFIN + "|" + DIAS + "|" + TotalEmpP + "|" + TotalEmpD + "|\n" )
                 archivo.write("COMPLEMENTO|Nomina12|EMISOR||0002099093|\n" )
-                archivo.write("COMPLEMENTO|Nomina12|RECEPTOR|" + Persona.CURP + "|" + CVEISSSTE + "|" + FECALTA + "|P" + PlazaSemana + "W|02|No|01|02|" + str(Persona.NumeroEmpleado) + "|" + str(Persona.idCentroCosto) + "|" + str(Persona.idPuesto) + "|1|04||" + CLABE + "|" + TotalBruto + "|" + TOTALDIARIO + "|DIF\n" )
+                archivo.write("COMPLEMENTO|Nomina12|RECEPTOR|" + Persona.CURP + "|" + CVEISSSTE + "|" + FECALTA + "|P" + PlazaSemana + "W|02|No|01|02|" + NumeroEmpleado + "|" + idCentroCosto + "|" + idPuesto + "|1|04||" + CLABE + "|" + TotalBruto + "|" + TOTALDIARIO + "|DIF\n" )
             
                 # if abreAux(strAux) then
                 archivo.write("COMPLEMENTO|Nomina12|PERCEPCIONES|" + TotalEmpP + "|||" + TotalEmpP + "|0.00\n")
