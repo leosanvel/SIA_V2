@@ -7,7 +7,7 @@ from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
 
-from rh.gestion_empleados.modelos.empleado import Empleados, Rbancopersona
+from rh.gestion_empleados.modelos.empleado import Empleado, Rbancopersona
 from rh.gestion_empleados.modelos.domicilio import Rdomicilio
 
 import os, zipfile
@@ -16,7 +16,6 @@ import os, zipfile
 @nomina.route('/nomina/generar-cfdi', methods = ['POST', 'GET'])
 @permisos_de_consulta
 def generar_CFDI():
-    
     return render_template('/generarCFDI.html', title='Generar CFDI',
                            Quincenas = None,
                            )

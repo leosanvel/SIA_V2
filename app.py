@@ -29,7 +29,7 @@ def update_last_activity():
 # Función para recargar el objeto de usuario
 @login_manager.user_loader
 def load_user(user_id):
-    user_db = db.session.query(rUsuario).filter_by(idPersona=user_id).first()
+    user_db = db.session.query(rUsuario).filter_by(Usuario=user_id).first()
     if user_db:
         return User(user_db)
     return None
@@ -57,6 +57,11 @@ app.register_blueprint(moduloSIA)
 # MÓDULO GESTIÓN DE EMPLEADOS
 from rh.gestion_empleados.rutas.gestion_empleados import gestion_empleados
 app.register_blueprint(gestion_empleados)
+
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO NOMINA
+from nomina.routes.routes import nomina
+app.register_blueprint(nomina)
 
 
 with app.app_context():

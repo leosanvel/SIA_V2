@@ -9,10 +9,10 @@ from sqlalchemy import and_, or_
 from collections import defaultdict
 from .routes import nomina
 from app import db
-from app.general.utils.funciones import *
-from app.catalogos.models.models import *
-from app.rh.asistencias.models.models import Tchecador, Tjustificante, Tincidencia, Rnominapersona, Tnomina
-from app.rh.empleado.models.models import Empleados
+from general.herramientas.funciones import *
+from catalogos.modelos.modelos import *
+# from rh.asistencias.models.models import Tchecador, Tjustificante, Tincidencia, Rnominapersona, Tnomina
+from rh.gestion_empleados.modelos.empleado import Empleado
 
 import os
 from flask import send_from_directory
