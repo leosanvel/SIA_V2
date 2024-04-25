@@ -1,0 +1,423 @@
+{% extends "formularioEmpleado.html" %}
+
+{% block titulo_pestanas %}
+
+<li class="nav-item"><a class="nav-link" id="tab-DomicilioParticular" data-toggle="tab" href="#DomicilioParticular">Domicilio Particular</a></li>
+<li class="nav-item"><a class="nav-link" id="tab-DomicilioFiscal" data-toggle="tab" href="#DomicilioFiscal">Domicilio Fiscal</a></li>
+{% block titulo_pestanas_2 %}{% endblock %}
+{% endblock %}
+
+{% block contenido_pestanas %}
+<div class="tab-pane" id="DomicilioParticular">
+    <!-- Contenido de la pestaña DomicilioParticular -->
+    <form id="formularioDomicilioParticular">
+        <div class="row oculta-empleado">
+            <div class="col-md-12">
+                <label for="lblBCP">Código Postal<span id="ABCP" class="form-text">*</span>:</label>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group" id="CPdomicilio">
+                    <input type="text" id="BCP" name="BCP" class="form-control" maxlength="5">
+                    <small id="EBCP" class="etiquetaError form-text form-text-error"></small>
+                    <div class="spinner-container" id="spinnerCP1" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="spinner-text">Buscando...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary btn-sm" type="button" id="submitCP1">
+                    <span class="icon-search" aria-hidden="true"></span> Buscar
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblEntidad">Entidad Federativa<span id="AEntidad" class="form-text">*</span>:</label>
+                    <select id="Entidad" name="Entidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Entidad %}
+                        <option value="{{row.idEntidad}}">{{row.Entidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EEntidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblMunicipio">Municipio<span id="AMunicipio" class="form-text">*</span>:</label>
+                    <select id="Municipio" name="Municipio" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="EMunicipio" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblLocalidad">Localidad<span id="ALocalidad" class="form-text">*</span>:</label>
+                    <select id="Localidad" name="Localidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="ELocalidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoAsentamiento">Tipo de asentamiento<span id="ATipoAsentamiento"
+                            class="form-text">*</span>:</label>
+                    <select id="TipoAsentamiento" name="TipoAsentamiento" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in TipoAsentamiento %}
+                        <option value="{{row.idTipoAsentamiento}}">{{row.TipoAsentamiento}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ETipoAsentamiento" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblAsentamiento">Nombre de asentamiento<span id="AAsentamiento"
+                            class="form-text">*</span>:</label>
+                    <select id="Asentamiento" name="Asentamiento" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="EAsentamiento" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblCP">Código Postal<span id="lblCP" class="form-text">*</span>:</label>
+                    <input id="CP" name="CP" class="obligatorio form-control" readonly />
+                    <small id="ECP" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad">Tipo de vialidad<span id="ATipoVialidad"
+                            class="form-text">*</span>:</label>
+                    <select id="TipoVialidad" name="TipoVialidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ETipoVialidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad">Nombre de vialidad<span id="AVialidad" class="form-text">*</span>:</label>
+                    <input type="text" id="Vialidad" name="Vialidad" class="obligatorio form-control" />
+                    <small id="EVialidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumExt" id="AlblNumExt">Número exterior:</label>
+                    <input type="text" id="NumExt" name="NumExt" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumInt" id="AlblNumInt">Número interior:</label>
+                    <input type="text" id="NumInt" name="NumInt" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="checkbox">
+                    <label>
+                        <input id="SN" name="SN" type="checkbox" value="true">
+                        Sin número
+                    </label>
+                    <label>
+                        <input id="DC" name="DC" type="checkbox">
+                        Domicilio conocido
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Entre vialidades:</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad01" id="AlblTipoVialidad01">Tipo de vialidad:</label>
+                    <select id="TipoVialidad01" name="TipoVialidad01" class="form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad01" id="AlblVialidad01">Nombre de vialidad:</label>
+                    <input type="text" id="Vialidad01" name="Vialidad01" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad02" id="AlblTipoVialidad02">Tipo de vialidad:</label>
+                    <select id="TipoVialidad02" name="TipoVialidad02" class="form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad02" id="AlblVialidad02">Nombre de vialidad:</label>
+                    <input type="text" id="Vialidad02" name="Vialidad02" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad03" id="AlblTipoVialidad03">Tipo de vialidad:</label>
+                    <select id="TipoVialidad03" name="TipoVialidad03" class="form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad03" id="AlblVialidad03">Nombre de vialidad:</label>
+                    <input type="text" id="Vialidad03" name="Vialidad03" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <hr>
+    <div class="checkbox">
+        <label>
+            <input id="mismoDomicilio" name="mismoDomicilio" type="checkbox">
+            El domicilio fiscal es el mismo que el particular.
+        </label>
+    </div>
+
+</div>
+
+<div class="tab-pane" id="DomicilioFiscal">
+    <form id="formularioDomicilioFiscal">
+        <!-- Contenido de la pestaña DomicilioFiscal -->
+        <div class="row oculta-empleado">
+            <div class="col-md-12">
+                <label for="lblBCP">Código Postal<span id="ABCP" class="form-text">*</span>:</label>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group" id="CPdomicilio">
+                    <input type="text" id="BCP" name="BCP" class="form-control" maxlength="5">
+                    <small id="EBCP" class="etiquetaError form-text form-text-error"></small>
+                    <div class="spinner-container" id="spinnerCP2" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="spinner-text">Buscando...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary btn-sm" type="button" id="submitCP2">
+                    <span class="icon-search" aria-hidden="true"></span> Buscar
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblEntidad">Entidad Federativa<span id="AEntidad" class="form-text">*</span>:</label>
+                    <select id="Entidad" name="Entidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Entidad %}
+                        <option value="{{row.idEntidad}}">{{row.Entidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EEntidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblMunicipio">Municipio<span id="AMunicipio" class="form-text">*</span>:</label>
+                    <select id="Municipio" name="Municipio" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="EMunicipio" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblLocalidad">Localidad<span id="ALocalidad" class="form-text">*</span>:</label>
+                    <select id="Localidad" name="Localidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="ELocalidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoAsentamiento">Tipo de asentamiento<span id="ATipoAsentamiento"
+                            class="form-text">*</span>:</label>
+                    <select id="TipoAsentamiento" name="TipoAsentamiento" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in TipoAsentamiento %}
+                        <option value="{{row.idTipoAsentamiento}}">{{row.TipoAsentamiento}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ETipoAsentamiento" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblAsentamiento">Nombre de asentamiento<span id="AAsentamiento"
+                            class="form-text">*</span>:</label>
+                    <select id="Asentamiento" name="Asentamiento" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="EAsentamiento" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblCP">Código Postal<span id="lblCP" class="form-text">*</span>:</label>
+                    <input id="CP" name="CP" class="obligatorio form-control" readonly />
+                    <small id="ECP" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad">Tipo de vialidad<span id="ATipoVialidad"
+                            class="form-text">*</span>:</label>
+                    <select id="TipoVialidad" name="TipoVialidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ETipoVialidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad">Nombre de vialidad<span id="AVialidad" class="form-text">*</span>:</label>
+                    <input type="text" id="Vialidad" name="Vialidad" class="obligatorio form-control" />
+                    <small id="EVialidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumExt" id="AlblNumExt">Número exterior:</label>
+                    <input type="text" id="NumExt" name="NumExt" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumInt" id="AlblNumInt">Número interior:</label>
+                    <input type="text" id="NumInt" name="NumInt" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="checkbox">
+                    <label>
+                        <input id="SN" name="SN" type="checkbox">
+                        Sin número
+                    </label>
+                    <label>
+                        <input id="DC" name="DC" type="checkbox">
+                        Domicilio conocido
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Entre vialidades:</h4>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad01" id="AlblTipoVialidad01">Tipo de vialidad:</label>
+                    <select id="TipoVialidad01" name="TipoVialidad01" class="form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad01" id="AlblVialidad01">Nombre de vialidad:</label>
+                    <input type="text" id="Vialidad01" name="Vialidad01" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad02" id="AlblTipoVialidad02">Tipo de vialidad:</label>
+                    <select id="TipoVialidad02" name="TipoVialidad02" class="form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad02" id="AlblVialidad02">Nombre de vialidad:</label>
+                    <input type="text" id="Vialidad02" name="Vialidad02" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoVialidad03" id="AlblTipoVialidad03">Tipo de vialidad:</label>
+                    <select id="TipoVialidad03" name="TipoVialidad03" class="form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Vialidad %}
+                        <option value="{{row.idVialidad}}">{{row.Vialidad}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblVialidad03" id="AlblVialidad03">Nombre de vialidad:</label>
+                    <input type="text" id="Vialidad03" name="Vialidad03" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% block contenido_pestanas_2 %}{% endblock %}
+{% endblock %}

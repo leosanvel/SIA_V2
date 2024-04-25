@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+        <tr>
+            <th colspan="4">EMPLEADO SELECCIONADO</th>
+        </tr>
+        <tr>
+            <th>No. Empleado:</th>
+            <th>CURP:</th>
+            <th>Nombre(s):</th>
+            <th>Apellidos</th>
+        </tr>
+        <tr>
+            <input type="hidden" id="idPersona" name="idPersona" value="">
+            <td id="NumeroEmpleado"></td>
+            <td id="CurpEmpleado"></td>
+            <td id="NombreEmpleado"></td>
+            <td id="ApellidosEmpleado"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+
+    <div class="row">
+        <form id="formularioClabe">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group datepicker-group" id="NumEmpGrupo">
+                        <label for="lblNumEmp">No. Empleado</label>
+                        <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                            class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="pull-right">
+                        <button class="btn btn-primary" type="button" id="btnBuscaClabe">Mostrar clabes</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <div class="form-group">
+            <small id="EResultadoClabes" class="etiquetaError form-text form-text-error"></small>
+        </div>
+        <div class="row">
+            <table class="table" id="TabClabes" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Clabe</th>
+                        <th>Activo</th>
+                        <th>Verificado</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/clabe.js') }}"></script>
+{% endblock %}

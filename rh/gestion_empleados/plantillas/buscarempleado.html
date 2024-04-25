@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block content %}
+<form id="frmBuscarEmpleado">
+    <div class="row">
+        <div class="col-md-6">
+            <label for="lblCURP">Ingrese CURP, nombre o número de Empleado:</label><span id="AParametro">*</span>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="text" id="WParametro" name="WParametro" class="obligatorio form-control">
+                <small id="EParametro" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary btn-sm"  id="btnBuscaEmpleado">
+                <span class="icon-search" aria-hidden="true"></span> Buscar
+            </button>
+        </div>
+    </div>
+</form>
+<div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong> verificar los campos capturados.</div>
+<hr>
+<table class="table table-striped" id="tablaEmpleados" style="display: none;">
+    <thead>
+        <tr>
+            <th></th>
+            <th># Emp</th>
+            <th>CURP</th>
+            <th>Nombre(s)</th>
+            <th>Apellidos</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Aquí se agregarán las filas de resultados de empleados -->
+    </tbody>
+</table>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

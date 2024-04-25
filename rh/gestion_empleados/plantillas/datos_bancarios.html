@@ -1,0 +1,36 @@
+{% extends "formularioDomicilio.html" %}
+
+{% block titulo_pestanas_2 %}
+<li class="nav-item"><a class="nav-link" id="tab-DatosBancarios" data-toggle="tab" href="#DatosBancarios">Datos Bancarios</a></li>
+
+{% endblock %}
+
+{% block contenido_pestanas_2 %}
+<div class="tab-pane" id="DatosBancarios">
+    <form id="formularioDatosBancarios" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblClabe">Clabe Interbancaria<span id="lblClabe" class="form-text">*</span>:</label>
+                    <input type="text" id="Clabe" name="Clabe" class="opcional clabe form-control" maxlength="18">
+                    <small id="EClabe" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group hidden-xs" bis_skin_checked="1">
+                    <label for="lblEdoCuenta">Subir Estado de Cuenta<span id="lblEdoCuenta" class="form-text">*</span>:</label>
+                    <input type="file" id="EdoCuenta" name="EdoCuenta" class="opcional">
+                    <small id="EEdoCuenta" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="lblBanco">Banco<span id="lblBanco" class="form-text"></span>:</label>
+                <input type="text" id="Banco" name="Banco" class="opcional form-control" readonly>
+                <small id="EBanco" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
