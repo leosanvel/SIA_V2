@@ -295,7 +295,7 @@ $gmx(document).ready(function () {
         }
         if (comportamiento === 'modificarEmpleado') {
             // Recargar la página
-            window.location.href = "/RH/modificarEmpleado";
+            window.location.href = "/rh/gestion-empleados/modificar-empleado";
         }
         if (comportamiento === 'inicio') {
             // Recargar la página

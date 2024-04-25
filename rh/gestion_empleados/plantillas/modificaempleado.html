@@ -1,0 +1,105 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+{%if empleado:%}
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado">
+        <tbody>
+            <tr>
+                <th colspan="4">EMPLEADO SELECCIONADO</th>
+            </tr>
+            <tr>
+                <th>No. Empleado:</th>
+                <th>CURP:</th>
+                <th>Nombre(s):</th>
+                <th>Apellidos</th>
+            </tr>
+            <tr>
+                <td id="NumeroEmpleado">{{ empleado.NumeroEmpleado }}</td>
+                <td id="CurpEmpleado">{{ empleado.CURP }}</td>
+                <td id="NombreEmpleado">{{ empleado.Nombre }}</td>
+                <td id="ApellidosEmpleado">{{ empleado.Paterno }} {{ empleado.Materno }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<input type="hidden" id="idPersona" name="idPersona" value="{{ empleado.idPersona }}">
+{%endif%}
+<div id="busquedaCurp">
+    <form id="frmBuscarCURP">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="lblBCURP">Clave Única de Registro de Población (CURP):</label><span id="ABCURP">*</span>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="text" id="BCURP" name="CURP" class="obligatorio CURP form-control" placeholder="CURP"
+                        maxlength="18" oninput="this.value = this.value.toUpperCase()">
+                    <small id="EBCURP" class="etiquetaError form-text form-text-error"></small>
+                    <div class="spinner-container" id="spinnerCURP" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="spinner-text">Buscando...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-sm" id="btnBuscarCurp">
+                    <span class="icon-search" aria-hidden="true"></span> Buscar
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<!-- <div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado">
+        <tr>
+            <th colspan="3">EMPLEADO SELECCIONADO:</th>
+        </tr>
+        <tr>
+            <th>N de empleado:</th>
+            <th>Nombre:</th>
+            <th>CURP:</th>
+        </tr>
+        <tr>
+            <td id="NumEmp">{{ empleado.NumeroEmpleado }}</td>
+            <td id="NomEmp">{{ empleado.Nombre }}</td>
+            <td id="CurpEmp">{{ empleado.CURP }}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div> -->
+{% block formulario %}{% endblock %}
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong> Verificar los campos capturados.</div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="pull-right">
+            <button class="btn btn-primary oculta-empleado" id="botonGuardarEmpleado">Guardar</button>
+        </div>
+    </div>
+</div>
+<hr>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/carga_formularios.js') }}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

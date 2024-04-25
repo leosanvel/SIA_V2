@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table" id="TabContratos">
+                <thread>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Generar</th>
+                        <th>Descargar</th>
+                    </tr>
+                </thread>
+                <tbody>
+                    <tr>
+                        <td>Gerardo Alejandro Ruiz Avendaño</td>
+                        <td>
+                            <button class="btn btn-primary" type="button" id="btnGenerarContrato">
+                                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                                Generar
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" type="button" id="btnDescargaContrato" style="display: none;">
+                                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                                Descargar Contrato
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/generar_contrato.js') }}"></script>
+{% endblock %}

@@ -43,23 +43,38 @@ class Puesto(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
 
-    idPuesto = db.Column(db.Integer, primary_key = True)
-    ConsecutivoPuesto = db.Column(db.Integer, nullable = True)
-    ReferenciaTabular = db.Column(db.String(10), nullable = True)
-    Puesto = db.Column(db.String(150), nullable = True)
     # idRamo = db.Column(db.Integer, nullable = True)
     idUA = db.Column(db.Integer, db.ForeignKey(UA.idUA), nullable = True)
+    ConsecutivoPuesto = db.Column(db.Integer, primary_key = True)
+    CodigoPuesto = db.Column(db.String(50), nullable = True)
+    Puesto = db.Column(db.String(150), nullable = True)
     idZonaEconomica = db.Column(db.Integer, db.ForeignKey(ZonaEconomica.idZonaEconomica), nullable = True)
+    ReferenciaTabular = db.Column(db.String(10), nullable = True)
+    ConsPuesto = db.Column(db.Integer, nullable = True)    
     idTipoPlazaPuesto = db.Column(db.Integer, db.ForeignKey(TipoPlazaPuesto.idTipoPlazaPuesto), nullable = True)
     idCaracterOcupacional = db.Column(db.Integer, db.ForeignKey(CaracterOcupacional.idCaracterOcupacional), nullable = True)
     idTipoFuncion = db.Column(db.Integer, nullable = True)
+    NivelSalarial = db.Column(db.String(5), nullable = True)
+    Tabulador = db.Column(db.Integer, nullable = True)
+    CodigoPresupuestal = db.Column(db.String(10), nullable = True)
+    OrdinalCP = db.Column(db.Integer, nullable = True)
     idGrupo = db.Column(db.Integer, db.ForeignKey(Grupo.idGrupo), nullable = True)
     idGrado = db.Column(db.Integer, db.ForeignKey(Grado.idGrado), nullable = True)
     idNivel = db.Column(db.Integer, db.ForeignKey(Nivel.idNivel), nullable = True)
-    idCentroTrabajo = db.Column(db.Integer, db.ForeignKey(CentroTrabajo.idCentroTrabajo), nullable = True)
-    idCentroCosto = db.Column(db.Integer, db.ForeignKey(CentroCosto.idCentroCosto), nullable = True)
     idEstatusPuesto = db.Column(db.Integer, db.ForeignKey(EstatusPuesto.idEstatusPuesto), nullable = True)
     idVigencia = db.Column(db.Integer, db.ForeignKey(Vigencia.idVigencia), nullable = True)
+    FechaInicio = db.Column(db.Date, nullable = True)
+    FechaFin = db.Column(db.Date, nullable = True)
+    idCentroTrabajo = db.Column(db.Integer, db.ForeignKey(CentroTrabajo.idCentroTrabajo), nullable = True)
+    FolioSival = db.Column(db.String(15), nullable = True)
+    RegimenLaboral = db.Column(db.String(15), nullable = True)
+    RemuneracionTotal = db.Column(db.Double, nullable = True)
+    TitularAU = db.Column(db.String(5), nullable = True)
+    DeclaracionPatrimonial = db.Column(db.String(5), nullable = True)
+    PlazasSubordinadas = db.Column(db.Integer, nullable = True)
+    PuestoJefe = db.Column(db.String(50), nullable = True)
+    PresupuestalJefe = db.Column(db.String(15), nullable = True)
+    idCentroCosto = db.Column(db.Integer, db.ForeignKey(CentroCostos.idCentroCosto), nullable = True)
 
     # Relaciones
     RUA = db.relationship('UA', back_populates = "Puestos", uselist = False, single_parent = True)
@@ -93,3 +108,32 @@ class Puesto(db.Model):
         self.idCentroTrabajo = idCentroTrabajo
         self.idCentroCosto = idCentroCosto
         self.idEstatusPuesto = idEstatusPuesto
+
+class Empleado(db.Model):
+    __tablename__ = "rempleado"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
+    NumeroEmpleado = db.Column(db.Integer, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    # Relacion
+    
+
+    def __init__(self, idPersona, idTipoEmpleado, NumeroEmpleado, Activo):
+        self.idPersona = idPersona
+        self.idTipoEmpleado = idTipoEmpleado
+        self.NumeroEmpleado = NumeroEmpleado
+        self.Activo = Activo
+
+class EmpleadoPuesto(db.Model):
+    __tablename__ = "rempleadopuesto"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idPuesto = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idPersona, idPuesto):
+        self.idPersona = idPersona
+        self.idPuesto = idPuesto
