@@ -34,7 +34,7 @@ def crear_usuario():
     
     respuesta = {}
     try:
-        usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = Usuario).one()
+        usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
         for key, value in usuario_data.items():
             setattr(usuario_a_modificar, key, value)
         respuesta["modificado"] = True

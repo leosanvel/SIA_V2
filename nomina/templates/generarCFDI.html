@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+
+    <form id="formularioGenerarCFDI">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumQuincena">Número de Quincena<span id="ANumQuincena"
+                            class="form-text">*</span>:</label>
+                    <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for Quincena in Quincenas %}
+                        <option value="{{Quincena.Quincena}}">{{Quincena.Quincena}}-----{{Quincena.Fechas}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ENumQuincena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="pull-right">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#foo" type="button"
+                    id="btnGenerarCFDI">
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                    Generar
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+
+
+    <div class="modal fade" id="GenerarCFDIModal" tabindex="1" aria-labelledby="Advertencia" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Advertencia">Advertencia</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="MensajeAdModal"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancelar" class="btn btn-primary"
+                        data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnGenerarCFDI_modal" class="btn btn-primary">Generar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="pull-left">
+            <button class="btn btn-primary" type="button" id="btnDescargaZIP" style="display: none;">
+                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                Descarga ZIP
+            </button>
+        </div>
+    </div>
+    <hr>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('nomina.static', filename='scripts/generarCFDI_script.js') }}"></script>
+{% endblock %}

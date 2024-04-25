@@ -117,3 +117,61 @@ def empleado_conceptos():
     return render_template('/empleado_conceptos.html', title ='Empleado Conceptos',
                             current_user=current_user,
                             TipoConcepto = tiposConcepto)
+
+@moduloSIA.route('/crear-empleado-concepto', methods = ['POST'])
+def crear_empleado_concepto():
+    mapeo_nombres = { #NombreEnFormulario : nombreEnBase
+        'idPersona' : 'idPersona',
+        'TipoConcepto' : 'idTipoConcepto',
+        'idConcepto' : 'idConcepto',
+        'Porcentaje' : 'Porcentaje',
+        'Monto' : 'Monto'
+    }
+    concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
+    concepto_data['idPersona'] = 1
+    print("concepto_data")
+    print(concepto_data)
+
+    idPersona = concepto_data.get('idPersona', None)
+    idTipoConcepto = concepto_data.get('idTipoConcepto', None)
+    idConcepto = concepto_data.get('idConcepto', None)
+    nuevo_concepto = None
+    try:
+        concepto_a_modificar = db.session.query(EmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto).one()
+        print("Ya existe")
+    except NoResultFound:
+        nuevo_concepto = EmpleadoConcepto(**concepto_data)
+        db.session.add(nuevo_concepto)
+
+    # Realizar cambios en la base de datos
+    db.session.commit()
+       
+    return jsonify(concepto_data)
+
+@moduloSIA.route('/buscar-asdconcepto', methods = ['POST'])
+def conceptoasd():
+    tipoConcepto = request.form.get('TipoConcepto')
+    concepto = request.form.get('Concepto')
+
+    query = db.session.query(Concepto)
+    
+    if tipoConcepto != "0":
+        query = query.filter(Concepto.idTipoConcepto == tipoConcepto)
+    if concepto:
+        query = query.filter(Concepto.Concepto.contains(concepto))
+    # Si todas las variables están vacías, no se aplican filtros y se devuelve una lista vacía
+    if not concepto and tipoConcepto == "0":
+        conceptos = []
+    else:
+        conceptos = query.all()
+
+
+    lista_conceptos = []
+    for conc in conceptos:
+        if conc is not None:
+            conc_dict = conc.__dict__
+            conc_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            lista_conceptos.append(conc_dict)
+    if not lista_conceptos:
+        return jsonify({"NoEncontrado":True}) 
+    return jsonify(lista_conceptos)

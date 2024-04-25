@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+
+    <form id="formularioEnviarNomina">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumQuincena">Número de Quincena<span id="ANumQuincena"
+                            class="form-text">*</span>:</label>
+                    <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for Quincena in Quincenas %}
+                        <option value="{{Quincena.Quincena}}">{{Quincena.Quincena}}-----{{Quincena.Fechas}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ENumQuincena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoEmpleado">Tipo de Empleado<span id="ATipoEmpleado"
+                            class="form-text">*</span>:</label>
+                    <select id="TipoEmpleado" name="TipoEmpleado" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for TipoEmpleado in Tipos_Empleados %}
+                        <option value="{{TipoEmpleado.idTipoEmpleado}}">{{TipoEmpleado.tipoempleado}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ETipoEmpleado" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="pull-left">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#foo" type="button"
+                    id="btnVistaPrevia">
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                    Vista Previa
+                </button>
+            </div>
+            <div class="pull-right">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#foo" type="button"
+                    id="btnEnviarNomina">
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                    Enviar
+                </button>
+            </div>
+        </div>
+    </form>
+
+
+
+
+    <div class="modal fade" id="EnviarNominaModal" tabindex="1" aria-labelledby="Advertencia" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Advertencia">Advertencia</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="MensajeAdModal"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancelar" class="btn btn-primary"
+                        data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnGenerarNomina" class="btn btn-primary">Generar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="table-responsive" style="width: 100;">
+            <table class="table table-striped" id="tablaVistaPrevia" style="display: none;">
+                <thead>
+                    <tr>
+                        <th style="width: 20px;">No. Quincena</th>
+                        <th style="width: 20px;">No. Empleado</th>
+                        <th>Nombre</th>
+                        <th>Fechas de Incidencias</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="pull-right">
+            <button class="btn btn-primary" type="button" id="btnCerrarVistaPrevia" style="display: none;">
+                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                Cerrar
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="pull-left">
+            <button class="btn btn-primary" type="button" id="btnDescargaDocumento" style="display: none;">
+                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                Descarga Reporte
+            </button>
+        </div>
+    </div>
+
+    <hr>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('nomina.static', filename='scripts/enviarnomina_script.js') }}"></script>
+{% endblock %}

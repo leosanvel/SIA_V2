@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#MasivoClabe">Verificar clabe masivo</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#EmpleadoClave">Verificar clabe por empleado</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="MasivoClabe">
+            <div class="row">
+                <div class="table-responsive" style="width: 100;">
+                    <table class="table table-striped" id="TabMasivoClabe" style="display: none;">
+                        <thead>
+                            <th>idPersona</th>
+                            <th>Clabe</th>
+                            <th>Banco</th>
+                            <th>Activo</th>
+                            <th>Verificado</th>
+                            <th>Estado de cuenta</th>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="EmpleadoClave">
+            <div class="row">
+                <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+                    <tr>
+                        <th colspan="4">EMPLEADO SELECCIONADO</th>
+                    </tr>
+                    <tr>
+                        <th>No. Empleado:</th>
+                        <th>CURP:</th>
+                        <th>Nombre(s):</th>
+                        <th>Apellidos</th>
+                    </tr>
+                    <tr>
+                        <input type="hidden" id="idPersona" name="idPersona" value="">
+                        <td id="NumeroEmpleado"></td>
+                        <td id="CurpEmpleado"></td>
+                        <td id="NombreEmpleado"></td>
+                        <td id="ApellidosEmpleado"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="row">
+                <form id="formularioValidarClabe">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group datepicker-group" id="NumEmpGrupo">
+                                <label for="lblNumEmp">No. Empleado</label>
+                                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                    class="form-control botonModalBuscaEmpleado" type="text">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="pull-right">
+                                <button class="btn btn-primary" type="button" id="btnBuscaClabe">Mostrar clabes</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="resultado" style="display: none;">
+                    <div  class="row">
+                        <div class="col-md-4">
+                            <label for="lblClabe">Clabe Interbancaria<span id="AClabe" class="form-text"></span>:</label>
+                            <input type="text" id="Clabe" class="form-control" readonly>
+                            <small id="EClabe" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="lblBanco">Banco<span id="ABanco" class="form-text"></span>:</label>
+                            <input type="text" id="Banco" class="form-control" readonly>
+                            <small id="EBanco" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="lblEdoCuenta">Estado de Cuenta<span id="AEdoCuenta" class="form-text"></span>:</label>
+                            <button type="button" id="btnDescargarEdoCuenta"><img src="{{url_for('nomina.static', filename='image/PDF_file_icon.png')}}" height="25" width="20"/></button>
+                        </div>
+                    </div>
+                    <div class="row pull-right">
+                        <button class="btn btn-primary" type="button" id="btnVerificarModal" onclick="abrirAdModal('')">
+                            Verificar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AsegurarVerificarModal" tabindex="1" aria-labelledby="Advertencia" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Advertencia">Advertencia</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="MensajeAdModal"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="dato" name="dato">
+                    <button type="button" id="btnCancelar" class="btn btn-primary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnVerificarClabe" class="btn btn-primary">Verificar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/scripts_empleado.js') }}"></script>
+<script src="{{ url_for('nomina.static', filename='scripts/validarclabe_script.js') }}"></script>
+{% endblock %}

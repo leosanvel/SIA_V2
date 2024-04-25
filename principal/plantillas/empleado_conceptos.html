@@ -48,7 +48,15 @@
             <!-- Contenido de la pestaña -->
             <form name="frmCrearConceptoEmpleado" id="frmCrearConceptoEmpleado" method="post">
                 <div class="row">
-
+                    <div class="col-md-3">
+                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
                                 class="form-text">*</span>:</label>
@@ -63,11 +71,23 @@
                         <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
                     </div>
 
+                    <div class="row">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="lblidConcepto">id Concepto<span id="AidConcepto"
+                                    class="form-text">*</span>:</label>
+                            <input type="text" name="idConcepto" id="idConcepto" placeholder=""
+                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
 
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="Concepto" id="Concepto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                            <input type="text" name="Concepto" id="Concepto" class="obligatorio form-control"
+                                oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
@@ -78,7 +98,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <input type="checkbox" id="porcentaje"> Porcentaje
+                            <input type="checkbox" id="checkboxPorcentaje"> Porcentaje
                         </div>
                     </div>
                 </div>
@@ -86,19 +106,19 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="lblClaveSAT">Porcentaje<span id="AClaveSAT" class="form-text">*</span>:</label>
-                            <input type="text" name="ClaveSAT" id="ClaveSAT" placeholder=""
+                            <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
+                                    class="form-text">*</span>:</label>
+                            <input type="text" name="Porcentaje" id="Porcentaje" placeholder=""
                                 class="obligatorio form-control">
-                            <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
+                            <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="lblClaveSAT">Monto<span id="AClaveSAT" class="form-text">*</span>:</label>
-                            <input type="text" name="ClaveSAT" id="ClaveSAT" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
+                            <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
+                            <input type="text" name="Monto" id="Monto" placeholder="" class="obligatorio form-control">
+                            <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
@@ -106,7 +126,7 @@
                 <br>
                 <div class="row">
                     <div class="col-md-12">
-                        <button type="button" id="btnCrearUsuario" class="btn btn-primary pull-right">Crear
+                        <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary pull-right">Crear
                             concepto</button>
                     </div>
                 </div>
@@ -120,7 +140,7 @@
         </div>
         <div class="tab-pane" id="Buscar">
             <!-- Contenido de la pestaña -->
-            <form id="formularioBuscaJustificante">
+            <form id="frmBuscarConceptoEmpleado">
                 <div class="row">
                     <div class="col-md-4">
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
@@ -145,7 +165,7 @@
                     </div>
                 </div>
                 <div class="row pull-right">
-                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaConcepto">
+                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
                         <span class="icon-search" aria-hidden="true"></span> Buscar
                     </button>
                 </div>
@@ -191,5 +211,5 @@
 
 {% block scripts %}
 {{ super() }}
-<!-- <script src="{{ url_for('gestion_empleados.static', filename='scripts/scripts_empleado.js') }}"></script> -->
+<script src="{{ url_for('principal.static', filename='scripts/empleado_conceptos.js') }}"></script>
 {% endblock %}

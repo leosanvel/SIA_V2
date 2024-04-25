@@ -4,7 +4,7 @@ from app import db
         # Define la clase User usada para administrar la sesión
 class User(UserMixin):
     def __init__(self, user_db):
-        self.id = user_db.idPersona
+        self.id = user_db.Usuario
         self.idPersona = user_db.idPersona
         self.Usuario = user_db.Usuario
         self.Contrasenia = user_db.Contrasenia
@@ -93,8 +93,8 @@ class EmpleadoConcepto(db.Model):
     idPersona = db.Column(db.String(1), primary_key = True)
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     idConcepto = db.Column(db.String(5), primary_key = True)
-    Porcentaje = db.Column(db.Numeric(11, 3), nullable = True)
-    Monto = db.Column(db.Numeric(11, 2), nullable = True)
+    Porcentaje = db.Column(db.Numeric(11, 3))
+    Monto = db.Column(db.Numeric(11, 2))
 
     def __init__(self, idPersona, idTipoConcepto, idConcepto, Porcentaje, Monto):
         self.idPersona = idPersona
