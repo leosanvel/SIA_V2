@@ -45,7 +45,7 @@ from principal.rutas.principal import moduloSIA
 app.register_blueprint(moduloSIA)
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO GESTIÓN DE EMPLEADOS
-from rh.gestion_empleado.rutas.gestion_empleado import gestion_empleados
+from rh.gestion_empleados.rutas.gestion_empleados import gestion_empleados
 app.register_blueprint(gestion_empleados)
 
 
