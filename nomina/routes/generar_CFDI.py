@@ -7,7 +7,7 @@ from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
 
-from rh.gestion_empleados.modelos.empleado import TPersona, BancoPersona
+from rh.gestion_empleados.modelos.empleado import TPersona, BancoPersona, Empleado
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
 
 import os, zipfile
@@ -41,14 +41,17 @@ def crear_CFDI():
         respuesta = "creado"
         os.makedirs(directorio)
         
-        Personas = db.session.query(TPersona).all()
+        empleados_activos = db.session.query(Empleado.idPersona).filter_by(Activo=1).all()
+            # Extrae los números de empleado de la lista de tuplas
+        empleados_activos = [numero[0] for numero in empleados_activos]
 
         fecha_hora_actual = datetime.now()
         # Formatear la fecha y hora en el formato deseado
         fecha_hora_formateada = fecha_hora_actual.strftime("%Y-%m-%dT%H:%M:%S")
         consecutivo = 0
 
-        for Persona in Personas:
+        for idPersona in empleados_activos:
+            Persona = db.session.query(TPersona).filter_by(idPersona = idPersona).first()
             Nombre_completo = Persona.ApPaterno + " " + Persona.ApMaterno + " " + Persona.Nombre
 
             domicilioFiscal = db.session.query(rDomicilio).filter_by(idTipoDomicilio=2, idPersona = Persona.idPersona).first()
