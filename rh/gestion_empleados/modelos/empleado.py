@@ -111,6 +111,7 @@ class Puesto(db.Model):
 
 class Empleado(db.Model):
     __tablename__ = "rempleado"
+    __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
@@ -129,6 +130,7 @@ class Empleado(db.Model):
 
 class EmpleadoPuesto(db.Model):
     __tablename__ = "rempleadopuesto"
+    __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
@@ -137,3 +139,21 @@ class EmpleadoPuesto(db.Model):
     def __init__(self, idPersona, idPuesto):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
+
+class BancoPersona(db.Model):
+    __tablename__ = "rbancopersona"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    Clabe = db.Column(db.String(18), primary_key = True)
+    Banco = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+    Verificado = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idPersona, Clabe, Banco, Activo, Verificado):
+        self.idPersona = idPersona
+        self.Clabe = Clabe
+        self.Banco = Banco
+        self.Activo = Activo
+        self.Verificado = Verificado
