@@ -283,17 +283,21 @@ class TipoAlta(db.Model):
         self.TipoAlta = TipoAlta
         self.Activo = Activo
 
-class Quincena(db.Model):
+class kQuincena(db.Model):
     __tablename__ = "kquincena"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idQuincena = db.Column(db.Integer, primary_key = True)
+    Quincena = db.Column(db.Integer,nullable = True)
+    Fechas = db.Column(db.String(60), nullable = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     Descripcion = db.Column(db.String(50), nullable = True)
 
-    def __init__(self, idQuincena, FechaInicio, FechaFin, Descripcion):
+    def __init__(self, idQuincena, Quincena, Fechas, FechaInicio, FechaFin, Descripcion):
         self.idQuincena = idQuincena
+        self.Quincena = Quincena
+        self.Fechas = Fechas
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.Descripcion = Descripcion
@@ -483,3 +487,14 @@ class CodigoPostal(db.Model):
         self.Consecutivo = Consecutivo
         self.Asentamiento = Asentamiento
         self.Activo = Activo
+
+class Plazas(db.Model):
+    __tablename__ = "kPlaza"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPlaza = db.Column(db.String(15), primary_key = True)
+    Plaza =  db.Column(db.String(250), nullable = True)
+
+    def __init__(self, idPlaza, Plaza):
+        self.idPlaza = idPlaza
+        self.Plaza = Plaza
