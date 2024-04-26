@@ -7,7 +7,7 @@ from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
 
-from rh.gestion_empleados.modelos.empleado import TPersona, BancoPersona
+from rh.gestion_empleados.modelos.empleado import tPersona, rBancoPersona
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
 
 import os, zipfile
@@ -16,7 +16,7 @@ import os, zipfile
 @nomina.route('/nomina/generar-cfdi', methods = ['POST', 'GET'])
 @permisos_de_consulta
 def generar_CFDI():
-    Quincenas = db.session.query(Quincena).all()
+    Quincenas = db.session.query(kQuincena).all()
     return render_template('/generarCFDI.html', title='Generar CFDI',
                            Quincenas = Quincenas,
                            )
@@ -26,7 +26,7 @@ def generar_CFDI():
 def crear_CFDI():
     
     strQuincena = request.form.get("NumQuincena")
-    Quincenas = db.session.query(Quincena).filter_by(idQuincena = strQuincena).first()
+    Quincenas = db.session.query(kQuincena).filter_by(idQuincena = strQuincena).first()
     strMes = Quincenas.FechaInicio.strftime("%m")
     strAnio = Quincenas.FechaInicio.strftime("%y")
     # Definir la ruta y nombre del archivo
@@ -41,7 +41,7 @@ def crear_CFDI():
         respuesta = "creado"
         os.makedirs(directorio)
         
-        Personas = db.session.query(TPersona).all()
+        Personas = db.session.query(tPersona).all()
 
         fecha_hora_actual = datetime.now()
         # Formatear la fecha y hora en el formato deseado
@@ -58,7 +58,7 @@ def crear_CFDI():
                 CodigoPostal = "NO REGISTRADO"
 
 
-            Banco_persona = db.session.query(BancoPersona).filter_by(idPersona = Persona.idPersona, Activo = 1).first()
+            Banco_persona = db.session.query(rBancoPersona).filter_by(idPersona = Persona.idPersona, Activo = 1).first()
             if Banco_persona:
                 CLABE = Banco_persona.Clabe
             else:

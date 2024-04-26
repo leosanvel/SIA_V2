@@ -36,21 +36,21 @@ def modificar_empleado():
             idSelec = None
             session["idPersona"] = None
             titulo = "Agrega empleado"
-    empleado  = db.session.query(Persona).filter_by(idPersona = idSelec).first()
+    empleado  = db.session.query(tPersona).filter_by(idPersona = idSelec).first()
 
     # Catalogos para el empleado
-    TipoPersona_datos = db.session.query(TipoPersona).filter_by(Activo = 1).order_by(TipoPersona.idTipoPersona).all()
-    EstCiv_datos = db.session.query(EstadoCivil).filter_by(Activo = 1).order_by(EstadoCivil.idEstadoCivil).all()
-    Nacionalidad_datos = db.session.query(Nacionalidad).filter_by(Activo = 1).order_by(Nacionalidad.idNacionalidad).all()
-    TipoEmpleado_datos = db.session.query(TipoEmpleado).filter_by(Activo = 1).order_by(TipoEmpleado.idTipoEmpleado).all()
-    CentroCostos_datos = db.session.query(CentroCostos).order_by(CentroCostos.idCentroCosto).all()
-    Quincena_datos = db.session.query(Quincena).order_by(Quincena.idQuincena).all()
-    Escolaridad_datos = db.session.query(Escolaridad).filter_by(Activo = 1).order_by(Escolaridad.idEscolaridad).all()
+    TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1).order_by(kTipoPersona.idTipoPersona).all()
+    EstCiv_datos = db.session.query(kEstadoCivil).filter_by(Activo = 1).order_by(kEstadoCivil.idEstadoCivil).all()
+    Nacionalidad_datos = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.idNacionalidad).all()
+    TipoEmpleado_datos = db.session.query(kTipoEmpleado).filter_by(Activo = 1).order_by(kTipoEmpleado.idTipoEmpleado).all()
+    CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
+    Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
+    Escolaridad_datos = db.session.query(kEscolaridad).filter_by(Activo = 1).order_by(kEscolaridad.idEscolaridad).all()
 
     # Catalogos para el domicilio
-    Entidad_datos = db.session.query(Entidad).filter_by(Activo = 1).order_by(Entidad.idEntidad).all()
-    TipoAsentamiento_datos = db.session.query(TipoAsentamiento).filter_by(Activo = 1).order_by(TipoAsentamiento.idTipoAsentamiento).all()
-    Vialidad_datos = db.session.query(Vialidad).filter_by(Activo = 1).order_by(Vialidad.idVialidad).all()
+    Entidad_datos = db.session.query(kEntidad).filter_by(Activo = 1).order_by(kEntidad.idEntidad).all()
+    TipoAsentamiento_datos = db.session.query(kTipoAsentamiento).filter_by(Activo = 1).order_by(kTipoAsentamiento.idTipoAsentamiento).all()
+    Vialidad_datos = db.session.query(kVialidad).filter_by(Activo = 1).order_by(kVialidad.idVialidad).all()
 
     return render_template('/datos_bancarios.html', title = titulo,
                            current_user = current_user,
@@ -131,7 +131,7 @@ def guardar_empleado():
 
 
     try:
-        empleado_existente = db.session.query(Persona).filter_by(idPersona=idPersona).one()
+        empleado_existente = db.session.query(tPersona).filter_by(idPersona=idPersona).one()
         existe = 1
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
@@ -152,14 +152,14 @@ def guardar_empleado():
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
-        ultimo_id = db.session.query(func.max(Persona.idPersona)).scalar()
+        ultimo_id = db.session.query(func.max(tPersona.idPersona)).scalar()
         existe = 0
         if ultimo_id is None:
             nuevo_id_persona = 1
         else:
             nuevo_id_persona = ultimo_id + 1
             
-        ultimo_Numero_Empleado = db.session.query(func.max(Empleado.NumeroEmpleado)).scalar()
+        ultimo_Numero_Empleado = db.session.query(func.max(rEmpleado.NumeroEmpleado)).scalar()
         if ultimo_Numero_Empleado is None:
             nuevo_Numero_Empleado = 1
         else:
@@ -173,13 +173,13 @@ def guardar_empleado():
 
         empleado_data['Activo'] = 1
 
-        nueva_persona = Persona(**persona_data)
+        nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
         print(nueva_persona)
-        nuevo_empleado = Empleado(**empleado_data)
+        nuevo_empleado = rEmpleado(**empleado_data)
         db.session.add(nuevo_empleado)
         print(nuevo_empleado)
-        nuevo_empleado_puesto = EmpleadoPuesto(**empleado_puesto_data)
+        nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
         db.session.add(nuevo_empleado_puesto)
         print(nuevo_empleado_puesto)
         respuesta["guardado"] = True
@@ -196,22 +196,25 @@ def buscar_empleado():
     esModal = request.form.get("esModal")
 
     filtro_comun = or_(
-        Persona.CURP.contains(parametro),
-        Persona.Nombre.contains(parametro),
-        Persona.ApPaterno.contains(parametro),
-        Persona.ApMaterno.contains(parametro),
-        #Persona.NumeroEmpleado.contains(parametro)
+        tPersona.CURP.contains(parametro),
+        tPersona.Nombre.contains(parametro),
+        tPersona.ApPaterno.contains(parametro),
+        tPersona.ApMaterno.contains(parametro),
+        #rEmpleado.NumeroEmpleado.contains(parametro)
     )
 
     #if esModal:
-    #    filtro_comun = and_(filtro_comun, Persona.Activo == 1)
+        #filtro_comun = and_(filtro_comun, tPersona.Empleado.Activo == 1)
 
-    empleados = db.session.query(Persona).filter(filtro_comun).all()
+    empleados = db.session.query(tPersona).filter(filtro_comun).all()
     lista_empleados = []
     for empleado in empleados:
         if empleado is not None:
+            NumeroEmpleado = empleado.Empleado.NumeroEmpleado
             empleado_dict = empleado.__dict__
             empleado_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            empleado_dict["NumeroEmpleado"] = NumeroEmpleado
+            empleado_dict.pop("Empleado")
             lista_empleados.append(empleado_dict)
     return jsonify(lista_empleados)
 
@@ -219,7 +222,7 @@ def buscar_empleado():
 @gestion_empleados.route('/rh/gestion-empleados/buscar-curp', methods = ['POST'])
 def buscar_curp():
     curp = request.form.get("CURP")
-    empleado = db.session.query(Persona).filter_by(CURP=curp).first()
+    empleado = db.session.query(tPersona).filter_by(CURP=curp).first()
     if empleado is None:
         empleado = consultar_curp(curp)
         session["idPersona"] = None
@@ -237,7 +240,7 @@ def cargar_CP():
     Municipio  = request.form.get("Municipio")
     TipoAsentamiento  = request.form.get("TipoAsentamiento")
     Asentamiento = request.form.get("Asentamiento")
-    CPbusqueda = db.session.query(CodigoPostal).filter_by(idEntidad = Entidad, idMunicipio = Municipio, idTipoAsentamiento = TipoAsentamiento, idAsentamiento = Asentamiento, Activo = 1).first()
+    CPbusqueda = db.session.query(kCodigoPostal).filter_by(idEntidad = Entidad, idMunicipio = Municipio, idTipoAsentamiento = TipoAsentamiento, idAsentamiento = Asentamiento, Activo = 1).first()
     
     if CPbusqueda:
         codigo_postal = CPbusqueda.CodigoPostal
@@ -248,7 +251,7 @@ def cargar_CP():
 @gestion_empleados.route('/rh/gestion-empleados/buscar-cp', methods = ['POST'])
 def buscar_CP():
     CP = request.form.get("CP")
-    CPbusqueda = db.session.query(CodigoPostal).filter_by(CodigoPostal = CP, Activo = 1).first()
+    CPbusqueda = db.session.query(kCodigoPostal).filter_by(CodigoPostal = CP, Activo = 1).first()
     if CPbusqueda:
         CPbusqueda = CPbusqueda.__dict__
         CPbusqueda.pop("_sa_instance_state", None)
@@ -256,3 +259,13 @@ def buscar_CP():
     else:
         return "no encontrado"
     
+@gestion_empleados.route('/rh/selecciona-empleado', methods = ['POST', 'GET'])
+@permisos_de_consulta
+def seleccionar_empleado():
+    idSeleccionado = request.form.get("idSeleccionado")
+    session['idPersona'] = idSeleccionado
+    empleado = db.session.query(tPersona).filter_by(idPersona = idSeleccionado).first()
+    if empleado is not None:
+        empleado = empleado.__dict__
+        empleado.pop("_sa_instance_state", None)
+    return jsonify(empleado)

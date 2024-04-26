@@ -43,7 +43,7 @@ function obtenerDomicilio(tipo) {
 function obtenerInfoEmpleado() {
     $.ajax({
         type: "POST",
-        url: "/RH/obtener_info_empleado",
+        url: "/rh/obtener-info-empleado",
         success: function (data) {
             if (data != null) {
                 var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
@@ -52,11 +52,12 @@ function obtenerInfoEmpleado() {
 
                 $("#CURP").val(data.CURP);
                 $("#Nombre").val(data.Nombre);
-                $("#Paterno").val(data.Paterno);
-                $("#Materno").val(data.Materno);
+                $("#Paterno").val(data.ApPaterno);
+                $("#Materno").val(data.ApMaterno);
                 $("#Sexo").val(data.Sexo);
                 $("#FechaNacimiento").val(FechaNacimientoFormateada);
                 $("#RFC").val(data.RFC);
+                $("#idTipoPersona").val(data.idTipoPersona);
                 $("#idEstadoCivil").val(data.idEstadoCivil);
                 $("#idNacionalidad").val(data.idNacionalidad);
                 cargaCalidadMigratoria();
@@ -65,15 +66,15 @@ function obtenerInfoEmpleado() {
                 $("#TelCelular").val(data.TelCelular);
                 $("#CorreoPersonal").val(data.CorreoPersonal);
                 $("#CorreoInstitucional").val(data.CorreoInstitucional);
-                $("#idTipoEmpleo").val(data.idTipoEmpleo);
+                $("#idTipoEmpleo").val(data.idTipoEmpleado);
                 cargarTipAlt();
                 $("#idTipoAlta").val(data.idTipoAlta);
                 cargarGrupo();
                 $("#idGrupo").val(data.idGrupo);
-                $("#idPuesto").val(data.idPuesto);
+                $("#idCC").val(data.idCentroCosto);
                 cargarPlaza();
-                $("#idPuestoJefe").val(data.idPuestoJefe);
-                $("#idCentroCosto").val(data.idCentroCosto);
+                $("#idPlazaHom").val(data.idPuesto);
+                $("#idUbicacion").val(data.idCentroCosto);
                 $("#HoraEntrada").val(data.HoraEntrada);
                 $("#HoraSalida").val(data.HoraSalida);
                 $("#FecIngresoGob").val(FecIngresoGobFormateada);
@@ -89,6 +90,10 @@ function obtenerInfoEmpleado() {
                 $("#Especialidad").val(data.Especialidad);
                 $("#NumQuincena").val(data.NumQuincena);
                 $("#idEstatus").val(data.Activo);
+
+                $("#idCC").prop("disabled", true);
+                $("#idPlazaHom").prop("disabled", true);
+                $("#idUbicacion").prop("disabled", true);
 
             }
         }
@@ -431,7 +436,7 @@ $gmx(document).ready(function () {
     $("#formularioDomicilioFiscal #SN").change(function () { cargaSinNumero(2); });
 
     var rutaActual = window.location.href;
-    if (rutaActual.includes("/modificarEmpleado")) {
+    if (rutaActual.includes("/rh/gestion-empleados/modificar-empleado")) {
 
         obtenerInfoEmpleado();
         obtenerDomicilio(1);
