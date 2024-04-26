@@ -4,11 +4,11 @@ from flask_login import current_user
 from datetime import time, date, datetime
 import os
 
-from .routes import nomina
+from .rutas import nomina
 from app import db
-from app.general.utils.funciones import permisos_de_edicion, permisos_de_consulta
-from app.catalogos.models.models import *
-from app.rh.empleado.models.models import Rbancopersona
+from general.herramientas.funciones import permisos_de_edicion, permisos_de_consulta
+from catalogos.modelos.modelos import *
+from rh.gestion_empleados.modelos.empleado import BancoPersona
 
 
 @nomina.route('/Nomina/validarClabe', methods = ['POST', 'GET'])

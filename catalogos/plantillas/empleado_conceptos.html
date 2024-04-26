@@ -142,10 +142,20 @@
             <!-- Contenido de la pestaña -->
             <form id="frmBuscarConceptoEmpleado">
                 <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-4">
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                class="form-text">*</span>:</label>
-                        <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                                class="form-text"></span>:</label>
+                        <select id="TipoConcepto" name="TipoConcepto" class=" form-control">
                             <option value="0">-- Seleccione --</option>
                             {% if TipoConcepto %}
                             {% for row in TipoConcepto %}
@@ -155,13 +165,25 @@
                         </select>
                         <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
                     </div>
-
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto</label>
-                            <input type="text" id="Concepto" class="obligatorio form-control">
+                            <input type="text" id="Concepto" name="Concepto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="lblConcepto">Concepto<span id="AConcepto"
+                                class="form-text"></span>:</label>
+                        <select id="SelectConcepto" name="SelectConcepto" class="form-control">
+                            <option value="0">-- Seleccione --</option>
+                            {% if Concepto %}
+                            {% for row in Concepto %}
+                            <option value="{{row.idConcepto}}">{{row.Concepto}}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                        <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                     </div>
                 </div>
                 <div class="row pull-right">
@@ -174,18 +196,20 @@
                 <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
             </div>
             <div class="row">
-                <form id="formResultadoConceptos">
+                <form id="formResultadoEmpleadoConceptos">
                     <div class="table-responsive" style="width: 100%;">
-                        <table class="table table-striped" id="tablaResultadosJustificantes" style="display: none;">
+                        <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
                             <thead>
                                 <tr>
                                     <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
                                 </tr>
                                 <tr>
                                     <th>No. Empleado</th>
-                                    <th>Fecha de inicio</th>
-                                    <th>Fecha de fin</th>
-                                    <th>Descripción</th>
+                                    <th>Tipo de Concepto</th>
+                                    <th>Concepto</th>
+                                    <th>Porcentaje</th>
+                                    <th>Monto</th>
+                                    <th>Activo</th>
                                     <th></th>
                                     <th></th>
                                 </tr>

@@ -60,8 +60,13 @@ app.register_blueprint(gestion_empleados)
 
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO NOMINA
-from nomina.routes.routes import nomina
+from nomina.rutas.rutas import nomina
 app.register_blueprint(nomina)
+
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO NOMINA
+from catalogos.rutas.rutas import catalogos
+app.register_blueprint(catalogos)
 
 
 with app.app_context():

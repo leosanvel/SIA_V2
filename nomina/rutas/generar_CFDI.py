@@ -2,7 +2,7 @@ from flask import render_template, request, jsonify, url_for, current_app, send_
 from flask_login import current_user
 from datetime import datetime
 
-from .routes import nomina
+from .rutas import nomina
 from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
