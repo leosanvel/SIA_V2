@@ -2,23 +2,7 @@ $gmx(document).ready(function () {
     $("#btnBuscaEmpleadoConcepto").click(buscar_empleado_concepto);
     $("#btnCrearEmpleadoConcepto").click(crear_empleado_concepto);
 
-    $('#cuadro_busqueda').on('input', function() {
-        console.log("Entró");
-        var textoBusqueda = $(this).val();
-        $.ajax({
-            url: '/buscar',
-            method: 'GET',
-            data: {texto_busqueda: textoBusqueda},
-            success: function(response) {
-                console.log("response:");
-                console.log(response);
-                // Actualizar la lista desplegable con los resultados
-                // Aquí deberías tener algún código para mostrar los resultados en una lista desplegable
-            }
-        });
-    });
-
-});
+   });
 
 function crear_empleado_concepto() {
     console.log("Boton");
@@ -47,7 +31,7 @@ function buscar_empleado_concepto() {
         data: $("#frmBuscarConceptoEmpleado").serialize(),
         success: function (data) {
             if (data.NoEncontrado) {
-                abrirModal("No encontrado", "No se encontraron coincidencias.","")
+                abrirModal("No encontrado", "No se encontraron coincidencias.", "")
             } else {
                 $("#tablaResultadosEmpleadoConceptos").show();
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
@@ -89,5 +73,5 @@ function buscar_empleado_concepto() {
             }
         }
     })
-    
+
 }

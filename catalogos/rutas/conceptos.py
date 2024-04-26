@@ -17,7 +17,7 @@ def catalogos_conceptos():
                             TipoPago = TiposPago)
 
 
-@catalogos.route('/crear-concepto', methods = ['POST'])
+@catalogos.route('/catalogos/crear-concepto', methods = ['POST'])
 def crear_concepto():
     TipoConcepto = request.form['TipoConcepto']
     idConcepto = request.form['idConcepto']
@@ -47,7 +47,7 @@ def crear_concepto():
        
     return jsonify(concepto_data)
 
-@catalogos.route('/buscar-concepto', methods = ['POST'])
+@catalogos.route('/catalogos/buscar-concepto', methods = ['POST'])
 def concepto():
     tipoConcepto = request.form.get('TipoConcepto')
     concepto = request.form.get('Concepto')
@@ -75,3 +75,13 @@ def concepto():
         return jsonify({"NoEncontrado":True}) 
     return jsonify(lista_conceptos)
 
+@catalogos.route('/catalogos/actualizar-busqueda-conceptos', methods=['GET'])
+def actualizar_busqueda_conceptos():
+    texto_busqueda = request.args.get('texto_busqueda', '')
+    resultados = kConcepto.query.filter(kConcepto.Concepto.ilike(f'%{texto_busqueda}%')).all()
+    resultados_json = [{'idTipoConcepto': resultado.idTipoConcepto,
+                        'idConcepto': resultado.idConcepto,
+                        'Concepto': resultado.Concepto,
+                        'texto': str(resultado.idTipoConcepto) + ' - ' + str(resultado.idConcepto) + ' - ' + resultado.Concepto
+                        } for resultado in resultados]
+    return jsonify(resultados_json)

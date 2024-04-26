@@ -75,16 +75,3 @@ def buscar_empleado_concepto():
     if not lista_empleado_conceptos:
         return jsonify({"NoEncontrado":True}) 
     return jsonify(lista_empleado_conceptos)
-
-
-@prestaciones.route('/buscar', methods=['GET'])
-def buscar():
-    texto_busqueda = request.args.get('texto_busqueda', '')
-    print("texto_busqueda")
-    print(texto_busqueda)
-    resultados = kConcepto.query.filter(kConcepto.Concepto.ilike(f'%{texto_busqueda}%')).all()
-    resultados_json = [{'idTipoConcepto': resultado.idTipoConcepto,
-                        'idConcepto': resultado.idConcepto,
-                        'Concepto': resultado.Concepto,
-                        } for resultado in resultados]
-    return jsonify(resultados_json)
