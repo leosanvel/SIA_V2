@@ -20,9 +20,10 @@ class TPersona(db.Model):
     TelCelular = db.Column(db.String(10), nullable = True)
     idTipoPersona = db.Column(db.Integer, nullable = True)
     idEstadoCivil = db.Column(db.Integer, nullable = True)
+    CorreoPersonal = db.Column(db.String(150), nullable = True)
 
     def __init__(self, idPersona, CURP, Nombre, ApPaterno, ApMaterno, Sexo, FechaNacimiento, RFC, idNacionalidad,
-                 CalidadMigratoria, TelCasa, TelCelular, idTipoPersona, idEstadoCivil):
+                 CalidadMigratoria, TelCasa, TelCelular, idTipoPersona, idEstadoCivil, CorreoPersonal):
         self.idPersona = idPersona
         self.CURP = CURP
         self.Nombre = Nombre
@@ -37,7 +38,7 @@ class TPersona(db.Model):
         self.TelCelular = TelCelular
         self.idTipoPersona = idTipoPersona
         self.idEstadoCivil = idEstadoCivil
-
+        self.CorreoPersonal = CorreoPersonal
 class Puesto(db.Model):
     __tablename__ = "tpuesto"
     __bind_key__ = 'db2'
@@ -109,7 +110,7 @@ class Puesto(db.Model):
         self.idCentroCosto = idCentroCosto
         self.idEstatusPuesto = idEstatusPuesto
 
-class Empleado(db.Model):
+class rEmpleado(db.Model):
     __tablename__ = "rempleado"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
@@ -117,15 +118,20 @@ class Empleado(db.Model):
     idPersona = db.Column(db.Integer, primary_key = True)
     idTipoEmpleado = db.Column(db.Integer, primary_key = True)
     NumeroEmpleado = db.Column(db.Integer, nullable = True)
+    NoISSSTE = db.Column(db.Integer, nullable = True)
+    FecAltaISSSTE = db.Column(db.Date, nullable = True) 
+    CorreoInstitucional = db.Column(db.String(150), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
 
-    # Relacion
-    
+    # Relacion   
 
-    def __init__(self, idPersona, idTipoEmpleado, NumeroEmpleado, Activo):
+    def __init__(self, idPersona, idTipoEmpleado, NumeroEmpleado, NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
         self.idPersona = idPersona
         self.idTipoEmpleado = idTipoEmpleado
         self.NumeroEmpleado = NumeroEmpleado
+        self.NoISSSTE = NoISSSTE
+        self.FecAltaISSSTE = FecAltaISSSTE
+        self.CorreoInstitucional = CorreoInstitucional
         self.Activo = Activo
 
 class EmpleadoPuesto(db.Model):
@@ -135,10 +141,12 @@ class EmpleadoPuesto(db.Model):
 
     idPersona = db.Column(db.Integer, primary_key = True)
     idPuesto = db.Column(db.Integer, primary_key = True)
+    idEstatusEP = db.Column(db.Integer, nullable= True)
 
-    def __init__(self, idPersona, idPuesto):
+    def __init__(self, idPersona, idPuesto, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
+        self.idEstatusEP = idEstatusEP
 
 class BancoPersona(db.Model):
     __tablename__ = "rbancopersona"
@@ -157,3 +165,20 @@ class BancoPersona(db.Model):
         self.Banco = Banco
         self.Activo = Activo
         self.Verificado = Verificado
+
+class rSerieNomina(db.Model):
+    __tablename__ = 'rserienomina'
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+    idNomina = db.Column(db.Integer, primary_key = True)
+    SerieInicial = db.Column(db.Integer, nullable = True)
+    SerieFinal = db.Column(db.Integer, nullable= True)
+    TotalRegistros = db.Column(db.Integer, nullable = True)
+    FechaProceso = db.Column(db.Date, nullable = True)
+
+    def __init__(self, idNomina, SerieInicial, SerieFinal, TotalRegistros, FechaProceso):
+        self.idNomina = idNomina
+        self.SerieInicial = SerieInicial
+        self.SerieFinal = SerieFinal
+        self.TotalRegistros = TotalRegistros
+        self.FechaProceso = FechaProceso

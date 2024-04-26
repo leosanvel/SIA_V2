@@ -6,17 +6,18 @@ from .routes import nomina
 from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
+from autenticacion.modelos.modelos import *
 
-from rh.gestion_empleados.modelos.empleado import TPersona, BancoPersona
+from rh.gestion_empleados.modelos.empleado import TPersona, BancoPersona, rSerieNomina, rEmpleado, EmpleadoPuesto, Puesto
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
 
 import os, zipfile
 
-
 @nomina.route('/nomina/generar-cfdi', methods = ['POST', 'GET'])
 @permisos_de_consulta
+
 def generar_CFDI():
-    Quincenas = db.session.query(Quincena).all()
+    Quincenas = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
     return render_template('/generarCFDI.html', title='Generar CFDI',
                            Quincenas = Quincenas,
                            )
@@ -26,9 +27,35 @@ def generar_CFDI():
 def crear_CFDI():
     
     strQuincena = request.form.get("NumQuincena")
-    Quincenas = db.session.query(Quincena).filter_by(idQuincena = strQuincena).first()
+
+    Quincenas = db.session.query(kQuincena).filter_by(idQuincena = strQuincena).first()
+    strQuincena = str(Quincenas.Quincena)
     strMes = Quincenas.FechaInicio.strftime("%m")
-    strAnio = Quincenas.FechaInicio.strftime("%y")
+    strAnio = Quincenas.FechaInicio.strftime("%Y")
+    desQuincena = Quincenas.Descripcion
+    FECPAGA = Quincenas.FechaFin 
+    FECINI = Quincenas.FechaInicio
+    FECFIN = Quincenas.FechaFin
+
+    Observaciones = request.form.get("Observaciones")
+    Descripcion = "NOMINA FEDERAL DE LA " + desQuincena + " DE " + strAnio    
+
+    if len(strMes) == 1:
+        strMes = "0" + strMes
+
+    if len(strQuincena) == 1:
+        strQuincena = "0" + strQuincena
+
+    NumQui = "NQNA" + strQuincena + strAnio + "F"
+
+    serienomina = db.session.query(rSerieNomina).filter_by().first()
+
+    if serienomina:
+        consecutivo = serienomina.SerieFinal
+    else:
+        consecutivo = 0
+
+    print("Serie: ", consecutivo)
     # Definir la ruta y nombre del archivo
     nombre_archivo = nombre_carpeta = strMes + strQuincena + strAnio
     directorio = "nomina/CFDI/" + nombre_carpeta + "/"
@@ -41,14 +68,15 @@ def crear_CFDI():
         respuesta = "creado"
         os.makedirs(directorio)
         
-        Personas = db.session.query(TPersona).all()
+        Empleados = db.session.query(rEmpleado).filter_by(idPersona = 5574).all()
 
         fecha_hora_actual = datetime.now()
         # Formatear la fecha y hora en el formato deseado
         fecha_hora_formateada = fecha_hora_actual.strftime("%Y-%m-%dT%H:%M:%S")
-        consecutivo = 0
 
-        for Persona in Personas:
+        for Empleado in Empleados:
+
+            Persona = db.session.query(TPersona).filter_by(idPersona = Empleado.idPersona).first()
             Nombre_completo = Persona.ApPaterno + " " + Persona.ApMaterno + " " + Persona.Nombre
 
             domicilioFiscal = db.session.query(rDomicilio).filter_by(idTipoDomicilio=2, idPersona = Persona.idPersona).first()
@@ -57,72 +85,139 @@ def crear_CFDI():
             else:
                 CodigoPostal = "NO REGISTRADO"
 
-
             Banco_persona = db.session.query(BancoPersona).filter_by(idPersona = Persona.idPersona, Activo = 1).first()
             if Banco_persona:
                 CLABE = Banco_persona.Clabe
             else:
                 CLABE = "NO REGISTRADA"
 
+            EmpleadoP = db.session.query(EmpleadoPuesto).filter_by(idPersona = Empleado.idPersona, idEstatusEP = 1).first()
+            Puestos = db.session.query(Puesto).filter_by(ConsecutivoPuesto = EmpleadoP.idPuesto).first()
+            CentroCosto = db.session.query(CentroCostos).filter_by(idCentroCosto = Puestos.idCentroCosto).first()
+            
+            CC = CentroCosto.CentroCosto
+            Plaza = db.session.query(Plazas).filter_by(idPlaza = Puestos.CodigoPresupuestal).first()
+            CPlaza = Puestos.NivelSalarial + " " + Plaza.Plaza
+            CVEISSSTE = str(Empleado.NoISSSTE)
+            FECALTA = str(Empleado.FecAltaISSSTE)
 
             #Falta generar: 
-            NumeroEmpleado = "NoEmpleado"
-            idCentroCosto = "idCentroCosto"
-            idPuesto = "idPuesto"
-            correoPersonal = "CORREO"
-            consecutivo = consecutivo + 1
-            NumQui = "X"
-            TotalEmpP = "X"
-            TotalEmpD = "X"
-            TotalEmp = "X"
-            FECPAGA = "X"
-            FECINI = "X"
-            FECFIN = "X"
-            DIAS = "X"
-            CVEISSSTE = "X"
-            FECALTA = "X"
-            PlazaSemana = "X"
-            TotalBruto = "X"
-            TOTALDIARIO = "X"
+            consecutivo += 1
 
-            PYD = "X"
-            CVECONCEPTO = "X"
-            IMPORTE = "X"
-            TotalEmpDD = "X"
-            TotalEmpDU = "X"
+            TotalEmpP = 0
+            TotalEmpD = 0
+            TotalEmpDD = 0
+            TotalEmpDU = 0
 
+            DIAS = 15
+            PlazaSemana = "99" #Numero de semana fecha ingreso gob y fecha de paga
+            TotalSueldoCG = 0
+            TotalBruto = 0
+            Conceptos = db.session.query(EmpleadoConcepto).filter_by(idPersona = Empleado.idPersona).all()
+            for Concep in Conceptos:
+                if Concep.idTipoConcepto == "P":
+                    TotalEmpP = TotalEmpP + Concep.Monto
+                    if Concep.idConcepto == "7" or Concep.idConcepto == "77" or Concep.idConcepto == "A1" or Concep.idConcepto == "A2" or Concep.idConcepto == "A3" or Concep.idConcepto == "A4" or Concep.idConcepto == "A5":
+                        TotalBruto = TotalBruto + Concep.Monto
+                        # totalbruto es la suma de los conceptos 7, 77,A1,A2,A3,A4,A5
+                    if Concep.idConcepto == "7" or Concep.idConcepto == "CG":
+                        TotalSueldoCG = TotalSueldoCG + Concep.Monto
+                if Concep.idTipoConcepto == "D":
+                    TotalEmpD = TotalEmpD + Concep.Monto                    
+                    
+                    if Concep.idConcepto == "1":
+                        TotalEmpDU = TotalEmpDU + Concep.Monto #TOTAL DE CLAVE CONCEPTO 1
+                    Conc = db.session.query(Concepto).filter_by(idTipoConcepto = "D", idConcepto = Concep.idConcepto).first()
+                    
+                    if Conc.idTipoPago == 1:
+                        TotalEmpDD = TotalEmpDD + float((TotalBruto * Conc.Porcentaje) / 100)
+                    else:
+                        TotalEmpDD = TotalEmpDD + float(Concep.Monto) #IMPORTE DE PERCEPCION O DEDUCCION
+
+
+
+            TOTALDIARIO = TotalBruto / DIAS
+            TOTALDIARIO = "{:.2f}".format(TOTALDIARIO) 
+            # totalbruto entre 15 dias
+
+            PYD = "" # T CONCEPTO PAC
+            CVECONCEPTO = "" # CLAVE DE CONCEPTO
+            DesConcepto = "" #DESCRIPCION DEL CONCEPTO
+            IMPORTE = 0 #IMPORTE DE PERCEPCION O DEDUCCION
+            
             Nombre_archivo = "I0" + str(consecutivo) + ".txt"
             ruta_completa = directorio + Nombre_archivo
             rutas_archivos.append(ruta_completa)
-            Observaciones = "OBSERVACIONES"
-            Descripcion = "DESCRIPCIÓN"
-            
+
             with open(ruta_completa, "w") as archivo:
+
+                if len(str(Empleado.CorreoInstitucional)) == 0:
+                    Correo = Persona.CorreoPersonal
+                else:
+                    Correo = Empleado.CorreoInstitucional
+
                 archivo.write("Lote|7.0\n" )
-                archivo.write("DOCUMENTO|CFDI_4.0|SI|SI|Recibo Nomina|ID_CONTROL|" + NumQui + "|ENVIO_RECEPTOR|" + Nombre_completo + "|" + correoPersonal + "|DATOSDECONTROL|DATODECONTROL|FILENAME|INAES_I00" + str(consecutivo) + "_" + NumQui + "_" + Persona.RFC + "\n")
-                archivo.write("COMPROBANTE|4.0|NOM-INS|I00109256|" + fecha_hora_formateada + "|99|||" + TotalEmpP + "|" + TotalEmpD + "|MXN||" + TotalEmp + "|N|01|PUE|04100|\n" )
+                archivo.write("DOCUMENTO|CFDI_4.0|SI|SI|Recibo Nomina|ID_CONTROL|" + str(NumQui) + "|ENVIO_RECEPTOR|" + str(Nombre_completo) + "|" + str(Correo) + "|DATOSDECONTROL|DATODECONTROL|FILENAME|INAES_I00" + str(consecutivo) + "_" + str(NumQui) + "_" + str(Persona.RFC) + "\n")
+                archivo.write("COMPROBANTE|4.0|NOM-INS|I00109256|" + str(fecha_hora_formateada) + "|99|||" + str(TotalEmpP) + "|" + str(TotalEmpD) + "|MXN||" + str(TotalEmpP - TotalEmpD) + "|N|01|PUE|04100|\n" )
                 archivo.write("EMISOR|CGP911204QU3|INSTITUTO NACIONAL DE LA ECONOMIA SOCIAL|603\n" )
-                archivo.write("RECEPTOR|" + Persona.RFC + "|" + Nombre_completo + "|" + "|" + CodigoPostal + "|MEX||605|CN01\n" )
-                archivo.write("CONCEPTO|84111505||1|ACT||Pago de nómina|" + TotalEmpP + "|" + TotalEmpP + "|" + TotalEmpD + "|03\n" )
-                archivo.write("COMPLEMENTO|Nomina12|O|" + FECPAGA + "|" + FECINI + "|" + FECFIN + "|" + DIAS + "|" + TotalEmpP + "|" + TotalEmpD + "|\n" )
+                archivo.write("RECEPTOR|" + str(Persona.RFC) + "|" + str(Nombre_completo) + "|" + "|" + str(CodigoPostal) + "|MEX||605|CN01\n" )
+                archivo.write("CONCEPTO|84111505||1|ACT||Pago de nómina|" + str(TotalEmpP) + "|" + str(TotalEmpP) + "|" + str(TotalEmpD) + "|03\n" )
+                archivo.write("COMPLEMENTO|Nomina12|O|" + str(FECPAGA) + "|" + str(FECINI) + "|" + str(FECFIN) + "|" + str(DIAS) + "|" + str(TotalEmpP) + "|" + str(TotalEmpD) + "|\n" )
                 archivo.write("COMPLEMENTO|Nomina12|EMISOR||0002099093|\n" )
-                archivo.write("COMPLEMENTO|Nomina12|RECEPTOR|" + Persona.CURP + "|" + CVEISSSTE + "|" + FECALTA + "|P" + PlazaSemana + "W|02|No|01|02|" + NumeroEmpleado + "|" + idCentroCosto + "|" + idPuesto + "|1|04||" + CLABE + "|" + TotalBruto + "|" + TOTALDIARIO + "|DIF\n" )
+                archivo.write("COMPLEMENTO|Nomina12|RECEPTOR|" + str(Persona.CURP) + "|" + str(CVEISSSTE) + "|" + str(FECALTA) + "|P" + str(PlazaSemana) + "W|02|No|01|02|" + str(Empleado.NumeroEmpleado) + "|" + str(CC) + "|" + str(CPlaza) + "|1|04||" + str(CLABE) + "|" + str(TotalBruto) + "|" + str(TOTALDIARIO) + "|DIF\n" )
             
-                # if abreAux(strAux) then
-                archivo.write("COMPLEMENTO|Nomina12|PERCEPCIONES|" + TotalEmpP + "|||" + TotalEmpP + "|0.00\n")
-                # do until rsAux.eof
-                archivo.write("COMPLEMENTO|Nomina12|PERCEPCION|" + PYD + "|P000_" + CVECONCEPTO + "|" + Descripcion + "|" + IMPORTE + "|0.00\n")
-                # if abreAux(strAux) then
-                archivo.write("COMPLEMENTO|Nomina12|DEDUCCIONES|" + TotalEmpDD + "|" + TotalEmpDU + "\n")
-                # do until rsAux.eof
-                archivo.write("COMPLEMENTO|Nomina12|DEDUCCION|" + PYD + "|D000_" + CVECONCEPTO + "|" + Descripcion + "|" + IMPORTE + "\n")
+                # ENCABEZADO PERCEPCIONES
+                archivo.write("COMPLEMENTO|Nomina12|PERCEPCIONES|" + str(TotalEmpP) + "|||" + str(TotalEmpP) + "|0.00\n")
+            
+                CP = db.session.query(EmpleadoConcepto).filter_by(idPersona = Empleado.idPersona, idTipoConcepto = "P").all()
+                for ConceptoP in CP:
+                    Conc = db.session.query(Concepto).filter_by(idTipoConcepto = "P", idConcepto = ConceptoP.idConcepto).first()
+                    
+                    PYD = Conc.ClaveSAT # T CONCEPTO PAC
+                    CVECONCEPTO = Conc.idConcepto 
+                    DesConcepto = Conc.Concepto #DESCRIPCION DEL CONCEPTO
+                    IMPORTE = ConceptoP.Monto #IMPORTE DE PERCEPCION O DEDUCCION
+            
+                    # RECORRE TODAS LAS PERCEPCIONES
+                    archivo.write("COMPLEMENTO|Nomina12|PERCEPCION|" + str(PYD) + "|P000_" + str(CVECONCEPTO) + "|" + str(DesConcepto) + "|" + str(IMPORTE) + "|0.00\n")
+            
+
+
+
+
+
+
+                # ENCABEZADO DE DEDUCCIONES
+                archivo.write("COMPLEMENTO|Nomina12|DEDUCCIONES|" + str(TotalEmpDD) + "|" + str(TotalEmpDU) + "\n")
+                
+                CP = db.session.query(EmpleadoConcepto).filter_by(idPersona = Empleado.idPersona, idTipoConcepto = "D").all()
+                for ConceptoP in CP:
+                    Conc = db.session.query(Concepto).filter_by(idTipoConcepto = "D", idConcepto = ConceptoP.idConcepto).first()
+                    if Conc.idTipoPago == 1:
+                        IMPORTE = float((TotalBruto * Conc.Porcentaje) / 100)
+                    else:
+                        IMPORTE = float(ConceptoP.Monto) #IMPORTE DE PERCEPCION O DEDUCCION
+
+                    if Conc.idConcepto == "50":
+                        IMPORTE =  float((TotalSueldoCG * Conc.Porcentaje) / 100)      
+                    
+                    IMPORTE = "{:.2f}".format(IMPORTE)
+                    PYD = Conc.ClaveSAT # T CONCEPTO PAC
+                    CVECONCEPTO = Conc.idConcepto 
+                    DesConcepto = Conc.Concepto #DESCRIPCION DEL CONCEPTO
+                    
+                    # RECORRE TODAS LAS DEDUCCIONES
+                    archivo.write("COMPLEMENTO|Nomina12|DEDUCCION|" + str(PYD) + "|D000_" + str(CVECONCEPTO) + "|" + str(DesConcepto) + "|" + str(IMPORTE) + "\n")
+
+
+
 
 
                 archivo.write("COMPLEMENTO|Nomina12|OTROSPAGO \n")
                 archivo.write("COMPLEMENTO|Nomina12|OTROPAGO|002|S000_SUE|Subsidio al Empleo informativo|0.00 \n")
                 archivo.write("COMPLEMENTO|Nomina12|SUBSIDIOALEMPLEO|0.00 \n")
-                archivo.write("IMPRESION|TABLA|LEYINAES|ATRIBUTO|" + Observaciones + "| \n")
-                archivo.write("TABLA|DEPNOMINA|ATRIBUTO|DescripNomina|" + Descripcion +"\n")
+                archivo.write("IMPRESION|TABLA|LEYINAES|ATRIBUTO|" + str(Observaciones) + "| \n")
+                archivo.write("TABLA|DEPNOMINA|ATRIBUTO|DescripNomina|" + str(Descripcion) +"\n")
                 archivo.write("TABLA|FormaPago|ATRIBUTO|FormadePago|PUE Pago en una sola exhibición \n")
                 archivo.write("TABLA|MetodPago|ATRIBUTO|MetododePago|TRANSFERENCIA ELECTRONICA \n")
 
