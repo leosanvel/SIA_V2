@@ -1,13 +1,13 @@
 function seleccionaEmpleado(idEmpleado) {
     $.ajax({
         type: "POST",
-        url: "/RH/seleccionaEmpleado",
+        url: "/rh/selecciona-empleado",
         data: { "idSeleccionado": idEmpleado },
         success: function (data) {
             if (data) {
                 var path = window.location.pathname;
-                if (path === "/RH/busquedaempleado") {
-                    window.location.href = "/RH/modificarEmpleado"
+                if (path === "/rh/gestion-empleados/busqueda-empleado") {
+                    window.location.href = "/rh/gestion-empleados/modificar-empleado"
                 } else {
                     // resetearTodosLosFormularios();
                     $("#tablaEmpleadoSeleccionado").show();
@@ -133,7 +133,7 @@ $gmx(document).ready(function () {
                                <td >${empleado.NumeroEmpleado}</td>
                                 <td >${empleado.CURP}</td>
                                 <td >${empleado.Nombre}</td>
-                                <td >${empleado.Paterno} ${empleado.Materno}</td>
+                                <td >${empleado.ApPaterno} ${empleado.ApMaterno}</td>
                                 </tr>
                             `);
                         });
