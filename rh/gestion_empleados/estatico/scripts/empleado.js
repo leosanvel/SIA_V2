@@ -1,8 +1,8 @@
-function seleccionaEmpleado(idEmpleado) {
+function seleccionaEmpleado(idPersona) {
     $.ajax({
         type: "POST",
-        url: "/rh/selecciona-empleado",
-        data: { "idSeleccionado": idEmpleado },
+        url: "/rh/gestion-empleados/selecciona-empleado",
+        data: { "idPersona": idPersona },
         success: function (data) {
             if (data) {
                 var path = window.location.pathname;
@@ -20,7 +20,7 @@ function seleccionaEmpleado(idEmpleado) {
 
                     $("#CurpEmpleado").text(data.CURP);
                     $("#NombreEmpleado").text(data.Nombre);
-                    $("#ApellidosEmpleado").text(data.Paterno);
+                    $("#ApellidosEmpleado").text(data.ApPaterno + ' '+ data.ApMaterno);
                     $('#ModalBuscaEmpleado').modal('hide');
 
                     $("#tablaResultadosJustificantes tbody").empty();
@@ -306,8 +306,8 @@ $gmx(document).ready(function () {
                     if (data.Status) { //No está registrado
                         if (data.Status == "EXITOSO") { //Curp encontrada
                             $("#Nombre").val(data.Nombre);
-                            $("#Paterno").val(data.Paterno);
-                            $("#Materno").val(data.Materno);
+                            $("#Paterno").val(data.ApPaterno);
+                            $("#Materno").val(data.ApMaterno);
                             $("#Sexo").val(data.Sexo);
                             $("#FechaNacimiento").val(data.FechaNacimiento);
                             $("#CURP").val(data.CURP);

@@ -260,13 +260,14 @@ def buscar_CP():
     else:
         return "no encontrado"
     
-@gestion_empleados.route('/rh/selecciona-empleado', methods = ['POST', 'GET'])
+@gestion_empleados.route('/rh/gestion-empleados/selecciona-empleado', methods = ['POST', 'GET'])
 @permisos_de_consulta
 def seleccionar_empleado():
-    idSeleccionado = request.form.get("idSeleccionado")
-    session['idPersona'] = idSeleccionado
-    empleado = db.session.query(tPersona).filter_by(idPersona = idSeleccionado).first()
+    idPersona = request.form.get("idPersona")
+    session['idPersona'] = idPersona
+    empleado = db.session.query(tPersona).filter_by(idPersona = idPersona).first()
     if empleado is not None:
         empleado = empleado.__dict__
         empleado.pop("_sa_instance_state", None)
+        print(empleado)
     return jsonify(empleado)
