@@ -1,6 +1,14 @@
 $gmx(document).ready(function () {
     $("#btnBuscaConcepto").click(buscar_concepto);
     $("#btnCrearConcepto").click(crear_concepto);
+    $("#TipoPago").change(function () { pago_fijo_variable($(this).val()); });
+    
+    $("#MontoContenedor").hide();
+        $("#PorcentajeContenedor").hide();
+        $("#contenedorCheckbox").hide();
+
+    $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
+
 });
 
 function crear_concepto() {
@@ -82,4 +90,45 @@ function buscar_concepto() {
         }
     })
     
+}
+
+function habilita_porcentaje_o_monto() {
+    if ($("#checkboxporcentaje").prop("checked")) {
+
+        $("#Monto").prop('disabled', true);
+        $("#Porcentaje").prop('disabled', false);
+        $("#Monto"). val("0.00")
+        $("#Monto").addClass("obligatorio");
+        $("#Porcentaje").removeClass("obligatorio");
+    } else {
+        $("#Porcentaje").prop('disabled', true);
+        $("#Monto").prop('disabled', false);
+        $("#Porcentaje"). val("0.000")
+        $("#Porcentaje").addClass("obligatorio");
+        $("#Monto").removeClass("obligatorio");
+    }
+
+}
+
+function pago_fijo_variable(TipoPago){
+    if (TipoPago == "2" ){//Si es == 2 (Variable)
+        $("#Monto").removeClass("obligatorio");
+        $("#Porcentaje").removeClass("obligatorio");
+        $("#Monto"). val("0.00")
+        $("#Porcentaje"). val("0.000")
+        $("#Porcentaje").prop('disabled', false);
+        $("#Monto").prop('disabled', false);
+        $("#MontoContenedor").hide();
+        $("#PorcentajeContenedor").hide();
+        $("#contenedorCheckbox").hide();
+
+    }else{
+        $("#Monto"). val("0.00")
+        $("#Porcentaje"). val("0.000")
+        $("#MontoContenedor").show();
+        $("#PorcentajeContenedor").show();
+        $("#contenedorCheckbox").show();
+        habilita_porcentaje_o_monto();
+    }
+     
 }

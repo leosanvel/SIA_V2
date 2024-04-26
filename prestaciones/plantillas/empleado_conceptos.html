@@ -123,6 +123,16 @@
                     </div>
 
                 </div>
+
+                <div class="row">
+                    <form>
+                        <label for="cuadro_busqueda">Buscar:</label>
+                        <input type="text" id="cuadro_busqueda" placeholder="Ingrese su búsqueda...">
+                        <!-- <select id="lista_desplegable" size="1"> -->
+                            <!-- Aquí se mostrarán los resultados -->
+                        </select>
+                    </form>
+                </div>
                 <br>
                 <div class="row">
                     <div class="col-md-12">
@@ -172,19 +182,7 @@
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <label for="lblConcepto">Concepto<span id="AConcepto"
-                                class="form-text"></span>:</label>
-                        <select id="SelectConcepto" name="SelectConcepto" class="form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if Concepto %}
-                            {% for row in Concepto %}
-                            <option value="{{row.idConcepto}}">{{row.Concepto}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
+                    
                 </div>
                 <div class="row pull-right">
                     <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
@@ -195,6 +193,7 @@
             <div class="form-group">
                 <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
             </div>
+            
             <div class="row">
                 <form id="formResultadoEmpleadoConceptos">
                     <div class="table-responsive" style="width: 100%;">
@@ -235,5 +234,5 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('principal.static', filename='scripts/empleado_conceptos.js') }}"></script>
+<script src="{{ url_for('prestaciones.static', filename='scripts/empleado_conceptos.js') }}"></script>
 {% endblock %}

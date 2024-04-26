@@ -66,7 +66,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblidConcepto">id Concepto<span id="AidConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="idConcepto" id="idConcepto" placeholder=""
+                            <input type="text" name="idConcepto" id="idConcepto" placeholder="" maxlength="5"
                                 class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
@@ -76,7 +76,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="Concepto" id="Concepto" placeholder=""
+                            <input type="text" name="Concepto" id="Concepto" placeholder="" maxlength="250"
                                 class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
@@ -85,7 +85,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura" class="form-text">*</span>:</label>
-                            <input type="text" name="Abreviatura" id="Abreviatura" placeholder=""
+                            <input type="text" name="Abreviatura" id="Abreviatura" placeholder="" maxlength="25"
                                 class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
                         </div>
@@ -116,25 +116,26 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="checkbox" id="checkboxporcentaje"> Porcentaje
+                        <div class="form-group" id="contenedorCheckbox">
+                            <input type="checkbox" id="checkboxporcentaje">
+                            <label for="checkboxporcentaje" class="file">Porcentaje</label>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="form-group" id="PorcentajeContenedor">
                             <label for="lblPorcentaje">Porcentaje<span id="APorcentaje" class="form-text">*</span>:</label>
-                            <input type="text" name="Porcentaje" id="Porcentaje" placeholder=""
+                            <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
                                 class="obligatorio form-control">
                             <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="form-group" id="MontoContenedor">
                             <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
-                            <input type="text" name="Monto" id="Monto" placeholder=""
+                            <input type="number" name="Monto" id="Monto" placeholder=""
                                 class="obligatorio form-control">
                             <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
                         </div>
@@ -234,5 +235,5 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('principal.static', filename='scripts/conceptos.js') }}"></script>
+<script src="{{ url_for('catalogos.static', filename='scripts/conceptos.js') }}"></script>
 {% endblock %}
