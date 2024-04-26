@@ -171,7 +171,7 @@ def guardar_empleado():
         empleado_data['NumeroEmpleado'] = nuevo_Numero_Empleado
         empleado_puesto_data['idPersona'] = nuevo_id_persona
 
-        empleado_data['Activo'] = 1
+        empleado_data['rEmpleadoPuesto'] = 1
 
         nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
@@ -210,6 +210,7 @@ def buscar_empleado():
     lista_empleados = []
     for empleado in empleados:
         if empleado is not None:
+            print(empleado.idPersona)
             NumeroEmpleado = empleado.Empleado.NumeroEmpleado
             empleado_dict = empleado.__dict__
             empleado_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy

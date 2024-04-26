@@ -291,16 +291,12 @@ class kQuincena(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idQuincena = db.Column(db.Integer, primary_key = True)
-    Quincena = db.Column(db.Integer,nullable = True)
-    Fechas = db.Column(db.String(60), nullable = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     Descripcion = db.Column(db.String(50), nullable = True)
 
-    def __init__(self, idQuincena, Quincena, Fechas, FechaInicio, FechaFin, Descripcion):
+    def __init__(self, idQuincena, FechaInicio, FechaFin, Descripcion):
         self.idQuincena = idQuincena
-        self.Quincena = Quincena
-        self.Fechas = Fechas
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.Descripcion = Descripcion

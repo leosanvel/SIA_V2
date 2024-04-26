@@ -43,13 +43,14 @@ function obtenerDomicilio(tipo) {
 function obtenerInfoEmpleado() {
     $.ajax({
         type: "POST",
-        url: "/rh/obtener-info-empleado",
+        url: "/rh/gestion-empleados/obtener-info-empleado",
         success: function (data) {
             if (data != null) {
                 var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
                 var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngresoGob);
                 var FecIngresoFormateada = convertirFechaParaVisualizacion(data.FecIngreso);
-
+                console.log("data");
+                console.log(data.CURP);
                 $("#CURP").val(data.CURP);
                 $("#Nombre").val(data.Nombre);
                 $("#Paterno").val(data.ApPaterno);

@@ -133,7 +133,7 @@ class rEmpleado(db.Model):
     Persona = db.relationship("tPersona", back_populates = "Empleado", single_parent = True, cascade = "all, delete-orphan")
     EmpleadoPuestos = db.relationship("rEmpleadoPuesto", back_populates = "Empleado", cascade = "all, delete-orphan")
 
-    def __init__(self, idPersona, idTipoEmpleado, NumeroEmpleado, Activo):
+    def __init__(self, idPersona, idTipoEmpleado, NumeroEmpleado,NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
         self.idPersona = idPersona
         self.idTipoEmpleado = idTipoEmpleado
         self.NumeroEmpleado = NumeroEmpleado
@@ -150,19 +150,19 @@ class rEmpleadoPuesto(db.Model):
     idPersona = db.Column(db.Integer, db.ForeignKey(rEmpleado.idPersona), primary_key = True)
     idPuesto = db.Column(db.Integer, db.ForeignKey(tPuesto.ConsecutivoPuesto), primary_key = True)
     FechaInicio = db.Column(db.Date, nullable = True)
-    FechaFin = db.Column(db.Date, nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    FechaTermino = db.Column(db.Date, nullable = True)
+    idEstatusEP = db.Column(db.Boolean, nullable = True)
 
     # Relacion
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, FechaInicio, FechaFin, Activo):
+    def __init__(self, idPersona, idPuesto, FechaInicio, FechaTermino, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.FechaInicio = FechaInicio
-        self.FechaFin = FechaFin
-        self.Activo = Activo
+        self.FechaTermino = FechaTermino
+        self.idEstatusEP = idEstatusEP
 
 class rBancoPersona(db.Model):
     __tablename__ = "rbancopersona"

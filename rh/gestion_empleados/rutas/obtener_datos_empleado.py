@@ -15,12 +15,16 @@ from app import db
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_empleados.modelos.domicilio import *
 
-@gestion_empleados.route('/rh/obtener-info-empleado', methods = ['POST'])
+@gestion_empleados.route('/rh/gestion-empleados/obtener-info-empleado', methods = ['POST'])
 def obtener_info_empleado():
     idPersona = session.get('idPersona', None)
-    empleadopuesto_datos = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, Activo = 1).first()
+    print("idPersona")
+    empleadopuesto_datos = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
+    print(idPersona)
     empleado_datos = {}
     if empleadopuesto_datos is not None:
+        print("HOOOOOLAAA")
+        print("empleadopuesto_datos.idPuesto")
         print(empleadopuesto_datos.idPuesto)
         print(empleadopuesto_datos.Empleado.Persona.Nombre)
         print(empleadopuesto_datos.Puesto.Puesto)
