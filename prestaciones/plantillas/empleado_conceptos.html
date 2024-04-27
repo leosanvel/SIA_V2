@@ -57,73 +57,52 @@
                             <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                class="form-text">*</span>:</label>
-                        <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if TipoConcepto %}
-                            {% for row in TipoConcepto %}
-                            <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-
                     <div class="row">
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblidConcepto">id Concepto<span id="AidConcepto"
-                                    class="form-text">*</span>:</label>
-                            <input type="text" name="idConcepto" id="idConcepto" placeholder=""
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lblConcepto">Concepto</label>
+                                <input type="text" id="ConceptoExistente" name="ConceptoExistente"
+                                    class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                <div class="dropdown">
+                                    <div id="lista_conceptos" class="dropdown-menu"
+                                        aria-labelledby="dropdownMenuButton">
+                                        <!-- Aquí se mostrarán los resultados -->
+                                    </div>
+                                </div>
+                                <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="Concepto" id="Concepto" class="obligatorio form-control"
-                                oninput="this.value = this.value.toUpperCase()">
-                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
                 </div>
                 <div class="row">
-
-
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="checkbox" id="checkboxPorcentaje"> Porcentaje
+                        <div class="form-group" id="contenedorCheckbox">
+                            <input type="checkbox" id="checkboxporcentaje">
+                            <label for="checkboxporcentaje" class="file">Porcentaje</label>
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="form-group" id="PorcentajeContenedor">
                             <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
                                     class="form-text">*</span>:</label>
-                            <input type="text" name="Porcentaje" id="Porcentaje" placeholder=""
+                            <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
                                 class="obligatorio form-control">
                             <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="form-group" id="MontoContenedor">
                             <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
-                            <input type="text" name="Monto" id="Monto" placeholder="" class="obligatorio form-control">
+                            <input type="number" name="Monto" id="Monto" placeholder=""
+                                class="obligatorio form-control">
                             <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
                 </div>
-
                 <br>
                 <div class="row">
                     <div class="col-md-12">
@@ -153,35 +132,21 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                class="form-text"></span>:</label>
-                        <select id="TipoConcepto" name="TipoConcepto" class=" form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if TipoConcepto %}
-                            {% for row in TipoConcepto %}
-                            <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-                </div>
-                <div class="row">
+
+
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto</label>
-                            <input type="text" id="ConceptoExistente" name="ConceptoExistente"
+                            <input type="text" id="ConceptoExistenteA" name="ConceptoExistenteA"
                                 class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <div class="dropdown">
-                                <div id="lista_conceptos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <div id="lista_conceptosA" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <!-- Aquí se mostrarán los resultados -->
                                 </div>
                             </div>
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-
                 </div>
                 <div class="row pull-right">
                     <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">

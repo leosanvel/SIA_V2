@@ -30,8 +30,6 @@ def crear_usuario():
     usuario_data["PrimerIngreso"] = 0
     usuario_data["Activo"] = 1
     nombre_usuario = usuario_data.get("Usuario", None)
-    print("usuario_data")
-    print(usuario_data)
     respuesta = {}
     try:
         usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()

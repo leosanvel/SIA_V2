@@ -1,6 +1,7 @@
 $gmx(document).ready(function () {
     $("#btnBuscaEmpleadoConcepto").click(buscar_empleado_concepto);
     $("#btnCrearEmpleadoConcepto").click(crear_empleado_concepto);
+    $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
 
     $('#ConceptoExistente').on('focus', function () {
         $('#lista_conceptos').show();
@@ -24,10 +25,9 @@ $gmx(document).ready(function () {
             }
         });
     });
-
+    habilita_porcentaje_o_monto();
 
 });
-
 
 function actualizarListaDesplegable(resultados) {
     var listaDesplegable = $('#lista_conceptos');
@@ -37,20 +37,20 @@ function actualizarListaDesplegable(resultados) {
             'class': 'dropdown-item form-group',
             'html': $('<a>', {
                 'href': 'javascript:void(0)', // El href está configurado para evitar que la página se recargue
-                'data-id': resultado.idConcepto,
-                'data-texto': resultado.texto,
                 'text': resultado.texto,
                 'click': function () {
-                    var textoSeleccionado = $(this).data('texto');
-                    $('#ConceptoExistente').val(textoSeleccionado);
+
+                    $('#ConceptoExistente').val(resultado.texto);
                     $('#lista_conceptos').hide();
+
+                    pago_fijo_variable(resultado.idTipoPago, resultado.Monto, resultado.Porcentaje);
+
+
                 }
             })
         });
         listaDesplegable.append(nuevoElemento);
     });
-
-
 }
 
 
@@ -125,5 +125,56 @@ function buscar_empleado_concepto() {
             }
         }
     })
+
+}
+function pago_fijo_variable(TipoPago, Monto, Porcentaje) {
+    console.log("TipoPagoAAA");
+    console.log(TipoPago);
+    if (TipoPago == "2") {//Si es == 2 (Variable)
+
+        $("#Monto").val("0.00")
+        $("#Porcentaje").val("0.000")
+        $("#MontoContenedor").show();
+        $("#PorcentajeContenedor").show();
+        $("#contenedorCheckbox").show();
+        habilita_porcentaje_o_monto();
+
+    } else {
+        $("#Monto").removeClass("obligatorio");
+        $("#Porcentaje").removeClass("obligatorio");
+        $("#Porcentaje").prop('disabled', false);
+        $("#Monto").prop('disabled', false);
+        if (Monto) {
+            console.log("IF MONTO")
+            $("#Monto").val(Monto);
+        }else{
+            console.log("ELSE MONTO")
+            $("#Monto").val(0);
+        }
+        $("#Porcentaje").val(Porcentaje);
+        $("#MontoContenedor").hide();
+        $("#PorcentajeContenedor").hide();
+        $("#contenedorCheckbox").hide();
+    }
+
+}
+
+function habilita_porcentaje_o_monto() {
+    if ($("#checkboxporcentaje").prop("checked")) {
+
+        $("#Monto").prop('disabled', true);
+        $("#Monto").val("0.00")
+        $("#Monto").removeClass("obligatorio");
+        $("#Porcentaje").addClass("obligatorio");
+        $("#Porcentaje").prop('disabled', false);
+        $("#Porcentaje").val("0.000")
+
+    } else {
+        $("#Monto").prop('disabled', false);
+        $("#Monto").val("0.00")
+
+        $("#Porcentaje").prop('disabled', true);
+        $("#Porcentaje").val("0.000")
+    }
 
 }

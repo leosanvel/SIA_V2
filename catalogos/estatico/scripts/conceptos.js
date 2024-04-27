@@ -58,8 +58,6 @@ function actualizarListaDesplegable(resultados) {
         });
         listaDesplegable.append(nuevoElemento);
     });
-
-
 }
 
 
