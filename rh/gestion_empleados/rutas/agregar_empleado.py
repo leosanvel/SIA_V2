@@ -118,10 +118,6 @@ def guardar_empleado():
     empleado_data = {mapeo_nombres_empleado[key]: request.form.get(key) for key in mapeo_nombres_empleado.keys()}
     empleado_puesto_data = {mapeo_nombres_empleado_puesto[key]: request.form.get(key) for key in mapeo_nombres_empleado_puesto.keys()}
 
-    print(persona_data)
-    print(empleado_data)
-    print(empleado_puesto_data)
-
     idPersona = session.get("idPersona", None)
     nueva_persona = None
     nuevo_empleado = None
@@ -211,11 +207,11 @@ def buscar_empleado():
     for empleado in empleados:
         if empleado is not None:
             print(empleado.idPersona)
-            NumeroEmpleado = empleado.Empleado.NumeroEmpleado
+            # NumeroEmpleado = empleado.Empleado.NumeroEmpleado
             empleado_dict = empleado.__dict__
             empleado_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-            empleado_dict["NumeroEmpleado"] = NumeroEmpleado
-            empleado_dict.pop("Empleado")
+            # empleado_dict["NumeroEmpleado"] = NumeroEmpleado
+            # empleado_dict.pop("Empleado")
             lista_empleados.append(empleado_dict)
     return jsonify(lista_empleados)
 

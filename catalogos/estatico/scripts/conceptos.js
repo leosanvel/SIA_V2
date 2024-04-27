@@ -10,19 +10,18 @@ $gmx(document).ready(function () {
     $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
 
 
-    $('#Concepto').on('focus', function () {
-        console.log("FOCUS");
-        $('#lista_desplegable_conceptos').show();
+
+    $('#ConceptoExistente').on('focus', function () {
+        $('#lista_conceptos').show();
     });
 
-    $('#Concepto').on('blur', function (event) {
-        if (!$(event.relatedTarget).closest('#lista_desplegable_conceptos').length) {
-            $('#lista_desplegable_conceptos').hide();
+    $('#ConceptoExistente').on('blur', function (event) {
+        if (!$(event.relatedTarget).closest('#lista_conceptos').length) {
+            $('#lista_conceptos').hide();
         }
     });
 
-
-    $('#Concepto').on('input', function () {
+    $('#ConceptoExistente').on('input', function () {
         var textoBusqueda = $(this).val();
         $.ajax({
             url: '/catalogos/actualizar-busqueda-conceptos',
@@ -40,7 +39,7 @@ $gmx(document).ready(function () {
 
 
 function actualizarListaDesplegable(resultados) {
-    var listaDesplegable = $('#lista_desplegable_conceptos');
+    var listaDesplegable = $('#lista_conceptos');
     listaDesplegable.empty(); // Vaciar la lista desplegable antes de agregar nuevos elementos
     resultados.forEach(function (resultado) {
         var nuevoElemento = $('<div>', {
@@ -52,8 +51,8 @@ function actualizarListaDesplegable(resultados) {
                 'text': resultado.texto,
                 'click': function () {
                     var textoSeleccionado = $(this).data('texto');
-                    $('#Concepto').val(textoSeleccionado);
-                    $('#lista_desplegable_conceptos').hide();
+                    $('#ConceptoExistente').val(textoSeleccionado);
+                    $('#lista_conceptos').hide();
                 }
             })
         });
@@ -85,7 +84,6 @@ function crear_concepto() {
 }
 
 function buscar_concepto() {
-    console.log("BUSCAR");
     $.ajax({
         async: false,
         type: "POST",

@@ -166,14 +166,22 @@
                         </select>
                         <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
                     </div>
-                    <div class="col-md-4">
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto</label>
-                            <input type="text" id="Concepto" name="Concepto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                            <input type="text" id="ConceptoExistente" name="ConceptoExistente"
+                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                            <div class="dropdown">
+                                <div id="lista_conceptos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <!-- Aquí se mostrarán los resultados -->
+                                </div>
+                            </div>
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="row pull-right">
                     <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
@@ -184,7 +192,7 @@
             <div class="form-group">
                 <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
             </div>
-            
+
             <div class="row">
                 <form id="formResultadoEmpleadoConceptos">
                     <div class="table-responsive" style="width: 100%;">
@@ -226,4 +234,5 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('prestaciones.static', filename='scripts/empleado_conceptos.js') }}"></script>
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
 {% endblock %}

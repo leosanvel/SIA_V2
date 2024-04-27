@@ -15,7 +15,7 @@ def empleado_conceptos():
                             current_user=current_user,
                             TipoConcepto = tiposConcepto)
 
-@prestaciones.route('/crear-empleado-concepto', methods = ['POST'])
+@prestaciones.route('/prestaciones/crear-empleado-concepto', methods = ['POST'])
 def crear_empleado_concepto():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         'idPersona' : 'idPersona',
@@ -25,10 +25,7 @@ def crear_empleado_concepto():
         'Monto' : 'Monto'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    concepto_data['idPersona'] = 1
-    print("concepto_data")
-    print(concepto_data)
-
+    
     idPersona = concepto_data.get('idPersona', None)
     idTipoConcepto = concepto_data.get('idTipoConcepto', None)
     idConcepto = concepto_data.get('idConcepto', None)
@@ -45,22 +42,23 @@ def crear_empleado_concepto():
        
     return jsonify(concepto_data)
 
-@prestaciones.route('/buscar-empleado-concepto', methods = ['POST'])
+@prestaciones.route('/prestaciones/buscar-empleado-concepto', methods = ['POST'])
 def buscar_empleado_concepto():
     idtipoConcepto = request.form.get('TipoConcepto')
     idconcepto = request.form.get('Concepto')
     idPersona = request.form.get('idPersona')
 
+
     query = db.session.query(rEmpleadoConcepto)
 
     if idPersona:
-        query = query.filter(rEmpleadoConcepto.idPersona == idPersona)
+        query = query.filter(rEmpleadoConcepto.idPersona == int(idPersona))
     if idtipoConcepto != "0":
         query = query.filter(rEmpleadoConcepto.idTipoConcepto == idtipoConcepto)
     if idconcepto:
         query = query.filter(rEmpleadoConcepto.idConcepto.contains(idconcepto))
     # Si todas las variables están vacías, no se aplican filtros y se devuelve una lista vacía
-    if not idconcepto and idtipoConcepto == "0":
+    if not idconcepto and idtipoConcepto == "0" and not idPersona:
         empleadoConceptos = []
     else:
         empleadoConceptos = query.all()
