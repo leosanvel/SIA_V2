@@ -166,26 +166,13 @@
             <!-- Contenido de la pestaña -->
             <form id="frmBuscarConcepto">
                 <div class="row">
-                    <div class="col-md-4">
-                        <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                class="form-text">*</span>:</label>
-                        <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if TipoConcepto %}
-                            {% for row in TipoConcepto %}
-                            <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
                     
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto</label>
-                            <input type="text" id="ConceptoA" name="ConceptoA" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                            <input type="text" id="ConceptoExistente" name="ConceptoExistente" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <div class="dropdown">
-                                <div id="lista_desplegable_conceptosA" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <div id="lista_conceptos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <!-- Aquí se mostrarán los resultados -->
                                 </div>
                             </div>

@@ -23,7 +23,6 @@ def obtener_info_empleado():
     print(idPersona)
     empleado_datos = {}
     if empleadopuesto_datos is not None:
-        print("HOOOOOLAAA")
         print("empleadopuesto_datos.idPuesto")
         print(empleadopuesto_datos.idPuesto)
         print(empleadopuesto_datos.Empleado.Persona.Nombre)

@@ -8,7 +8,6 @@ from sqlalchemy.orm.exc import NoResultFound
 
 @catalogos.route('/catalogos/conceptos')
 def catalogos_conceptos():
-    print("HOLA")
     TiposConcepto = db.session.query(kTipoConcepto).all()
     TiposPago = db.session.query(kTipoPago).all()
     return render_template('/conceptos.html', title ='Conceptos',
@@ -37,7 +36,7 @@ def crear_concepto():
     nuevo_concepto = None
     try:
         concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).one()
-        print("Ya existe")
+
     except NoResultFound:
         nuevo_concepto = kConcepto(**concepto_data)
         db.session.add(nuevo_concepto)
@@ -49,20 +48,21 @@ def crear_concepto():
 
 @catalogos.route('/catalogos/buscar-concepto', methods = ['POST'])
 def concepto():
-    tipoConcepto = request.form.get('TipoConcepto')
-    concepto = request.form.get('Concepto')
-
-    query = db.session.query(kConcepto)
-    
-    if tipoConcepto != "0":
-        query = query.filter(kConcepto.idTipoConcepto == tipoConcepto)
+    concepto = request.form.get('ConceptoExistente')
     if concepto:
-        query = query.filter(kConcepto.Concepto.contains(concepto))
-    # Si todas las variables están vacías, no se aplican filtros y se devuelve una lista vacía
-    if not concepto and tipoConcepto == "0":
-        conceptos = []
-    else:
+        query = db.session.query(kConcepto)
+    
+        partes = concepto.split(' - ')
+        
+        if len(partes) == 3:
+            query = query.filter(kConcepto.idTipoConcepto == partes[0])
+            query = query.filter(kConcepto.idConcepto == partes[1])
+            query = query.filter(kConcepto.Concepto.contains(partes[2]))
+        else:
+            query = query.filter(kConcepto.Concepto.contains(concepto))
         conceptos = query.all()
+    else:
+        conceptos = []
 
 
     lista_conceptos = []
@@ -82,6 +82,12 @@ def actualizar_busqueda_conceptos():
     resultados_json = [{'idTipoConcepto': resultado.idTipoConcepto,
                         'idConcepto': resultado.idConcepto,
                         'Concepto': resultado.Concepto,
-                        'texto': str(resultado.idTipoConcepto) + ' - ' + str(resultado.idConcepto) + ' - ' + resultado.Concepto
+                        'Abreviatura': resultado.Abreviatura,
+                        'Porcentaje': resultado.Porcentaje,
+                        'Monto': resultado.Monto,
+                        'ClaveSAT': resultado.ClaveSAT,
+                        'idTipoPago': resultado.idTipoPago,
+                        'Activo': resultado.Activo,
+                        'texto': str(resultado.idTipoConcepto) + ' - ' + str(resultado.idConcepto) + ' - ' + str(resultado.Concepto)
                         } for resultado in resultados]
     return jsonify(resultados_json)

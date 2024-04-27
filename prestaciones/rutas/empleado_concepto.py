@@ -15,7 +15,7 @@ def empleado_conceptos():
                             current_user=current_user,
                             TipoConcepto = tiposConcepto)
 
-@prestaciones.route('/crear-empleado-concepto', methods = ['POST'])
+@prestaciones.route('/prestaciones/crear-empleado-concepto', methods = ['POST'])
 def crear_empleado_concepto():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         'idPersona' : 'idPersona',
@@ -25,9 +25,17 @@ def crear_empleado_concepto():
         'Monto' : 'Monto'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    concepto_data['idPersona'] = 1
-    print("concepto_data")
-    print(concepto_data)
+    print("concepto_data['Monto']")
+    print(type(concepto_data['Monto']))
+    concepto = request.form.get("ConceptoExistente")
+    partes = concepto.split(' - ')
+        
+    if len(partes) == 3:
+        concepto_data['idTipoConcepto'] = partes[0]
+        concepto_data['idConcepto'] = partes[1]
+    else:
+        return jsonify({"Invalido":True})
+
 
     idPersona = concepto_data.get('idPersona', None)
     idTipoConcepto = concepto_data.get('idTipoConcepto', None)
@@ -45,26 +53,27 @@ def crear_empleado_concepto():
        
     return jsonify(concepto_data)
 
-@prestaciones.route('/buscar-empleado-concepto', methods = ['POST'])
+@prestaciones.route('/prestaciones/buscar-empleado-concepto', methods = ['POST'])
 def buscar_empleado_concepto():
-    idtipoConcepto = request.form.get('TipoConcepto')
-    idconcepto = request.form.get('Concepto')
     idPersona = request.form.get('idPersona')
-
+    concepto = request.form.get('ConceptoExistente')
     query = db.session.query(rEmpleadoConcepto)
-
     if idPersona:
-        query = query.filter(rEmpleadoConcepto.idPersona == idPersona)
-    if idtipoConcepto != "0":
-        query = query.filter(rEmpleadoConcepto.idTipoConcepto == idtipoConcepto)
-    if idconcepto:
-        query = query.filter(rEmpleadoConcepto.idConcepto.contains(idconcepto))
-    # Si todas las variables están vacías, no se aplican filtros y se devuelve una lista vacía
-    if not idconcepto and idtipoConcepto == "0":
-        empleadoConceptos = []
-    else:
-        empleadoConceptos = query.all()
+        query = query.filter(rEmpleadoConcepto.idPersona == int(idPersona))
 
+    if concepto:
+        partes = concepto.split(' - ')
+        
+        if len(partes) == 3:
+            query = query.filter(rEmpleadoConcepto.idTipoConcepto == partes[0])
+            query = query.filter(rEmpleadoConcepto.idConcepto == partes[1])
+        else:
+            query = query.filter(rEmpleadoConcepto.idTipoConcepto.contains(concepto))
+    
+    if idPersona or concepto:
+        empleadoConceptos = query.all()
+    else:
+        empleadoConceptos = []
 
     lista_empleado_conceptos = []
     for emp_con in empleadoConceptos:

@@ -5,7 +5,7 @@ class rEmpleadoConcepto(db.Model):
     __tablename__ = "rempleadoconcepto"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
 
-    idPersona = db.Column(db.String(1), primary_key = True)
+    idPersona = db.Column(db.Integer, primary_key = True)
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     idConcepto = db.Column(db.String(5), primary_key = True)
     Porcentaje = db.Column(db.Numeric(11, 3))

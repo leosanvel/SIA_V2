@@ -27,11 +27,9 @@ def crear_usuario():
         'Activo' : 'Activo'
     }
     usuario_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    usuario_data["idPersona"] = 0
     usuario_data["PrimerIngreso"] = 0
     usuario_data["Activo"] = 1
     nombre_usuario = usuario_data.get("Usuario", None)
-    
     respuesta = {}
     try:
         usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
