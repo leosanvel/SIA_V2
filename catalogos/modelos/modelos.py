@@ -44,7 +44,7 @@ class kGrado(db.Model):
         self.Grado = Grado
 
 class kCaracterOcupacional(db.Model):
-    __ta1blename__ = "kcaracterocupacional"
+    __tablename__ = "kcaracterocupacional"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idCaracterOcupacional = db.Column(db.Integer, primary_key = True)
@@ -499,7 +499,6 @@ class Plazas(db.Model):
         self.Plaza = Plaza
 
 class kConcepto(db.Model):
-    __bind_key__ = 'db2'
     __tablename__ = "kconcepto"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
 
@@ -526,7 +525,6 @@ class kConcepto(db.Model):
         self.Activo = Activo
 
 class kTipoConcepto(db.Model):
-    __bind_key__ = 'db2'
     __tablename__ = "ktipoconcepto"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
 
@@ -540,7 +538,6 @@ class kTipoConcepto(db.Model):
         self.Activo = Activo
 
 class kTipoPago(db.Model):
-    __bind_key__ = 'db2'
     __tablename__ = "ktipopago"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
 
