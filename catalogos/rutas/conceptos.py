@@ -49,20 +49,23 @@ def crear_concepto():
 
 @catalogos.route('/catalogos/buscar-concepto', methods = ['POST'])
 def concepto():
-    tipoConcepto = request.form.get('TipoConcepto')
-    concepto = request.form.get('Concepto')
-
-    query = db.session.query(kConcepto)
+    # tipoConcepto = request.form.get('TipoConcepto')
+    concepto = request.form.get('ConceptoExistente')
     
-    if tipoConcepto != "0":
-        query = query.filter(kConcepto.idTipoConcepto == tipoConcepto)
     if concepto:
-        query = query.filter(kConcepto.Concepto.contains(concepto))
-    # Si todas las variables están vacías, no se aplican filtros y se devuelve una lista vacía
-    if not concepto and tipoConcepto == "0":
-        conceptos = []
-    else:
+        query = db.session.query(kConcepto)
+    
+        partes = concepto.split(' - ')
+        
+        if len(partes) == 3:
+            query = query.filter(kConcepto.idTipoConcepto.contains(partes[0]))
+            query = query.filter(kConcepto.idConcepto.contains(partes[1]))
+            query = query.filter(kConcepto.Concepto.contains(partes[2]))
+        else:
+            query = query.filter(kConcepto.Concepto.contains(concepto))
         conceptos = query.all()
+    else:
+        conceptos = []
 
 
     lista_conceptos = []
