@@ -257,7 +257,6 @@ def buscar_CP():
         return "no encontrado"
     
 @gestion_empleados.route('/rh/gestion-empleados/selecciona-empleado', methods = ['POST', 'GET'])
-@permisos_de_consulta
 def seleccionar_empleado():
     idPersona = request.form.get("idPersona")
     session['idPersona'] = idPersona

@@ -99,7 +99,7 @@ def cambiar_contrasena():
     NuevaContrasena = request.form['NuevaContrasena']
     NuevaContrasena2 = request.form['NuevaContrasena2']
 
-    usuario_actual = db.session.query(rUsuario).filter_by(idPersona=current_user.idPersona).first()
+    usuario_actual = db.session.query(rUsuario).filter_by(Usuario=current_user.Usuario).first()
 
     if (ContrasenaActual == usuario_actual.Contrasenia):
         respuesta["ContrasenaActual"] = True

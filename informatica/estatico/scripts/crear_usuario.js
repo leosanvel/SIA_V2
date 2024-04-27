@@ -6,7 +6,7 @@ $(document).ready(function() {
             $.ajax({
                 type: "POST",
                 url: "/informatica/crear-usuario",
-                data: $("#frmCrearUsuario").serialize(),
+                data: $("#frmCrearUsuario, #idPersona").serialize(),
                 success: function (respuesta) {
                  if (respuesta.creado){
                      console.log("CREADO")

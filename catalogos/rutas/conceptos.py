@@ -58,8 +58,12 @@ def concepto():
         partes = concepto.split(' - ')
         
         if len(partes) == 3:
-            query = query.filter(kConcepto.idTipoConcepto.contains(partes[0]))
-            query = query.filter(kConcepto.idConcepto.contains(partes[1]))
+            # query = query.filter(kConcepto.idTipoConcepto.contains(partes[0]))
+            # query = query.filter(kConcepto.idConcepto.contains(partes[1]))
+            # query = query.filter(kConcepto.Concepto.contains(partes[2]))
+
+            query = query.filter(kConcepto.idTipoConcepto == partes[0])
+            query = query.filter(kConcepto.idConcepto == partes[1])
             query = query.filter(kConcepto.Concepto.contains(partes[2]))
         else:
             query = query.filter(kConcepto.Concepto.contains(concepto))
@@ -87,4 +91,5 @@ def actualizar_busqueda_conceptos():
                         'Concepto': resultado.Concepto,
                         'texto': str(resultado.idTipoConcepto) + ' - ' + str(resultado.idConcepto) + ' - ' + resultado.Concepto
                         } for resultado in resultados]
+    print(resultados_json)
     return jsonify(resultados_json)

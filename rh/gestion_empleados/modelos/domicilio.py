@@ -16,7 +16,6 @@ class rDomicilio(db.Model):
 
 class kTipoDomicilio(db.Model):
     __tablename__ = "ktipodomicilio"
-    __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
 
     idTipoDomicilio = db.Column(db.Integer, primary_key = True)
