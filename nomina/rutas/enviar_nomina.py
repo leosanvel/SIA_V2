@@ -7,7 +7,7 @@ import openpyxl
 from openpyxl.styles import NamedStyle, Border, Side, Alignment
 from sqlalchemy import and_, or_
 from collections import defaultdict
-from .routes import nomina
+from .rutas import nomina
 from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *

@@ -45,10 +45,18 @@
         </style>
 
         <div class="tab-pane active" id="Crear">
-            <!-- Contenido de la pestaña Datos Personales -->
-            <form name="frmCrearConcepto" id="frmCrearConcepto">
+            <!-- Contenido de la pestaña -->
+            <form name="frmCrearConceptoEmpleado" id="frmCrearConceptoEmpleado" method="post">
                 <div class="row">
-
+                    <div class="col-md-3">
+                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
                                 class="form-text">*</span>:</label>
@@ -63,68 +71,43 @@
                         <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
                     </div>
 
+                    <div class="row">
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="lblidConcepto">id Concepto<span id="AidConcepto" class="form-text">*</span>:</label>
+                            <label for="lblidConcepto">id Concepto<span id="AidConcepto"
+                                    class="form-text">*</span>:</label>
                             <input type="text" name="idConcepto" id="idConcepto" placeholder=""
                                 class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-                </div>
-                <div class="row">
+
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="Concepto" id="Concepto" placeholder=""
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                            <input type="text" name="Concepto" id="Concepto" class="obligatorio form-control"
+                                oninput="this.value = this.value.toUpperCase()">
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura" class="form-text">*</span>:</label>
-                            <input type="text" name="Abreviatura" id="Abreviatura" placeholder=""
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
                 </div>
                 <div class="row">
 
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblClaveSAT">Clave SAT<span id="AClaveSAT" class="form-text">*</span>:</label>
-                            <input type="text" name="ClaveSAT" id="ClaveSAT" placeholder=""
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="lblTipoPago">Tipo de Pago<span id="ATipoPago" class="form-text">*</span>:</label>
-                        <select id="TipoPago" name="TipoPago" class="obligatorio form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if TipoPago %}
-                            {% for row in TipoPago %}
-                            <option value="{{row.idTipoPago}}">{{row.TipoPago}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-                </div>
-                <div class="row">
+
                     <div class="col-md-6">
                         <div class="form-group">
-                            <input type="checkbox" id="checkboxporcentaje"> Porcentaje
+                            <input type="checkbox" id="checkboxPorcentaje"> Porcentaje
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="lblPorcentaje">Porcentaje<span id="APorcentaje" class="form-text">*</span>:</label>
+                            <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
+                                    class="form-text">*</span>:</label>
                             <input type="text" name="Porcentaje" id="Porcentaje" placeholder=""
                                 class="obligatorio form-control">
                             <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
@@ -134,17 +117,17 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
-                            <input type="text" name="Monto" id="Monto" placeholder=""
-                                class="obligatorio form-control">
+                            <input type="text" name="Monto" id="Monto" placeholder="" class="obligatorio form-control">
                             <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
 
                 </div>
+
                 <br>
                 <div class="row">
                     <div class="col-md-12">
-                        <button type="button" id="btnCrearConcepto" class="btn btn-primary pull-right">Crear
+                        <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary pull-right">Crear
                             concepto</button>
                     </div>
                 </div>
@@ -158,12 +141,22 @@
         </div>
         <div class="tab-pane" id="Buscar">
             <!-- Contenido de la pestaña -->
-            <form id="frmBuscarConcepto">
+            <form id="frmBuscarConceptoEmpleado">
                 <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-4">
                         <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                class="form-text">*</span>:</label>
-                        <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                                class="form-text"></span>:</label>
+                        <select id="TipoConcepto" name="TipoConcepto" class=" form-control">
                             <option value="0">-- Seleccione --</option>
                             {% if TipoConcepto %}
                             {% for row in TipoConcepto %}
@@ -173,7 +166,6 @@
                         </select>
                         <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
                     </div>
-
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblConcepto">Concepto</label>
@@ -181,9 +173,10 @@
                             <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
+                    
                 </div>
                 <div class="row pull-right">
-                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaConcepto">
+                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
                         <span class="icon-search" aria-hidden="true"></span> Buscar
                     </button>
                 </div>
@@ -191,23 +184,21 @@
             <div class="form-group">
                 <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
             </div>
+            
             <div class="row">
-                <form id="formResultadoConceptos">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="tablaResultadosConceptos" style="display: none;">
+                <form id="formResultadoEmpleadoConceptos">
+                    <div class="table-responsive" style="width: 100%;">
+                        <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
                             <thead>
                                 <tr>
-                                    <th colspan="11">RESULTADOS DE LA BÚSQUEDA:</th>
+                                    <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
                                 </tr>
                                 <tr>
-                                    <th>Tipo de concepto</th>
-                                    <th>idConcepto</th>
+                                    <th>No. Empleado</th>
+                                    <th>Tipo de Concepto</th>
                                     <th>Concepto</th>
-                                    <th>Abreviatura</th>
                                     <th>Porcentaje</th>
                                     <th>Monto</th>
-                                    <th>Clave SAT</th>
-                                    <th>Tipo de pago</th>
                                     <th>Activo</th>
                                     <th></th>
                                     <th></th>
@@ -234,5 +225,5 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('principal.static', filename='scripts/conceptos.js') }}"></script>
+<script src="{{ url_for('prestaciones.static', filename='scripts/empleado_conceptos.js') }}"></script>
 {% endblock %}

@@ -1,7 +1,8 @@
 $gmx(document).ready(function () {
     $("#btnBuscaEmpleadoConcepto").click(buscar_empleado_concepto);
     $("#btnCrearEmpleadoConcepto").click(crear_empleado_concepto);
-});
+
+   });
 
 function crear_empleado_concepto() {
     console.log("Boton");
@@ -30,41 +31,32 @@ function buscar_empleado_concepto() {
         data: $("#frmBuscarConceptoEmpleado").serialize(),
         success: function (data) {
             if (data.NoEncontrado) {
-                abrirModal("No encontrado", "No se encontraron coincidencias.","")
+                abrirModal("No encontrado", "No se encontraron coincidencias.", "")
             } else {
-                $("#tablaResultadosConceptos").show();
-                $("#tablaResultadosConceptos tbody").empty();
+                $("#tablaResultadosEmpleadoConceptos").show();
+                $("#tablaResultadosEmpleadoConceptos tbody").empty();
                 var cont = 1;
-                data.forEach(function (concepto) {
+                data.forEach(function (empleado_concepto) {
                     text = `
                     <tr>
                         
                         <td>
-                            <input type="text" class="form-control" id="TipoConcepto" value="${concepto.idTipoConcepto}" readonly></input></td>
+                            <input type="text" class="form-control" id="TipoConcepto" value="${empleado_concepto.NoEmpleado}" readonly></input></td>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idConcepto" value="${concepto.idConcepto}" readonly></input>
+                            <input type="text" class="form-control" id="idConcepto" value="${empleado_concepto.idTipoConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto" value="${concepto.Concepto}" readonly></input>
+                            <input type="text" class="form-control" id="Concepto" value="${empleado_concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Abreviatura" value="${concepto.Abreviatura}" readonly></input>
+                            <input type="text" class="form-control" id="Abreviatura" value="${empleado_concepto.Porcentaje}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Porcentaje" value="${concepto.Porcentaje}" readonly></input>
+                            <input type="text" class="form-control" id="Porcentaje" value="${empleado_concepto.Monto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Monto" value="${concepto.Monto}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="ClaveSAT" value="${concepto.ClaveSAT}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="idTipoPago" value="${concepto.idTipoPago}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Activo" value="${concepto.Activo}" readonly></input>
+                            <input type="text" class="form-control" id="Activo" value="${empleado_concepto.Activo}" readonly></input>
                         </td>
 
                         <td>
@@ -76,10 +68,10 @@ function buscar_empleado_concepto() {
                     </tr>
                     `;
                     cont++;
-                    $("#tablaResultadosConceptos tbody").append(text);
+                    $("#tablaResultadosEmpleadoConceptos tbody").append(text);
                 });
             }
         }
     })
-    
+
 }

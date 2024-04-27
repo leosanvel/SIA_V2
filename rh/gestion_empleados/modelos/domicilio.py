@@ -14,7 +14,7 @@ class rDomicilio(db.Model):
         self.idTipoDomicilio = idTipoDomicilio
         self.idCP = idCP
 
-class TipoDomicilio(db.Model):
+class kTipoDomicilio(db.Model):
     __tablename__ = "ktipodomicilio"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}

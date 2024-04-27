@@ -3,7 +3,7 @@ from sqlalchemy import func
 from app import db
 #from rh.gestion_empleado.modelos.empleado import Puesto
 
-class CentroCostos(db.Model):
+class kCentroCostos(db.Model):
     __tablename__ = "kcentrocosto"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -17,7 +17,7 @@ class CentroCostos(db.Model):
     idCiudad = db.Column(db.Integer, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RCentroCostos", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "CentroCostos", cascade = "all, delete-orphan")
 
     def __init__(self, idCentroCosto, Clave, CentroCosto, idEntidad, Materia, Abreviatura, idNivelRegistroContable, idCiudad):
         self.idCentroCosto = idCentroCosto
@@ -29,7 +29,7 @@ class CentroCostos(db.Model):
         self.idNivelRegistroContable = idNivelRegistroContable
         self.idCiudad = idCiudad
 
-class Grado(db.Model):
+class kGrado(db.Model):
     __tablename__ = "kgrado"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
     
@@ -37,13 +37,13 @@ class Grado(db.Model):
     Grado = db.Column(db. String(50), nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RGrado", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "Grado", cascade = "all, delete-orphan")
 
     def __init__(self, idGrado, Grado):
         self.idGrado = idGrado
         self.Grado = Grado
 
-class CaracterOcupacional(db.Model):
+class kCaracterOcupacional(db.Model):
     __ta1blename__ = "kcaracterocupacional"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -52,14 +52,14 @@ class CaracterOcupacional(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RCaracterOcupacional", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "CaracterOcupacional", cascade = "all, delete-orphan")
 
     def __init__(self, idCaracterOcupacional, CaracterOcupacional, Activo):
         self.idCaracterOcupacional = idCaracterOcupacional
         self.CaracterOcupacional = CaracterOcupacional
         self.Activo = Activo
 
-class Nivel(db.Model):
+class kNivel(db.Model):
     __tablename__ = "knivel"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -68,14 +68,14 @@ class Nivel(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RNivel", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "Nivel", cascade = "all, delete-orphan")
 
     def __init__(self, idNivel, Nivel, Activo):
         self.idNivel = idNivel
         self.Nivel = Nivel
         self.Activo = Activo
 
-class Grupo(db.Model):
+class kGrupo(db.Model):
     __tablename__ = "kgrupo"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -86,7 +86,7 @@ class Grupo(db.Model):
     idEsquemaHonorarios = db.Column(db.Integer, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RGrupo", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "Grupo", cascade = "all, delete-orphan")
 
     def __init__(self, idGrupo, idTipoAlta, Grupo, Activo, idEsquemaHonorarios):
         self.idGrupo = idGrupo
@@ -95,7 +95,7 @@ class Grupo(db.Model):
         self.Activo = Activo
         self.idEsquemaHonorarios = idEsquemaHonorarios
 
-class ZonaEconomica(db.Model):
+class kZonaEconomica(db.Model):
     __tablename__ = "kzonaeconomica"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -104,14 +104,14 @@ class ZonaEconomica(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RZonaEconomica", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "ZonaEconomica", cascade = "all, delete-orphan")
 
     def __init__(self, idZonaEconomica, ZonaEconomica, Activo):
         self.idZonaEconomica = idZonaEconomica
         self.ZonaEconomica = ZonaEconomica
         self.Activo = Activo
 
-class Ramo(db.Model):
+class kRamo(db.Model):
     __tablename__ = "kramo"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -120,25 +120,25 @@ class Ramo(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     # Relación
-    UAs = db.relationship("UA", back_populates = "Ramo", cascade = "all, delete-orphan")
+    UAs = db.relationship("kUA", back_populates = "Ramo", cascade = "all, delete-orphan")
 
     def __init__(self, idRamo, Ramo, Activo):
         self.idRamo = idRamo
         self.Ramo = Ramo
         self.Activo = Activo
 
-class UA(db.Model):
+class kUA(db.Model):
     __tablename__ = "kua"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idRamo = db.Column(db.Integer, db.ForeignKey(Ramo.idRamo), nullable = True)
+    idRamo = db.Column(db.Integer, db.ForeignKey(kRamo.idRamo), nullable = True)
     idUA = db.Column(db.Integer, primary_key = True)
     UA = db.Column(db.String(150), nullable = True)
     Activo = db.Column(db.Boolean, nullable = True)
 
     #Relación
-    Ramo = db.relationship('Ramo', back_populates = "UAs", uselist = False, single_parent = True)
-    Puestos = db.relationship('Puesto', back_populates = "RUA", cascade = "all, delete-orphan")
+    Ramo = db.relationship('kRamo', back_populates = "UAs", uselist = False, single_parent = True)
+    Puestos = db.relationship('tPuesto', back_populates = "UA", cascade = "all, delete-orphan")
 
     def __init__(self, idRamo, idUA, UA, Activo):
         self.idRamo = idRamo
@@ -146,7 +146,7 @@ class UA(db.Model):
         self.UA = UA
         self.Activo = Activo
 
-class EstatusPuesto(db.Model):
+class kEstatusPuesto(db.Model):
     __tablename__ = "kestatuspuesto"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -155,14 +155,14 @@ class EstatusPuesto(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "REstatusPuesto", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "EstatusPuesto", cascade = "all, delete-orphan")
 
     def __init__(self, idEstatusPuesto, EstatusPuesto, Activo):
         self.idEstatusPuesto = idEstatusPuesto
         self.EstatusPuesto = EstatusPuesto
         self.Activo = Activo
 
-class CentroTrabajo(db.Model):
+class kCentroTrabajo(db.Model):
     __tablename__ = "kcentrotrabajo"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -171,14 +171,14 @@ class CentroTrabajo(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
     
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RCentroTrabajo", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "CentroTrabajo", cascade = "all, delete-orphan")
 
     def __init__(self, idCentroTrabajo, CentroTrabajo, Activo):
         self.idCentroTrabajo = idCentroTrabajo
         self.CentroTrabajo = CentroTrabajo
         self.Activo = Activo
 
-class TipoPlazaPuesto(db.Model):
+class kTipoPlazaPuesto(db.Model):
     __tablename__ = "ktipoplaza"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -187,14 +187,14 @@ class TipoPlazaPuesto(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     # Relación
-    Puestos = db.relationship('Puesto', back_populates = "RTipoPlazaPuesto", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "TipoPlazaPuesto", cascade = "all, delete-orphan")
 
     def __init__(self, idTipoPlazaPuesto, TipoPlazaPuesto, Activo):
         self.idTipoPlazaPuesto = idTipoPlazaPuesto
         self.TipoPlazaPuesto = TipoPlazaPuesto
         self.Activo = Activo
 
-class Vigencia(db.Model):
+class kVigencia(db.Model):
     __tablename__ = "kvigencia"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -203,7 +203,7 @@ class Vigencia(db.Model):
     Activo = db.Column(db.Boolean, nullable = True)
 
     #Relación
-    Puestos = db.relationship('Puesto', back_populates = "RVigencia", cascade = "all, delete-orphan")
+    Puestos = db.relationship('tPuesto', back_populates = "Vigencia", cascade = "all, delete-orphan")
 
     def __init__(self, idVigencia, Vigencia, Activo):
         self.idVigencia = idVigencia
@@ -211,7 +211,7 @@ class Vigencia(db.Model):
         self.Activo = Activo
 
 #
-class TipoPersona(db.Model):
+class kTipoPersona(db.Model):
     __tablename__ = "ktipopersona"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -219,13 +219,16 @@ class TipoPersona(db.Model):
     TipoPersona = db.Column(db.String(50), nullable = True)
     Activo = db.Column(db.Boolean, nullable = True)
 
+    # Relacion
+    Personas = db.relationship("tPersona", back_populates = "TipoPersona", cascade = "all, delete-orphan")
+
     def __init__(self, idTipoPersona, TipoPersona, Activo):
         self.idTipoPersona = idTipoPersona
         self.TipoPersona = TipoPersona
         self.Activo = Activo
 
 # 
-class Nacionalidad(db.Model):
+class kNacionalidad(db.Model):
     __tablename__ = "knacionalidad"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -242,7 +245,7 @@ class Nacionalidad(db.Model):
         self.idPaisFP = idPaisFP
         self.Activo = Activo
 
-class EstadoCivil(db.Model):
+class kEstadoCivil(db.Model):
     __tablename__ = "kestadocivil"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -255,7 +258,7 @@ class EstadoCivil(db.Model):
         self.EstadoCivil = EstadoCivil
         self. Activo = Activo
 
-class TipoEmpleado(db.Model):
+class kTipoEmpleado(db.Model):
     __tablename__ = "ktipoempleado"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -268,7 +271,7 @@ class TipoEmpleado(db.Model):
         self.TipoEmpleado = TipoEmpleado
         self.Activo = Activo
 
-class TipoAlta(db.Model):
+class kTipoAlta(db.Model):
     __tablename__ = "ktipoalta"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -288,21 +291,17 @@ class kQuincena(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idQuincena = db.Column(db.Integer, primary_key = True)
-    Quincena = db.Column(db.Integer,nullable = True)
-    Fechas = db.Column(db.String(60), nullable = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     Descripcion = db.Column(db.String(50), nullable = True)
 
-    def __init__(self, idQuincena, Quincena, Fechas, FechaInicio, FechaFin, Descripcion):
+    def __init__(self, idQuincena, FechaInicio, FechaFin, Descripcion):
         self.idQuincena = idQuincena
-        self.Quincena = Quincena
-        self.Fechas = Fechas
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.Descripcion = Descripcion
 
-class Escolaridad(db.Model):
+class kEscolaridad(db.Model):
     __tablename__ = "kescolaridad"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -315,7 +314,7 @@ class Escolaridad(db.Model):
         self.Escolaridad = Escolaridad
         self.Activo = Activo
 
-class EscolaridadNivel(db.Model):
+class rEscolaridadNivel(db.Model):
     __tablename__ = "rescolaridadnivel"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -326,7 +325,7 @@ class EscolaridadNivel(db.Model):
         self.idEscolaridad = idEscolaridad
         self.idNivelEscolaridad = idNivelEscolaridad
 
-class NivelEscolaridad(db.Model):
+class kNivelEscolaridad(db.Model):
     __tablename__ = "knivelescolaridad"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -338,7 +337,7 @@ class NivelEscolaridad(db.Model):
         self.idNivelEscolaridad = idNivelEscolaridad
         self.NivelEscolaridad = NivelEscolaridad
 
-class InstitucionEscolar(db.Model):
+class kInstitucionEscolar(db.Model):
     __tablename__ = "kinstitucionescolar"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -351,7 +350,7 @@ class InstitucionEscolar(db.Model):
         self.InstitucionEscolar = InstitucionEscolar
         self.Activo = Activo
 
-class EscolaridadInstitucion(db.Model):
+class rEscolaridadInstitucion(db.Model):
     __tablename__ = "rescolaridadinstitucion"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -362,7 +361,7 @@ class EscolaridadInstitucion(db.Model):
         self.idEscolaridad = idEscolaridad
         self.idInstitucionEscolar - idInstitucionEscolar
 
-class FormacionEducativa(db.Model):
+class kFormacionEducativa(db.Model):
     __tablename__ = "kformacioneducativa"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -375,7 +374,7 @@ class FormacionEducativa(db.Model):
         self.FormacionEducativa = FormacionEducativa
         self.Activo = Activo
 
-class InstitucionFormacion(db.Model):
+class rInstitucionFormacion(db.Model):
     __tablename__ = "rinstitucionformacion"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -386,7 +385,7 @@ class InstitucionFormacion(db.Model):
         self.idInstitucionEscolar = idInstitucionEscolar
         self.idFormacionEducativa = idFormacionEducativa
 
-class Entidad(db.Model):
+class kEntidad(db.Model):
     __tablename__ = "kentidad"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -403,7 +402,7 @@ class Entidad(db.Model):
         self.Abreviatura = Abreviatura
         self. Activo = Activo
 
-class Municipio(db.Model):
+class kMunicipio(db.Model):
     __tablename__ = "kmunicipio"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -420,7 +419,7 @@ class Municipio(db.Model):
         self.Municipio = Municipio
         self.Activo = Activo
 
-class Localidad(db.Model):
+class kLocalidad(db.Model):
     __tablename__ = "klocalidad"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -439,7 +438,7 @@ class Localidad(db.Model):
         self.Localidad = Localidad
         self.Activo = Activo
 
-class TipoAsentamiento(db.Model):
+class kTipoAsentamiento(db.Model):
     __tablename__ = "ktipoasentamiento"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -452,7 +451,7 @@ class TipoAsentamiento(db.Model):
         self.TipoAsentamiento = TipoAsentamiento
         self.Activo = Activo
 
-class Vialidad(db.Model):
+class kVialidad(db.Model):
     __tablename__ = "kvialidad"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -465,7 +464,7 @@ class Vialidad(db.Model):
         self.Vialidad = Vialidad
         self.Activo = Activo
 
-class CodigoPostal(db.Model):
+class kCodigoPostal(db.Model):
     __tablename__ = "kcodigopostal"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -498,3 +497,58 @@ class Plazas(db.Model):
     def __init__(self, idPlaza, Plaza):
         self.idPlaza = idPlaza
         self.Plaza = Plaza
+
+class kConcepto(db.Model):
+    __bind_key__ = 'db2'
+    __tablename__ = "kconcepto"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+
+    idTipoConcepto = db.Column(db.String(1), primary_key = True)
+    idConcepto = db.Column(db.String(5), primary_key = True)
+    Concepto = db.Column(db.String(250), nullable = False)
+    Abreviatura = db.Column(db.String(25), nullable = False)
+    Porcentaje = db.Column(db.Numeric(11, 3), nullable = True)
+    Monto = db.Column(db.Numeric(11, 2), nullable = True)
+    ClaveSAT = db.Column(db.String(25), nullable = False)
+    idTipoPago = db.Column(db.Integer, nullable = False)
+    Activo = db.Column(db.Integer, nullable = False)
+
+
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Activo):
+        self.idTipoConcepto = idTipoConcepto
+        self.idConcepto = idConcepto
+        self.Concepto = Concepto
+        self.Abreviatura = Abreviatura
+        self.Porcentaje = Porcentaje
+        self.Monto = Monto
+        self.ClaveSAT = ClaveSAT
+        self.idTipoPago = idTipoPago
+        self.Activo = Activo
+
+class kTipoConcepto(db.Model):
+    __bind_key__ = 'db2'
+    __tablename__ = "ktipoconcepto"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+
+    idTipoConcepto = db.Column(db.String(1), primary_key = True)
+    TipoConcepto = db.Column(db.String(25), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoConcepto, TipoConcepto, Activo):
+        self.idTipoConcepto = idTipoConcepto
+        self.TipoConcepto = TipoConcepto
+        self.Activo = Activo
+
+class kTipoPago(db.Model):
+    __bind_key__ = 'db2'
+    __tablename__ = "ktipopago"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+
+    idTipoPago = db.Column(db.String(1), primary_key = True)
+    TipoPago = db.Column(db.String(25), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoPago, TipoPago, Activo):
+        self.idTipoPago = idTipoPago
+        self.TipoPago = TipoPago
+        self.Activo = Activo

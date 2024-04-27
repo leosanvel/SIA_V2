@@ -117,13 +117,13 @@ def envia_correo(receptor, motivo, objeto):
 
     if motivo == "Alta":
         subject = 'Alta de empleado'
-        body = 'Se solicita que el empleado ' + objeto.Nombre +' '+ objeto.Paterno +' '+ objeto.Materno + ' con número de empleado ' + str(objeto.NumeroEmpleado) + ', sea dado de ALTA en todos los sistemas y correo electrónico.'
+        body = 'Se solicita que el empleado ' + objeto.Nombre +' '+ objeto.ApPaterno +' '+ objeto.ApMaterno + ' con número de empleado ' + str(objeto.NumeroEmpleado) + ', sea dado de ALTA en todos los sistemas y correo electrónico.'
     elif motivo == "Baja":
         subject = 'Baja de empleado'
-        body = 'Se solicita que el empleado ' + objeto.Nombre +' '+ objeto.Paterno +' '+ objeto.Materno + ' con número de empleado ' + str(objeto.NumeroEmpleado) + ', sea dado de BAJA de todos los sistemas y correo electrónico.'
+        body = 'Se solicita que el empleado ' + objeto.Nombre +' '+ objeto.ApPaterno +' '+ objeto.ApMaterno + ' con número de empleado ' + str(objeto.NumeroEmpleado) + ', sea dado de BAJA de todos los sistemas y correo electrónico.'
     elif motivo == "Reactivar":
         subject = 'Reactivación de empleado'
-        body = 'Se solicita que el empleado ' + objeto.Nombre +' '+ objeto.Paterno +' '+ objeto.Materno + ' con número de empleado ' + str(objeto.NumeroEmpleado) + ', sea REACTIVADO en todos los sistemas y correo electrónico.'
+        body = 'Se solicita que el empleado ' + objeto.Nombre +' '+ objeto.ApPaterno +' '+ objeto.ApMaterno + ' con número de empleado ' + str(objeto.NumeroEmpleado) + ', sea REACTIVADO en todos los sistemas y correo electrónico.'
 
     elif motivo == "solicitud_completada":
         subject = 'Solicitud completada'
@@ -240,7 +240,7 @@ def procesar_nomina(nomina_data, VistaPrevia = None):
             nomina_data["idPersona"] = Persona.idPersona
             nomina_data["ADSCRIP"] = "000"
             nomina_data["Nivel"] = "X0"
-            nomina_data["NombrePersona"] = Persona.Paterno + " " + Persona.Materno + " " + Persona.Nombre
+            nomina_data["NombrePersona"] = Persona.ApPaterno + " " + Persona.ApMaterno + " " + Persona.Nombre
             nomina_data["RFC"] = Persona.RFC
             nomina_data["NumeroEmpleado"] = Persona.NumeroEmpleado
             nomina_data["DiasIncidencias"] = []
