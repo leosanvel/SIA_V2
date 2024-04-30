@@ -9,18 +9,51 @@
     <!-- Contenido de la pestaña -->
 
     <div class="row">
-        <div class="form-group  datepicker-group" id="NumeroBuscarUsuario">
+        <div class="form-group  datepicker-group" id="ssBuscarUsuario">
             <label for="lblNumEmp">Usuario</label>
-            <input id="NumeroBuscarUsuario" name="NumeroBuscarUsuario"
+            <input id="BuscarUsuario" name="BuscarUsuario"
                 class="form-control botonModalBuscaUsuario" type="text">
             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+            <small id="EBuscarUsuario" class="etiquetaError form-text form-text-error"></small>
         </div>
+    </div>
+
+    <div class="row pull-right">
+        <button class="btn btn-primary btn-sm" type="button" id="btnBuscaUsuario">
+            <span class="icon-search" aria-hidden="true"></span> Buscar
+        </button>
+    </div>
+
+    <div class="form-group">
+        <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+    </div>
+    <div class="row">
+        <form id="formResultadoUsuarios">
+            <div class="table-responsive">
+                <table class="table table-striped" id="tablaResultadoUsuarios" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Contrasenia</th>
+                            <th>PrimerIngreso</th>
+                            <th>idPersona</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </form>
     </div>
 
     <div class="row">
 
-        <div class="tree">
+        <div class="tree" style="display: none;">
             <ul>
                 <li>
                     <input type="checkbox" id="folder1">
