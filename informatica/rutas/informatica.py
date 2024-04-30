@@ -16,7 +16,7 @@ def gestion_usuarios():
 
 
 
-@informatica.route('/informatica/crear-usuario', methods=['POST', 'GET'])
+@informatica.route('/informatica/gestion-usuarios/crear-usuario', methods=['POST', 'GET'])
 def crear_usuario():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         
@@ -30,21 +30,29 @@ def crear_usuario():
     usuario_data["PrimerIngreso"] = 0
     usuario_data["Activo"] = 1
     nombre_usuario = usuario_data.get("Usuario", None)
+    idPersona = usuario_data.get("idPersona", None)
     respuesta = {}
-    try:
-        usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
-        for key, value in usuario_data.items():
-            setattr(usuario_a_modificar, key, value)
-        respuesta["modificado"] = True
-    except NoResultFound:
-        usuario = rUsuario(**usuario_data)
-        db.session.add(usuario)
-        respuesta["creado"] = True
+    if idPersona:    
+        try:
+            usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
+            respuesta["existente"] = True
+            respuesta["usuario"] = usuario_a_modificar.Usuario
+            # for key, value in usuario_data.items():
+            #     setattr(usuario_a_modificar, key, value)
+            # respuesta["modificado"] = True
+        except NoResultFound:
+            usuario = rUsuario(**usuario_data)
+            db.session.add(usuario)
+            respuesta["creado"] = True
+            respuesta["usuario"] = usuario_data["Usuario"]
 
-    dar_todos_los_permisos(nombre_usuario)
+        if respuesta.get('creado', False):
+            dar_todos_los_permisos(nombre_usuario)
 
-    # Realizar cambios en la base de datos
-    db.session.commit()
+            # Realizar cambios en la base de datos
+            db.session.commit()
+    else:
+        respuesta["noidPersona"] = True
 
     return jsonify(respuesta)
 
@@ -62,3 +70,19 @@ def dar_todos_los_permisos(Usuario):
         nueva_pagina = rPPUsuario(**pagina_data)
         db.session.add(nueva_pagina)
     print("permisos agregados")
+
+
+@informatica.route('/informatica/gestion-usuarios/buscar-usuario', methods = ['POST', 'GET'])
+def buscar_usuario():
+     
+    usuario_busq = request.form.get("BuscarUsuario")
+    
+    usuarios = db.session.query(rUsuario).filter(rUsuario.Usuario.contains(usuario_busq)).all()
+    lista_usuarios = []
+    for usuario in usuarios:
+        if usuario is not None:
+            usuario_dict = usuario.__dict__
+            usuario_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            lista_usuarios.append(usuario_dict)
+    
+    return jsonify(lista_usuarios)
