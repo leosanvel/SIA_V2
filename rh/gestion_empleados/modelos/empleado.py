@@ -184,17 +184,26 @@ class rEmpleadoPuesto(db.Model):
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaTermino = db.Column(db.Date, nullable = True)
     idEstatusEP = db.Column(db.Integer, nullable = True) # ACTIVO o INACTIVO
+    
+    idCausaBaja = db.Column(db.Integer)
+    Observaciones = db.Column(db.String(300), nullable = True)
+    FechaEfecto = db.Column(db.Date, nullable = True)
+    idQuincena = db.Column(db.Integer)
 
     # Relacion
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, FechaInicio, FechaTermino, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, FechaInicio, FechaTermino, idEstatusEP, idCausaBaja, Observaciones, FechaEfecto,idQuincena):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.FechaInicio = FechaInicio
         self.FechaTermino = FechaTermino
         self.idEstatusEP = idEstatusEP
+        self.idCausaBaja = idCausaBaja
+        self.Ovservaciones = Observaciones
+        self.FechaEfecto = FechaEfecto
+        self.idQuincena = idQuincena
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

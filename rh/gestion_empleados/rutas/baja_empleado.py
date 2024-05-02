@@ -63,24 +63,37 @@ def dar_baja_empleado():
     
     idPersona = request.form['idPersona']
     idPuesto = request.form['idPuesto']
+
+    idCausaBaja = request.form['CausaBaja']
+    Observaciones = request.form['Observaciones']
     FechaEfecto = request.form['FechaEfecto']
+    NumQuincena = request.form['NumQuincena']
     respuesta = {}
     try:
-        # puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = idPuesto).one()
         empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto).one()
-        # cambiar en tPuesto idEstatusPuesto (a vacante (2))
+        # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
         empleadoPuesto.Puesto.idEstatusPuesto = 2
-        # puesto.idEstatusPuesto = 2
 
-        # (1 = Ocupada, 2 = Vacante
-        empleadoPuesto.idEstatusEP = 2
+
+        # Desactivar el puesto del empleado
+        empleadoPuesto.idEstatusEP = 0
         empleadoPuesto.FechaTermino = datetime.strptime(FechaEfecto, '%d/%m/%Y')
 
 
         # estatus baja, observaciones, fecha que se hizo y fecha de efecto
-        # vaciar: rconcepto empleado
-
+        empleadoPuesto.idCausaBaja = idCausaBaja
+        empleadoPuesto.Observaciones = Observaciones
+        empleadoPuesto.FechaEfecto = datetime.strptime(FechaEfecto, '%d/%m/%Y')
+        empleadoPuesto.FechaTermino = datetime.today()
+        empleadoPuesto.idQuincena = NumQuincena
+        
         db.session.commit()
+        
+        
+        # vaciar: rconcepto empleado
+        
+        
+        
         respuesta["Exito"] = True
     except NoResultFound:
         respuesta["Error"] = True
