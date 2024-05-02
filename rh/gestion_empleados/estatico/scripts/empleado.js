@@ -30,6 +30,8 @@ function seleccionaEmpleado(idPersona) {
                     $("#tablaResultadosPolitica").hide();
                     $("#btnGuardaPoliticaPersona").hide();
 
+                    $("#ResultadoPuesto").hide();
+
                 }
             }
         }

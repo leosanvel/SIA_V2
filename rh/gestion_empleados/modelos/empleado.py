@@ -151,7 +151,7 @@ class rEmpleadoPuesto(db.Model):
     idPuesto = db.Column(db.Integer, db.ForeignKey(tPuesto.ConsecutivoPuesto), primary_key = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaTermino = db.Column(db.Date, nullable = True)
-    idEstatusEP = db.Column(db.Boolean, nullable = True)
+    idEstatusEP = db.Column(db.Integer, nullable = True)
 
     # Relacion
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)

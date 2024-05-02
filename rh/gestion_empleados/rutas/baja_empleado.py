@@ -18,21 +18,69 @@ from general.herramientas.funciones import *
 
 @gestion_empleados.route('/rh/gestion-empleados/baja-empleado', methods = ['POST', 'GET'])
 def baja_empleado():
-    
+    quincena = db.session.query(kQuincena).all()
     return render_template('/bajaempleado.html', title='Baja de empleado',
-                           current_user=current_user)
+                           current_user=current_user,
+                           Quincena = quincena)
 
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-puestos-empleado', methods = ['POST', 'GET'])
 def obtener_puestos_empleado():
     idPersona = request.form['idPersona']
-    puestos = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona).all()
-    lista_puestos = []
-    for puesto in puestos:
+    try:
+        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).one()
+        puesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idEstatusEP == 1).first()
+        respuesta = {}
         if puesto is not None:
+            tipoEmpleado = db.session.query(kTipoEmpleado).filter_by(idTipoEmpleado = empleado.idTipoEmpleado).first()
+
+            respuesta["NumeroEmpleado"] = empleado.NumeroEmpleado
+            respuesta["TipoEmpleado"] = tipoEmpleado.TipoEmpleado
+            respuesta["TipoAlta"] = empleado.NumeroEmpleado
+            respuesta["TipoBaja"] = empleado.NumeroEmpleado
+            
+            
+            causas = db.session.query(kCausaBaja).filter(kCausaBaja.idTipoEmpleado == empleado.idTipoEmpleado).all()
+            lista_causas_baja = []
+            for causa in causas:
+                causa_dict = causa.__dict__
+                causa_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+                lista_causas_baja.append(causa_dict)
+            respuesta["CausasBaja"] = lista_causas_baja
+        
             puesto_dict = puesto.__dict__
             puesto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-            lista_puestos.append(puesto_dict)
-    print("lista_puestos")
-    print(lista_puestos)
-    return jsonify(lista_puestos)
+            respuesta["Puesto"] = puesto_dict
+        else:
+            respuesta["NoEncontrado"] = True
+    except NoResultFound:    
+        respuesta["NoEncontrado"] = True
+    return jsonify(respuesta)
+
+
+@gestion_empleados.route('/rh/gestion-empleados/dar-baja-empleado', methods = ['POST', 'GET'])
+def dar_baja_empleado():
+    
+    idPersona = request.form['idPersona']
+    idPuesto = request.form['idPuesto']
+    FechaEfecto = request.form['FechaEfecto']
+    respuesta = {}
+    try:
+        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).one()
+
+        puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = idPuesto).one()
+        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto).one()
+        
+        # cambiar en tPuesto idEstatusPuesto (a vacante (2))
+        puesto.idEstatusPuesto = 2
+
+        # (1 = Ocupada, 2 = Vacante)
+        # cambiar en tabla rEmpleadoPuesto su valor en idEstatusEP, agregar fecha termino, 
+        empleadoPuesto.idEstatusEP = 2
+        empleadoPuesto.FechaTermino = datetime.strptime(FechaEfecto, '%d/%m/%Y')
+        db.session.commit()
+        respuesta["Exito"] = True
+    except NoResultFound:
+        respuesta["Error"] = True
+
+    return respuesta

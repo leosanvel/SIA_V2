@@ -56,7 +56,7 @@
                             <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="row pull-right">
                     <button class="btn btn-primary btn-sm" type="button" id="btnBuscaBajaEmpleado">
@@ -67,30 +67,136 @@
             <div class="form-group">
                 <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
             </div>
-            <div class="row">
-                <form id="formResultadoEmpleadoPuestos">
-                    <div class="table-responsive" style="width: 100%;">
-                        <table class="table table-striped" id="tablaResultadosEmpleadoPuestos" style="display: none;">
-                            <thead>
-                                <tr>
-                                    <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
-                                </tr>
-                                <tr>
-                                    <th>id Persona</th>
-                                    <th>id Puesto</th>
-                                    <th>Fecha de inicio</th>
-                                    <th>Fecha de fin</th>
-                                    <th>Activo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Aquí se agregarán las filas de resultados de empleados -->
-                            </tbody>
-                        </table>
+
+
+            <div class="form" id="ResultadoPuesto" style="display: none;">
+                <form name="frmResultadoPuesto" id="frmResultadoPuesto" method="post">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblidPuesto">id Puesto</label>
+                                <input type="text" id="idPuesto" name="idPuesto" class="form-control obligatorio"
+                                    readonly>
+                                <small id="EidPuesto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 ">
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <label for="lblFechaInicio">Fecha de inicio<span id="AFechaInicio"
+                                        class="form-text">*</span>:</label>
+                                <input type="text" id="fechaInicio" name="fechaInicio"
+                                    class="form-control obligatorio fecha" readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaInicio" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 ">
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <label for="lblFecTerm">Fecha de terminación<span id="AFecTerm"
+                                        class="form-text">*</span>:</label>
+                                <input type="text" id="FecTerm" name="FecTerm" class="form-control"
+                                    readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFecTerm" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblTipoEmpleado">Tipo empleado</label>
+                                <input type="text" id="TipoEmpleado" name="TipoEmpleado"
+                                    class="form-control obligatorio" readonly>
+                                <small id="EMaterno" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblTipoAlta">Tipo de Alta</label>
+                                <input type="text" id="TipoAlta" name="TipoAlta" class="form-control obligatorio"
+                                    readonly>
+                                <small id="ETipoAlta" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblTipoDeBaja">Tipo de Baja</label>
+                                <input type="text" id="TipoBaja" name="TipoBaja" class="form-control obligatorio"
+                                    readonly>
+                                <small id="ETipoBaja" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lblCausaBaja">Causa de Baja<span id="ACausaBaja"
+                                        class="form-text">*</span>:</label>
+                                <select id="CausaBaja" name="CausaBaja" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                </select>
+                                <small id="ECausaBaja" class="etiquetaError form-text form-text-error"> </small>
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lblObserv">Observaciones</label>
+                                <input type="text" id="Observ" name="Observ" class="form-control">
+                                <small id="EObserv" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3 ">
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <label for="lblFechaEfecto">Efectos a partir de:<span id="AFechaEfecto"
+                                        class="form-text">*</span>:</label>
+                                <input type="text" id="FechaEfecto" name="FechaEfecto"
+                                    class="form-control obligatorio fecha">
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaEfecto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblNumQui">Número de quincena<span id="ANumQui"
+                                            class="form-text">*</span>:</label>
+                                    <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                                        <option value="0">-- Seleccione --</option>
+                                        {% for row in Quincena %}
+                                        <option value="{{row.idQuincena}}">{{row.Descripcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small id="ENumQuincena" class="etiquetaError form-text form-text-error"> </small>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" id="contenedorCheckbox">
+                                <input type="checkbox" id="checkboxMovimientoExtra">
+                                <label for="checkboxporcentaje" class="file">Mov. Extraordinario</label>
+                            </div>
+                        </div>
                     </div>
                 </form>
+
+                <div class="row" id="espacio_botones">
+                    <div class="col-md-12">
+                        <button type="button" id="btnDarDeBaja" class="btn btn-primary pull-right">Dar de baja</button>
+
+                    </div>
+                </div>
+
             </div>
-            <div class="row" id="espacio_botones"></div>
         </div>
     </div>
 </div>

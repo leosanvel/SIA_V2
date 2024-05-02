@@ -549,3 +549,19 @@ class kTipoPago(db.Model):
         self.idTipoPago = idTipoPago
         self.TipoPago = TipoPago
         self.Activo = Activo
+
+
+class kCausaBaja(db.Model):
+    __tablename__ = "kcausabaja"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+
+    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
+    idCausaBaja = db.Column(db.Integer, primary_key = True)
+    CausaBaja = db.Column(db.String(300))
+    Activo = db.Column(db.Integer)
+
+    def __init__(self, idTipoEmpleado, idCausaBaja, CausaBaja, Activo):
+        self.idTipoEmpleado = idTipoEmpleado
+        self.idCausaoBaja = idCausaBaja
+        self.CausaBaja = CausaBaja
+        self.Activo = Activo
