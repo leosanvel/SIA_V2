@@ -1,7 +1,7 @@
 function obtenerDomicilio(tipo) {
     $.ajax({
         type: "POST",
-        url: "/RH/obtener_domicilio",
+        url: "/rh/gestion-empleados/obtener-domicilio",
         data: {
             tipo: tipo
         },
@@ -40,6 +40,25 @@ function obtenerDomicilio(tipo) {
     });
 }
 
+function obtenerEscolaridad(){
+    $.ajax({
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-escolaridad",
+        success: function(data){
+            if(data != null){
+                $("#idEscolaridad").val(data.idEscolaridad);
+                cargarEstNivEsc();
+                cargarEscuela();
+                $("#idNivelEscolaridad").val(data.idNivelEscolaridad);
+                $("#idInstitucionEscolar").val(data.idInstitucionEscolar);
+                cargarFormacionEducativa();
+                $("#idFormacionEducativa").val(data.idFormacionEducativa);
+                $("#Especialidad").val(data.Especialidad);
+            }
+        }
+    })
+}
+
 function obtenerInfoEmpleado() {
     $.ajax({
         type: "POST",
@@ -47,10 +66,10 @@ function obtenerInfoEmpleado() {
         success: function (data) {
             if (data != null) {
                 var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
-                var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngresoGob);
-                var FecIngresoFormateada = convertirFechaParaVisualizacion(data.FecIngreso);
+                var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngGobierno);
+                var FecIngresoFormateada = convertirFechaParaVisualizacion(data.FecIngFonaes);
                 console.log("data");
-                console.log(data.CURP);
+                console.log(data.idGrupo);
                 $("#CURP").val(data.CURP);
                 $("#Nombre").val(data.Nombre);
                 $("#Paterno").val(data.ApPaterno);
@@ -79,17 +98,11 @@ function obtenerInfoEmpleado() {
                 $("#HoraEntrada").val(data.HoraEntrada);
                 $("#HoraSalida").val(data.HoraSalida);
                 $("#FecIngresoGob").val(FecIngresoGobFormateada);
+                cargarMesesSerGob();
                 $("#FecIngreso").val(FecIngresoFormateada);
-                $("#MesesServicio").val(data.MesesServicio);
-                $("#idEscolaridad").val(data.idEscolaridad);
-                cargarEstNivEsc();
-                cargarEscuela();
-                $("#idNivelEscolaridad").val(data.idNivelEscolaridad);
-                $("#idInstitucionEscolar").val(data.idInstitucionEscolar);
-                cargarFormacionEducativa();
-                $("#idFormacionEducativa").val(data.idFormacionEducativa);
-                $("#Especialidad").val(data.Especialidad);
-                $("#NumQuincena").val(data.NumQuincena);
+                //$("#MesesServicio").val(data.MesesServicio);
+                
+                $("#NumQuincena").val(data.idQuincena);
                 $("#idEstatus").val(data.Activo);
 
                 $("#idCC").prop("disabled", true);
@@ -440,6 +453,7 @@ $gmx(document).ready(function () {
     if (rutaActual.includes("/rh/gestion-empleados/modificar-empleado")) {
 
         obtenerInfoEmpleado();
+        obtenerEscolaridad();
         obtenerDomicilio(1);
         obtenerDomicilio(2);
         obtenerDatosBanco();

@@ -9,46 +9,46 @@ from docxtpl import DocxTemplate, InlineImage
 from docx2pdf import convert
 import pythoncom
 import os
+import json
+import datetime
 
 from .gestion_empleados import gestion_empleados
 from app import db
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_empleados.modelos.domicilio import *
+from general.herramientas.funciones import serialize_datetime
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-info-empleado', methods = ['POST'])
 def obtener_info_empleado():
     idPersona = session.get('idPersona', None)
-    print("idPersona")
     empleadopuesto_datos = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
-    print(idPersona)
+    print(empleadopuesto_datos)
     empleado_datos = {}
     if empleadopuesto_datos is not None:
-        print("HOOOOOLAAA")
-        print("empleadopuesto_datos.idPuesto")
-        print(empleadopuesto_datos.idPuesto)
-        print(empleadopuesto_datos.Empleado.Persona.Nombre)
-        print(empleadopuesto_datos.Puesto.Puesto)
-        empleado_datos = {
-            "CURP": empleadopuesto_datos.Empleado.Persona.CURP,
-            "Nombre": empleadopuesto_datos.Empleado.Persona.Nombre,
-            "ApPaterno": empleadopuesto_datos.Empleado.Persona.ApPaterno,
-            "ApMaterno": empleadopuesto_datos.Empleado.Persona.ApMaterno,
-            "Sexo": empleadopuesto_datos.Empleado.Persona.Sexo,
-        }
-        # idTipoEmpleado = empleado.Empleado.idTipoEmpleado
-        # idPuesto = empleado.Empleado.Puesto.ConsecutivoPuesto
-        # idCentroCosto = empleado.Empleado.Puesto.idCentroCosto
-        # empleado_dict = empleado.__dict__
-        # empleado_dict.pop("_sa_instance_state", None)
-        # empleado_dict["idTipoEmpleado"] = idTipoEmpleado
-        # empleado_dict["idCentroCosto"] = idCentroCosto
-        # empleado_dict["idPuesto"] = idPuesto
-        # empleado_dict.pop("Empleado")
-        # #print(empleado)
-        # print(empleado_dict)
+        idCentroCosto = empleadopuesto_datos.Puesto.idCentroCosto
+        persona_data = empleadopuesto_datos.Empleado.Persona
+        empleado_data = empleadopuesto_datos.Empleado
+        puesto_data = empleadopuesto_datos.Puesto
+        empleadopuesto_datos_dict = empleadopuesto_datos.__dict__
+        empleadopuesto_datos_dict.pop("_sa_instance_state", None)
+        empleadopuesto_datos_dict.pop("Empleado")
+        empleadopuesto_datos_dict.pop("Puesto")
+        #print(empleadopuesto_datos_dict)
+        persona_data_dict = persona_data.__dict__
+        persona_data_dict.pop("_sa_instance_state", None)
+        #print(persona_data_dict)
+        empleado_data_dict = empleado_data.__dict__
+        empleado_data_dict.pop("_sa_instance_state", None)
+        empleado_data_dict.pop("Persona")
+        #print(empleado_data_dict)
+        puesto_data_dict = puesto_data.__dict__
+        puesto_data_dict.pop("_sa_instance_state", None)
+        #print(puesto_data_dict)
+        empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto}
+        #print(empleado_datos)
     return jsonify(empleado_datos)
 
-@gestion_empleados.route('/RH/obtener_domicilio', methods = ['POST'])
+@gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])
 def obtener_domicilio():
     idPersona = session.get('idPersona', None)
     tipo = request.form.get("tipo")
@@ -57,3 +57,13 @@ def obtener_domicilio():
         domicilio = domicilio.__dict__
         domicilio.pop("_sa_instance_state", None)
     return jsonify(domicilio)
+
+@gestion_empleados.route('/rh/gestion-empleados/obtener-escolaridad', methods = ['POST'])
+def obtener_escolaridad():
+    idPersona = session.get('idPersona', None)
+    escolaridad = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
+    if escolaridad is not None:
+        escolaridad = escolaridad.__dict__
+        escolaridad.pop("_sa_instance_state", None)
+    
+    return jsonify(escolaridad)

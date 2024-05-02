@@ -4,7 +4,7 @@ from catalogos.modelos.modelos import *
 class tPersona(db.Model):
     __tablename__ = "tpersona"
     __bind_key__ = 'db2'
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
     CURP = db.Column(db.String(18), nullable = True)
@@ -25,6 +25,8 @@ class tPersona(db.Model):
     # Relaciones
     TipoPersona = db.relationship("kTipoPersona", back_populates = "Personas", uselist = False, single_parent = True)
     Empleado = db.relationship("rEmpleado", uselist = False, back_populates = "Persona", cascade = "all, delete-orphan", single_parent = True)
+    Domicilios = db.relationship("rDomicilio", back_populates = "Persona", cascade = "all, delete-orphan")
+    Escolaridades = db.relationship("rPersonaEscolaridad", back_populates = "Persona", cascade = "all, delete-orphan")
 
     def __init__(self, idPersona, CURP, Nombre, ApPaterno, ApMaterno, Sexo, FechaNacimiento, RFC, idNacionalidad,
                  CalidadMigratoria, TelCasa, TelCelular, idTipoPersona, idEstadoCivil, CorreoPersonal):
@@ -43,10 +45,16 @@ class tPersona(db.Model):
         self.idTipoPersona = idTipoPersona
         self.idEstadoCivil = idEstadoCivil
         self.CorreoPersonal = CorreoPersonal
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
 class tPuesto(db.Model):
     __tablename__ = "tpuesto"
     __bind_key__ = 'db2'
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     # idRamo = db.Column(db.Integer, nullable = True)
     idUA = db.Column(db.Integer, db.ForeignKey(kUA.idUA), nullable = True)
@@ -116,16 +124,28 @@ class tPuesto(db.Model):
         self.idCentroCosto = idCentroCosto
         self.idEstatusPuesto = idEstatusPuesto
 
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
 class rEmpleado(db.Model):
     __tablename__ = "rempleado"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, db.ForeignKey(tPersona.idPersona), primary_key = True)
-    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
     NumeroEmpleado = db.Column(db.Integer, nullable = True)
+    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
+    idTipoAlta = db.Column(db.Integer, nullable = True)
+    idGrupo = db.Column(db.Integer, nullable = True)
+    HoraEntrada = db.Column(db.String(20), nullable = True)
+    HoraSalida = db.Column(db.String(20), nullable = True)
+    FecIngGobierno = db.Column(db.Date, nullable = True)
+    FecIngFonaes = db.Column(db.Date, nullable = True)
+    idQuincena = db.Column(db.Integer, nullable = True)
     NoISSSTE = db.Column(db.Integer, nullable = True)
-    FecAltaISSSTE = db.Column(db.Date, nullable = True) 
+    FecAltaISSSTE = db.Column(db.Date, nullable = True)
     CorreoInstitucional = db.Column(db.String(150), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
 
@@ -133,14 +153,26 @@ class rEmpleado(db.Model):
     Persona = db.relationship("tPersona", back_populates = "Empleado", single_parent = True, cascade = "all, delete-orphan")
     EmpleadoPuestos = db.relationship("rEmpleadoPuesto", back_populates = "Empleado", cascade = "all, delete-orphan")
 
-    def __init__(self, idPersona, idTipoEmpleado, NumeroEmpleado,NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
+    def __init__(self, idPersona, NumeroEmpleado, idTipoEmpleado, idTipoAlta, idGrupo, HoraEntrada, HoraSalida, FecIngGobierno, FecIngFonaes, idQuincena, NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
         self.idPersona = idPersona
-        self.idTipoEmpleado = idTipoEmpleado
         self.NumeroEmpleado = NumeroEmpleado
+        self.idTipoEmpleado = idTipoEmpleado
+        self.idTipoAlta = idTipoAlta
+        self.idGrupo = idGrupo
+        self.HoraEntrada = HoraEntrada
+        self.HoraSalida = HoraSalida
+        self.FecIngGobierno = FecIngGobierno
+        self.FecIngFonaes = FecIngFonaes
+        self.idQuincena = idQuincena
         self.NoISSSTE = NoISSSTE
         self.FecAltaISSSTE = FecAltaISSSTE
         self.CorreoInstitucional = CorreoInstitucional
         self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
 
 class rEmpleadoPuesto(db.Model):
     __tablename__ = "rempleadopuesto"
@@ -164,6 +196,41 @@ class rEmpleadoPuesto(db.Model):
         self.FechaTermino = FechaTermino
         self.idEstatusEP = idEstatusEP
 
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rPersonaEscolaridad(db.Model):
+    __tablename__ = "rpersonaescolaridad"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, db.ForeignKey('tpersona.idPersona'), primary_key = True)
+    idEscolaridad = db.Column(db.Integer, nullable = True)
+    idNivelEscolaridad = db.Column(db.Integer, nullable = True)
+    idInstitucionEscolar = db.Column(db.Integer, nullable = True)
+    idFormacionEducativa = db.Column(db.Integer, nullable = True)
+    Especialidad = db.Column(db.Text, nullable = True)
+    Consecutivo = db.Column(db.Integer, nullable = True)
+
+    # Relacion
+    Persona = db.relationship('tPersona', back_populates = "Escolaridades", uselist = False, single_parent = True)
+
+    def __init__(self, idPersona, idEscolaridad, idNivelEscolaridad, idInstitucionEscolar, idFormacionEducativa, Especialidad, Consecutivo):
+        self.idPersona = idPersona
+        self.idEscolaridad = idEscolaridad
+        self.idNivelEscolaridad = idNivelEscolaridad
+        self.idInstitucionEscolar = idInstitucionEscolar
+        self.idFormacionEducativa = idFormacionEducativa
+        self.Especialidad = Especialidad
+        self.Consecutivo = Consecutivo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
 class rBancoPersona(db.Model):
     __tablename__ = "rbancopersona"
     __bind_key__ = 'db2'
@@ -182,6 +249,11 @@ class rBancoPersona(db.Model):
         self.Activo = Activo
         self.Verificado = Verificado
 
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
 class rSerieNomina(db.Model):
     __tablename__ = 'rserienomina'
     __bind_key__ = 'db2'
@@ -198,3 +270,8 @@ class rSerieNomina(db.Model):
         self.SerieFinal = SerieFinal
         self.TotalRegistros = TotalRegistros
         self.FechaProceso = FechaProceso
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
