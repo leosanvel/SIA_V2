@@ -48,6 +48,7 @@ def crear_concepto():
 
 @catalogos.route('/catalogos/buscar-concepto', methods = ['POST'])
 def concepto():
+    respuesta = {}
     concepto = request.form.get('ConceptoExistente')
     if concepto:
         query = db.session.query(kConcepto)
@@ -72,8 +73,22 @@ def concepto():
             conc_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             lista_conceptos.append(conc_dict)
     if not lista_conceptos:
-        return jsonify({"NoEncontrado":True}) 
-    return jsonify(lista_conceptos)
+        respuesta["NoEncontrado"] = True
+
+    tipospago = db.session.query(kTipoPago).all()
+    lista_tipo_pago = []
+    for tipopago in tipospago:
+        if tipopago is not None:
+            tipopago_dict = tipopago.__dict__
+            tipopago_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            lista_tipo_pago.append(tipopago_dict)
+
+        
+    respuesta["ListaConceptos"] = lista_conceptos   
+    respuesta["TipoPago"] = lista_tipo_pago   
+ 
+
+    return jsonify(respuesta)
 
 @catalogos.route('/catalogos/actualizar-busqueda-conceptos', methods=['GET'])
 def actualizar_busqueda_conceptos():
@@ -91,3 +106,15 @@ def actualizar_busqueda_conceptos():
                         'texto': str(resultado.idTipoConcepto) + ' - ' + str(resultado.idConcepto) + ' - ' + str(resultado.Concepto)
                         } for resultado in resultados]
     return jsonify(resultados_json)
+
+
+@catalogos.route('/catalogos/cancela_casdoncepto', methods = ['POST', 'GET'])
+def cancelasda_concepto():
+    idIncidencia = request.form.get('idIncidencia')
+    Incidencia = db.session.query(Tincidencia).filter_by(idIncidencia = idIncidencia).first()
+    if Incidencia is not None:
+        Incidencia_dict = Incidencia.__dict__
+        Incidencia_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+        return jsonify(Incidencia_dict)
+    else:
+        return jsonify(False)

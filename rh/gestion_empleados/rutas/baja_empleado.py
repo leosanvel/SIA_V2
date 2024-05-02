@@ -74,10 +74,14 @@ def dar_baja_empleado():
         # cambiar en tPuesto idEstatusPuesto (a vacante (2))
         puesto.idEstatusPuesto = 2
 
-        # (1 = Ocupada, 2 = Vacante)
-        # cambiar en tabla rEmpleadoPuesto su valor en idEstatusEP, agregar fecha termino, 
+        # (1 = Ocupada, 2 = Vacante
         empleadoPuesto.idEstatusEP = 2
         empleadoPuesto.FechaTermino = datetime.strptime(FechaEfecto, '%d/%m/%Y')
+
+
+        # estatus baja, observaciones, fecha que se hizo y fecha de efecto
+        # vaciar: rconcepto empleado
+
         db.session.commit()
         respuesta["Exito"] = True
     except NoResultFound:
