@@ -70,9 +70,9 @@ function dar_baja(){
             data: $("#frmResultadoPuesto, #idPersona").serialize(),
             success: function (datos) {
                 if (datos.NoEncontrado) {
-                    abrirModal("Éxito", "El empleado ha sido dado de baja correctamente", "recargar");
-                }else{
                     abrirModal("Error", "Ha ocurrido un problema", "");
+                }else{
+                    abrirModal("Éxito", "El empleado ha sido dado de baja correctamente", "recargar");
                 }
             }
         });

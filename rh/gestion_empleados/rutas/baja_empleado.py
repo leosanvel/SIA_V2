@@ -66,13 +66,11 @@ def dar_baja_empleado():
     FechaEfecto = request.form['FechaEfecto']
     respuesta = {}
     try:
-        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).one()
-
-        puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = idPuesto).one()
+        # puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = idPuesto).one()
         empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto).one()
-        
         # cambiar en tPuesto idEstatusPuesto (a vacante (2))
-        puesto.idEstatusPuesto = 2
+        empleadoPuesto.Puesto.idEstatusPuesto = 2
+        # puesto.idEstatusPuesto = 2
 
         # (1 = Ocupada, 2 = Vacante
         empleadoPuesto.idEstatusEP = 2
