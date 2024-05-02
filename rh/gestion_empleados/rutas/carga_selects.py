@@ -40,7 +40,7 @@ def select_localidad():
     Entidad = request.form.get('Entidad')
     Municipio = request.form.get('Municipio')
     ret = '<option value="0">-- Seleccione --</option>'
-    localidades = db.session.query(kLocalidad).filter_by(idEntidad = Entidad, idMunicipio = Municipio, Activo = 1).all()
+    localidades = db.session.query(kLocalidad).filter_by(idEntidad = Entidad, idMunicipio = Municipio, Activo = 1).order_by(kLocalidad.Localidad).all()
     for entry in localidades:
         ret += '<option value="{}">{}</option>'.format(entry.idLocalidad, entry.Localidad)
     return ret

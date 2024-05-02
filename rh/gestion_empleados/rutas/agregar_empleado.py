@@ -12,6 +12,7 @@ import os
 
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
+from rh.gestion_empleados.modelos.domicilio import *
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -82,7 +83,7 @@ def guardar_empleado():
         'TelCasa': 'TelCasa',
         'TelCelular': 'TelCelular',
         'idTipoPersona': 'idTipoPersona',
-        #'CorreoPersonal': 'CorreoPersonal',
+        'CorreoPersonal': 'CorreoPersonal',
         #'CorreoInstitucional': 'CorreoInstitucional',
         #'idTipoEmpleo': 'idTipoEmpleo',
         #'idTipoAlta': 'idTipoAlta',
@@ -108,26 +109,45 @@ def guardar_empleado():
 
     mapeo_nombres_empleado = {
         'idTipoEmpleo': 'idTipoEmpleado',
+        'idTipoAlta': 'idTipoAlta',
+        'idGrupo': 'idGrupo',
+        'HoraEntrada': 'HoraEntrada',
+        'HoraSalida': 'HoraSalida',
+        'FecIngresoGob_format' : 'FecIngGobierno',
+        'FecIngreso_format': 'FecIngFonaes',
+        'NumQuincena': 'idQuincena',
+        'CorreoInstitucional': 'CorreoInstitucional'
     }
 
     mapeo_nombres_empleado_puesto = {
         'idPlazaHom' : 'idPuesto'
     }
 
+    mapeo_nombres_escolaridad = {
+        'idEscolaridad': 'idEscolaridad',
+        'idNivelEscolaridad': 'idNivelEscolaridad',
+        'idInstitucionEscolar': 'idInstitucionEscolar',
+        'idFormacionEducativa': 'idFormacionEducativa',
+        'Especialidad': 'Especialidad',
+    }
+
     persona_data = {mapeo_nombres_persona[key]: request.form.get(key) for key in mapeo_nombres_persona.keys()}
     empleado_data = {mapeo_nombres_empleado[key]: request.form.get(key) for key in mapeo_nombres_empleado.keys()}
     empleado_puesto_data = {mapeo_nombres_empleado_puesto[key]: request.form.get(key) for key in mapeo_nombres_empleado_puesto.keys()}
+    escolaridad_data = {mapeo_nombres_escolaridad[key]: request.form.get(key) for key in mapeo_nombres_escolaridad.keys()}
 
     idPersona = session.get("idPersona", None)
     nueva_persona = None
     nuevo_empleado = None
     nuevo_empleado_puesto = None
+    nueva_escolaridad = None
     correo_enviado = False
     respuesta = {}
 
-
     try:
-        empleado_existente = db.session.query(tPersona).filter_by(idPersona=idPersona).one()
+        persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
+        empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        escolaridad_existente = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
         existe = 1
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
@@ -140,11 +160,15 @@ def guardar_empleado():
         #         envia_correo("informatica","Baja",empleado_existente)
         #         crea_solicitud("Baja",empleado_existente)
         #         correo_enviado = True
-
+        print("Actualiza")
+        persona_data["idPersona"] = idPersona
+        persona_existente.update(**persona_data)
+        empleado_existente.update(**empleado_data)
+        escolaridad_existente.update(**escolaridad_data)
         # Actualizar los atributos de 'empleado_existente' con los valores de 'empleado_data'
-        for attr, value in persona_data.items():
-            if not attr.startswith('_') and hasattr(empleado_existente, attr):
-                setattr(empleado_existente, attr, value)
+        #for attr, value in persona_data.items():
+        #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
+        #        setattr(empleado_existente, attr, value)
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
@@ -167,7 +191,16 @@ def guardar_empleado():
         empleado_data['NumeroEmpleado'] = nuevo_Numero_Empleado
         empleado_puesto_data['idPersona'] = nuevo_id_persona
 
-        empleado_data['rEmpleadoPuesto'] = 1
+        empleado_data['NoISSSTE'] = None
+        empleado_data['FecAltaISSSTE'] = None
+        empleado_data['Activo'] = 1
+
+        empleado_puesto_data['FechaInicio'] = None
+        empleado_puesto_data['FechaTermino'] = None
+        empleado_puesto_data['idEstatusEP'] = 1
+
+        escolaridad_data['idPersona'] = nuevo_id_persona
+        escolaridad_data['Consecutivo'] = 1
 
         nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
@@ -178,10 +211,18 @@ def guardar_empleado():
         nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
         db.session.add(nuevo_empleado_puesto)
         print(nuevo_empleado_puesto)
+        nueva_escolaridad = rPersonaEscolaridad(**escolaridad_data)
+        db.session.add(nueva_escolaridad)
+        print(nueva_escolaridad)
         respuesta["guardado"] = True
 
     # Realizar cambios en la base de datos
     db.session.commit()
+
+    if nuevo_empleado is not None:
+        # recuperar ID del nuevo empleado y devolverlo en el json
+        empleado_existente = db.session.query(tPersona).filter_by(CURP=empleado_data['CURP']).one()  
+        session['idPersona'] = empleado_existente.idPersona
 
     return jsonify(respuesta)
 
@@ -196,24 +237,108 @@ def buscar_empleado():
         tPersona.Nombre.contains(parametro),
         tPersona.ApPaterno.contains(parametro),
         tPersona.ApMaterno.contains(parametro),
-        #rEmpleado.NumeroEmpleado.contains(parametro)
+        rEmpleado.NumeroEmpleado.contains(parametro)
     )
 
-    #if esModal:
-        #filtro_comun = and_(filtro_comun, tPersona.Empleado.Activo == 1)
+    if esModal:
+        filtro_comun = and_(filtro_comun, rEmpleado.Activo == 1)
 
-    empleados = db.session.query(tPersona).filter(filtro_comun).all()
+    empleados = db.session.query(tPersona).join(rEmpleado).filter(filtro_comun).all()
     lista_empleados = []
     for empleado in empleados:
         if empleado is not None:
-            print(empleado.idPersona)
-            # NumeroEmpleado = empleado.Empleado.NumeroEmpleado
+            NumeroEmpleado = empleado.Empleado.NumeroEmpleado
             empleado_dict = empleado.__dict__
             empleado_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-            # empleado_dict["NumeroEmpleado"] = NumeroEmpleado
-            # empleado_dict.pop("Empleado")
+            empleado_dict["NumeroEmpleado"] = NumeroEmpleado
+            empleado_dict.pop("Empleado")
             lista_empleados.append(empleado_dict)
     return jsonify(lista_empleados)
+
+@gestion_empleados.route('/rh/gestion-empleados/guardar-direccion', methods = ['POST'])
+def guardar_direccion():
+    idPersona = session.get('idPersona', None)
+    if(idPersona is None):
+        return jsonify({"guardado": False})
+    else:
+        insp = inspect(rDomicilio).all_orm_descriptors.keys()
+        atributos_form = ['idPersona', 'idTipoDomicilio', 'CP', 'Entidad', 'Municipio', 'Localidad', 'TipoAsentamiento', 'Asentamiento',
+                        'TipoVialidad', 'Vialidad', 'NumExt', 'NumInt', 'SN', 'DC', 'TipoVialidad01',
+                        'Vialidad01', 'TipoVialidad02', 'Vialidad02', 'TipoVialidad03', 'Vialidad03']
+        
+        direccion = {}
+
+        for column, key in zip(insp, atributos_form):
+            if key in ["SN", "DC"]:
+                direccion[column] = 0 if request.form.get(key) == None else 1
+            else:
+                direccion[column] = request.form.get(key)
+        direccion['idPersona'] = idPersona
+        direccion['Descripcion'] = None
+        direccion['idDomicilio'] = idPersona
+
+        print(direccion)
+
+        try:
+            direcciones_existentes = db.session.query(rDomicilio).filter_by(idPersona = idPersona).all()
+            direccion_encontrada = None
+            for direccion_existente in direcciones_existentes:
+                if direccion_existente.idTipoDomicilio == int(direccion['idTipoDomicilio']):
+                    direccion_encontrada = direccion_existente
+
+            if direccion_encontrada is None:
+                # Si no se encontró ninguna dirección que coincida, crea una nueva
+                nueva_direccion = rDomicilio(**direccion)
+                db.session.add(nueva_direccion)
+            else:
+                direccion_encontrada.update(**direccion)
+
+        except NoResultFound:
+            nueva_direccion = rDomicilio(**direccion)
+            db.session.add(nueva_direccion)
+
+        db.session.commit()
+
+        return jsonify({"guardado": True})
+    
+@gestion_empleados.route('/rh/gestion-empleados/guardar-datos-bancarios', methods = ["POST"])
+def guardar_datos_bancarios():
+    idPersona = session.get('idPersona', None)
+    if(idPersona is None):
+        return jsonify({"guardado": False})
+    else:
+        #insp = inspect(rBancoPersona).all_orm_descriptors.keys()
+        mapeo_nombres_datos_bancarios = {
+            'idPersona': 'idPersona',
+            'Clabe': 'Clabe',
+            'idBanco': 'idBanco'}
+        
+        datos_bancarios = {mapeo_nombres_datos_bancarios[key]: request.form.get(key) for key in mapeo_nombres_datos_bancarios.keys()}
+        
+        nuevo_datos_bancarios = None
+
+        Edo_Cuenta = request.files.get('EdoCuenta')
+        datos_bancarios["idPersona"] = idPersona
+        datos_bancarios["Activo"] = 1
+        datos_bancarios["Verificado"] = 0
+
+        print(datos_bancarios)
+
+        datos_bancarios_existente = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Activo = 1).first()
+        if(datos_bancarios_existente is None):
+            nuevo_datos_bancarios = rBancoPersona(**datos_bancarios)
+            db.session.add(nuevo_datos_bancarios)
+            db.session.commit()
+
+        EXTENCIONES_PERMITIDAS = {'pdf'}
+        if(Edo_Cuenta and archivo_permitido(Edo_Cuenta.filename, EXTENCIONES_PERMITIDAS)):
+            if(datos_bancarios["Clabe"] != ""):
+                filename = secure_filename(datos_bancarios["Clabe"] + '_' + str(idPersona) + '.pdf')
+                dir = os.path.join(current_app.root_path, "rh", "empleado", "documentos", "estados_cuenta", filename)
+                Edo_Cuenta.save(dir)
+
+        return jsonify({"guardado": True})
+
 
 
 @gestion_empleados.route('/rh/gestion-empleados/buscar-curp', methods = ['POST'])
@@ -262,7 +387,22 @@ def seleccionar_empleado():
     session['idPersona'] = idPersona
     empleado = db.session.query(tPersona).filter_by(idPersona = idPersona).first()
     if empleado is not None:
+        NumeroEmpleado = empleado.Empleado.NumeroEmpleado
         empleado = empleado.__dict__
         empleado.pop("_sa_instance_state", None)
-        print(empleado)
+        empleado["NumeroEmpleado"] = NumeroEmpleado
+        empleado.pop("Empleado")
     return jsonify(empleado)
+
+@gestion_empleados.route('/rh/gestion-empleados/obtener-banco', methods = ['POST'])
+@permisos_de_consulta
+def obtener_Banco():
+    subClabe = request.form.get("subClabe")
+    try:
+        Banco = db.session.query(kBancos).filter_by(Codigo = subClabe).one()
+        Banco_dict = Banco.__dict__
+        Banco_dict.pop("_sa_instance_state", None)
+        return jsonify(Banco_dict)
+    
+    except NoResultFound:
+        return jsonify({"Nombre": "Banco no encontrado"})

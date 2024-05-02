@@ -62,8 +62,8 @@ def consultar_curp(CURP):
                 # Se obtiene el resto de la información
                 empleado["CURP"] = soup.find('td', id = 'CURP').text.strip()
                 empleado["Nombre"] = soup.find('td', id = 'nombres').text.strip()
-                empleado["Paterno"] = soup.find('td', id = 'apellido1').text.strip()
-                empleado["Materno"] = soup.find('td', id = 'apellido2').text.strip()
+                empleado["ApPaterno"] = soup.find('td', id = 'apellido1').text.strip()
+                empleado["ApMaterno"] = soup.find('td', id = 'apellido2').text.strip()
                 empleado["Sexo"] = soup.find('td', id = 'sexo').text.strip()
                 empleado["FechaNacimiento"] = soup.find('td', id = 'fechNac').text.strip()
                 empleado["Edad"] = calcular_edad(datetime.strptime(empleado["FechaNacimiento"], "%d/%m/%Y"))
@@ -324,3 +324,8 @@ def actualizar_tchecador(incidencia_o_justificante):
 
     # Realizar cambios en la base de datos
     db.session.commit()
+
+def serialize_datetime(obj): 
+    if isinstance(obj, datetime): 
+        return obj.isoformat() 
+    raise TypeError("Type not serializable")
