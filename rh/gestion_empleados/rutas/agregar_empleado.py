@@ -195,7 +195,7 @@ def guardar_empleado():
         empleado_data['FecAltaISSSTE'] = None
         empleado_data['Activo'] = 1
 
-        empleado_puesto_data['FechaInicio'] = None
+        empleado_puesto_data['FechaInicio'] = datetime.now().date()
         empleado_puesto_data['FechaTermino'] = None
         empleado_puesto_data['idEstatusEP'] = 1
 

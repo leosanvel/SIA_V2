@@ -60,7 +60,7 @@ def select_asentamiento():
 def cargar_Plaza():
     idCentroCosto = request.form.get('idCentroCostos')
     ret = '<option value="0">-- Seleccione --</option>'
-    Plazas = db.session.query(tPuesto).filter_by(idCentroCosto = idCentroCosto).all()
+    Plazas = db.session.query(tPuesto).filter_by(idCentroCosto = idCentroCosto, idEstatusPuesto = 2).all()
     for entry in Plazas:
         ret += '<option value="{}">{}</option>'.format(entry.ConsecutivoPuesto, entry.Puesto)
     return ret
