@@ -60,9 +60,6 @@ function actualizarListaDesplegable(resultados) {
     });
 }
 
-
-
-
 function crear_concepto() {
     console.log("Boton");
     if (validarFormulario($("#frmCrearConcepto")).valido) {
@@ -87,55 +84,73 @@ function buscar_concepto() {
         type: "POST",
         url: "/catalogos/buscar-concepto",
         data: $("#frmBuscarConcepto").serialize(),
-        success: function (data) {
-            if (data.NoEncontrado) {
+        success: function (respuesta) {
+            if (respuesta.NoEncontrado) {
                 abrirModal("No encontrado", "No se encontraron coincidencias.", "")
             } else {
                 $("#tablaResultadosConceptos").show();
                 $("#tablaResultadosConceptos tbody").empty();
                 var cont = 1;
-                data.forEach(function (concepto) {
+                
+                opcionHTML = `<option value="0">-- Seleccione --</option>`
+                respuesta.TipoPago.forEach(function (tipoPago) {
+                    opcionHTML += `<option value='${tipoPago.idTipoPago}'> ${tipoPago.TipoPago} </option>`;
+                });
+                console.log("opcionHTML")
+                console.log(opcionHTML)
+
+                respuesta.ListaConceptos.forEach(function (concepto) {
                     text = `
-                    <tr>
-                        
+                    <tr>  
                         <td>
-                            <input type="text" class="form-control" id="TipoConcepto" value="${concepto.idTipoConcepto}" readonly></input></td>
+                            <input type="text" class="form-control" id="TipoConcepto${cont}" value="${concepto.idTipoConcepto}" readonly></input></td>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idConcepto" value="${concepto.idConcepto}" readonly></input>
+                            <input type="text" class="form-control" id="idConcepto${cont}" value="${concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto" value="${concepto.Concepto}" readonly></input>
+                            <input type="text" class="form-control" id="Concepto${cont}" value="${concepto.Concepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Abreviatura" value="${concepto.Abreviatura}" readonly></input>
+                            <input type="text" class="form-control" id="Abreviatura${cont}" value="${concepto.Abreviatura}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Porcentaje" value="${concepto.Porcentaje}" readonly></input>
+                            <input type="text" class="form-control" id="Porcentaje${cont}" value="${concepto.Porcentaje}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Monto" value="${concepto.Monto}" readonly></input>
+                            <input type="text" class="form-control" id="Monto${cont}" value="${concepto.Monto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="ClaveSAT" value="${concepto.ClaveSAT}" readonly></input>
+                            <input type="text" class="form-control" id="ClaveSAT${cont}" value="${concepto.ClaveSAT}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idTipoPago" value="${concepto.idTipoPago}" readonly></input>
+                            <select id="TipoPago${cont}" name="TipoPago${cont}" class="obligatorio form-control">
+                            </select>
+                        </div>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Activo" value="${concepto.Activo}" readonly></input>
+                            <input type="text" class="form-control" id="Activo${cont}" value="${concepto.Activo}" readonly></input>
                         </td>
 
                         <td>
+                            <div style="display: block;">
+                            <button type="button" class="btn btn-primary" id="Editar_Aceptar${cont}" onclick="editar_aceptar(${cont})">Editar</button>
+                        </div>
                         </td>
                         <td>
+                            <div style="display: block;">
+                                <button type="button" class="btn btn-secondary" id="Cancelar${cont}" onclick="cancelar('${cont}')" style="display: none">Cancelar</button>
+                            </div>
                         </td>
 
 
                     </tr>
                     `;
-                    cont++;
                     $("#tablaResultadosConceptos tbody").append(text);
+                    $("#TipoPago" + cont).html(opcionHTML);
+                    $("#TipoPago" + cont).val(concepto.idTipoPago);
+                    $("#TipoPago" + cont).prop('disabled', true);
+                    cont++;
                 });
             }
         }
@@ -182,4 +197,67 @@ function pago_fijo_variable(TipoPago) {
         habilita_porcentaje_o_monto();
     }
 
+}
+
+function editar_aceptar(data) {
+    if ($("#Editar_Aceptar" + data).text() == "Editar") {
+        
+        $("#Porcentaje" + data).attr("readonly", false);
+        $("#Monto" + data).attr("readonly", false);
+        $("#ClaveSAT" + data).attr("readonly", false);
+        $("#TipoPago" + data).attr("disabled", false);
+        $("#Activo" + data).attr("readonly", false);
+
+        $("#Editar_Aceptar" + data).text("Aceptar");
+        $("#Cancelar" + data).toggle();
+    }
+    else {
+        guardar_modificar_porcentaje(data);
+    }
+}
+
+function cancelar(data) {
+
+    $("#Porcentaje" + data).attr("readonly", true);
+    $("#Monto" + data).attr("readonly", true);
+    $("#ClaveSAT" + data).attr("readonly", true);
+    $("#TipoPago" + data).attr("disabled", true);
+    $("#Activo" + data).attr("readonly", true);
+    
+    $("#Editar_Aceptar" + data).text("Editar");
+    $("#Cancelar" + data).toggle();
+}
+
+function guardar_modificar_porcentaje(dato) {
+    datos = {}
+    if (dato) {
+        datos["idPorcentaje"] = dato;
+        datos["Porcentaje"] = $("#porcentaje" + dato).val();
+        datos["Activo"] = $("#Activo" + dato).val();
+        var valido = ($("#porcentaje" + dato).val()) ? true : false;
+        datos = JSON.stringify(datos);
+    }
+    else {
+        datos["Porcentaje"] = $("#porcentaje").val();
+        console.log(datos["Porcentaje"])
+        datos["Activo"] = $("#Activo").val() - 1;
+        datos = JSON.stringify(datos);
+        valido = validarFormulario($("#formularioPorcentajes")).valido
+    }
+
+    if (valido) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/Catalogos/guardar_porcentajes",
+            datatype: "json",
+            contentType: "application/json; charset=utf-8",
+            data: datos,
+            success: function (data) {
+                if (data.guardado) {
+                    abrirModal("Información guardada", "Los datos de Tipo de Justificante se guardaron correctamente.", "recargar");
+                }
+            }
+        })
+    }
 }

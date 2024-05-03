@@ -3,56 +3,42 @@ $gmx(document).ready(function () {
     $("#btnCrearEmpleadoConcepto").click(crear_empleado_concepto);
     $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
 
-    $('#ConceptoExistente').on('focus', function () {
-        $('#lista_conceptos').show();
-    });
+    $("#btnAgregarEmpleadoConcepto").click(modal_agregar_concepto);
 
-    $('#ConceptoExistente').on('blur', function (event) {
-        if (!$(event.relatedTarget).closest('#lista_conceptos').length) {
-            $('#lista_conceptos').hide();
-        }
-    });
+    $("#TipoConcepto").change(filtrar_tipo_concepto);
+    $("#Concepto").change(pago_fijo_variable);
 
-    $('#ConceptoExistente').on('input', function () {
-        var textoBusqueda = $(this).val();
-        $.ajax({
-            url: '/catalogos/actualizar-busqueda-conceptos',
-            method: 'GET',
-            data: { texto_busqueda: textoBusqueda },
-            success: function (response) {
-                actualizarListaDesplegable(response);
-
-            }
-        });
-    });
     habilita_porcentaje_o_monto();
 
 });
+function filtrar_tipo_concepto() {
+    $("#Concepto").val("0");
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/prestaciones/filtrar-conceptos",
+        data: $("#TipoConcepto, #idPersona").serialize(),
+        success: function (resultados) {
+            if (resultados.NoEncontrado) {
+                console.log("ERROR empleado concepto");
 
-function actualizarListaDesplegable(resultados) {
-    var listaDesplegable = $('#lista_conceptos');
-    listaDesplegable.empty(); // Vaciar la lista desplegable antes de agregar nuevos elementos
-    resultados.forEach(function (resultado) {
-        var nuevoElemento = $('<div>', {
-            'class': 'dropdown-item form-group',
-            'html': $('<a>', {
-                'href': 'javascript:void(0)', // El href está configurado para evitar que la página se recargue
-                'text': resultado.texto,
-                'click': function () {
+            } else {
 
-                    $('#ConceptoExistente').val(resultado.texto);
-                    $('#lista_conceptos').hide();
-
-                    pago_fijo_variable(resultado.idTipoPago, resultado.Monto, resultado.Porcentaje);
-
-
-                }
-            })
-        });
-        listaDesplegable.append(nuevoElemento);
+                resultados.forEach(function (resultado) {
+                    // Crea una nueva opción HTML
+                    var nuevaOpcion = $('<option>', {
+                        'value': resultado.idConcepto,
+                        'text': resultado.idConcepto + ' - ' + resultado.Concepto
+                    });
+                
+                    // Agrega la nueva opción al elemento select con id "Concepto"
+                    $('#Concepto').append(nuevaOpcion);
+                    
+                });
+            }
+        }
     });
 }
-
 
 
 function crear_empleado_concepto() {
@@ -66,7 +52,8 @@ function crear_empleado_concepto() {
             success: function (data) {
                 if (data) {
                     console.log("CREADO");
-                    abrirModal("Información guardada", "El concepto se creó con éxito", "recargar");
+                    abrirModal("Información guardada", "El concepto se creó con éxito", "");
+                    buscar_empleado_concepto();
                 }
             }
         });
@@ -84,7 +71,9 @@ function buscar_empleado_concepto() {
             console.log("Peticion completa!")
             if (data.NoEncontrado) {
                 abrirModal("No encontrado", "No se encontraron coincidencias.", "")
+                $("#btnAgregarEmpleadoConcepto").show();
             } else {
+                $("#btnAgregarEmpleadoConcepto").show();
                 $("#tablaResultadosEmpleadoConceptos").show();
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
                 var cont = 1;
@@ -93,22 +82,19 @@ function buscar_empleado_concepto() {
                     <tr>
                         
                         <td>
-                            <input type="text" class="form-control" id="TipoConcepto" value="${empleado_concepto.NoEmpleado}" readonly></input></td>
+                            <input type="text" class="form-control" id="NumeroEmpleado${cont}" value="${empleado_concepto.NumeroEmpleado}" readonly></input></td>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idConcepto" value="${empleado_concepto.idTipoConcepto}" readonly></input>
+                            <input type="text" class="form-control" id="idTipoConcepto${cont}" value="${empleado_concepto.idTipoConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto" value="${empleado_concepto.idConcepto}" readonly></input>
+                            <input type="text" class="form-control" id="idConcepto${cont}" value="${empleado_concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Abreviatura" value="${empleado_concepto.Porcentaje}" readonly></input>
+                            <input type="text" class="form-control" id="Porcentaje${cont}" value="${empleado_concepto.Porcentaje}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Porcentaje" value="${empleado_concepto.Monto}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Activo" value="${empleado_concepto.Activo}" readonly></input>
+                            <input type="text" class="form-control" id="Monto${cont}" value="${empleado_concepto.Monto}" readonly></input>
                         </td>
 
                         <td>
@@ -127,54 +113,64 @@ function buscar_empleado_concepto() {
     })
 
 }
-function pago_fijo_variable(TipoPago, Monto, Porcentaje) {
-    console.log("TipoPagoAAA");
-    console.log(TipoPago);
-    if (TipoPago == "2") {//Si es == 2 (Variable)
+function pago_fijo_variable() {
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/prestaciones/obtener-concepto",
+        data: $("#TipoConcepto, #Concepto").serialize(),
+        success: function (concepto) {
+            if (concepto.NoEncontrado) {
+                abrirModal("ERROR", "Error", "");
+            }else{
+                if (concepto.idTipoPago == "2") {//Si es == 2 (Variable)
+                    $("#contenedorCheckbox").show();
+                    $("#Monto").val("0.00");
+                    $("#Porcentaje").val("0.000");
+                    $("#Monto").prop('readonly', false);
+                    $("#Porcentaje").prop('readonly', false);
+                    habilita_porcentaje_o_monto();
+                }else{
+                    $("#contenedorCheckbox").hide();
 
-        $("#Monto").val("0.00")
-        $("#Porcentaje").val("0.000")
-        $("#MontoContenedor").show();
-        $("#PorcentajeContenedor").show();
-        $("#contenedorCheckbox").show();
-        habilita_porcentaje_o_monto();
+                    $("#Monto").val(concepto.Monto);
+                    $("#Porcentaje").val(concepto.Porcentaje);
 
-    } else {
-        $("#Monto").removeClass("obligatorio");
-        $("#Porcentaje").removeClass("obligatorio");
-        $("#Porcentaje").prop('disabled', false);
-        $("#Monto").prop('disabled', false);
-        if (Monto) {
-            console.log("IF MONTO")
-            $("#Monto").val(Monto);
-        }else{
-            console.log("ELSE MONTO")
-            $("#Monto").val(0);
+                    $("#Monto").prop('readonly', true);
+                    $("#Porcentaje").prop('readonly', true);
+                }
+            }
         }
-        $("#Porcentaje").val(Porcentaje);
-        $("#MontoContenedor").hide();
-        $("#PorcentajeContenedor").hide();
-        $("#contenedorCheckbox").hide();
-    }
+    });
+
 
 }
 
 function habilita_porcentaje_o_monto() {
     if ($("#checkboxporcentaje").prop("checked")) {
 
-        $("#Monto").prop('disabled', true);
+        $("#Monto").prop('readonly', true);
         $("#Monto").val("0.00")
         $("#Monto").removeClass("obligatorio");
         $("#Porcentaje").addClass("obligatorio");
-        $("#Porcentaje").prop('disabled', false);
+        $("#Porcentaje").prop('readonly', false);
         $("#Porcentaje").val("0.000")
 
     } else {
-        $("#Monto").prop('disabled', false);
+        $("#Monto").prop('readonly', false);
         $("#Monto").val("0.00")
 
-        $("#Porcentaje").prop('disabled', true);
+        $("#Porcentaje").prop('readonly', true);
         $("#Porcentaje").val("0.000")
     }
 
+}
+
+function modal_agregar_concepto() {
+    console.log("MODAL!!")
+    $('#ModalAgregaEmpleadoConcepto').modal('show');
+}
+
+function funcionSeleccionar() {
+    buscar_empleado_concepto();
 }

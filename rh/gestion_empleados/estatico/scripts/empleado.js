@@ -9,6 +9,7 @@ function seleccionaEmpleado(idPersona) {
                 if (path === "/rh/gestion-empleados/busqueda-empleado") {
                     window.location.href = "/rh/gestion-empleados/modificar-empleado"
                 } else {
+                    console.log(data);
                     // resetearTodosLosFormularios();
                     $("#tablaEmpleadoSeleccionado").show();
 
@@ -29,6 +30,13 @@ function seleccionaEmpleado(idPersona) {
                     $("#tablaResultadosPolitica tbody").empty();
                     $("#tablaResultadosPolitica").hide();
                     $("#btnGuardaPoliticaPersona").hide();
+
+                    $("#ResultadoPuesto").hide();
+
+                    if (typeof funcionSeleccionar === 'function') {
+                        // Ejecutar la función
+                        funcionSeleccionar();
+                    }
 
                 }
             }
@@ -100,11 +108,25 @@ function guardarDomicilio(idTipoDomicilio, formulario) {
     $.ajax({
         async: false,
         type: "POST",
-        url: "/guarda_direccion",
+        url: "/rh/gestion-empleados/guardar-direccion",
         data: formData,
         processData: false,
         contentType: false,
         success: function (data) { }
+    });
+}
+
+function guardarDatosBancarios(formulario){
+    var formData = new FormData(formulario[0]);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/guardar-datos-bancarios",
+        data: formData,
+        enctype: 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function(data){ }
     });
 }
 
@@ -128,7 +150,7 @@ $gmx(document).ready(function () {
                             $("#tablaEmpleados tbody").append(`
                                 <tr>
                                 <td>
-                                    <button onclick="seleccionaEmpleado(${empleado.idPersona})" class="btn btn-primary btn-sm">Sel.</button>
+                                    <button onclick="seleccionaEmpleado(${empleado.idPersona})" class="btn btn-primary btn-sm boton-seleccionar">Sel.</button>
                                 </td>
                                <td >${empleado.NumeroEmpleado}</td>
                                 <td >${empleado.CURP}</td>
@@ -187,11 +209,11 @@ $gmx(document).ready(function () {
             const formDatosPersonales = new FormData($("#formularioDatosPersonales")[0]);
             const formDatosEmpleado = new FormData($("#formularioDatosEmpleado")[0]);
             const formEscolaridad = new FormData($("#formularioEscolaridad")[0]);
-            const formDatosBancarios = new FormData($("#formularioDatosBancarios")[0]);
-            const formularioEstatus = new FormData($("#formularioEstatus")[0]);
+            //const formDatosBancarios = new FormData($("#formularioDatosBancarios")[0]);
+            //const formularioEstatus = new FormData($("#formularioEstatus")[0]);
 
             const FormularioCompleto = new FormData();
-            for(const[key, value] of [...formDatosPersonales.entries(), ...formDatosEmpleado.entries(), ...formEscolaridad.entries(), ...formDatosBancarios.entries(), ...formularioEstatus.entries()]){
+            for(const[key, value] of [...formDatosPersonales.entries(), ...formDatosEmpleado.entries(), ...formEscolaridad.entries()]){
                 FormularioCompleto.append(key, value);
             }
 
@@ -243,6 +265,13 @@ $gmx(document).ready(function () {
                 mensajeGuardado += "-Domicilio Fiscal. <br>"
             } else {
                 mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DomicilioFiscal\')">-Domicilio fiscal</a>. <br>';
+            }
+        }
+
+        if(!formularioVacio($("#formularioDatosBancarios"))){
+            console.log("No esta vacio");
+            if(validarFormulario($("#formularioDatosBancarios")).valido){
+                guardarDatosBancarios($("#formularioDatosBancarios"))
             }
         }
 
@@ -385,17 +414,17 @@ function validarSoloNumeros(event) {
 }
 
 function verBanco() {
-    console.log($("#Clabe").val());
     if ($("#Clabe").val().length >= 3) {
         $.ajax({
             async: false,
             type: "POST",
-            url: "/RH/obtenerBanco",
+            url: "/rh/gestion-empleados/obtener-banco",
             data: {
                 "subClabe": $("#Clabe").val().substring(0, 3)
             },
             success: function (data) {
                 $("#Banco").val(data.Nombre);
+                $("#idBanco").val(data.idBanco);
             }
         });
     }else{

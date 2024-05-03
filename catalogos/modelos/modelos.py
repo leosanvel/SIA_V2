@@ -500,7 +500,7 @@ class Plazas(db.Model):
 
 class kConcepto(db.Model):
     __tablename__ = "kconcepto"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     idConcepto = db.Column(db.String(5), primary_key = True)
@@ -526,7 +526,7 @@ class kConcepto(db.Model):
 
 class kTipoConcepto(db.Model):
     __tablename__ = "ktipoconcepto"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     TipoConcepto = db.Column(db.String(25), nullable = True)
@@ -539,7 +539,7 @@ class kTipoConcepto(db.Model):
 
 class kTipoPago(db.Model):
     __tablename__ = "ktipopago"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoPago = db.Column(db.String(1), primary_key = True)
     TipoPago = db.Column(db.String(25), nullable = True)
@@ -549,3 +549,33 @@ class kTipoPago(db.Model):
         self.idTipoPago = idTipoPago
         self.TipoPago = TipoPago
         self.Activo = Activo
+
+class kCausaBaja(db.Model):
+    __tablename__ = "kcausabaja"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+
+    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
+    idCausaBaja = db.Column(db.Integer, primary_key = True)
+    CausaBaja = db.Column(db.String(300))
+    Activo = db.Column(db.Integer)
+
+    def __init__(self, idTipoEmpleado, idCausaBaja, CausaBaja, Activo):
+        self.idTipoEmpleado = idTipoEmpleado
+        self.idCausaoBaja = idCausaBaja
+        self.CausaBaja = CausaBaja
+        self.Activo = Activo
+
+class kBancos(db.Model):
+    __tablename__ = "kbancos"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idBanco = db.Column(db.Integer, primary_key = True)
+    Codigo = db.Column(db.String(3), nullable = True)
+    Clave = db.Column(db.String(5), nullable = True)
+    Nombre = db.Column(db.String(50), nullable = True)
+
+    def __init__(self, idBanco, Codigo, Clave, Nombre):
+        self.idBanco = idBanco
+        self.Codigo = Codigo
+        self.Clave = Clave
+        self.Nombre = Nombre

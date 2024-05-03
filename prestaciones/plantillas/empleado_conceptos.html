@@ -1,6 +1,31 @@
 {% extends "plantilla_base.html" %}
 {% block content %}
 
+
+<form id="frmBuscarConceptoEmpleado">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                <label for="lblNumEmp">No. Empleado</label>
+                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                    class="form-control botonModalBuscaEmpleado obligatorio" type="text">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row pull-right">
+        <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
+            <span class="icon-search" aria-hidden="true"></span> Buscar
+        </button>
+    </div>
+</form>
+<div class="form-group">
+    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+</div>
+
+
 <div class="row">
     <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
         <tr>
@@ -28,173 +53,145 @@
     </table>
 </div>
 
-
-
-
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Crear">Crear</a></li>
-        <li class="nav-item "><a class="nav-link" data-toggle="tab" href="#Buscar">Buscar</a></li>
-    </ul>
-    <div class="tab-content">
-        <style>
-            .tab-content form .form-control {
-                margin-bottom: 0 !important;
-                /* Anula el margen inferior */
-            }
-        </style>
-
-        <div class="tab-pane active" id="Crear">
-            <!-- Contenido de la pestaña -->
-            <form name="frmCrearConceptoEmpleado" id="frmCrearConceptoEmpleado" method="post">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                            <label for="lblNumEmp">No. Empleado</label>
-                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                                class="form-control botonModalBuscaEmpleado" type="text">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="lblConcepto">Concepto</label>
-                                <input type="text" id="ConceptoExistente" name="ConceptoExistente"
-                                    class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                                <div class="dropdown">
-                                    <div id="lista_conceptos" class="dropdown-menu"
-                                        aria-labelledby="dropdownMenuButton">
-                                        <!-- Aquí se mostrarán los resultados -->
-                                    </div>
-                                </div>
-                                <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group" id="contenedorCheckbox">
-                            <input type="checkbox" id="checkboxporcentaje">
-                            <label for="checkboxporcentaje" class="file">Porcentaje</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group" id="PorcentajeContenedor">
-                            <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
-                                    class="form-text">*</span>:</label>
-                            <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
-                                class="obligatorio form-control">
-                            <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group" id="MontoContenedor">
-                            <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
-                            <input type="number" name="Monto" id="Monto" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary pull-right">Crear
-                            concepto</button>
-                    </div>
-                </div>
-                <hr />
-                <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
-                    <strong>Error:</strong>
-                    verificar los campos capturados.
-                </div>
-            </form>
-
+<div class="row">
+    <form id="formResultadoEmpleadoConceptos">
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
+                <thead>
+                    <tr>
+                        <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                    </tr>
+                    <tr>
+                        <input type="hidden" id="TipoPago" name="TipoPago" value="">
+                        <th>No. Empleado</th>
+                        <th>Tipo de Concepto</th>
+                        <th>Concepto</th>
+                        <th>Porcentaje</th>
+                        <th>Monto</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán las filas de resultados de empleados -->
+                </tbody>
+            </table>
         </div>
-        <div class="tab-pane" id="Buscar">
-            <!-- Contenido de la pestaña -->
-            <form id="frmBuscarConceptoEmpleado">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                            <label for="lblNumEmp">No. Empleado</label>
-                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                                class="form-control botonModalBuscaEmpleado" type="text">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
-
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="lblConcepto">Concepto</label>
-                            <input type="text" id="ConceptoExistenteA" name="ConceptoExistenteA"
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <div class="dropdown">
-                                <div id="lista_conceptosA" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <!-- Aquí se mostrarán los resultados -->
-                                </div>
-                            </div>
-                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row pull-right">
-                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
-                        <span class="icon-search" aria-hidden="true"></span> Buscar
-                    </button>
-                </div>
-            </form>
-            <div class="form-group">
-                <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" id="btnAgregarEmpleadoConcepto" class="btn btn-primary"
+                    style="display: none;">Agregar
+                    concepto</button>
             </div>
-
-            <div class="row">
-                <form id="formResultadoEmpleadoConceptos">
-                    <div class="table-responsive" style="width: 100%;">
-                        <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
-                            <thead>
-                                <tr>
-                                    <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
-                                </tr>
-                                <tr>
-                                    <th>No. Empleado</th>
-                                    <th>Tipo de Concepto</th>
-                                    <th>Concepto</th>
-                                    <th>Porcentaje</th>
-                                    <th>Monto</th>
-                                    <th>Activo</th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Aquí se agregarán las filas de resultados de empleados -->
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
-            </div>
-
+            <br>
         </div>
-    </div>
+    </form>
 </div>
+
+
+
 
 <br>
 <div class="row">
     <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
         Verificar los campos capturados.</div>
 </div>
+
+
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalAgregaEmpleadoConcepto" tabindex="-1"
+    aria-labelledby="tituloModalAgregaEmpleadoConcepto" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalAgregaEmpleadoConcepto">Agregar concepto</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalAgregaEmpleadoConcepto">
+
+                    <form name="frmCrearConceptoEmpleado" id="frmCrearConceptoEmpleado" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
+                                        class="form-text">*</span>:</label>
+                                <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    {% if TipoConcepto %}
+                                    {% for row in TipoConcepto %}
+                                    <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
+                                    {% endfor %}
+                                    {% endif %}
+                                </select>
+                                <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label for="lblConcepto">Concepto<span id="AConcepto"
+                                        class="form-text">*</span>:</label>
+                                <select id="Concepto" name="Concepto" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                </select>
+                                <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" id="contenedorCheckbox">
+                                    <input type="checkbox" id="checkboxporcentaje">
+                                    <label for="checkboxporcentaje" class="file">Porcentaje</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" id="PorcentajeContenedor">
+                                    <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
+                                            class="form-text">*</span>:</label>
+                                    <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
+                                        class="obligatorio form-control">
+                                    <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group" id="MontoContenedor">
+                                    <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
+                                    <input type="number" name="Monto" id="Monto" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
+
+                        <hr />
+
+                    </form>
+
+
+
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModalAgregaEmpleadoConcepto" class="btn btn-primary"
+                    data-dismiss="modal" data-comportamiento="nada">Cancelar</button>
+                <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary"
+                    data-dismiss="modal">Crear concepto</button>
+
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
+
+
+
 
 {% block scripts %}
 {{ super() }}
