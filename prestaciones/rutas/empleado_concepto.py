@@ -52,10 +52,12 @@ def buscar_empleado_concepto():
 
     lista_empleado_conceptos = []
     for emp_con in empleadoConceptos:
+        concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto).first()
         if emp_con is not None:
             emp_con_dict = emp_con.__dict__
             emp_con_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             emp_con_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
+            emp_con_dict["Concepto"] = concepto.Concepto
             lista_empleado_conceptos.append(emp_con_dict)
     if not lista_empleado_conceptos:
         return jsonify({"NoEncontrado":True}) 

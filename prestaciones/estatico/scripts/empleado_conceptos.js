@@ -91,6 +91,9 @@ function buscar_empleado_concepto() {
                             <input type="text" class="form-control" id="idConcepto${cont}" value="${empleado_concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
+                            <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly></input>
+                        </td>
+                        <td>
                             <input type="text" class="form-control" id="Porcentaje${cont}" value="${empleado_concepto.Porcentaje}" readonly></input>
                         </td>
                         <td>
