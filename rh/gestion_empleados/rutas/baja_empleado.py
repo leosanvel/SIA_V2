@@ -10,6 +10,7 @@ from docx2pdf import convert
 import pythoncom
 import os
 
+from prestaciones.modelos.modelos import rEmpleadoConcepto
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 #from catalogos.modelos.modelos import *
@@ -29,16 +30,25 @@ def obtener_puestos_empleado():
     idPersona = request.form['idPersona']
     try:
         empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).one()
-        puesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idEstatusEP == 1).first()
+        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idEstatusEP == 1).first()
+        puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = empleadoPuesto.idPuesto).one()
+        
         respuesta = {}
-        if puesto is not None:
+        if empleadoPuesto is not None:
             tipoEmpleado = db.session.query(kTipoEmpleado).filter_by(idTipoEmpleado = empleado.idTipoEmpleado).first()
 
             respuesta["NumeroEmpleado"] = empleado.NumeroEmpleado
             respuesta["TipoEmpleado"] = tipoEmpleado.TipoEmpleado
-            respuesta["TipoAlta"] = empleado.NumeroEmpleado
-            respuesta["TipoBaja"] = empleado.NumeroEmpleado
-            
+            respuesta["Puesto"] = puesto.Puesto
+            respuesta["idPuesto"] = puesto.ConsecutivoPuesto
+
+        
+            tipoAlta = db.session.query(kTipoAlta).filter_by(idTipoEmpleado = empleado.idTipoEmpleado, idTipoAlta = empleado.idTipoAlta).first()
+            if tipoAlta:
+                respuesta["TipoAlta"] = tipoAlta.TipoAlta
+            else:
+                respuesta["TipoAlta"] = "No especificado"
+
             
             causas = db.session.query(kCausaBaja).filter(kCausaBaja.idTipoEmpleado == empleado.idTipoEmpleado).all()
             lista_causas_baja = []
@@ -48,9 +58,9 @@ def obtener_puestos_empleado():
                 lista_causas_baja.append(causa_dict)
             respuesta["CausasBaja"] = lista_causas_baja
         
-            puesto_dict = puesto.__dict__
-            puesto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-            respuesta["Puesto"] = puesto_dict
+            empleadoPuesto_dict = empleadoPuesto.__dict__
+            empleadoPuesto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            respuesta["empleadoPuesto"] = empleadoPuesto_dict
         else:
             respuesta["NoEncontrado"] = True
     except NoResultFound:    
@@ -67,7 +77,20 @@ def dar_baja_empleado():
     idCausaBaja = request.form['CausaBaja']
     Observaciones = request.form['Observaciones']
     FechaEfecto = request.form['FechaEfecto']
-    NumQuincena = request.form['NumQuincena']
+    FechaEfectoFormateado = datetime.strptime(FechaEfecto, '%d/%m/%Y')
+    print("FechaEfectoFormateado")
+    print(FechaEfectoFormateado)
+    try:
+        quincena = db.session.query(kQuincena).filter(
+            and_(
+                kQuincena.FechaInicio <= FechaEfectoFormateado,
+                kQuincena.FechaFin >= FechaEfectoFormateado
+            )
+        ).one()
+        NumQuincena = quincena.idQuincena
+    except NoResultFound:
+        NumQuincena = "-"
+
     respuesta = {}
     try:
         empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto).one()
@@ -77,20 +100,23 @@ def dar_baja_empleado():
 
         # Desactivar el puesto del empleado
         empleadoPuesto.idEstatusEP = 0
-        empleadoPuesto.FechaTermino = datetime.strptime(FechaEfecto, '%d/%m/%Y')
 
 
         # estatus baja, observaciones, fecha que se hizo y fecha de efecto
         empleadoPuesto.idCausaBaja = idCausaBaja
         empleadoPuesto.Observaciones = Observaciones
-        empleadoPuesto.FechaEfecto = datetime.strptime(FechaEfecto, '%d/%m/%Y')
+        empleadoPuesto.FechaEfecto = FechaEfectoFormateado
         empleadoPuesto.FechaTermino = datetime.today()
         empleadoPuesto.idQuincena = NumQuincena
+
+
+        # vaciar: rconcepto empleado
+        conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).delete()
+        
         
         db.session.commit()
         
         
-        # vaciar: rconcepto empleado
         
         
         

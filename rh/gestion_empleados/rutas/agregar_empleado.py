@@ -390,8 +390,10 @@ def seleccionar_empleado():
         NumeroEmpleado = empleado.Empleado.NumeroEmpleado
         empleado = empleado.__dict__
         empleado.pop("_sa_instance_state", None)
-        empleado["NumeroEmpleado"] = NumeroEmpleado
+        empleado["NumeroEmpleado"] = str(NumeroEmpleado)
         empleado.pop("Empleado")
+    print("empleado")
+    print(empleado)
     return jsonify(empleado)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-banco', methods = ['POST'])

@@ -1,6 +1,31 @@
 {% extends "plantilla_base.html" %}
 {% block content %}
 
+
+<form id="frmBuscaEmpleadoPuesto">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                <label for="lblNumEmp">No. Empleado</label>
+                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                    class="form-control botonModalBuscaEmpleado" type="text">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+
+    </div>
+    <div class="row pull-right">
+        <button class="btn btn-primary btn-sm" type="button" id="btnBuscaBajaEmpleado">
+            <span class="icon-search" aria-hidden="true"></span> Buscar
+        </button>
+    </div>
+</form>
+<div class="form-group">
+    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+</div>
+
+
 <div class="row">
     <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
         <tr>
@@ -29,177 +54,91 @@
 </div>
 
 
-
-
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#Buscar">Buscar</a></li>
-    </ul>
-    <div class="tab-content">
-        <style>
-            .tab-content form .form-control {
-                margin-bottom: 0 !important;
-                /* Anula el margen inferior */
-            }
-        </style>
-
-        <div class="tab-pane active" id="Buscar">
-            <!-- Contenido de la pestaña -->
-            <form id="frmBuscaEmpleadoPuesto">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                            <label for="lblNumEmp">No. Empleado</label>
-                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                                class="form-control botonModalBuscaEmpleado" type="text">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
+<div class="form" id="ResultadoPuesto" style="display: none;">
+    <form name="frmResultadoPuesto" id="frmResultadoPuesto" method="post">
+        <input type="hidden" id="idPuesto" name="idPuesto" value="">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label for="lblPuesto">Puesto</label>
+                    <input type="text" id="Puesto" name="Puesto" class="form-control obligatorio" readonly>
+                    <small id="EPuesto" class="etiquetaError form-text form-text-error"></small>
                 </div>
-                <div class="row pull-right">
-                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaBajaEmpleado">
-                        <span class="icon-search" aria-hidden="true"></span> Buscar
-                    </button>
-                </div>
-            </form>
-            <div class="form-group">
-                <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
-            </div>
-
-
-            <div class="form" id="ResultadoPuesto" style="display: none;">
-                <form name="frmResultadoPuesto" id="frmResultadoPuesto" method="post">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="lblidPuesto">id Puesto</label>
-                                <input type="text" id="idPuesto" name="idPuesto" class="form-control obligatorio"
-                                    readonly>
-                                <small id="EidPuesto" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-3 ">
-                            <div class="form-group datepicker-group" style="z-index: 1;">
-                                <label for="lblFechaInicio">Fecha de inicio<span id="AFechaInicio"
-                                        class="form-text">*</span>:</label>
-                                <input type="text" id="fechaInicio" name="fechaInicio"
-                                    class="form-control obligatorio fecha" readonly>
-                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                <small id="EFechaInicio" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-3 ">
-                            <div class="form-group datepicker-group" style="z-index: 1;">
-                                <label for="lblFecTerm">Fecha de terminación<span id="AFecTerm"
-                                        class="form-text">*</span>:</label>
-                                <input type="text" id="FecTerm" name="FecTerm" class="form-control"
-                                    readonly>
-                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                <small id="EFecTerm" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="lblTipoEmpleado">Tipo empleado</label>
-                                <input type="text" id="TipoEmpleado" name="TipoEmpleado"
-                                    class="form-control obligatorio" readonly>
-                                <small id="EMaterno" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="lblTipoAlta">Tipo de Alta</label>
-                                <input type="text" id="TipoAlta" name="TipoAlta" class="form-control obligatorio"
-                                    readonly>
-                                <small id="ETipoAlta" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="lblTipoDeBaja">Tipo de Baja</label>
-                                <input type="text" id="TipoBaja" name="TipoBaja" class="form-control obligatorio"
-                                    readonly>
-                                <small id="ETipoBaja" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="lblCausaBaja">Causa de Baja<span id="ACausaBaja"
-                                        class="form-text">*</span>:</label>
-                                <select id="CausaBaja" name="CausaBaja" class="obligatorio form-control">
-                                    <option value="0">-- Seleccione --</option>
-                                </select>
-                                <small id="ECausaBaja" class="etiquetaError form-text form-text-error"> </small>
-
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="lblObservaciones">Observaciones</label>
-                                <input type="text" id="Observaciones" name="Observaciones" class="form-control">
-                                <small id="EObservaciones" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3 ">
-                            <div class="form-group datepicker-group" style="z-index: 1;">
-                                <label for="lblFechaEfecto">Efectos a partir de:<span id="AFechaEfecto"
-                                        class="form-text">*</span>:</label>
-                                <input type="text" id="FechaEfecto" name="FechaEfecto"
-                                    class="form-control obligatorio fecha">
-                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                <small id="EFechaEfecto" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="lblNumQui">Número de quincena<span id="ANumQui"
-                                            class="form-text">*</span>:</label>
-                                    <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
-                                        <option value="0">-- Seleccione --</option>
-                                        {% for row in Quincena %}
-                                        <option value="{{row.idQuincena}}">{{row.Descripcion}}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <small id="ENumQuincena" class="etiquetaError form-text form-text-error"> </small>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group" id="contenedorCheckbox">
-                                <input type="checkbox" id="checkboxMovimientoExtra">
-                                <label for="checkboxporcentaje" class="file">Mov. Extraordinario</label>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="row" id="espacio_botones">
-                    <div class="col-md-12">
-                        <button type="button" id="btnDarDeBaja" class="btn btn-primary pull-right">Dar de baja</button>
-
-                    </div>
-                </div>
-
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoEmpleado">Tipo empleado</label>
+                    <input type="text" id="TipoEmpleado" name="TipoEmpleado" class="form-control obligatorio" readonly>
+                    <small id="EMaterno" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblTipoAlta">Tipo de Alta</label>
+                    <input type="text" id="TipoAlta" name="TipoAlta" class="form-control obligatorio" readonly>
+                    <small id="ETipoAlta" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group" id="contenedorCheckbox" style="display: none;">
+                    <input type="checkbox" id="checkboxConservarVacaciones">
+                    <label for="checkboxConservarVacaciones">Conservar vacaciones</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group">
+                    <label for="lblCausaBaja">Causa de Baja<span id="ACausaBaja" class="form-text">*</span>:</label>
+                    <select id="CausaBaja" name="CausaBaja" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="ECausaBaja" class="etiquetaError form-text form-text-error"> </small>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="lblObservaciones">Observaciones</label>
+                    <input type="text" id="Observaciones" name="Observaciones" class="form-control">
+                    <small id="EObservaciones" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3 ">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaEfecto">Efectos a partir de:<span id="AFechaEfecto"
+                            class="form-text">*</span>:</label>
+                    <input type="text" id="FechaEfecto" name="FechaEfecto" class="form-control obligatorio fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaEfecto" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+
+        </div>
+        
+    </form>
+
+    <div class="row" id="espacio_botones">
+        <div class="col-md-12">
+            <button type="button" id="btnDarDeBaja" class="btn btn-primary pull-right">Dar de baja</button>
+
+        </div>
     </div>
+
 </div>
+
 
 <br>
 <div class="row">

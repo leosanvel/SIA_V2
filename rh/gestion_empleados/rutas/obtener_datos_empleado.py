@@ -45,7 +45,7 @@ def obtener_info_empleado():
         puesto_data_dict.pop("_sa_instance_state", None)
         #print(puesto_data_dict)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto}
-        #print(empleado_datos)
+        print(empleado_datos)
     return jsonify(empleado_datos)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])

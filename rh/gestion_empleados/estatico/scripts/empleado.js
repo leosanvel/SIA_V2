@@ -9,6 +9,7 @@ function seleccionaEmpleado(idPersona) {
                 if (path === "/rh/gestion-empleados/busqueda-empleado") {
                     window.location.href = "/rh/gestion-empleados/modificar-empleado"
                 } else {
+                    console.log(data);
                     // resetearTodosLosFormularios();
                     $("#tablaEmpleadoSeleccionado").show();
 

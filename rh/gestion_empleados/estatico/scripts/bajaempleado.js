@@ -33,18 +33,19 @@ function busca_baja_empleado(){
 
                     $("#ResultadoPuesto").show();
 
-                    if (datos.Puesto.FechaInicio != null) {
-                        var FechaInicio = convertirFechaParaVisualizacion(datos.Puesto.FechaInicio);
+                    if (datos.empleadoPuesto.FechaInicio != null) {
+                        var FechaInicio = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaInicio);
                     } else {
                         var FechaInicio = "-"
                     }
-                    if (datos.Puesto.FechaTermino != null) {
-                        var FechaFin = convertirFechaParaVisualizacion(datos.Puesto.FechaTermino);
+                    if (datos.empleadoPuesto.FechaTermino != null) {
+                        var FechaFin = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaTermino);
                     } else {
                         var FechaFin = "-"
                     }
 
-                    $("#idPuesto").val(datos.Puesto.idPuesto);
+                    $("#Puesto").val(datos.Puesto);
+                    $("#idPuesto").val(datos.idPuesto);
                     $("#fechaInicio").val(FechaInicio);
                     $("#FecTerm").val(FechaFin);
                     $("#TipoEmpleado").val(datos.TipoEmpleado);
@@ -53,8 +54,12 @@ function busca_baja_empleado(){
                         optionsHTML += `<option value='${causa.idCausaBaja}'> ${causa.CausaBaja} </option>`;
                     });
                     $("#CausaBaja").html(optionsHTML);
-                    $("#TipoAlta").val("Por definir");
-                    $("#TipoBaja").val("Por definir");
+                    $("#TipoAlta").val(datos.TipoAlta);
+
+                    if (datos.TipoEmpleado == "Plaza federal"){
+                        $("#contenedorCheckbox").show();
+                    }
+
                 }
             }
         });
