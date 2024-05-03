@@ -26,6 +26,7 @@ def obtener_info_empleado():
     empleado_datos = {}
     if empleadopuesto_datos is not None:
         idCentroCosto = empleadopuesto_datos.Puesto.idCentroCosto
+        idQuincena = empleadopuesto_datos.Empleado.idQuincena
         persona_data = empleadopuesto_datos.Empleado.Persona
         empleado_data = empleadopuesto_datos.Empleado
         puesto_data = empleadopuesto_datos.Puesto
@@ -45,6 +46,7 @@ def obtener_info_empleado():
         puesto_data_dict.pop("_sa_instance_state", None)
         #print(puesto_data_dict)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto}
+        empleado_datos["idQuincena"] = idQuincena
         #print(empleado_datos)
     return jsonify(empleado_datos)
 
