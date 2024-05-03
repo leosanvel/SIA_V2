@@ -57,7 +57,10 @@ app.register_blueprint(moduloSIA)
 # MÓDULO GESTIÓN DE EMPLEADOS
 from rh.gestion_empleados.rutas.gestion_empleados import gestion_empleados
 app.register_blueprint(gestion_empleados)
-
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO GESTIÓN DE ASISTENCIAS
+from rh.gestion_asistencias.rutas.gestion_asistencias import gestion_asistencias
+app.register_blueprint(gestion_asistencias)
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO NOMINA
 from nomina.rutas.rutas import nomina

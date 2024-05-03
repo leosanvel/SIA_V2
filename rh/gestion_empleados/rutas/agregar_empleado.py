@@ -13,6 +13,7 @@ import os
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_empleados.modelos.domicilio import *
+from prestaciones.modelos.modelos import rEmpleadoConcepto
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -198,6 +199,10 @@ def guardar_empleado():
         empleado_puesto_data['FechaInicio'] = datetime.now().date()
         empleado_puesto_data['FechaTermino'] = None
         empleado_puesto_data['idEstatusEP'] = 1
+        empleado_puesto_data['idCausaBaja'] = None
+        empleado_puesto_data['Observaciones'] = None
+        empleado_puesto_data['FechaEfecto'] = None
+        empleado_puesto_data['idQuincena'] = None
 
         escolaridad_data['idPersona'] = nuevo_id_persona
         escolaridad_data['Consecutivo'] = 1
@@ -221,7 +226,7 @@ def guardar_empleado():
 
     if nuevo_empleado is not None:
         # recuperar ID del nuevo empleado y devolverlo en el json
-        empleado_existente = db.session.query(tPersona).filter_by(CURP=empleado_data['CURP']).one()  
+        empleado_existente = db.session.query(tPersona).filter_by(CURP = persona_data['CURP']).one()  
         session['idPersona'] = empleado_existente.idPersona
 
     return jsonify(respuesta)
@@ -276,8 +281,6 @@ def guardar_direccion():
         direccion['idPersona'] = idPersona
         direccion['Descripcion'] = None
         direccion['idDomicilio'] = idPersona
-
-        print(direccion)
 
         try:
             direcciones_existentes = db.session.query(rDomicilio).filter_by(idPersona = idPersona).all()
@@ -339,6 +342,30 @@ def guardar_datos_bancarios():
 
         return jsonify({"guardado": True})
 
+@gestion_empleados.route('/rh/gestion-empleados/agregar-conceptos', methods = ["POST"])
+def guardar_conceptos():
+    idPersona = session.get('idPersona', None)
+    if(idPersona is None):
+        return jsonify({"guardado": False})
+    else:
+        lista_idconteptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
+        lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+        nuevo_concepto = None
+        datos_conceptos = {}
+        datos_conceptos["idPersona"] = idPersona
+        for indice in range(0, len(lista_idconteptos)):
+            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice] ,idConcepto = lista_idconteptos[indice]).first()
+            if(concepto is not None):
+                datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
+                datos_conceptos["idConcepto"] = concepto.idConcepto
+                datos_conceptos["Porcentaje"] = concepto.Porcentaje
+                datos_conceptos["Monto"] = concepto.Monto
+                nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
+                db.session.add(nuevo_concepto)
+        
+        db.session.commit()
+
+        return jsonify({"guardado": True})
 
 
 @gestion_empleados.route('/rh/gestion-empleados/buscar-curp', methods = ['POST'])

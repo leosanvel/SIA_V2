@@ -124,6 +124,15 @@ function guardarDatosBancarios(formulario){
     });
 }
 
+function agregarConceptos(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/agregar-conceptos",
+        success: function(data){ }
+    })
+}
+
 $gmx(document).ready(function () {
     $("#btnBuscaEmpleado").click(function (event) {
         event.preventDefault();
@@ -268,9 +277,10 @@ $gmx(document).ready(function () {
                 guardarDatosBancarios($("#formularioDatosBancarios"))
             }
         }
-
-
-
+        var path = window.location.pathname;
+        if (path === "/rh/gestion-empleados/agregar-empleado") {
+            agregarConceptos();
+        }
         //Recorremos formularios para validar y mostrar el primer error
         var formularios = [
             $("#formularioDomicilioFiscal"),
