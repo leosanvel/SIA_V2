@@ -565,17 +565,48 @@ class kCausaBaja(db.Model):
         self.CausaBaja = CausaBaja
         self.Activo = Activo
 
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
 class kBancos(db.Model):
     __tablename__ = "kbancos"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci", "schema": "db1"}
 
     idBanco = db.Column(db.Integer, primary_key = True)
     Codigo = db.Column(db.String(3), nullable = True)
     Clave = db.Column(db.String(5), nullable = True)
     Nombre = db.Column(db.String(50), nullable = True)
 
+    # Relacion
+    BancoPersonas = db.relationship("rBancoPersona", back_populates = "Banco", cascade = "all, delete-orphan")
+
     def __init__(self, idBanco, Codigo, Clave, Nombre):
         self.idBanco = idBanco
         self.Codigo = Codigo
         self.Clave = Clave
         self.Nombre = Nombre
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kPoliticas(db.Model):
+    __tablename__ = "kpoliticas"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPolitica = db.Column(db.Integer, primary_key = True)
+    Politica = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idPolitica, Politica, Activo):
+        self.idPolitica = idPolitica
+        self.Politica = Politica
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
