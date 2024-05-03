@@ -170,3 +170,7 @@ function modal_agregar_concepto() {
     console.log("MODAL!!")
     $('#ModalAgregaEmpleadoConcepto').modal('show');
 }
+
+function funcionSeleccionar() {
+    buscar_empleado_concepto();
+}

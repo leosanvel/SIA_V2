@@ -33,6 +33,11 @@ function seleccionaEmpleado(idPersona) {
 
                     $("#ResultadoPuesto").hide();
 
+                    if (typeof funcionSeleccionar === 'function') {
+                        // Ejecutar la función
+                        funcionSeleccionar();
+                    }
+
                 }
             }
         }
@@ -145,7 +150,7 @@ $gmx(document).ready(function () {
                             $("#tablaEmpleados tbody").append(`
                                 <tr>
                                 <td>
-                                    <button onclick="seleccionaEmpleado(${empleado.idPersona})" class="btn btn-primary btn-sm">Sel.</button>
+                                    <button onclick="seleccionaEmpleado(${empleado.idPersona})" class="btn btn-primary btn-sm boton-seleccionar">Sel.</button>
                                 </td>
                                <td >${empleado.NumeroEmpleado}</td>
                                 <td >${empleado.CURP}</td>
