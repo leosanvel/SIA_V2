@@ -8,7 +8,7 @@ function generar_checador(event){
         $.ajax({
             async: false,
             type: "POST",
-            url: "/RH/generarChecador",
+            url: "/rh/gestion-asistencias/generar-checador",
             data: $("#formularioGenerarChecador").serialize(),
             success: function(data){
                 if(data.guardado){

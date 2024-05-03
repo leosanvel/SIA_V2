@@ -58,9 +58,11 @@ def generar_checador():
                 Checador["HoraEntrada"] = time(9, 0, 0)
                 Checador["HoraSalida"] = time(18, 0, 0)
                 Checador["idQuincenaReportada"] = None
+                Checador["idIncidencia"] = None
+                Checador["idJustificante"] = None
                 
                 try:
-                    checador_existente = db.session.query(tChecador).filter_by(idPersona = Checador['idPersona'], Fecha = Checador['Fecha'], NumeroQuincena = Checador['idQuincena']).one()
+                    checador_existente = db.session.query(tChecador).filter_by(idPersona = Checador['idPersona'], Fecha = Checador['Fecha'], idQuincena = Checador['idQuincena']).one()
                     checador_ya_generado = 0
                 except NoResultFound:
                     Nuevo_checador = tChecador(**Checador)

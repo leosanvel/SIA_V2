@@ -18,7 +18,7 @@ class rPoliticaPersona(db.Model):
                 setattr(self, attr, value)
 
 class tChecador(db.Model):
-    __tablename__ = "idPersona"
+    __tablename__ = "tchecador"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
