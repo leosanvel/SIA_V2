@@ -487,7 +487,7 @@ class kCodigoPostal(db.Model):
         self.Asentamiento = Asentamiento
         self.Activo = Activo
 
-class Plazas(db.Model):
+class kPlazas(db.Model):
     __tablename__ = "kPlaza"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -604,6 +604,42 @@ class kPoliticas(db.Model):
     def __init__(self, idPolitica, Politica, Activo):
         self.idPolitica = idPolitica
         self.Politica = Politica
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kTipoSancion(db.Model):
+    __tablename__ = "ktiposancion"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoSancion = db.Column(db.Integer, primary_key = True)
+    TipoSancion = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idTipoSancion, TipoSancion, Activo):
+        self.idTipoSancion = idTipoSancion
+        self.TipoSancion = TipoSancion
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kPorcentajes(db.Model):
+    __tablename__ = "kporcentajes"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPorcentaje = db.Column(db.Integer, primary_key = True)
+    Porcentaje = db.Column(db.String(10), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idPorcentaje, Porcentaje, Activo):
+        self.idPorcentaje = idPorcentaje
+        self.Porcentaje = Porcentaje
         self.Activo = Activo
 
     def update(self, **kwargs):

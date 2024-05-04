@@ -75,7 +75,7 @@ def generar_checador():
 
     return jsonify({"guardado": checador_ya_generado})
 
-@gestion_asistencias.route('/RH/checarIncidencias', methods = ['POST'])
+@gestion_asistencias.route('/rh/gestion-asistencias/checar-incidencias', methods = ['POST'])
 def checar_incidencias(NumQuincena):
     try:
         incidencias_existentes = db.session.query(tIncidencia).filter_by(NumeroQuincena = NumQuincena).all()
