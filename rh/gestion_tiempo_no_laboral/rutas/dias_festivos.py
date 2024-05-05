@@ -52,8 +52,11 @@ def consulta_festividad():
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/buscar-dia-festivo', methods = ['POST'])
 def busca_festividad():
     FechaFestiva = request.form.get('Fecha_formateada')
-    festividad_existente  = db.session.query(kDiasFestivos).filter_by(Fecha = FechaFestiva).first()
-    if festividad_existente is not None:
-        festividad_existente = festividad_existente.__dict__
-        festividad_existente.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-    return jsonify(festividad_existente)
+    if(FechaFestiva != ""):
+        festividad_existente  = db.session.query(kDiasFestivos).filter_by(Fecha = FechaFestiva).first()
+        if festividad_existente is not None:
+            festividad_existente = festividad_existente.__dict__
+            festividad_existente.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+        return jsonify(festividad_existente)
+    else:
+        return jsonify({"Encontrado": False})

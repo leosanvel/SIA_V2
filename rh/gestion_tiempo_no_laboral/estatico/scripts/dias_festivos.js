@@ -47,7 +47,8 @@ $gmx(document).ready(function () {
                 url: "/rh/gestion-tiempo-no-laboral/buscar-dia-festivo",
                 data: $("#formularioCreaDiaFestivo").serialize(),
                 success: function (data) {
-                    if (data) {
+                    console.log(data.Encontrado);
+                    if (data.Encontrado ==! false) {
                         $("#Descripcion").val(data.Descripcion);
                         abrirModal("Fecha encontrada", 'La fecha ya está registrada. A continuación modificarás su descripción', "");
                     }
