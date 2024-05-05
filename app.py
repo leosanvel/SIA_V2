@@ -53,6 +53,7 @@ app.register_blueprint(informatica)
 # MÓDULO PRINCIPAL
 from principal.rutas.principal import moduloSIA
 app.register_blueprint(moduloSIA)
+
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO GESTIÓN DE EMPLEADOS
 from rh.gestion_empleados.rutas.gestion_empleados import gestion_empleados
@@ -61,6 +62,10 @@ app.register_blueprint(gestion_empleados)
 # MÓDULO GESTIÓN DE ASISTENCIAS
 from rh.gestion_asistencias.rutas.gestion_asistencias import gestion_asistencias
 app.register_blueprint(gestion_asistencias)
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO GESTIÓN DE TIEMPO NO LABORAL
+from rh.gestion_tiempo_no_laboral.rutas.gestion_tiempo_no_laboral import gestion_tiempo_no_laboral
+app.register_blueprint(gestion_tiempo_no_laboral)
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO NOMINA
 from nomina.rutas.rutas import nomina
@@ -76,5 +81,5 @@ app.register_blueprint(catalogos)
 from prestaciones.rutas.rutas import prestaciones
 app.register_blueprint(prestaciones)
 
-# with app.app_context():
-    # db.create_all()
+with app.app_context():
+    db.create_all()
