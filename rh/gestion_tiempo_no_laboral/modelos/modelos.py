@@ -63,29 +63,3 @@ class rDiasPersona(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
-
-class tJustificante(db.Model):
-    __tablename__ = "tjustificante"
-    __bind_key__ = 'db2'
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
-
-    idJustificante = db.Column(db.Integer, primary_key = True)
-    idPersona = db.Column(db.Integer, nullable = True)
-    idTipo = db.Column(db.Integer, nullable = True)
-    Descripcion = db.Column(db.Text, nullable = True)
-    FechaInicio = db.Column(db.Date, nullable = True)
-    FechaFin = db.Column(db.Date, nullable = True)
-    FechaCreacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
-
-    def __init__(self, idJustificante, idPersona, idTipo, Descripcion, FechaInicio, FechaFin):
-        self.idJustificante = idJustificante
-        self.idPersona = idPersona
-        self.idTipo = idTipo
-        self.Descripcion = Descripcion
-        self.FechaInicio = FechaInicio
-        self.FechaFin = FechaFin
-
-    def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            if hasattr(self, attr):
-                setattr(self, attr, value)
