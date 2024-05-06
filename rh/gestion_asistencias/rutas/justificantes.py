@@ -97,9 +97,10 @@ def guardar_o_modificar_justificante(justificante_data):
 
             
         # Actualizar los atributos de 'justificante_existente' con los valores de 'justificante_data'
-        for attr, value in justificante_data.items():
-            if not attr.startswith('_') and hasattr(justificante_a_modificar, attr):
-                setattr(justificante_a_modificar, attr, value)
+        justificante_a_modificar.update(**justificante_data)
+        # for attr, value in justificante_data.items():
+        #     if not attr.startswith('_') and hasattr(justificante_a_modificar, attr):
+        #         setattr(justificante_a_modificar, attr, value)
                 
     except NoResultFound:
         if request.form.get('TipoProceso') == '2':
@@ -204,7 +205,6 @@ def eliminar_Justificante():
     idJustificante = request.form.get("idJustificante")
     try:
         Justificante = db.session.query(tJustificante).get(idJustificante)
-        print(Justificante.Descripcion)
 
         db.session.delete(Justificante)
 
