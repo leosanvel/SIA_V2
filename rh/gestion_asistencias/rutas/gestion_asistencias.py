@@ -4,4 +4,5 @@ gestion_asistencias = Blueprint('gestion_asistencias', __name__, template_folder
 
 from . import politicas
 from . import checador
+from . import incidencias
 from . import sanciones

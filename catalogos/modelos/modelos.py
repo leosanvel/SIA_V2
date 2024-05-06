@@ -646,3 +646,21 @@ class kPorcentajes(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class kTipoIncidencia(db.Model):
+    __tablename__ = "ktipoincidencia"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoIncidencia = db.Column(db.Integer, primary_key = True)
+    TipoIncidencia = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoIncidencia, TipoIncidencia, Activo):
+        self.idTipoIncidencia = idTipoIncidencia
+        self.TipoIncidencia = TipoIncidencia
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
