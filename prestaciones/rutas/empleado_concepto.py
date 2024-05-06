@@ -26,15 +26,16 @@ def crear_empleado_concepto():
         'Monto' : 'Monto'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    print("concepto_data")
-    print(concepto_data)
+
     idPersona = concepto_data.get('idPersona', None)
     idTipoConcepto = concepto_data.get('idTipoConcepto', None)
     idConcepto = concepto_data.get('idConcepto', None)
+
     nuevo_concepto = None
     try:
         concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto).one()
-        print("Ya existe")
+        concepto_a_modificar.update(**concepto_data)
+
     except NoResultFound:
         nuevo_concepto = rEmpleadoConcepto(**concepto_data)
         db.session.add(nuevo_concepto)
@@ -67,15 +68,20 @@ def buscar_empleado_concepto():
 
 @prestaciones.route('/prestaciones/filtrar-conceptos', methods = ['POST'])
 def filtrar_concepto():
-    TipoConcepto = request.form.get('TipoConcepto')
-    idPersona = request.form.get('idPersona')
+
+    datos = request.get_json()
+    TipoConcepto = datos.pop("TipoConcepto", None)
+    idPersona = datos.pop("idPersona", None)
+    BuscarRepetidos = datos.pop("BuscarRepetidos", None)
+
     conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto).order_by(asc(kConcepto.Concepto)).all()
-    
+
     lista_conceptos = []
     for concepto in conceptos:
         empleadoConcepto = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idConcepto = concepto.idConcepto, idTipoConcepto = concepto.idTipoConcepto).first()
 
-        if empleadoConcepto is None:
+        if empleadoConcepto is None or BuscarRepetidos=="true":
+
             if concepto is not None:
                 concepto_dict = concepto.__dict__
                 concepto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
@@ -88,8 +94,11 @@ def filtrar_concepto():
 
 @prestaciones.route('/prestaciones/obtener-concepto', methods = ['POST'])
 def obtener_concepto():
-    TipoConcepto = request.form.get('TipoConcepto')
-    Concepto = request.form.get('Concepto')
+
+    datos = request.get_json()
+    TipoConcepto = datos.pop("TipoConcepto", None)
+    Concepto = datos.pop("Concepto", None)
+
     
     conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idConcepto=Concepto).first()
 
@@ -100,3 +109,21 @@ def obtener_concepto():
     if not concepto_dict:
         return jsonify({"NoEncontrado":True}) 
     return jsonify(concepto_dict)
+
+
+@prestaciones.route('/prestaciones/eliminar-empleado-concepto', methods = ['POST'])
+def eliminar_empleado_concepto():
+
+    idPersona = request.form.get('idPersona')
+    idTipoConcepto = request.form.get('TipoConcepto')
+    idConcepto = request.form.get('Concepto')
+
+    concepto_a_eliminar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto).delete()
+    if concepto_a_eliminar > 0:
+        print("El registro fue eliminado correctamente.")
+    else:
+        print("No se encontró ningún registro para eliminar.")
+    # Realizar cambios en la base de datos
+    db.session.commit()
+       
+    return jsonify({"eliminado":True})

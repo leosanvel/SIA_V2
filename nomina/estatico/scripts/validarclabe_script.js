@@ -8,10 +8,8 @@ $gmx(document).ready(function(){
 function mostrar_btn_buscar(){
     if($("#NumeroBuscarEmpleado").val() != ""){
         $("#btnBuscaClabe").show();
-        console.log($("#NumeroBuscaEmpleado").val());
     }else{
         $("#btnBuscaClabe").hide();
-        console.log($("#NumeroBuscaEmpleado").val());
     }
 }
 
@@ -57,7 +55,6 @@ function abrirAdModal(dato){
 
 function verificar_clabe(){
     var dato = $("#dato").val();
-    console.log(dato);
     $.ajax({
         async: false,
         type: "POST",
@@ -83,7 +80,6 @@ function obtener_clabe_masivo(){
         url: "/Nomina/buscarClaveMasivo",
         success: function(data){
             if(data){
-                console.log(data);
                 if(data.resultado == false){
                     abrirModal("Verificación incorrecta", "No se ha podido verificar la clabe interbancaria.", "recargar");
                 }else{

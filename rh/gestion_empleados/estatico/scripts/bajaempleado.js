@@ -84,3 +84,7 @@ function dar_baja(){
     }
     
 }
+
+function funcionSeleccionar() {
+    busca_baja_empleado();
+}

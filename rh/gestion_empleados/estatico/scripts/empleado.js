@@ -9,7 +9,7 @@ function seleccionaEmpleado(idPersona) {
                 if (path === "/rh/gestion-empleados/busqueda-empleado") {
                     window.location.href = "/rh/gestion-empleados/modificar-empleado"
                 } else {
-                    console.log(data);
+                    
                     // resetearTodosLosFormularios();
                     $("#tablaEmpleadoSeleccionado").show();
 
@@ -226,7 +226,7 @@ $gmx(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log(data)
+                    
                     if (data.guardado) {
                         // abrirModal("Información guardada", "Los datos personales, de empleado y de escolaridad han sido actualizados correctamente en la base de datos.", "");
                         mensajeGuardado += "-Datos personales.<br>";
@@ -269,7 +269,7 @@ $gmx(document).ready(function () {
         }
 
         if(!formularioVacio($("#formularioDatosBancarios"))){
-            console.log("No esta vacio");
+            
             if(validarFormulario($("#formularioDatosBancarios")).valido){
                 guardarDatosBancarios($("#formularioDatosBancarios"))
             }
@@ -406,7 +406,7 @@ $gmx(document).ready(function () {
 
 function validarSoloNumeros(event) {
     //$("#Clabe").keydown(function(event){
-    //console.log("Hola");
+    //
     if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105) && event.keyCode !== 190 && event.keyCode !== 110 && event.keyCode !== 8 && event.keyCode !== 9 && event.keyCode !== 46) {
         return false;
     }
@@ -439,7 +439,7 @@ function modalReafirmar() {
 
 function cancelarSelectEstatus() {
     var estadoInicial = $('#ModalAltaBaja').attr('data-valorInicial');
-    console.log(estadoInicial)
+    
     if (estadoInicial == 0) {
         $("#idEstatus").val(1)
     } else {
@@ -454,7 +454,7 @@ function modalReafirmar() {
 
 function cancelarSelectEstatus() {
     var estadoInicial = $('#ModalAltaBaja').attr('data-valorInicial');
-    console.log(estadoInicial)
+    
     if (estadoInicial == 0) {
         $("#idEstatus").val(1)
     } else {

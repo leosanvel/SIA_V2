@@ -90,7 +90,6 @@ function cancelar(data1, data2) {
 
 function guardar_modificar_clabe(dato){
     var activos = $('select[id^=ActClabe]');
-    console.log(activos);
     datos = {
         idPersona: $("#idPersona" + dato).val(),
         Clabe: $("#Clabe" + dato).val(),

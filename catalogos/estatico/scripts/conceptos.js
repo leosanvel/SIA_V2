@@ -61,7 +61,6 @@ function actualizarListaDesplegable(resultados) {
 }
 
 function crear_concepto() {
-    console.log("Boton");
     if (validarFormulario($("#frmCrearConcepto")).valido) {
         $.ajax({
             async: false,
@@ -70,7 +69,6 @@ function crear_concepto() {
             data: $("#frmCrearConcepto").serialize(),
             success: function (data) {
                 if (data) {
-                    console.log("CREADO");
                     abrirModal("Información guardada", "El concepto se creó con éxito", "recargar");
                 }
             }
@@ -96,8 +94,7 @@ function buscar_concepto() {
                 respuesta.TipoPago.forEach(function (tipoPago) {
                     opcionHTML += `<option value='${tipoPago.idTipoPago}'> ${tipoPago.TipoPago} </option>`;
                 });
-                console.log("opcionHTML")
-                console.log(opcionHTML)
+
 
                 respuesta.ListaConceptos.forEach(function (concepto) {
                     text = `
@@ -199,47 +196,46 @@ function pago_fijo_variable(TipoPago) {
 
 }
 
-function editar_aceptar(data) {
-    if ($("#Editar_Aceptar" + data).text() == "Editar") {
+function editar_aceptar(consecutivo) {
+    if ($("#Editar_Aceptar" + consecutivo).text() == "Editar") {
         
-        $("#Porcentaje" + data).attr("readonly", false);
-        $("#Monto" + data).attr("readonly", false);
-        $("#ClaveSAT" + data).attr("readonly", false);
-        $("#TipoPago" + data).attr("disabled", false);
-        $("#Activo" + data).attr("readonly", false);
+        $("#Porcentaje" + consecutivo).attr("readonly", false);
+        $("#Monto" + consecutivo).attr("readonly", false);
+        $("#ClaveSAT" + consecutivo).attr("readonly", false);
+        $("#TipoPago" + consecutivo).attr("disabled", false);
+        $("#Activo" + consecutivo).attr("readonly", false);
 
-        $("#Editar_Aceptar" + data).text("Aceptar");
-        $("#Cancelar" + data).toggle();
+        $("#Editar_Aceptar" + consecutivo).text("Aceptar");
+        $("#Cancelar" + consecutivo).toggle();
     }
     else {
-        guardar_modificar_porcentaje(data);
+        guardar_modificar_porcentaje(consecutivo);
     }
 }
 
-function cancelar(data) {
+function cancelar(consecutivo) {
 
-    $("#Porcentaje" + data).attr("readonly", true);
-    $("#Monto" + data).attr("readonly", true);
-    $("#ClaveSAT" + data).attr("readonly", true);
-    $("#TipoPago" + data).attr("disabled", true);
-    $("#Activo" + data).attr("readonly", true);
+    $("#Porcentaje" + consecutivo).attr("readonly", true);
+    $("#Monto" + consecutivo).attr("readonly", true);
+    $("#ClaveSAT" + consecutivo).attr("readonly", true);
+    $("#TipoPago" + consecutivo).attr("disabled", true);
+    $("#Activo" + consecutivo).attr("readonly", true);
     
-    $("#Editar_Aceptar" + data).text("Editar");
-    $("#Cancelar" + data).toggle();
+    $("#Editar_Aceptar" + consecutivo).text("Editar");
+    $("#Cancelar" + consecutivo).toggle();
 }
 
-function guardar_modificar_porcentaje(dato) {
+function guardar_modificar_porcentaje(consecut) {
     datos = {}
-    if (dato) {
-        datos["idPorcentaje"] = dato;
-        datos["Porcentaje"] = $("#porcentaje" + dato).val();
-        datos["Activo"] = $("#Activo" + dato).val();
-        var valido = ($("#porcentaje" + dato).val()) ? true : false;
+    if (consecut) {
+        datos["idPorcentaje"] = consecut;
+        datos["Porcentaje"] = $("#porcentaje" + consecut).val();
+        datos["Activo"] = $("#Activo" + consecut).val();
+        var valido = ($("#porcentaje" + consecut).val()) ? true : false;
         datos = JSON.stringify(datos);
     }
     else {
         datos["Porcentaje"] = $("#porcentaje").val();
-        console.log(datos["Porcentaje"])
         datos["Activo"] = $("#Activo").val() - 1;
         datos = JSON.stringify(datos);
         valido = validarFormulario($("#formularioPorcentajes")).valido
