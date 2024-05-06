@@ -30,7 +30,8 @@ def crear_CFDI():
     strQuincena = request.form.get("NumQuincena")
 
     Quincenas = db.session.query(kQuincena).filter_by(idQuincena = strQuincena).first()
-    strQuincena = str(Quincenas.idQuincena)
+    strQuincena = str(Quincenas.Quincena)
+    NumQuincena = Quincenas.Quincena
     strMes = Quincenas.FechaInicio.strftime("%m")
     strAnio = Quincenas.FechaInicio.strftime("%Y")
     desQuincena = Quincenas.Descripcion
@@ -38,8 +39,14 @@ def crear_CFDI():
     FECINI = Quincenas.FechaInicio
     FECFIN = Quincenas.FechaFin
 
+    if (NumQuincena % 2) == 0:
+        NumQuincena = 0
+    else:
+        NumQuincena = 1
+
     Observaciones = request.form.get("Observaciones")
-    Descripcion = "NOMINA FEDERAL DE LA " + desQuincena + " DE " + strAnio    
+    
+    Descripcion = "NOMINA FEDERAL DE LA " + desQuincena + " DE " + strAnio
 
     if len(strMes) == 1:
         strMes = "0" + strMes
@@ -111,40 +118,46 @@ def crear_CFDI():
             TotalEmpDU = 0
 
             DIAS = 15
+
             PlazaSemana = "99" #Numero de semana fecha ingreso gob y fecha de paga
             TotalSueldoCG = 0
             TotalBruto = 0
+            
             Conceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = Empleado.idPersona).all()
             for Concep in Conceptos:
+            
                 if Concep.idTipoConcepto == "P":
                     TotalEmpP = TotalEmpP + Concep.Monto
                     if Concep.idConcepto == "7" or Concep.idConcepto == "77" or Concep.idConcepto == "A1" or Concep.idConcepto == "A2" or Concep.idConcepto == "A3" or Concep.idConcepto == "A4" or Concep.idConcepto == "A5":
-                        TotalBruto = TotalBruto + Concep.Monto
-                        # totalbruto es la suma de los conceptos 7, 77,A1,A2,A3,A4,A5
+                        TotalBruto = TotalBruto + Concep.Monto                        
                     if Concep.idConcepto == "7" or Concep.idConcepto == "CG":
                         TotalSueldoCG = TotalSueldoCG + Concep.Monto
-                if Concep.idTipoConcepto == "D":
-                    TotalEmpD = TotalEmpD + Concep.Monto                    
-                    
-                    if Concep.idConcepto == "1":
-                        TotalEmpDU = TotalEmpDU + Concep.Monto #TOTAL DE CLAVE CONCEPTO 1
-                    Conc = db.session.query(kConcepto).filter_by(idTipoConcepto = "D", idConcepto = Concep.idConcepto).first()
-                    
-                    if Conc.idTipoPago == 1:
-                        TotalEmpDD = TotalEmpDD + float((TotalBruto * Conc.Porcentaje) / 100)
-                    else:
-                        TotalEmpDD = TotalEmpDD + float(Concep.Monto) #IMPORTE DE PERCEPCION O DEDUCCION
 
-
-
+#calcular dias a descontar
             TOTALDIARIO = TotalBruto / DIAS
-            TOTALDIARIO = "{:.2f}".format(TOTALDIARIO) 
-            # totalbruto entre 15 dias
+            TOTALDIARIO = "{:.2f}".format(TOTALDIARIO)
 
-            PYD = "" # T CONCEPTO PAC
-            CVECONCEPTO = "" # CLAVE DE CONCEPTO
-            DesConcepto = "" #DESCRIPCION DEL CONCEPTO
-            IMPORTE = 0 #IMPORTE DE PERCEPCION O DEDUCCION
+            for Concep in Conceptos:
+                if Concep.idTipoConcepto == "D":                    
+                    if Concep.idConcepto == "1":
+                        
+
+
+                        TotalEmpDU = TotalEmpDU + Concep.Monto #TOTAL DE CLAVE CONCEPTO 1
+                    else:
+                        if Concep.idConcepto == "77D":  
+                            if NumQuincena == 0:
+                                TotalEmpDD = TotalEmpDD + 7.27
+                            else:
+                                TotalEmpDD = TotalEmpDD + 7.28
+                        else:
+                            if Concep.Porcentaje > 0:
+                                TotalEmpDD = TotalEmpDD + float((TotalBruto * Concep.Porcentaje) / 100)
+                            else:
+                                TotalEmpDD = TotalEmpDD + float(Concep.Monto) #IMPORTE DE PERCEPCION O DEDUCCION
+
+            TotalEmpDD = "{:.2f}".format(TotalEmpDD)
+             
             
             Nombre_archivo = "I0" + str(consecutivo) + ".txt"
             ruta_completa = directorio + Nombre_archivo
@@ -177,16 +190,15 @@ def crear_CFDI():
                     PYD = Conc.ClaveSAT # T CONCEPTO PAC
                     CVECONCEPTO = Conc.idConcepto 
                     DesConcepto = Conc.Concepto #DESCRIPCION DEL CONCEPTO
-                    IMPORTE = ConceptoP.Monto #IMPORTE DE PERCEPCION O DEDUCCION
+
+                    if ConceptoP.Porcentaje > 0:
+                        IMPORTE =  float((TotalSueldoCG * ConceptoP.Porcentaje) / 100)    
+                    else:
+                        IMPORTE = ConceptoP.Monto #IMPORTE DE PERCEPCION O DEDUCCION
             
                     # RECORRE TODAS LAS PERCEPCIONES
                     archivo.write("COMPLEMENTO|Nomina12|PERCEPCION|" + str(PYD) + "|P000_" + str(CVECONCEPTO) + "|" + str(DesConcepto) + "|" + str(IMPORTE) + "|0.00\n")
             
-
-
-
-
-
 
                 # ENCABEZADO DE DEDUCCIONES
                 archivo.write("COMPLEMENTO|Nomina12|DEDUCCIONES|" + str(TotalEmpDD) + "|" + str(TotalEmpDU) + "\n")
@@ -194,18 +206,27 @@ def crear_CFDI():
                 CP = db.session.query(rEmpleadoConcepto).filter_by(idPersona = Empleado.idPersona, idTipoConcepto = "D").all()
                 for ConceptoP in CP:
                     Conc = db.session.query(kConcepto).filter_by(idTipoConcepto = "D", idConcepto = ConceptoP.idConcepto).first()
-                    if Conc.idTipoPago == 1:
-                        IMPORTE = float((TotalBruto * Conc.Porcentaje) / 100)
-                    else:
-                        IMPORTE = float(ConceptoP.Monto) #IMPORTE DE PERCEPCION O DEDUCCION
-
-                    if Conc.idConcepto == "50":
-                        IMPORTE =  float((TotalSueldoCG * Conc.Porcentaje) / 100)      
                     
-                    IMPORTE = "{:.2f}".format(IMPORTE)
                     PYD = Conc.ClaveSAT # T CONCEPTO PAC
                     CVECONCEPTO = Conc.idConcepto 
                     DesConcepto = Conc.Concepto #DESCRIPCION DEL CONCEPTO
+
+                    if ConceptoP.Porcentaje > 0:
+                        if Conc.idConcepto == "50":
+                            IMPORTE =  float((TotalSueldoCG * ConceptoP.Porcentaje) / 100) 
+                        else:           
+                            
+                            IMPORTE =  float((TotalBruto * ConceptoP.Porcentaje) / 100)      
+                    else:
+                        if Conc.idConcepto == "77D":  
+                            if NumQuincena == 0:
+                                IMPORTE = 7.27
+                            else:
+                                IMPORTE = 7.28
+                        else:
+                            IMPORTE = float(ConceptoP.Monto) #IMPORTE DE PERCEPCION O DEDUCCION
+
+                    IMPORTE = "{:.2f}".format(IMPORTE)                    
                     
                     # RECORRE TODAS LAS DEDUCCIONES
                     archivo.write("COMPLEMENTO|Nomina12|DEDUCCION|" + str(PYD) + "|D000_" + str(CVECONCEPTO) + "|" + str(DesConcepto) + "|" + str(IMPORTE) + "\n")
