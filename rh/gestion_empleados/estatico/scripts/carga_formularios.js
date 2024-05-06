@@ -116,7 +116,7 @@ function obtenerInfoEmpleado() {
 function obtenerDatosBanco(){
     $.ajax({
         type: "POST",
-        url: "/RH/obtener_datos_banco",
+        url: "/rh/gestion-empleados/obtener-datos-bancarios",
         success: function(data){
             if(data != null){
                 $("#Clabe").val(data.Clabe);

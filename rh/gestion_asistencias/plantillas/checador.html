@@ -1,0 +1,36 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+
+    <form id="formularioGenerarChecador">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblNumQuincena">Número de Quincena<span id="ANumQuincena"
+                            class="form-text">*</span>:</label>
+                    <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for quincena in quincenas %}
+                        <option value="{{quincena.idQuincena}}">{{quincena.Descripcion}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ENumQuincena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row pull-right">
+            <button class="btn btn-primary" type="button" id="btnGenerarChecador">
+                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                Generar
+            </button>
+        </div>
+    </form>
+    
+</div>
+<hr>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_asistencias.static', filename='scripts/checador.js') }}"></script>
+{% endblock %}
