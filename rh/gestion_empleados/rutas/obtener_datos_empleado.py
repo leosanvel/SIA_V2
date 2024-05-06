@@ -26,6 +26,7 @@ def obtener_info_empleado():
     empleado_datos = {}
     if empleadopuesto_datos is not None:
         idCentroCosto = empleadopuesto_datos.Puesto.idCentroCosto
+        idQuincena = empleadopuesto_datos.Empleado.idQuincena
         persona_data = empleadopuesto_datos.Empleado.Persona
         empleado_data = empleadopuesto_datos.Empleado
         puesto_data = empleadopuesto_datos.Puesto
@@ -45,7 +46,8 @@ def obtener_info_empleado():
         puesto_data_dict.pop("_sa_instance_state", None)
         #print(puesto_data_dict)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto}
-        print(empleado_datos)
+        empleado_datos["idQuincena"] = idQuincena
+        #print(empleado_datos)
     return jsonify(empleado_datos)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])
@@ -67,3 +69,16 @@ def obtener_escolaridad():
         escolaridad.pop("_sa_instance_state", None)
     
     return jsonify(escolaridad)
+
+@gestion_empleados.route('/rh/gestion-empleados/obtener-datos-bancarios', methods = ["POST"])
+def obtener_datos_bancarios():
+    idPersona = session.get('idPersona', None)
+    datos_bancarios = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Activo = 1).first()
+    if(datos_bancarios is not None):
+        Banco = datos_bancarios.Banco.Nombre
+        datos_bancarios = datos_bancarios.__dict__
+        datos_bancarios.pop("_sa_instance_state", None)
+        datos_bancarios["Banco"] = Banco
+
+
+    return jsonify(datos_bancarios)
