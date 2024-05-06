@@ -13,6 +13,7 @@ import os
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
+from rh.gestion_tiempo_no_laboral.modelos.modelos import *
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -78,8 +79,11 @@ def dar_baja_empleado():
     Observaciones = request.form['Observaciones']
     FechaEfecto = request.form['FechaEfecto']
     FechaEfectoFormateado = datetime.strptime(FechaEfecto, '%d/%m/%Y')
-    print("FechaEfectoFormateado")
-    print(FechaEfectoFormateado)
+
+    checkboxConservarVacaciones = request.form.get("checkboxConservarVacaciones")
+    print("checkboxConservarVacaciones")
+    print(checkboxConservarVacaciones)
+    
     try:
         quincena = db.session.query(kQuincena).filter(
             and_(
@@ -101,7 +105,6 @@ def dar_baja_empleado():
         # Desactivar el puesto del empleado
         empleadoPuesto.idEstatusEP = 0
 
-
         # estatus baja, observaciones, fecha que se hizo y fecha de efecto
         empleadoPuesto.idCausaBaja = idCausaBaja
         empleadoPuesto.Observaciones = Observaciones
@@ -109,11 +112,17 @@ def dar_baja_empleado():
         empleadoPuesto.FechaTermino = datetime.today()
         empleadoPuesto.idQuincena = NumQuincena
 
+        # desactivar empleado
+        empleadoPuesto.Empleado.Activo = 0
 
         # vaciar: rconcepto empleado
         conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).delete()
+
+        #Eliminar vacaciones
+        if checkboxConservarVacaciones is None:
+            vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = idPersona).delete()
      
-        db.session.commit()
+        # db.session.commit()
 
         respuesta["Exito"] = True
     except NoResultFound:
