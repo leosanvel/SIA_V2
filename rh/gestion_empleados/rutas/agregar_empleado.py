@@ -232,6 +232,9 @@ def buscar_empleado():
     parametro = request.form.get("WParametro")
     esModal = request.form.get("esModal")
 
+    # Dividir el parámetro en partes
+    parametros_separados = parametro.split()
+
     filtro_comun = or_(
         tPersona.CURP.contains(parametro),
         tPersona.Nombre.contains(parametro),
@@ -242,6 +245,19 @@ def buscar_empleado():
 
     if esModal:
         filtro_comun = and_(filtro_comun, rEmpleado.Activo == 1)
+
+    # Agregar la búsqueda por partes del nombre
+    if len(parametros_separados)>1:
+        condiciones_nombre = []
+        for parte_nombre in parametros_separados:
+            condiciones_nombre.append(
+                or_(
+                    tPersona.Nombre.contains(parte_nombre),
+                    tPersona.ApPaterno.contains(parte_nombre),
+                    tPersona.ApMaterno.contains(parte_nombre)
+                )
+            )
+        filtro_comun = and_(*condiciones_nombre)
 
     empleados = db.session.query(tPersona).join(rEmpleado).filter(filtro_comun).all()
     lista_empleados = []
