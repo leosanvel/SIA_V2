@@ -3,7 +3,7 @@ $gmx(document).ready(function () {
     $("#btnCrearEmpleadoConcepto").click(crear_empleado_concepto);
     $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
 
-    $("#btnAgregarEmpleadoConcepto").click(modal_agregar_concepto);
+    $("#btnAbrirModalAgregarEmpleadoConcepto").click(modal_agregar_concepto);
 
     $("#TipoConcepto").on("change", function () { filtrar_tipo_concepto("false"); });
     $("#btnEliminarEmpleadoConcepto").on("click", function () { eliminar_empleado_concepto(); });
@@ -87,9 +87,9 @@ function buscar_empleado_concepto() {
                 abrirModal("No encontrado", "No se encontraron coincidencias.", "")
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
                 $("#tablaResultadosEmpleadoConceptos").hide();
-                $("#btnAgregarEmpleadoConcepto").show();
+                $("#btnAbrirModalAgregarEmpleadoConcepto").show();
             } else {
-                $("#btnAgregarEmpleadoConcepto").show();
+                $("#btnAbrirModalAgregarEmpleadoConcepto").show();
                 $("#tablaResultadosEmpleadoConceptos").show();
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
                 var cont = 1;

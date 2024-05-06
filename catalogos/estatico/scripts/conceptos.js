@@ -1,11 +1,11 @@
 $gmx(document).ready(function () {
+
+    $("#btnAbrirModalCrearConcepto").click(modal_crear_concepto);
+
     $("#btnBuscaConcepto").click(buscar_concepto);
     $("#btnCrearConcepto").click(crear_concepto);
-    $("#TipoPago").change(function () { pago_fijo_variable($(this).val()); });
 
-    $("#MontoContenedor").hide();
-    $("#PorcentajeContenedor").hide();
-    $("#contenedorCheckbox").hide();
+    $("#TipoPago").change(function () { pago_fijo_variable($(this).val()); });
 
     $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
 
@@ -37,6 +37,35 @@ $gmx(document).ready(function () {
 
 });
 
+function modal_crear_concepto() {
+    $('#ModalCrearConcepto').modal('show');
+    $("#btnEliminarConcepto").hide();
+    $("#Estatus").val("2");
+    $("#ContenedorEstatus").hide();
+
+    $("#consecutivo").val("");
+
+    $("#TipoConcepto").prop('disabled', false);
+    $("#idConcepto").prop('readonly', false);
+    $("#Concepto").prop('readonly', false);
+    $("#Abreviatura").prop('readonly', false);
+    $("#ClaveSAT").prop('readonly', false);
+    $("#TipoPago").prop('disabled', false);
+
+    $('#tituloModalCrearConcepto')[0].textContent = "Crear nuevo concepto";
+    $('#btnCrearConcepto')[0].textContent = "Crear";
+
+    $("#TipoConcepto").val("0");
+    $("#idConcepto").val("");
+    $("#Concepto").val("");
+    $("#Abreviatura").val("");
+    $("#ClaveSAT").val("");
+    $("#TipoPago").val("0");
+    $("#Monto").val("0.00");
+    $("#Porcentaje").val("0.000");
+    $("#checkboxporcentaje").prop('checked', true);
+    habilita_porcentaje_o_monto();
+}
 
 function actualizarListaDesplegable(resultados) {
     var listaDesplegable = $('#lista_conceptos');
@@ -61,15 +90,17 @@ function actualizarListaDesplegable(resultados) {
 }
 
 function crear_concepto() {
+    $("#TipoConcepto").prop('disabled', false);
+    $("#TipoPago").prop('disabled', false);
     if (validarFormulario($("#frmCrearConcepto")).valido) {
         $.ajax({
             async: false,
             type: "POST",
             url: "/catalogos/crear-concepto",
-            data: $("#frmCrearConcepto").serialize(),
+            data: $("#frmCrearConcepto, #consecutivo").serialize(),
             success: function (data) {
                 if (data) {
-                    abrirModal("Información guardada", "El concepto se creó con éxito", "recargar");
+                    abrirModal("Información guardada", "operación realizada con éxito", "recargar");
                 }
             }
         });
@@ -89,7 +120,7 @@ function buscar_concepto() {
                 $("#tablaResultadosConceptos").show();
                 $("#tablaResultadosConceptos tbody").empty();
                 var cont = 1;
-                
+
                 opcionHTML = `<option value="0">-- Seleccione --</option>`
                 respuesta.TipoPago.forEach(function (tipoPago) {
                     opcionHTML += `<option value='${tipoPago.idTipoPago}'> ${tipoPago.TipoPago} </option>`;
@@ -131,13 +162,8 @@ function buscar_concepto() {
 
                         <td>
                             <div style="display: block;">
-                            <button type="button" class="btn btn-primary" id="Editar_Aceptar${cont}" onclick="editar_aceptar(${cont})">Editar</button>
+                            <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="editar_concepto(${cont})"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
                         </div>
-                        </td>
-                        <td>
-                            <div style="display: block;">
-                                <button type="button" class="btn btn-secondary" id="Cancelar${cont}" onclick="cancelar('${cont}')" style="display: none">Cancelar</button>
-                            </div>
                         </td>
 
 
@@ -158,14 +184,14 @@ function buscar_concepto() {
 function habilita_porcentaje_o_monto() {
     if ($("#checkboxporcentaje").prop("checked")) {
 
-        $("#Monto").prop('disabled', true);
-        $("#Porcentaje").prop('disabled', false);
+        $("#Monto").prop('readonly', true);
+        $("#Porcentaje").prop('readonly', false);
         $("#Monto").val("0.00")
         $("#Monto").addClass("obligatorio");
         $("#Porcentaje").removeClass("obligatorio");
     } else {
-        $("#Porcentaje").prop('disabled', true);
-        $("#Monto").prop('disabled', false);
+        $("#Porcentaje").prop('readonly', true);
+        $("#Monto").prop('readonly', false);
         $("#Porcentaje").val("0.000")
         $("#Porcentaje").addClass("obligatorio");
         $("#Monto").removeClass("obligatorio");
@@ -174,43 +200,74 @@ function habilita_porcentaje_o_monto() {
 }
 
 function pago_fijo_variable(TipoPago) {
+    console.log("FUNCION PAGO FIJO O VARIABLE");
     if (TipoPago == "2") {//Si es == 2 (Variable)
-        $("#Monto").removeClass("obligatorio");
-        $("#Porcentaje").removeClass("obligatorio");
+        console.log("TIPO 2 VARIABLE");
         $("#Monto").val("0.00")
         $("#Porcentaje").val("0.000")
-        $("#Porcentaje").prop('disabled', false);
-        $("#Monto").prop('disabled', false);
-        $("#MontoContenedor").hide();
-        $("#PorcentajeContenedor").hide();
+        $("#Porcentaje").prop('readonly', true);
+        $("#Monto").prop('readonly', true);
         $("#contenedorCheckbox").hide();
 
     } else {
+        console.log("TIPO 1 FIJO");
         $("#Monto").val("0.00")
         $("#Porcentaje").val("0.000")
-        $("#MontoContenedor").show();
-        $("#PorcentajeContenedor").show();
+        $("#Porcentaje").prop('readonly', false);
+        $("#Monto").prop('readonly', false);
         $("#contenedorCheckbox").show();
         habilita_porcentaje_o_monto();
     }
 
 }
 
-function editar_aceptar(consecutivo) {
-    if ($("#Editar_Aceptar" + consecutivo).text() == "Editar") {
-        
-        $("#Porcentaje" + consecutivo).attr("readonly", false);
-        $("#Monto" + consecutivo).attr("readonly", false);
-        $("#ClaveSAT" + consecutivo).attr("readonly", false);
-        $("#TipoPago" + consecutivo).attr("disabled", false);
-        $("#Activo" + consecutivo).attr("readonly", false);
+function editar_concepto(consecutivo) {
 
-        $("#Editar_Aceptar" + consecutivo).text("Aceptar");
-        $("#Cancelar" + consecutivo).toggle();
+    $('#ModalCrearConcepto').modal('show');
+    $("#btnEliminarConcepto").show();
+
+    $("#consecutivo").val(consecutivo);
+
+    $("#TipoConcepto").prop('disabled', true);
+    $("#idConcepto").prop('readonly', true);
+    $("#Concepto").prop('readonly', true);
+    $("#Abreviatura").prop('readonly', true);
+    $("#ClaveSAT").prop('readonly', true);
+    $("#TipoPago").prop('disabled', false);
+
+
+    $('#tituloModalCrearConcepto')[0].textContent = "Editar concepto";
+    $('#btnCrearConcepto')[0].textContent = "Editar";
+
+    $("#TipoConcepto").val($("#TipoConcepto" + consecutivo).val());
+    $("#idConcepto").val($("#idConcepto" + consecutivo).val());
+    $("#Concepto").val($("#Concepto" + consecutivo).val());
+    $("#Abreviatura").val($("#Abreviatura" + consecutivo).val());
+    $("#ClaveSAT").val($("#ClaveSAT" + consecutivo).val());
+    $("#TipoPago").val($("#TipoPago" + consecutivo).val());
+
+    if ($("#TipoPago").val() == "2") {//Si es == 2 (Variable)
+
+        $("#Monto").val("0.00")
+        $("#Porcentaje").val("0.000")
+        $("#Porcentaje").prop('readonly', true);
+        $("#Monto").prop('readonly', true);
+        $("#contenedorCheckbox").hide();
+
+    } else {
+        $("#Monto").val($("#Monto" + consecutivo).val());
+        $("#Porcentaje").val($("#Porcentaje" + consecutivo).val());
+
+        $("#Porcentaje").prop('readonly', false);
+        $("#Monto").prop('readonly', false);
+        $("#contenedorCheckbox").show();
+        habilita_porcentaje_o_monto();
     }
-    else {
-        guardar_modificar_porcentaje(consecutivo);
-    }
+
+    $("#ContenedorEstatus").show();
+    console.log($("#Activo" + consecutivo).val() + 1)
+    console.log($("#Activo" + consecutivo).val() + 1)
+    $("#Estatus").val(parseInt($("#Activo" + consecutivo).val()) + 1);
 }
 
 function cancelar(consecutivo) {
@@ -220,7 +277,7 @@ function cancelar(consecutivo) {
     $("#ClaveSAT" + consecutivo).attr("readonly", true);
     $("#TipoPago" + consecutivo).attr("disabled", true);
     $("#Activo" + consecutivo).attr("readonly", true);
-    
+
     $("#Editar_Aceptar" + consecutivo).text("Editar");
     $("#Cancelar" + consecutivo).toggle();
 }

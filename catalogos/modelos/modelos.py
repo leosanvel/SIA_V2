@@ -523,6 +523,11 @@ class kConcepto(db.Model):
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
         self.Activo = Activo
+    
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
 
 class kTipoConcepto(db.Model):
     __tablename__ = "ktipoconcepto"
