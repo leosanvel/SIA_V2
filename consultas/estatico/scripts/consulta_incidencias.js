@@ -43,7 +43,6 @@ $gmx(document).ready(function () {
                             `);
 
                         });
-                        actualizarVisibilidadElementos();
                     } else {
                         $("#tablaResultadosIncidencias tbody").empty();
                         $("#tablaResultadosIncidencias").hide();

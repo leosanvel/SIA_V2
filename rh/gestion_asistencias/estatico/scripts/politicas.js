@@ -64,7 +64,6 @@ $gmx(document).ready(function () {
                         $(`#check${politica_persona.idPolitica}`).prop("checked", true);
                     });
 
-                    //actualizarVisibilidadElementos();
                 }
             });
         }

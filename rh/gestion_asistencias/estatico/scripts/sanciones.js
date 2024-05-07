@@ -151,7 +151,6 @@ $gmx(document).ready(function () {
                             $(`#porcentaje${sancion.idSancionPersona}`).val(sancion.idPorcentaje);
                             $(`#sancion${sancion.idSancionPersona}`).val(sancion.idSancion);
                         });
-                        //actualizarVisibilidadElementos();
                     } else {
                         $("#tablaResultadosJustificantes tbody").empty();
                         $("#tablaResultadosJustificantes").hide();

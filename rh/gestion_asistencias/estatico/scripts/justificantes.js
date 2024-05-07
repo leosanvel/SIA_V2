@@ -199,7 +199,6 @@ $gmx(document).ready(function () {
                             `);
 
                         });
-                        //actualizarVisibilidadElementos();
                     } else {
                         $("#tablaResultadosJustificantes tbody").empty();
                         $("#tablaResultadosJustificantes").hide();
