@@ -7,12 +7,13 @@ function buscar_clabe(){
         $.ajax({
             async: false,
             type: "POST",
-            url: "/RH/buscarClabe",
+            url: "/rh/gestion-empleados/buscar-clabe",
             data: {
                 "idPersona": $("#idPersona").val()
             },
             success: function(data){
                 if(data.length > 0){
+                    console.log(data);
                     $("#TabClabes").show();
                     $("#TabClabes tbody").empty();
                     $("#EResultadoClabes").text("");
@@ -90,7 +91,6 @@ function cancelar(data1, data2) {
 
 function guardar_modificar_clabe(dato){
     var activos = $('select[id^=ActClabe]');
-    console.log(activos);
     datos = {
         idPersona: $("#idPersona" + dato).val(),
         Clabe: $("#Clabe" + dato).val(),
@@ -99,7 +99,7 @@ function guardar_modificar_clabe(dato){
     $.ajax({
         async: false,
         type: "POST",
-        url: "/RH/modificarClabe",
+        url: "/rh/gestion-empleados/modificar-clabe",
         data: datos,
         success: function(data){
             if(data.encontrado){

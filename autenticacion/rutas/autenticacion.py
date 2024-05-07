@@ -22,8 +22,8 @@ def inicio_sesion():
 
 @autenticacion.route('/autenticacion/iniciar-sesion', methods = ['POST'])
 def login():
-    usuario = request.form['Usuario']
-    contrasena = request.form['Contrasena']
+    usuario = request.form.get('Usuario')
+    contrasena = request.form.get('Contrasena')
     user_db = db.session.query(rUsuario).filter_by(Usuario=usuario).first()
     if user_db and user_db.Contrasenia == contrasena:
         user = User(user_db)
@@ -95,9 +95,9 @@ def cambia_contrasena():
 @permisos_de_consulta
 def cambiar_contrasena():
     respuesta = {}
-    ContrasenaActual = request.form['ContrasenaActual']
-    NuevaContrasena = request.form['NuevaContrasena']
-    NuevaContrasena2 = request.form['NuevaContrasena2']
+    ContrasenaActual = request.form.get('ContrasenaActual')
+    NuevaContrasena = request.form.get('NuevaContrasena')
+    NuevaContrasena2 = request.form.get('NuevaContrasena2')
 
     usuario_actual = db.session.query(rUsuario).filter_by(Usuario=current_user.Usuario).first()
 

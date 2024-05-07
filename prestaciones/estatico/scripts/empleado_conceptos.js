@@ -3,25 +3,37 @@ $gmx(document).ready(function () {
     $("#btnCrearEmpleadoConcepto").click(crear_empleado_concepto);
     $("#checkboxporcentaje").on("change", function () { habilita_porcentaje_o_monto(); });
 
-    $("#btnAgregarEmpleadoConcepto").click(modal_agregar_concepto);
+    $("#btnAbrirModalAgregarEmpleadoConcepto").click(modal_agregar_concepto);
 
-    $("#TipoConcepto").change(filtrar_tipo_concepto);
+    $("#TipoConcepto").on("change", function () { filtrar_tipo_concepto("false"); });
+    $("#btnEliminarEmpleadoConcepto").on("click", function () { eliminar_empleado_concepto(); });
     $("#Concepto").change(pago_fijo_variable);
 
     habilita_porcentaje_o_monto();
 
 });
-function filtrar_tipo_concepto() {
+
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado
+    buscar_empleado_concepto();
+}
+
+function filtrar_tipo_concepto(BuscarRepetidos) {
     $("#Concepto").val("0");
+    datos = {}
+    datos["TipoConcepto"] = $("#TipoConcepto").val();
+    datos["idPersona"] = $("#idPersona").val();
+    datos["BuscarRepetidos"] = BuscarRepetidos;
+    datos = JSON.stringify(datos);
     $.ajax({
-        async: false,
+        async:false,
         type: "POST",
         url: "/prestaciones/filtrar-conceptos",
-        data: $("#TipoConcepto, #idPersona").serialize(),
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        data: datos,
         success: function (resultados) {
             if (resultados.NoEncontrado) {
                 console.log("ERROR empleado concepto");
-
             } else {
 
                 resultados.forEach(function (resultado) {
@@ -30,10 +42,10 @@ function filtrar_tipo_concepto() {
                         'value': resultado.idConcepto,
                         'text': resultado.idConcepto + ' - ' + resultado.Concepto
                     });
-                
+
                     // Agrega la nueva opción al elemento select con id "Concepto"
                     $('#Concepto').append(nuevaOpcion);
-                    
+
                 });
             }
         }
@@ -42,7 +54,10 @@ function filtrar_tipo_concepto() {
 
 
 function crear_empleado_concepto() {
-    console.log("Boton");
+
+    $("#TipoConcepto").prop('disabled', false);
+    $("#Concepto").prop('disabled', false);
+
     if (validarFormulario($("#frmCrearConceptoEmpleado")).valido) {
         $.ajax({
             async: false,
@@ -51,9 +66,9 @@ function crear_empleado_concepto() {
             data: $("#frmCrearConceptoEmpleado, #idPersona").serialize(),
             success: function (data) {
                 if (data) {
-                    console.log("CREADO");
-                    abrirModal("Información guardada", "El concepto se creó con éxito", "");
+                    abrirModal("Información guardada", "Operación realizada con éxito", "");
                     buscar_empleado_concepto();
+                    $('#ModalAgregaEmpleadoConcepto').modal('hide');
                 }
             }
         });
@@ -61,19 +76,20 @@ function crear_empleado_concepto() {
 }
 
 function buscar_empleado_concepto() {
-    console.log("BUSCAR");
+    console.log("BUSCANDO");
     $.ajax({
         async: false,
         type: "POST",
         url: "/prestaciones/buscar-empleado-concepto",
         data: $("#frmBuscarConceptoEmpleado, #idPersona").serialize(),
         success: function (data) {
-            console.log("Peticion completa!")
             if (data.NoEncontrado) {
                 abrirModal("No encontrado", "No se encontraron coincidencias.", "")
-                $("#btnAgregarEmpleadoConcepto").show();
+                $("#tablaResultadosEmpleadoConceptos tbody").empty();
+                $("#tablaResultadosEmpleadoConceptos").hide();
+                $("#btnAbrirModalAgregarEmpleadoConcepto").show();
             } else {
-                $("#btnAgregarEmpleadoConcepto").show();
+                $("#btnAbrirModalAgregarEmpleadoConcepto").show();
                 $("#tablaResultadosEmpleadoConceptos").show();
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
                 var cont = 1;
@@ -91,21 +107,20 @@ function buscar_empleado_concepto() {
                             <input type="text" class="form-control" id="idConcepto${cont}" value="${empleado_concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly></input>
+                            <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly style="width: 500px"></input>
                         </td>
                         <td>
                             <input type="text" class="form-control" id="Porcentaje${cont}" value="${empleado_concepto.Porcentaje}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Monto${cont}" value="${empleado_concepto.Monto}" readonly></input>
+                            <input type="text" class="form-control" id="Monto${cont}" value="${empleado_concepto.Monto}" readonly style="width: 140px"></input>
                         </td>
 
                         <td>
+                        <div>
+                            <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="modal_editar_elemento(${cont})"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> </button>
+                        </div>
                         </td>
-                        <td>
-                        </td>
-
-
                     </tr>
                     `;
                     cont++;
@@ -125,7 +140,7 @@ function pago_fijo_variable() {
         success: function (concepto) {
             if (concepto.NoEncontrado) {
                 abrirModal("ERROR", "Error", "");
-            }else{
+            } else {
                 if (concepto.idTipoPago == "2") {//Si es == 2 (Variable)
                     $("#contenedorCheckbox").show();
                     $("#Monto").val("0.00");
@@ -133,7 +148,7 @@ function pago_fijo_variable() {
                     $("#Monto").prop('readonly', false);
                     $("#Porcentaje").prop('readonly', false);
                     habilita_porcentaje_o_monto();
-                }else{
+                } else {
                     $("#contenedorCheckbox").hide();
 
                     $("#Monto").val(concepto.Monto);
@@ -170,10 +185,60 @@ function habilita_porcentaje_o_monto() {
 }
 
 function modal_agregar_concepto() {
-    console.log("MODAL!!")
     $('#ModalAgregaEmpleadoConcepto').modal('show');
+    $("#btnEliminarEmpleadoConcepto").hide();
+    $("#consecutivo").val("");
+    $("#TipoConcepto").prop('disabled', false);
+    $("#Concepto").prop('disabled', false);
+    $('#tituloModalAgregaEmpleadoConcepto')[0].textContent = "Agregar concepto";
+    $('#btnCrearEmpleadoConcepto')[0].textContent = "Agregar";
+    $("#Concepto").val("0");
+    $("#TipoConcepto").val("0");
+    $("#Monto").val("0.00");
+    $("#Porcentaje").val("0.000");
 }
 
-function funcionSeleccionar() {
-    buscar_empleado_concepto();
+
+
+function modal_editar_elemento(consecutivo) {
+
+    $('#ModalAgregaEmpleadoConcepto').modal('show');
+    $("#consecutivo").val(consecutivo);
+    $("#btnEliminarEmpleadoConcepto").show();
+    $('#tituloModalAgregaEmpleadoConcepto')[0].textContent = "Modificar concepto asignado";
+    $('#btnCrearEmpleadoConcepto')[0].textContent = "Modificar";
+
+    $("#TipoConcepto").val($("#idTipoConcepto" + consecutivo).val());
+
+    filtrar_tipo_concepto("true");
+
+    $("#Concepto").val($("#idConcepto" + consecutivo).val());
+    $("#Monto").val($("#Monto" + consecutivo).val());
+    $("#Porcentaje").val($("#Porcentaje" + consecutivo).val());
+
+    $("#TipoConcepto").prop('disabled', true);
+    $("#Concepto").prop('disabled', true);
+
+    // pago_fijo_variable();
+}
+
+function eliminar_empleado_concepto() {
+
+    $("#TipoConcepto").prop('disabled', false);
+    $("#Concepto").prop('disabled', false);
+    
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/prestaciones/eliminar-empleado-concepto",
+            data: $("#frmCrearConceptoEmpleado, #idPersona").serialize(),
+            success: function (data) {
+                if (data.eliminado) {
+                    abrirModal("Relación eliminada", "Operación realizada con éxito", "");
+                    buscar_empleado_concepto();
+                    $('#ModalAgregaEmpleadoConcepto').modal('hide');
+                }
+            }
+        });
+    
 }

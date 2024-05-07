@@ -18,7 +18,6 @@ $gmx(document).ready(function () {
                     } else {
                         abrirModal("Contraseña actual Incorrecta", "La contraseña actual no coincide con la del usuario.", "recargar");
                     }
-                    console.log(data.Modificado)
                 }
             });
         }

@@ -1,0 +1,54 @@
+{% extends "plantilla_base.html" %}
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('informatica.static', filename='css/estilos.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% if current_user.usuario is not none %}
+
+<div class="container">
+    <div class="row">
+        <table class="table" id="TablaSolicitudes" style="display: none;">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Solicitud</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endif %}
+
+
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalCompletado" tabindex="-1" aria-labelledby="tituloModalCompletado" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalCompletado">Solicitud completada</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalCompletado">¿Está seguro que desea cambiar el estado de la solicitud a completado?.<br> Una notificación será enviada al guardar la información para completar la solicitud.</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModal" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('informatica.static', filename='scripts/solicitud_scripts.js') }}"></script>
+{% endblock %}

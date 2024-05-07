@@ -248,8 +248,8 @@ class rBancoPersona(db.Model):
     idPersona = db.Column(db.Integer, primary_key = True)
     Clabe = db.Column(db.String(18), primary_key = True)
     idBanco = db.Column(db.String(50), db.ForeignKey(kBancos.idBanco), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
-    Verificado = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+    Verificado = db.Column(db.Integer, nullable = True)
 
     # Relacion
     Banco = db.relationship("kBancos", back_populates = "BancoPersonas", uselist = False, single_parent = True)

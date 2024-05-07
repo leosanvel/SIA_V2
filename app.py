@@ -46,13 +46,14 @@ app.register_blueprint(general)
 
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO INFORMATICA
-from informatica.rutas.informatica import informatica
-app.register_blueprint(informatica)
+# from informatica.rutas.rutas import informatica
+# app.register_blueprint(informatica)
 
 
 # MÓDULO PRINCIPAL
 from principal.rutas.principal import moduloSIA
 app.register_blueprint(moduloSIA)
+
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO GESTIÓN DE EMPLEADOS
 from rh.gestion_empleados.rutas.gestion_empleados import gestion_empleados
@@ -62,12 +63,16 @@ app.register_blueprint(gestion_empleados)
 from rh.gestion_asistencias.rutas.gestion_asistencias import gestion_asistencias
 app.register_blueprint(gestion_asistencias)
 #----------------------------------------------------------------------------------------------------------------------
+# MÓDULO GESTIÓN DE TIEMPO NO LABORAL
+from rh.gestion_tiempo_no_laboral.rutas.gestion_tiempo_no_laboral import gestion_tiempo_no_laboral
+app.register_blueprint(gestion_tiempo_no_laboral)
+#----------------------------------------------------------------------------------------------------------------------
 # MÓDULO NOMINA
 from nomina.rutas.rutas import nomina
 app.register_blueprint(nomina)
 
 #----------------------------------------------------------------------------------------------------------------------
-# MÓDULO NOMINA
+# MÓDULO CATALOGOS
 from catalogos.rutas.rutas import catalogos
 app.register_blueprint(catalogos)
 
@@ -76,5 +81,10 @@ app.register_blueprint(catalogos)
 from prestaciones.rutas.rutas import prestaciones
 app.register_blueprint(prestaciones)
 
-with app.app_context():
-    db.create_all()
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO CONSULTAS
+from consultas.rutas.rutas import consultas
+app.register_blueprint(consultas)
+
+# with app.app_context():
+#     db.create_all()

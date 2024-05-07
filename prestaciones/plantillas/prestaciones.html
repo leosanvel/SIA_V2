@@ -1,0 +1,21 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <form id="formularioPrestaciones">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumISSSTE">Número ISSSTE<span id="ANumISSSTE"
+                        class="form-text">*</span>:</label>
+                    <input type="text" class="form-control" id="NumISSSTE">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- <script src="{{ url_for('prestaciones.static', filename='scripts/scripts.js') }}"></script> -->
+{% endblock %}

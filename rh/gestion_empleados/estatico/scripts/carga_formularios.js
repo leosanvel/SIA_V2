@@ -68,8 +68,7 @@ function obtenerInfoEmpleado() {
                 var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
                 var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngGobierno);
                 var FecIngresoFormateada = convertirFechaParaVisualizacion(data.FecIngFonaes);
-                console.log("data");
-                console.log(data.idGrupo);
+                
                 $("#CURP").val(data.CURP);
                 $("#Nombre").val(data.Nombre);
                 $("#Paterno").val(data.ApPaterno);

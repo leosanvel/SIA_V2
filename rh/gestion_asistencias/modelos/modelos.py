@@ -59,14 +59,121 @@ class tIncidencia(db.Model):
     FechaFin = db.Column(db.Date, nullable = True)
     FechaCreacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
 
-    def __init__(self, idIncidencia, idPersona, idTipo, Descripcion, FechaInicio, FechaFin, FechaCreacion):
+    def __init__(self, idIncidencia, idPersona, idTipo, Descripcion, FechaInicio, FechaFin):
         self.idIncidencia = idIncidencia
         self.idPersona = idPersona
         self.idTipo = idTipo
         self.Descripcion = Descripcion
         self. FechaInicio = FechaInicio
         self.FechaFin = FechaFin
-        self.FechaCreacion = FechaCreacion
+        # self.FechaCreacion = FechaCreacion
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rSancionPersona(db.Model):
+    __tablename__ = "rsancionpersona"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idSancionPersona = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, nullable = True)
+    idSancion = db.Column(db.Integer, nullable = True)
+    idPorcentaje = db.Column(db.Integer, nullable = True)
+    FechaInicio = db.Column(db.Date, nullable = True)
+    FechaFin = db.Column(db.Date, nullable = True)
+    FechaCreacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    Descripcion = db.Column(db.Text, nullable = True)
+
+    def __init__(self, idSancionPersona, idPersona, idSancion, idPorcentaje, FechaInicio, FechaFin, Descripcion):
+        self.idSancionPersona = idSancionPersona
+        self.idPersona = idPersona
+        self.idSancion = idSancion
+        self.idPorcentaje = idPorcentaje
+        self.FechaInicio = FechaInicio
+        self.FechaFin = FechaFin
+        # self.FechaCreacion = FechaCreacion
+        self.Descripcion = Descripcion
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kTipoProceso(db.Model):
+    __tablename__ = "ktipoproceso"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoProceso = db.Column(db.Integer, primary_key = True)
+    TipoProceso = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoProceso, TipoProceso, Activo):
+        self.idTipoProceso = idTipoProceso
+        self.TipoProceso = TipoProceso
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kTipoJustificante(db.Model):
+    __tablename__ = "ktipojustificante"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoJustificante = db.Column(db.Integer, primary_key = True)
+    TipoJustificante = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoJustificante, TipoJustificante, Activo):
+        self.idTipoJustificante = idTipoJustificante
+        self.TipoJustificante = TipoJustificante
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rTipoProcesoJustificante(db.Model):
+    __tablename__ = "rtipoprocesojustificante"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoProceso = db.Column(db.Integer, primary_key = True)
+    idTipoJustificante = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idTipoProceso, idTipoJustificante):
+        self.idTipoProceso = idTipoProceso
+        self.idTipoJustificante = idTipoJustificante
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class tJustificante(db.Model):
+    __tablename__ = "tjustificante"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idJustificante = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, nullable = True)
+    idTipo = db.Column(db.Integer, nullable = True)
+    Descripcion = db.Column(db.Text, nullable = True)
+    FechaInicio = db.Column(db.Date, nullable = True)
+    FechaFin = db.Column(db.Date, nullable = True)
+    FechaCreacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+
+    def __init__(self, idJustificante, idPersona, idTipo, Descripcion, FechaInicio, FechaFin):
+        self.idJustificante = idJustificante
+        self.idPersona = idPersona
+        self.idTipo = idTipo
+        self.Descripcion = Descripcion
+        self.FechaInicio = FechaInicio
+        self.FechaFin = FechaFin
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

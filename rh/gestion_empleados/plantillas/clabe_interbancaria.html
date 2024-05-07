@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "plantilla_base.html" %}
 {% block content %}
 
 <div class="container">
@@ -77,5 +77,5 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
-<script src="{{ url_for('gestion_empleados.static', filename='scripts/clabe.js') }}"></script>
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/clabe_interbancaria.js') }}"></script>
 {% endblock %}
