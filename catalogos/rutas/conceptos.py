@@ -18,8 +18,8 @@ def catalogos_conceptos():
 
 @catalogos.route('/catalogos/crear-concepto', methods = ['POST'])
 def crear_concepto():
-    TipoConcepto = request.form['TipoConcepto']
-    idConcepto = request.form['idConcepto']
+    TipoConcepto = request.form.get('TipoConcepto')
+    idConcepto = request.form.get('idConcepto')
 
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         'TipoConcepto' : 'idTipoConcepto',
