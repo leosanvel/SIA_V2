@@ -13,6 +13,7 @@ import os
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
+from rh.gestion_tiempo_no_laboral.modelos.modelos import *
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -27,7 +28,7 @@ def baja_empleado():
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-puestos-empleado', methods = ['POST', 'GET'])
 def obtener_puestos_empleado():
-    idPersona = request.form['idPersona']
+    idPersona = request.form.get('idPersona')
     try:
         empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).one()
         empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idEstatusEP == 1).first()
@@ -71,15 +72,18 @@ def obtener_puestos_empleado():
 @gestion_empleados.route('/rh/gestion-empleados/dar-baja-empleado', methods = ['POST', 'GET'])
 def dar_baja_empleado():
     
-    idPersona = request.form['idPersona']
-    idPuesto = request.form['idPuesto']
+    idPersona = request.form.get('idPersona')
+    idPuesto = request.form.get('idPuesto')
 
-    idCausaBaja = request.form['CausaBaja']
-    Observaciones = request.form['Observaciones']
-    FechaEfecto = request.form['FechaEfecto']
+    idCausaBaja = request.form.get('CausaBaja')
+    Observaciones = request.form.get('Observaciones')
+    FechaEfecto = request.form.get('FechaEfecto')
     FechaEfectoFormateado = datetime.strptime(FechaEfecto, '%d/%m/%Y')
-    print("FechaEfectoFormateado")
-    print(FechaEfectoFormateado)
+
+    checkboxConservarVacaciones = request.form.get("checkboxConservarVacaciones")
+    print("checkboxConservarVacaciones")
+    print(checkboxConservarVacaciones)
+    
     try:
         quincena = db.session.query(kQuincena).filter(
             and_(
@@ -101,7 +105,6 @@ def dar_baja_empleado():
         # Desactivar el puesto del empleado
         empleadoPuesto.idEstatusEP = 0
 
-
         # estatus baja, observaciones, fecha que se hizo y fecha de efecto
         empleadoPuesto.idCausaBaja = idCausaBaja
         empleadoPuesto.Observaciones = Observaciones
@@ -109,9 +112,15 @@ def dar_baja_empleado():
         empleadoPuesto.FechaTermino = datetime.today()
         empleadoPuesto.idQuincena = NumQuincena
 
+        # desactivar empleado
+        empleadoPuesto.Empleado.Activo = 0
 
         # vaciar: rconcepto empleado
         conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).delete()
+
+        #Eliminar vacaciones
+        if checkboxConservarVacaciones is None:
+            vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = idPersona).delete()
      
         db.session.commit()
 

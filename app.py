@@ -81,5 +81,5 @@ app.register_blueprint(catalogos)
 from prestaciones.rutas.rutas import prestaciones
 app.register_blueprint(prestaciones)
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()

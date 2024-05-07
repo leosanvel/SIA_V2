@@ -95,11 +95,9 @@ def filtrar_concepto():
 @prestaciones.route('/prestaciones/obtener-concepto', methods = ['POST'])
 def obtener_concepto():
 
-    datos = request.get_json()
-    TipoConcepto = datos.pop("TipoConcepto", None)
-    Concepto = datos.pop("Concepto", None)
+    TipoConcepto = request.form.get('TipoConcepto')
+    Concepto = request.form.get('Concepto')
 
-    
     conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idConcepto=Concepto).first()
 
     if conceptos is not None:

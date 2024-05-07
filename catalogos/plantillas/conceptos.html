@@ -2,231 +2,238 @@
 {% block content %}
 
 <div class="row">
-    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
-        <tr>
-            <th colspan="4">EMPLEADO SELECCIONADO</th>
-        </tr>
-        <tr>
-            <th>No. Empleado:</th>
-            <th>CURP:</th>
-            <th>Nombre(s):</th>
-            <th>Apellidos</th>
-        </tr>
-        <tr>
-            <input type="hidden" id="idPersona" name="idPersona" value="">
-            <td id="NumeroEmpleado"></td>
-            <td id="CurpEmpleado"></td>
-            <td id="NombreEmpleado"></td>
-            <td id="ApellidosEmpleado"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
-</div>
-
-
-
-
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Crear">Crear</a></li>
-        <li class="nav-item "><a class="nav-link" data-toggle="tab" href="#Buscar">Buscar</a></li>
-    </ul>
-    <div class="tab-content">
-        <style>
-            .tab-content form .form-control {
-                margin-bottom: 0 !important;
-                /* Anula el margen inferior */
-            }
-        </style>
-
-        <div class="tab-pane active" id="Crear">
-            <!-- Contenido de la pestaña Datos Personales -->
-            <form name="frmCrearConcepto" id="frmCrearConcepto">
-                <div class="row">
-
-                    <div class="col-md-4">
-                        <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                class="form-text">*</span>:</label>
-                        <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if TipoConcepto %}
-                            {% for row in TipoConcepto %}
-                            <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblidConcepto">id Concepto<span id="AidConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="idConcepto" id="idConcepto" placeholder="" maxlength="5"
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
-                            <input type="text" name="Concepto" id="Concepto" placeholder="" maxlength="250"
-                                class="obligatorio form-control Concepto" oninput="this.value = this.value.toUpperCase()">
-                                <div class="dropdown">
-                                    <div id="lista_desplegable_conceptos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <!-- Aquí se mostrarán los resultados -->
-                                    </div>
-                                </div>
-                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura" class="form-text">*</span>:</label>
-                            <input type="text" name="Abreviatura" id="Abreviatura" placeholder="" maxlength="25"
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblClaveSAT">Clave SAT<span id="AClaveSAT" class="form-text">*</span>:</label>
-                            <input type="text" name="ClaveSAT" id="ClaveSAT" placeholder=""
-                                class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label for="lblTipoPago">Tipo de Pago<span id="ATipoPago" class="form-text">*</span>:</label>
-                        <select id="TipoPago" name="TipoPago" class="obligatorio form-control">
-                            <option value="0">-- Seleccione --</option>
-                            {% if TipoPago %}
-                            {% for row in TipoPago %}
-                            <option value="{{row.idTipoPago}}">{{row.TipoPago}}</option>
-                            {% endfor %}
-                            {% endif %}
-                        </select>
-                        <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group" id="contenedorCheckbox">
-                            <input type="checkbox" id="checkboxporcentaje">
-                            <label for="checkboxporcentaje" class="file">Porcentaje</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group" id="PorcentajeContenedor">
-                            <label for="lblPorcentaje">Porcentaje<span id="APorcentaje" class="form-text">*</span>:</label>
-                            <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
-                                class="obligatorio form-control">
-                            <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group" id="MontoContenedor">
-                            <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
-                            <input type="number" name="Monto" id="Monto" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="button" id="btnCrearConcepto" class="btn btn-primary pull-right">Crear
-                            concepto</button>
-                    </div>
-                </div>
-                <hr />
-                <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
-                    <strong>Error:</strong>
-                    verificar los campos capturados.
-                </div>
-            </form>
-
-        </div>
-        <div class="tab-pane" id="Buscar">
-            <!-- Contenido de la pestaña -->
-            <form id="frmBuscarConcepto">
-                <div class="row">
-                    
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="lblConcepto">Concepto</label>
-                            <input type="text" id="ConceptoExistente" name="ConceptoExistente" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
-                            <div class="dropdown">
-                                <div id="lista_conceptos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <!-- Aquí se mostrarán los resultados -->
-                                </div>
-                            </div>
-                            <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row pull-right">
-                    <button class="btn btn-primary btn-sm" type="button" id="btnBuscaConcepto">
-                        <span class="icon-search" aria-hidden="true"></span> Buscar
-                    </button>
-                </div>
-            </form>
-            <div class="form-group">
-                <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
-            </div>
-            <div class="row">
-                <form id="formResultadoConceptos">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="tablaResultadosConceptos" style="display: none;">
-                            <thead>
-                                <tr>
-                                    <th colspan="11">RESULTADOS DE LA BÚSQUEDA:</th>
-                                </tr>
-                                <tr>
-                                    <th>Tipo de concepto</th>
-                                    <th>idConcepto</th>
-                                    <th>Concepto</th>
-                                    <th>Abreviatura</th>
-                                    <th>Porcentaje</th>
-                                    <th>Monto</th>
-                                    <th>Clave SAT</th>
-                                    <th>Tipo de pago</th>
-                                    <th>Activo</th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Aquí se agregarán las filas de resultados de empleados -->
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
-            </div>
-
-        </div>
+    <div class="col-md-12">
+        <button type="button" id="btnAbrirModalCrearConcepto" class="btn btn-primary">Crear nuevo concepto</button>
     </div>
 </div>
+<br>
+<form id="frmBuscarConcepto">
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="lblConcepto">Buscar concepto:</label>
+                <input type="text" id="ConceptoExistente" name="ConceptoExistente" class="obligatorio form-control"
+                    oninput="this.value = this.value.toUpperCase()">
+                <div class="dropdown">
+                    <div id="lista_conceptos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!-- Aquí se mostrarán los resultados -->
+                    </div>
+                </div>
+                <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </div>
+    <div class="row pull-right">
+        <button class="btn btn-primary btn-sm" type="button" id="btnBuscaConcepto">
+            <span class="icon-search" aria-hidden="true"></span> Buscar
+        </button>
+    </div>
+</form>
+<div class="form-group">
+    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+</div>
+<div class="row">
+    <form id="formResultadoConceptos">
+        <div class="table-responsive">
+            <table class="table table-striped" id="tablaResultadosConceptos" style="display: none;">
+                <thead>
+                    <tr>
+                        <th colspan="11">RESULTADOS DE LA BÚSQUEDA:</th>
+                    </tr>
+                    <tr>
+                        <th>Tipo de concepto</th>
+                        <th>idConcepto</th>
+                        <th>Concepto</th>
+                        <th>Abreviatura</th>
+                        <th>Porcentaje</th>
+                        <th>Monto</th>
+                        <th>Clave SAT</th>
+                        <th>Tipo de pago</th>
+                        <th>Activo</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán las filas de resultados de empleados -->
+                </tbody>
+            </table>
+        </div>
+    </form>
+</div>
+
+
+
 
 <br>
 <div class="row">
     <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
         Verificar los campos capturados.</div>
+</div>
+
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalCrearConcepto" tabindex="-1" aria-labelledby="tituloModalCrearConcepto"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalCrearConcepto">Agregar concepto</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalCrearConcepto">
+
+                    <form name="frmCrearConcepto" id="frmCrearConcepto">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
+                                        class="form-text">*</span>:</label>
+                                <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    {% if TipoConcepto %}
+                                    {% for row in TipoConcepto %}
+                                    <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
+                                    {% endfor %}
+                                    {% endif %}
+                                </select>
+                                <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblidConcepto">id Concepto<span id="AidConcepto"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="idConcepto" id="idConcepto" placeholder="" maxlength="5"
+                                        class="obligatorio form-control"
+                                        oninput="this.value = this.value.toUpperCase()">
+                                    <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="lblConcepto">Concepto<span id="AConcepto"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="Concepto" id="Concepto" placeholder="" maxlength="250"
+                                        class="obligatorio form-control Concepto"
+                                        oninput="this.value = this.value.toUpperCase()">
+                                    <div class="dropdown">
+                                        <div id="lista_desplegable_conceptos" class="dropdown-menu"
+                                            aria-labelledby="dropdownMenuButton">
+                                            <!-- Aquí se mostrarán los resultados -->
+                                        </div>
+                                    </div>
+                                    <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="Abreviatura" id="Abreviatura" placeholder="" maxlength="25"
+                                        class="obligatorio form-control"
+                                        oninput="this.value = this.value.toUpperCase()">
+                                    <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblClaveSAT">Clave SAT<span id="AClaveSAT"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="ClaveSAT" id="ClaveSAT" placeholder=""
+                                        class="obligatorio form-control"
+                                        oninput="this.value = this.value.toUpperCase()">
+                                    <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="lblTipoPago">Tipo de Pago<span id="ATipoPago"
+                                        class="form-text">*</span>:</label>
+                                <select id="TipoPago" name="TipoPago" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    {% if TipoPago %}
+                                    {% for row in TipoPago %}
+                                    <option value="{{row.idTipoPago}}">{{row.TipoPago}}</option>
+                                    {% endfor %}
+                                    {% endif %}
+                                </select>
+                                <small id="ETipoPago" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <br>
+                            <div class="col-md-6">
+                                <div class="form-group" id="contenedorCheckbox">
+                                    <input type="checkbox" id="checkboxporcentaje">
+                                    <label for="checkboxporcentaje" class="file">Porcentaje</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" id="PorcentajeContenedor">
+                                    <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
+                                            class="form-text">*</span>:</label>
+                                    <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
+                                        class="obligatorio form-control">
+                                    <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group" id="MontoContenedor">
+                                    <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
+                                    <input type="number" name="Monto" id="Monto" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <br>
+                            <div class="col-md-6" id="ContenedorEstatus">
+                                <label for="lblEstatus">Estatus<span id="AEstatus"
+                                        class="form-text">*</span>:</label>
+                                <select id="Estatus" name="Estatus" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    <option value="1">Inactivo</option>
+                                    <option value="2">Activo</option>
+                                    
+                                </select>
+                                <small id="EEstatus" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
+                            <strong>Error:</strong>
+                            verificar los campos capturados.
+                        </div>
+                    </form>
+
+                    <input type="hidden" id="consecutivo" name="consecutivo" value="">
+
+
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModalCrearConcepto" class="btn btn-primary" data-dismiss="modal"
+                    data-comportamiento="nada">Cancelar</button>
+                <button type="button" id="btnCrearConcepto" class="btn btn-primary">Crear</button>
+                <button type="button" id="btnEliminarConcepto" class="btn btn-primary" style="display: none;"
+                    data-dismiss="modal">Eliminar</button>
+
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
