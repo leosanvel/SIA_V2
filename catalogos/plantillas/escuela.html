@@ -1,0 +1,84 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#NuevaEscuela">Ingresar nuevo dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarEscuela">Modificar datos</a></li>
+    </ul>
+
+    <form id="formularioEscuela">
+        <div class="tab-content">
+            <div class="row">
+                <div class="form-group">
+                    <label for="lblNivEsc">Nivel escolar<span id="ANivEsc" class="form-text">*</span>:</label>
+                    <select id="NivelEscolar" name="NivelEscolar" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Escolaridad %}
+                        <option value = "{{row.idEscolaridad}}">{{row.Escolaridad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="ENivEsc" class="etiquetaError form-text form-text-error"  > </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="NuevaEscuela">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblEscuela">Nueva escuela<span id="AEscuela" class="form-text">*</span>:</label>
+                            <input type="text" id="Escuela" name="Escuela" class="obligatorio form-control">
+                            <small id="EEscuela" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblActEscuela">Activo<span id="AActEscuela" class="form-text"></span>:</label>
+                            <select id="ActEscuela" name="ActEscuela" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                <option value="1">Inactivo</option>
+                                <option value="2">Activo</option>
+                            </select>
+                            <small id="EActEscuela" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="pull-right">
+                            <div class="form-group">
+                                <button class="btn btn-primary oculta-empleado" type="button" id="guardarEscuela" onclick="guardar_modificar_escuela()">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="tab-pane" id="ModificarEscuela">
+            <div class="row">
+                <div class="table-responsive" style="width: 100%;">
+                    <table class="table" id="TabModEscuela" style="display: none;">
+                        <thead>
+                            <tr>
+                                {% for row in columns %}
+                                <th>{{row}}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/escuela.js')}}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

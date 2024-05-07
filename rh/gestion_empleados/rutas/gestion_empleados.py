@@ -7,3 +7,4 @@ from . import baja_empleado
 from . import obtener_datos_empleado
 from . import carga_selects
 from . import generar_contrato
+from . import clabe_interbancaria

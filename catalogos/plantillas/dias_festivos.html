@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <table class="table" id="TabDiasFestivos">
+            <thead>
+                <tr>
+                    <th>ID día festivo</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/scripts_empleado.js') }}"></script>
+<script src="{{ url_for('diasfestivos.static', filename='scripts/scripts_diasfestivos.js')}}"></script>
+{% endblock %}
