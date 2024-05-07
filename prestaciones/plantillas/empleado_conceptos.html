@@ -15,11 +15,6 @@
         </div>
     </div>
 
-    <div class="row pull-right">
-        <button class="btn btn-primary btn-sm" type="button" id="btnBuscaEmpleadoConcepto">
-            <span class="icon-search" aria-hidden="true"></span> Buscar
-        </button>
-    </div>
 </form>
 <div class="form-group">
     <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
@@ -59,7 +54,7 @@
             <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
                 <thead>
                     <tr>
-                        <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                        <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
                     </tr>
                     <tr>
                         <input type="hidden" id="TipoPago" name="TipoPago" value="">
@@ -69,7 +64,6 @@
                         <th>Concepto</th>
                         <th>Porcentaje</th>
                         <th>Monto</th>
-                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -170,7 +164,7 @@
                         <br>
 
                         <hr />
-
+                        <input type="hidden" id="consecutivo" name="consecutivo" value="">
                     </form>
 
 
@@ -182,8 +176,9 @@
             <div class="modal-footer">
                 <button type="button" id="btnCierreModalAgregaEmpleadoConcepto" class="btn btn-primary"
                     data-dismiss="modal" data-comportamiento="nada">Cancelar</button>
-                <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary"
-                    data-dismiss="modal">Crear concepto</button>
+                <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary">Agregar</button>
+                <button type="button" id="btnEliminarEmpleadoConcepto" class="btn btn-primary" style="display: none;"
+                    data-dismiss="modal">Eliminar</button>
 
             </div>
         </div>

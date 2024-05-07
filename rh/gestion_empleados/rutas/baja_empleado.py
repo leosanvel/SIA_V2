@@ -112,14 +112,9 @@ def dar_baja_empleado():
 
         # vaciar: rconcepto empleado
         conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).delete()
-        
-        
+     
         db.session.commit()
-        
-        
-        
-        
-        
+
         respuesta["Exito"] = True
     except NoResultFound:
         respuesta["Error"] = True
