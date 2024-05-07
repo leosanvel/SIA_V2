@@ -1,11 +1,9 @@
 $gmx(document).ready(function () {
     $("#btnGenerarCFDI").click(abrirAdModal);
     $("#btnGenerarCFDI_modal").click(generarCFDI);
-    console.log("CARGADO");
 });
 
 function abrirAdModal() {
-    console.log("Abrir modal");
     if (validarFormulario($("#formularioGenerarCFDI")).valido) {
         $("#MensajeAdModal").html("¿Está seguro que desea generar el CFDI de la quincena " + $("#NumQuincena").val() + "?");
         $("#GenerarCFDIModal").modal('show');

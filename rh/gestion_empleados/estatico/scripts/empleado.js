@@ -9,6 +9,7 @@ function seleccionaEmpleado(idPersona) {
                 if (path === "/rh/gestion-empleados/busqueda-empleado") {
                     window.location.href = "/rh/gestion-empleados/modificar-empleado"
                 } else {
+                    
                     // resetearTodosLosFormularios();
                     $("#tablaEmpleadoSeleccionado").show();
 
@@ -29,6 +30,13 @@ function seleccionaEmpleado(idPersona) {
                     $("#tablaResultadosPolitica tbody").empty();
                     $("#tablaResultadosPolitica").hide();
                     $("#btnGuardaPoliticaPersona").hide();
+
+                    $("#ResultadoPuesto").hide();
+
+                    if (typeof funcionSeleccionar === 'function') {
+                        // Ejecutar la función
+                        funcionSeleccionar();
+                    }
 
                 }
             }
@@ -100,12 +108,35 @@ function guardarDomicilio(idTipoDomicilio, formulario) {
     $.ajax({
         async: false,
         type: "POST",
-        url: "/guarda_direccion",
+        url: "/rh/gestion-empleados/guardar-direccion",
         data: formData,
         processData: false,
         contentType: false,
         success: function (data) { }
     });
+}
+
+function guardarDatosBancarios(formulario){
+    var formData = new FormData(formulario[0]);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/guardar-datos-bancarios",
+        data: formData,
+        enctype: 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function(data){ }
+    });
+}
+
+function agregarConceptos(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/agregar-conceptos",
+        success: function(data){ }
+    })
 }
 
 $gmx(document).ready(function () {
@@ -128,7 +159,7 @@ $gmx(document).ready(function () {
                             $("#tablaEmpleados tbody").append(`
                                 <tr>
                                 <td>
-                                    <button onclick="seleccionaEmpleado(${empleado.idPersona})" class="btn btn-primary btn-sm">Sel.</button>
+                                    <button onclick="seleccionaEmpleado(${empleado.idPersona})" class="btn btn-primary btn-sm boton-seleccionar">Sel.</button>
                                 </td>
                                <td >${empleado.NumeroEmpleado}</td>
                                 <td >${empleado.CURP}</td>
@@ -187,11 +218,11 @@ $gmx(document).ready(function () {
             const formDatosPersonales = new FormData($("#formularioDatosPersonales")[0]);
             const formDatosEmpleado = new FormData($("#formularioDatosEmpleado")[0]);
             const formEscolaridad = new FormData($("#formularioEscolaridad")[0]);
-            const formDatosBancarios = new FormData($("#formularioDatosBancarios")[0]);
-            const formularioEstatus = new FormData($("#formularioEstatus")[0]);
+            //const formDatosBancarios = new FormData($("#formularioDatosBancarios")[0]);
+            //const formularioEstatus = new FormData($("#formularioEstatus")[0]);
 
             const FormularioCompleto = new FormData();
-            for(const[key, value] of [...formDatosPersonales.entries(), ...formDatosEmpleado.entries(), ...formEscolaridad.entries(), ...formDatosBancarios.entries(), ...formularioEstatus.entries()]){
+            for(const[key, value] of [...formDatosPersonales.entries(), ...formDatosEmpleado.entries(), ...formEscolaridad.entries()]){
                 FormularioCompleto.append(key, value);
             }
 
@@ -204,7 +235,7 @@ $gmx(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    console.log(data)
+                    
                     if (data.guardado) {
                         // abrirModal("Información guardada", "Los datos personales, de empleado y de escolaridad han sido actualizados correctamente en la base de datos.", "");
                         mensajeGuardado += "-Datos personales.<br>";
@@ -246,8 +277,16 @@ $gmx(document).ready(function () {
             }
         }
 
-
-
+        if(!formularioVacio($("#formularioDatosBancarios"))){
+            
+            if(validarFormulario($("#formularioDatosBancarios")).valido){
+                guardarDatosBancarios($("#formularioDatosBancarios"))
+            }
+        }
+        var path = window.location.pathname;
+        if (path === "/rh/gestion-empleados/agregar-empleado") {
+            agregarConceptos();
+        }
         //Recorremos formularios para validar y mostrar el primer error
         var formularios = [
             $("#formularioDomicilioFiscal"),
@@ -377,7 +416,7 @@ $gmx(document).ready(function () {
 
 function validarSoloNumeros(event) {
     //$("#Clabe").keydown(function(event){
-    //console.log("Hola");
+    //
     if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105) && event.keyCode !== 190 && event.keyCode !== 110 && event.keyCode !== 8 && event.keyCode !== 9 && event.keyCode !== 46) {
         return false;
     }
@@ -385,17 +424,17 @@ function validarSoloNumeros(event) {
 }
 
 function verBanco() {
-    console.log($("#Clabe").val());
     if ($("#Clabe").val().length >= 3) {
         $.ajax({
             async: false,
             type: "POST",
-            url: "/RH/obtenerBanco",
+            url: "/rh/gestion-empleados/obtener-banco",
             data: {
                 "subClabe": $("#Clabe").val().substring(0, 3)
             },
             success: function (data) {
                 $("#Banco").val(data.Nombre);
+                $("#idBanco").val(data.idBanco);
             }
         });
     }else{
@@ -410,7 +449,7 @@ function modalReafirmar() {
 
 function cancelarSelectEstatus() {
     var estadoInicial = $('#ModalAltaBaja').attr('data-valorInicial');
-    console.log(estadoInicial)
+    
     if (estadoInicial == 0) {
         $("#idEstatus").val(1)
     } else {
@@ -425,7 +464,7 @@ function modalReafirmar() {
 
 function cancelarSelectEstatus() {
     var estadoInicial = $('#ModalAltaBaja').attr('data-valorInicial');
-    console.log(estadoInicial)
+    
     if (estadoInicial == 0) {
         $("#idEstatus").val(1)
     } else {

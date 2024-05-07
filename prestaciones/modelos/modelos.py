@@ -17,3 +17,8 @@ class rEmpleadoConcepto(db.Model):
         self.idConcepto = idConcepto
         self.Porcentaje = Porcentaje
         self.Monto = Monto
+        
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

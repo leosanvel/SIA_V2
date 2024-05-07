@@ -1,0 +1,47 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <!-- Contenido de la pestaña -->
+    <div class="row">
+        <label id="MensajeTablaDiasPersona" class="form-text">Días festivos registrados:</label>
+    </div>
+    <div class="row">
+        <form id="formResultadoDiasPersona">
+            <div class="table-responsive" style="width: 100;">
+                <table class="table table-striped" id="tablaResultadosDiasPersona" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <th>No. Empleado</th>
+                            <th>Periodo Vacacional</th>
+                            <th>No. de días</th>
+                            <th>Fecha</th>
+                            <th>Activo</th>
+                            <th>Borrar</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong> Verificar los campos capturados.</div>
+</div>
+<hr>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('gestion_tiempo_no_laboral.static', filename='scripts/dias_persona.js') }}"></script>
+{% endblock %}

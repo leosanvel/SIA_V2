@@ -1,0 +1,96 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Crear">Crear</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Buscar">Buscar</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <style>
+            .tab-content form .form-control {
+                margin-bottom: 0 !important;
+            }
+        </style>
+
+        <div class="tab-pane active oculta-empleado" id="Crear">
+            <form id="formularioPeriodoVacacional">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group datepicker-group" style="z-index: 1;">
+                            <label for="lblFechaInicio">Fecha inicio<span id="AFechaIncio" class="form-text"></span>:</label>
+                            <input type="text" id="FechaInicio" name="FechaIncio" class="form-control obligatorio fecha">
+                            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                            <small id="EFechaInicio" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group datepicker-group" style="z-index: 1;">
+                            <label for="lblFechaFin">Fecha fin<span id="AFechaFin" class="form-text"></span>:</label>
+                            <input type="text" id="FechaFin" name="FechaFin" class="form-control obligatorio fecha">
+                            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                            <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblPeriodo">Periodo<span id="APeriodo" class="form-text"></span>:</label>
+                            <select id="Perido" name="Periodo" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                <option value="1">PP</option>
+                                <option value="2">SP</option>
+                            </select>
+                            <small id="EPeriodo" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lblDescripcion">Descripción</label>
+                            <textarea id="Descripcion" name="Descripcion" class="form-control obligatorio" rows="3" style="resize: none;"></textarea>
+                            <small id="EDescripcion" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <button class="btn btn-primary" type="button" id="btnGuardaPeriodoVacacional">
+                                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="Buscar">
+            <div class="row">
+                <div class="table-responsive">
+                    <table class="table" id="TabPeriodoVacacional" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Periodo</th>
+                                <th>Descripcion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('gestion_tiempo_no_laboral.static', filename='scripts/periodo_vacacional.js') }}"></script>
+{% endblock %}

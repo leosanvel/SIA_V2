@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from app import db
 from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago
+from prestaciones.modelos.modelos import rEmpleadoConcepto
 from sqlalchemy.orm.exc import NoResultFound
 
 @catalogos.route('/catalogos/conceptos')
@@ -18,8 +19,8 @@ def catalogos_conceptos():
 
 @catalogos.route('/catalogos/crear-concepto', methods = ['POST'])
 def crear_concepto():
-    TipoConcepto = request.form['TipoConcepto']
-    idConcepto = request.form['idConcepto']
+    TipoConcepto = request.form.get('TipoConcepto')
+    idConcepto = request.form.get('idConcepto')
 
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         'TipoConcepto' : 'idTipoConcepto',
@@ -29,14 +30,23 @@ def crear_concepto():
         'ClaveSAT' : 'ClaveSAT',
         'TipoPago' : 'idTipoPago',
         'Porcentaje' : 'Porcentaje',
-        'Monto' : 'Monto'
+        'Monto' : 'Monto',
+        'Estatus' : 'Activo'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    concepto_data["Activo"] = 1
+    concepto_data["Activo"] = int(concepto_data["Activo"]) - 1
     nuevo_concepto = None
     try:
         concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).one()
+        concepto_a_modificar.update(**concepto_data)
 
+        # Modificar relaciones existentes de ese concepto:
+        if concepto_a_modificar.idTipoPago == "1":#Sólo si es de pago FIJO
+            relaciones = db.session.query(rEmpleadoConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).all()
+            for concepto in relaciones:
+                concepto.Porcentaje = concepto_data["Porcentaje"]
+                concepto.Monto = concepto_data["Monto"]
+                
     except NoResultFound:
         nuevo_concepto = kConcepto(**concepto_data)
         db.session.add(nuevo_concepto)
@@ -48,6 +58,7 @@ def crear_concepto():
 
 @catalogos.route('/catalogos/buscar-concepto', methods = ['POST'])
 def concepto():
+    respuesta = {}
     concepto = request.form.get('ConceptoExistente')
     if concepto:
         query = db.session.query(kConcepto)
@@ -72,8 +83,22 @@ def concepto():
             conc_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             lista_conceptos.append(conc_dict)
     if not lista_conceptos:
-        return jsonify({"NoEncontrado":True}) 
-    return jsonify(lista_conceptos)
+        respuesta["NoEncontrado"] = True
+
+    tipospago = db.session.query(kTipoPago).all()
+    lista_tipo_pago = []
+    for tipopago in tipospago:
+        if tipopago is not None:
+            tipopago_dict = tipopago.__dict__
+            tipopago_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            lista_tipo_pago.append(tipopago_dict)
+
+        
+    respuesta["ListaConceptos"] = lista_conceptos   
+    respuesta["TipoPago"] = lista_tipo_pago   
+ 
+
+    return jsonify(respuesta)
 
 @catalogos.route('/catalogos/actualizar-busqueda-conceptos', methods=['GET'])
 def actualizar_busqueda_conceptos():
@@ -91,3 +116,5 @@ def actualizar_busqueda_conceptos():
                         'texto': str(resultado.idTipoConcepto) + ' - ' + str(resultado.idConcepto) + ' - ' + str(resultado.Concepto)
                         } for resultado in resultados]
     return jsonify(resultados_json)
+
+

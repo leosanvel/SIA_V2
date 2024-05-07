@@ -40,7 +40,7 @@ def select_localidad():
     Entidad = request.form.get('Entidad')
     Municipio = request.form.get('Municipio')
     ret = '<option value="0">-- Seleccione --</option>'
-    localidades = db.session.query(kLocalidad).filter_by(idEntidad = Entidad, idMunicipio = Municipio, Activo = 1).all()
+    localidades = db.session.query(kLocalidad).filter_by(idEntidad = Entidad, idMunicipio = Municipio, Activo = 1).order_by(kLocalidad.Localidad).all()
     for entry in localidades:
         ret += '<option value="{}">{}</option>'.format(entry.idLocalidad, entry.Localidad)
     return ret
@@ -60,7 +60,7 @@ def select_asentamiento():
 def cargar_Plaza():
     idCentroCosto = request.form.get('idCentroCostos')
     ret = '<option value="0">-- Seleccione --</option>'
-    Plazas = db.session.query(tPuesto).filter_by(idCentroCosto = idCentroCosto).all()
+    Plazas = db.session.query(tPuesto).filter_by(idCentroCosto = idCentroCosto, idEstatusPuesto = 2).all()
     for entry in Plazas:
         ret += '<option value="{}">{}</option>'.format(entry.ConsecutivoPuesto, entry.Puesto)
     return ret

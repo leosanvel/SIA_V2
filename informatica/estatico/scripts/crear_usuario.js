@@ -15,11 +15,9 @@ $(document).ready(function () {
                         abrirModal("Usuario creado", "El usuario " + respuesta.usuario + " ha sido registrado correctamente.", "recargar")
                     }
                     if (respuesta.modificado) {
-                        console.log("MODIFICADO")
                         abrirModal("Usuario modificado", "El usuario " + respuesta.usuario + " ha sido modificado.", "recargar")
                     }
                     if (respuesta.existente) {
-                        console.log("existente")
                         abrirModal("Usuario existente", "El usuario " + respuesta.usuario + " ya existe.", "")
                     }
 

@@ -1,52 +1,90 @@
 $gmx(document).ready(function () {
 
-    $("#btnBuscaBajaEmpleado").click(function (event) {
-        var idPersona = $("#idPersona").val()
-        if (idPersona) {
-            $.ajax({
-                async: false,
-                type: "POST",
-                url: "/rh/gestion-empleados/obtener-puestos-empleado",
-                data: {
-                    "idPersona": $("#idPersona").val()
-                },
-                success: function (lista_puestos) {
-                    if (lista_puestos.length) {
-                        var cont = 1;
-                        $("#tablaResultadosEmpleadoPuestos tbody").empty();
-                        $("#tablaResultadosEmpleadoPuestos").show();
-                        lista_puestos.forEach(function (puesto) {
-                            var FechaInicio = convertirFechaParaVisualizacion(puesto.FechaInicio);
-                            var FechaFin = convertirFechaParaVisualizacion(puesto.FechaTermino);
-                            var text = `
-                            <tr>
-                                <td><input type="text" class="form-control" id="idPersona${cont}" value=${puesto.idPersona} data-chbxvalue="${cont}" readonly"></td>
-                                <td><input type="text" class="form-control" id="idPuesto${cont}" value=${puesto.idPuesto} data-chbxvalue="${cont}" readonly></td>
-                                <td><input type="text" class="form-control" id="FechaInicio${cont}" value="${FechaInicio}" data-chbxvalue="${cont}" readonly></td>
-                                <td><input type="text" class="form-control" id="FechaFin${cont}" value="${FechaFin}" data-chbxvalue="${cont}" readonly></td>
-                                <td><input type="text" class="form-control" id="Activo${cont}" value=${puesto.idEstatusEP} data-chbxvalue="${cont}" readonly></td>
-                            </tr>
-                            
-                            `;
-                            cont++;
-                            $("#tablaResultadosEmpleadoPuestos tbody").append(text);
 
-                        });
-                        var text = `
-                        <div class="col-md-12">
-                            <button type="button" id="btnDarDeBaja" class="btn btn-primary pull-right">Dar de baja</button>
-                            <button type="button" id="btnRenovar" class="btn btn-primary pull-right" style="margin-right: 10px;">Renovar</button>
-                        </div>
-                        `;
-                        $("#espacio_botones").append(text);
-                    }else{
-                        abrirModal("Error","El empleado no tiene asignado un puesto", "");
-                    }
-                }
-            });
-        }
+    $("#FechaEfecto").datepicker({ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true });
 
+    $("#btnDarDeBaja").click(function (event) {dar_baja()});
 
+    $("#btnBuscaBajaEmpleado").click(function (event) {busca_baja_empleado()
     });
 
 });
+
+function busca_baja_empleado(){
+    var idPersona = $("#idPersona").val()
+    if (idPersona) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/obtener-puestos-empleado",
+            data: {
+                "idPersona": $("#idPersona").val()
+            },
+            success: function (datos) {
+                if (datos.NoEncontrado) {
+                    abrirModal("Error", "El empleado no tiene asignado un puesto", "");
+                    $("#ResultadoPuesto input").val("");
+                    $("#ResultadoPuesto select").val("0");
+                    $("#ResultadoPuesto").hide();
+                }
+                else {
+                    $("#ResultadoPuesto input").val("");
+                    $("#ResultadoPuesto select").val("0");
+
+                    $("#ResultadoPuesto").show();
+
+                    if (datos.empleadoPuesto.FechaInicio != null) {
+                        var FechaInicio = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaInicio);
+                    } else {
+                        var FechaInicio = "-"
+                    }
+                    if (datos.empleadoPuesto.FechaTermino != null) {
+                        var FechaFin = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaTermino);
+                    } else {
+                        var FechaFin = "-"
+                    }
+
+                    $("#Puesto").val(datos.Puesto);
+                    $("#idPuesto").val(datos.idPuesto);
+                    $("#fechaInicio").val(FechaInicio);
+                    $("#FecTerm").val(FechaFin);
+                    $("#TipoEmpleado").val(datos.TipoEmpleado);
+                    var optionsHTML = `<option value='0'> -- Seleccione -- </option>`;
+                    datos.CausasBaja.forEach(function (causa) {
+                        optionsHTML += `<option value='${causa.idCausaBaja}'> ${causa.CausaBaja} </option>`;
+                    });
+                    $("#CausaBaja").html(optionsHTML);
+                    $("#TipoAlta").val(datos.TipoAlta);
+
+                    if (datos.TipoEmpleado == "Plaza federal"){
+                        $("#contenedorCheckbox").show();
+                    }
+
+                }
+            }
+        });
+    }
+}
+
+function dar_baja(){
+    if (validarFormulario($("#frmResultadoPuesto")).valido) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/dar-baja-empleado",
+            data: $("#frmResultadoPuesto, #idPersona").serialize(),
+            success: function (datos) {
+                if (datos.NoEncontrado) {
+                    abrirModal("Error", "Ha ocurrido un problema", "");
+                }else{
+                    abrirModal("Éxito", "El empleado ha sido dado de baja correctamente", "recargar");
+                }
+            }
+        });
+    }
+    
+}
+
+function funcionSeleccionar() {
+    busca_baja_empleado();
+}

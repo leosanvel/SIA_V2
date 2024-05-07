@@ -12,7 +12,7 @@ function generar_contrato(){
             if(data.generado){
                 abrirModal("Contrato Generado", "Contrato generado de forma correcta", "");
             }
-            //console.log(data.url_descarga);
+            
             var urlDescarga = data.url_descarga;
             $("#btnDescargaContrato").show();
             $("#btnDescargaContrato").wrap('<a href="' + urlDescarga + '"download></a>');

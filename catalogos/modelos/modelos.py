@@ -489,7 +489,7 @@ class kCodigoPostal(db.Model):
         self.Asentamiento = Asentamiento
         self.Activo = Activo
 
-class Plazas(db.Model):
+class kPlazas(db.Model):
     __tablename__ = "kPlaza"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
@@ -502,7 +502,7 @@ class Plazas(db.Model):
 
 class kConcepto(db.Model):
     __tablename__ = "kconcepto"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     idConcepto = db.Column(db.String(5), primary_key = True)
@@ -525,10 +525,15 @@ class kConcepto(db.Model):
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
         self.Activo = Activo
+    
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
 
 class kTipoConcepto(db.Model):
     __tablename__ = "ktipoconcepto"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     TipoConcepto = db.Column(db.String(25), nullable = True)
@@ -541,7 +546,7 @@ class kTipoConcepto(db.Model):
 
 class kTipoPago(db.Model):
     __tablename__ = "ktipopago"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoPago = db.Column(db.String(1), primary_key = True)
     TipoPago = db.Column(db.String(25), nullable = True)
@@ -551,3 +556,134 @@ class kTipoPago(db.Model):
         self.idTipoPago = idTipoPago
         self.TipoPago = TipoPago
         self.Activo = Activo
+
+class kCausaBaja(db.Model):
+    __tablename__ = "kcausabaja"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+
+    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
+    idCausaBaja = db.Column(db.Integer, primary_key = True)
+    CausaBaja = db.Column(db.String(300))
+    Activo = db.Column(db.Integer)
+
+    def __init__(self, idTipoEmpleado, idCausaBaja, CausaBaja, Activo):
+        self.idTipoEmpleado = idTipoEmpleado
+        self.idCausaoBaja = idCausaBaja
+        self.CausaBaja = CausaBaja
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kBancos(db.Model):
+    __tablename__ = "kbancos"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci", "schema": "db1"}
+
+    idBanco = db.Column(db.Integer, primary_key = True)
+    Codigo = db.Column(db.String(3), nullable = True)
+    Clave = db.Column(db.String(5), nullable = True)
+    Nombre = db.Column(db.String(50), nullable = True)
+
+    # Relacion
+    BancoPersonas = db.relationship("rBancoPersona", back_populates = "Banco", cascade = "all, delete-orphan")
+
+    def __init__(self, idBanco, Codigo, Clave, Nombre):
+        self.idBanco = idBanco
+        self.Codigo = Codigo
+        self.Clave = Clave
+        self.Nombre = Nombre
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kPoliticas(db.Model):
+    __tablename__ = "kpoliticas"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPolitica = db.Column(db.Integer, primary_key = True)
+    Politica = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idPolitica, Politica, Activo):
+        self.idPolitica = idPolitica
+        self.Politica = Politica
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kTipoSancion(db.Model):
+    __tablename__ = "ktiposancion"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoSancion = db.Column(db.Integer, primary_key = True)
+    TipoSancion = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idTipoSancion, TipoSancion, Activo):
+        self.idTipoSancion = idTipoSancion
+        self.TipoSancion = TipoSancion
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kPorcentajes(db.Model):
+    __tablename__ = "kporcentajes"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPorcentaje = db.Column(db.Integer, primary_key = True)
+    Porcentaje = db.Column(db.String(10), nullable = True)
+    Activo = db.Column(db.Boolean, nullable = True)
+
+    def __init__(self, idPorcentaje, Porcentaje, Activo):
+        self.idPorcentaje = idPorcentaje
+        self.Porcentaje = Porcentaje
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kTipoIncidencia(db.Model):
+    __tablename__ = "ktipoincidencia"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoIncidencia = db.Column(db.Integer, primary_key = True)
+    TipoIncidencia = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoIncidencia, TipoIncidencia, Activo):
+        self.idTipoIncidencia = idTipoIncidencia
+        self.TipoIncidencia = TipoIncidencia
+        self.Activo = Activo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kEstadoSolicitud(db.Model):
+    __tablename__ = "kestadosolicitud"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idEstadoSolicitud = db.Column(db.Integer, primary_key = True)
+    Estado = db.Column(db.String(50))
+    
+    def __init__(self, idEstadoSolicitud, Estado):
+        self.idEstadoSolicitud = idEstadoSolicitud
+        self.Estado = Estado
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
