@@ -58,7 +58,6 @@ def genera_reporte_incidencias():
     lista_nomina = procesar_nomina(nomina_data)
     if(lista_nomina["NoChecador"] or lista_nomina["NoIncidencias"]):
         return jsonify(lista_nomina)
-    print(lista_nomina)
     fecha_actual = datetime.now()
     quincena = db.session.query(kQuincena).filter(kQuincena.idQuincena == nomina_data["NumeroQuincena"]).one()
     dias_quincena = quincena.FechaFin - quincena.FechaInicio

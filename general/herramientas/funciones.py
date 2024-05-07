@@ -236,7 +236,6 @@ def procesar_nomina(nomina_data, VistaPrevia = None):
                 .order_by(tChecador.Fecha)\
                 .limit(3)\
                 .all()
-        print(Checadores)
 
         # Se agregará información a lista_nomina solo si hay días con HoraEntrada o HoraSalida como None
         if Checadores:
