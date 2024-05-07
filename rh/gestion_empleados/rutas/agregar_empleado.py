@@ -144,11 +144,14 @@ def guardar_empleado():
     nueva_escolaridad = None
     correo_enviado = False
     respuesta = {}
+    empleado_data['Activo'] = 1
+    empleado_puesto_data['idEstatusEP'] = 1
 
     try:
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
         empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         escolaridad_existente = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
+        empleado_puesto_existente = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).first()
         existe = 1
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
@@ -166,6 +169,20 @@ def guardar_empleado():
         persona_existente.update(**persona_data)
         empleado_existente.update(**empleado_data)
         escolaridad_existente.update(**escolaridad_data)
+        if(not empleado_puesto_existente.idEstatusEP):
+            empleado_puesto_data["idPersona"] = idPersona
+            empleado_puesto_data['FechaInicio'] = datetime.now().date()
+            empleado_puesto_data['FechaTermino'] = None
+            empleado_puesto_data['idEstatusEP'] = 1
+            empleado_puesto_data['idCausaBaja'] = None
+            empleado_puesto_data['Observaciones'] = None
+            empleado_puesto_data['FechaEfecto'] = None
+            empleado_puesto_data['idQuincena'] = None
+            nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
+            db.session.add(nuevo_empleado_puesto)
+            db.session.commit()
+            nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
+
         # Actualizar los atributos de 'empleado_existente' con los valores de 'empleado_data'
         #for attr, value in persona_data.items():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
