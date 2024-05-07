@@ -1,0 +1,96 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#NuevoCentroCostos">Ingresar nuevo dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarCentroCosto">Modificar datos</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="NuevoCentroCostos">
+            <form id="formularioCentroCosto">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblClave">Clave<span id="AClave" class="form-text">*</span>:</label>
+                            <input type="text" id="Clave" name="Clave" class="obligatorio form-control">
+                            <small id="EClave" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblEntidad">Entidad<span id="AEntidad" class="form-text">*</span>:</label>
+                            <input type="text" id="Entidad" name="Entidad" class="obligatorio form-control">
+                            <small id="EEntidad" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblCentroCosto">Centro de costos<span id="ACentroCosto" class="form-text">*</span>:</label>
+                            <input type="text" id="CentroCosto" name="CentroCosto" class="obligatorio form-control">
+                            <small id="ECentroCosto" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblMateria">Materia<span id="AMateria" class="form-text">*</span>:</label>
+                            <input type="text" id="Materia" name="Materia" class="obligatorio form-control">
+                            <small id="EMateria" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura" class="form-text">*</span>:</label>
+                            <input type="text" id="Abreviatura" name="Abreviatura" class="obligatorio form-control">
+                            <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblRegistroContable">Registro contable<span id="ARegistroContable" class="form-text">*</span>:</label>
+                            <input type="text" id="RegistroContable" name="RegistroContable" class="obligatorio form-control">
+                            <small id="ERegistroContable" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblCiudad">Ciudad<span id="ACiudad" class="form-text">*</span>:</label>
+                            <input type="text" id="Ciudad" name="Ciudad" class="obligatorio form-control">
+                            <small id="ECiudad" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblCentroCostoReal">Centro costo real<span id="ACentroCostoReal" class="form-text">*</span>:</label>
+                            <input type="text" id="CentroCostoReal" name="CentroCostoReal" class="obligatorio form-control">
+                            <small id="ECentroCostoReal" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <button class="btn btn-primary oculta-empleado" type="button" id="guardarCC" onclick="guardar_modificar_centrocosto()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane" id="ModificarCentroCosto">
+            <div class="row">
+                <table class="table" id="TabModCC">
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/centro_costos.js')}}"></script>
+{% endblock %}

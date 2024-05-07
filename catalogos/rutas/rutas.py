@@ -9,3 +9,6 @@ from app import db
 catalogos = Blueprint('catalogos', __name__, template_folder='../plantillas', static_folder='../estatico', static_url_path='/catalogos/estatico')
 
 from . import conceptos
+from . import centro_costos
+from . import dias_festivos
+from . import escuela
