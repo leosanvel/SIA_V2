@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from app import db
 from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago
+from prestaciones.modelos.modelos import rEmpleadoConcepto
 from sqlalchemy.orm.exc import NoResultFound
 
 @catalogos.route('/catalogos/conceptos')
@@ -38,6 +39,14 @@ def crear_concepto():
     try:
         concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).one()
         concepto_a_modificar.update(**concepto_data)
+
+        # Modificar relaciones existentes de ese concepto:
+        if concepto_a_modificar.idTipoPago == "1":#Sólo si es de pago FIJO
+            relaciones = db.session.query(rEmpleadoConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).all()
+            for concepto in relaciones:
+                concepto.Porcentaje = concepto_data["Porcentaje"]
+                concepto.Monto = concepto_data["Monto"]
+                
     except NoResultFound:
         nuevo_concepto = kConcepto(**concepto_data)
         db.session.add(nuevo_concepto)

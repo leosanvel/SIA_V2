@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify
+from .rutas import informatica
+from flask import render_template, request, jsonify
 from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
@@ -6,8 +7,6 @@ from autenticacion.modelos.modelos import rUsuario
 from general.modelos.modelos import rPPUsuario, kPagina
 
 from app import db
-
-informatica = Blueprint('informatica', __name__, template_folder = '../plantillas', static_folder='../estatico', static_url_path='/informatica/estatico')
 
 @informatica.route('/informatica/gestion-usuarios', methods=['POST', 'GET'])
 def gestion_usuarios():

@@ -669,3 +669,19 @@ class kTipoIncidencia(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class kEstadoSolicitud(db.Model):
+    __tablename__ = "kestadosolicitud"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idEstadoSolicitud = db.Column(db.Integer, primary_key = True)
+    Estado = db.Column(db.String(50))
+    
+    def __init__(self, idEstadoSolicitud, Estado):
+        self.idEstadoSolicitud = idEstadoSolicitud
+        self.Estado = Estado
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
