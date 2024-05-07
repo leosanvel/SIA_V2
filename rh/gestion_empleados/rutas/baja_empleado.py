@@ -97,7 +97,7 @@ def dar_baja_empleado():
 
     respuesta = {}
     try:
-        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto).one()
+        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto, FechaTermino = None).one()
         # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
         empleadoPuesto.Puesto.idEstatusPuesto = 2
 
