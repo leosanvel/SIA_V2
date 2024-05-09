@@ -18,7 +18,7 @@ function obtener_clabe(event){
         $.ajax({
             async: false,
             type: "POST",
-            url: "/Nomina/buscarClabe",
+            url: "/nomina/buscar-clabe",
             data: {
                 "idPersona": $("#idPersona").val()
             },
@@ -58,7 +58,7 @@ function verificar_clabe(){
     $.ajax({
         async: false,
         type: "POST",
-        url: "/Nomina/verificarClabe",
+        url: "/nomina/verificar-clabe",
         data: {
             "idPersona": $("#idPersona" + dato).val(),
             "Clabe": $("#Clabe" + dato).val()
@@ -77,7 +77,7 @@ function obtener_clabe_masivo(){
     $.ajax({
         async: false,
         type: "POST",
-        url: "/Nomina/buscarClaveMasivo",
+        url: "/nomina/buscar-clave-masivo",
         success: function(data){
             if(data){
                 if(data.resultado == false){
@@ -111,7 +111,7 @@ function obtener_clabe_masivo(){
                             </td>
                             <td>
                                 <div style="display: block;">
-                                    <button type="button" id="EdoCuenta${cont}")"><img src="/nomina/static/image/PDF_file_icon.png" height="25" width="20"/></button>
+                                    <button type="button" id="EdoCuenta${cont}")"><img src="/nomina/estatico/image/PDF_file_icon.png" height="25" width="20"/></button>
                                 </div>
                             </td>
                             <td>

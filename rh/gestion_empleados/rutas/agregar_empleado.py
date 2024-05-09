@@ -370,7 +370,7 @@ def guardar_datos_bancarios():
         if(Edo_Cuenta and archivo_permitido(Edo_Cuenta.filename, EXTENCIONES_PERMITIDAS)):
             if(datos_bancarios["Clabe"] != ""):
                 filename = secure_filename(datos_bancarios["Clabe"] + '_' + str(idPersona) + '.pdf')
-                dir = os.path.join(current_app.root_path, "rh", "empleado", "documentos", "estados_cuenta", filename)
+                dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta", filename)
                 Edo_Cuenta.save(dir)
 
         return jsonify({"guardado": True})
