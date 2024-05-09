@@ -46,8 +46,8 @@ app.register_blueprint(general)
 
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO INFORMATICA
-# from informatica.rutas.rutas import informatica
-# app.register_blueprint(informatica)
+from informatica.rutas.rutas import informatica
+app.register_blueprint(informatica)
 
 
 # MÓDULO PRINCIPAL

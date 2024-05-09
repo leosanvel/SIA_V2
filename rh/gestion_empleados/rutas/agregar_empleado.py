@@ -155,15 +155,15 @@ def guardar_empleado():
         existe = 1
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
-        # if not(empleado_existente.Activo == int(empleado_data["Activo"])):
-        #     if(int(empleado_data["Activo"]) == 1):
-        #         envia_correo("informatica","Reactivar",empleado_existente)
-        #         crea_solicitud("Reactivar",empleado_existente)
-        #         correo_enviado = True
-        #     if(int(empleado_data["Activo"]) == 0):
-        #         envia_correo("informatica","Baja",empleado_existente)
-        #         crea_solicitud("Baja",empleado_existente)
-        #         correo_enviado = True
+        if not(empleado_existente.Activo == int(empleado_data["Activo"])):
+            if(int(empleado_data["Activo"]) == 1):
+                envia_correo("informatica","Reactivar",empleado_existente)
+                crea_solicitud("Reactivar",empleado_existente)
+                correo_enviado = True
+            if(int(empleado_data["Activo"]) == 0):
+                envia_correo("informatica","Baja",empleado_existente)
+                crea_solicitud("Baja",empleado_existente)
+                correo_enviado = True
         print("Actualiza")
         persona_data["idPersona"] = idPersona
         persona_existente.update(**persona_data)

@@ -10,7 +10,7 @@ function inicializacion() {
     $.ajax({
         async: false,
         type: "POST",
-        url: "/Informatica/Cargar_Solicitudes",
+        url: '/informatica/solicitudes/cargar-solicitudes',
         success: function (data) {
             $("#TablaSolicitudes").show();
             $("#TablaSolicitudes tbody").empty();
@@ -97,7 +97,7 @@ function cancelar(idSolicitud) {
     $.ajax({
         async: false,
         type: "POST",
-        url: "/Informatica/cancela_solicitud",
+        url: "/informatica/solicitudes/cancela-solicitud",
         data: {
             "idSolicitud": idSolicitud,
         },
@@ -137,7 +137,7 @@ function guardar_modificar_solicitud(idSolicitud) {
     $.ajax({
         async: false,
         type: "POST",
-        url: "/Informatica/guardaSolicitud",
+        url: "/informatica/solicitudes/guarda-solicitud",
         data: {
             "idSolicitud": idSolicitud,
             "idEstadoSolicitud": $("#idEstadoSolicitud" + idSolicitud).val(),

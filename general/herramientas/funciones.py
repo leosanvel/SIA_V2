@@ -16,6 +16,7 @@ from email.message import EmailMessage
 from catalogos.modelos.modelos import kQuincena
 from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador
 from rh.gestion_empleados.modelos.empleado import rEmpleado
+from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina
 
 def permisos_de_consulta(view_func):
@@ -103,6 +104,7 @@ def archivo_permitido(filename, EXTENCIONES_PERMITIDAS):
 
 
 def envia_correo(receptor, motivo, objeto):
+    print("Función de correo ejecutada")
     return 0
     # Configura los detalles del servidor SMTP
     smtp_server = 'smtp.gmail.com'
@@ -332,3 +334,18 @@ def serialize_datetime(obj):
     if isinstance(obj, datetime): 
         return obj.isoformat() 
     raise TypeError("Type not serializable")
+
+def crea_solicitud(motivo,empleado_existente):
+    solicitud_data = {
+        "idSolicitud" : None,
+        "Solicitud" : motivo,
+        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + ".",
+        "idEstadoSolicitud" : 1,
+    }
+    
+    
+    nueva_solicitud = rSolicitudEstado(**solicitud_data)
+    db.session.add(nueva_solicitud)
+    # Realizar cambios en la base de datos
+    db.session.commit()
+    print("Solicitud agregada a la base de datos")
