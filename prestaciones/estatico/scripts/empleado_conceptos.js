@@ -189,7 +189,11 @@ function modal_agregar_concepto() {
     $("#btnEliminarEmpleadoConcepto").hide();
     $("#consecutivo").val("");
     $("#TipoConcepto").prop('disabled', false);
+
+    $("#Concepto").empty();
+    $("#Concepto").append("<option value='0'>-- Seleccione --</option>");
     $("#Concepto").prop('disabled', false);
+    
     $('#tituloModalAgregaEmpleadoConcepto')[0].textContent = "Agregar concepto";
     $('#btnCrearEmpleadoConcepto')[0].textContent = "Agregar";
     $("#Concepto").val("0");
