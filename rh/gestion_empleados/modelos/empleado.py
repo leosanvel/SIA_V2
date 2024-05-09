@@ -181,9 +181,9 @@ class rEmpleadoPuesto(db.Model):
 
     idPersona = db.Column(db.Integer, db.ForeignKey(rEmpleado.idPersona), primary_key = True)
     idPuesto = db.Column(db.Integer, db.ForeignKey(tPuesto.ConsecutivoPuesto), primary_key = True)
-    FechaInicio = db.Column(db.Date, nullable = True)
+    FechaInicio = db.Column(db.Date, primary_key = True)
     FechaTermino = db.Column(db.Date, nullable = True)
-    idEstatusEP = db.Column(db.Integer, nullable = True) # ACTIVO o INACTIVO
+    idEstatusEP = db.Column(db.Integer, primary_key = True) # ACTIVO o INACTIVO
     
     idCausaBaja = db.Column(db.Integer)
     Observaciones = db.Column(db.String(300), nullable = True)
