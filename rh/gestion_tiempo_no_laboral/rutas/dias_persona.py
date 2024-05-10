@@ -29,7 +29,6 @@ def guarda_diasPersona():
     diasPersona_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     if diasPersona_data["Fecha"]:
         diasPersona_data["Fecha"] = datetime.strptime(diasPersona_data["Fecha"], '%d/%m/%Y')
-    print(diasPersona_data)
     try:
         diasPersona_existente = db.session.query(rDiasPersona).filter_by(idPersona = diasPersona_data["idPersona"], 
                                                                         idPeriodo=diasPersona_data["idPeriodo"],
@@ -91,7 +90,6 @@ def buscar_dias_persona():
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/eliminar-dias', methods = ['POST'])
 def eliminar_dias():
     id = request.form.get('id')
-    #print(id)
     DiasPersonas = db.session.query(rDiasPersona).all()
     Dia_Persona = DiasPersonas[int(id) - 1]
     Dia_Persona.DiasGanados = 0

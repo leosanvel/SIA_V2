@@ -85,7 +85,6 @@ def verificar_clabe():
 
     try:
         Clabe_existente = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Clabe = Clabe, Activo = 1).one()
-        print(Clabe_existente)
 
         Clabe_existente.Verificado = 1
         db.session.commit()

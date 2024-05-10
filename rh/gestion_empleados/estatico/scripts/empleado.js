@@ -335,7 +335,6 @@ $gmx(document).ready(function () {
                 url: "/rh/gestion-empleados/buscar-curp",
                 data: $("#frmBuscarCURP").serialize(),
                 success: function (data) {
-                    console.log(data);
                     $("#spinnerCURP").hide();
                     $('#formularioDatosPersonales')[0].reset();
                     $('#formularioDatosEmpleado')[0].reset();

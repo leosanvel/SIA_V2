@@ -73,8 +73,6 @@ def filtrar_concepto():
     TipoConcepto = datos.pop("TipoConcepto", None)
     idPersona = datos.pop("idPersona", None)
     BuscarRepetidos = datos.pop("BuscarRepetidos", None)
-    print("BuscarRepetidos")
-    print(BuscarRepetidos)
     conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto).order_by(asc(kConcepto.Concepto)).all()
 
     lista_conceptos = []

@@ -226,16 +226,12 @@ def guardar_empleado():
 
         nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
-        print(nueva_persona)
         nuevo_empleado = rEmpleado(**empleado_data)
         db.session.add(nuevo_empleado)
-        print(nuevo_empleado)
         nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
         db.session.add(nuevo_empleado_puesto)
-        print(nuevo_empleado_puesto)
         nueva_escolaridad = rPersonaEscolaridad(**escolaridad_data)
         db.session.add(nueva_escolaridad)
-        print(nueva_escolaridad)
         respuesta["guardado"] = True
 
     # Realizar cambios en la base de datos

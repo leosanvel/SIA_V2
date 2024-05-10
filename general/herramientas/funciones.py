@@ -100,12 +100,10 @@ def eliminar_caracter(cad):
             indices.append(pos)
     
     if(indices):
-        #print(indices)
         for i in indices:
             i = i - indices.index(i)
             cad_aux = cad_aux[:i] + cad_aux[i + 1:]
     
-    #print(cad_aux)
 
     return cad_aux
 
