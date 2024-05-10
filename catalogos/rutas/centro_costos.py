@@ -59,8 +59,6 @@ def cargar_centro_costos():
 
     ret += '</tbody>'
 
-    #print(ret)
-
     return ret
 
 # Ruta para guardar información modificada
