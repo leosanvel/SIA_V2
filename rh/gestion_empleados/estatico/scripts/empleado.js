@@ -335,14 +335,20 @@ $gmx(document).ready(function () {
                 url: "/rh/gestion-empleados/buscar-curp",
                 data: $("#frmBuscarCURP").serialize(),
                 success: function (data) {
+                    console.log(data);
                     $("#spinnerCURP").hide();
                     $('#formularioDatosPersonales')[0].reset();
                     $('#formularioDatosEmpleado')[0].reset();
                     $('#formularioEscolaridad')[0].reset();
                     $('#formularioDomicilioParticular')[0].reset();
                     $('#formularioDomicilioFiscal')[0].reset();
-
-                    if (data.Status) { //No está registrado
+                    if(data.tiempo_error){
+                        $("#spinnerCURP").hide();
+                        $("#EBCURP").text("No hay respuesta del servidor RENAPO.");
+                    }else if(data.conexion_error){
+                        $("#spinnerCURP").hide();
+                        $("#EBCURP").text("Error en la conexión.");
+                    }else if (data.Status) { //No está registrado
                         if (data.Status == "EXITOSO") { //Curp encontrada
                             $("#Nombre").val(data.Nombre);
                             $("#Paterno").val(data.ApPaterno);

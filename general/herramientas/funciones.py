@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from collections import defaultdict
+import requests.exceptions
 from sqlalchemy import and_, or_
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import time, date, datetime
@@ -41,39 +42,52 @@ def consultar_curp(CURP):
     # Unión de la URL con la CURP a consultar
     url = url + CURP
 
-    # Obtención del HTML de respuesta a la consulta
-    page = requests.get(url, verify=False)
+    try:
+        # Obtención del HTML de respuesta a la consulta
+        page = requests.get(url, verify=False, timeout = 2)
 
-    # Si la respuesta es correcta
-    if page.status_code == 200:
-        html_content = page.text
-        soup = BeautifulSoup(html_content, 'html.parser')
+        # Si la respuesta es correcta
+        if page.status_code == 200:
+            html_content = page.text
+            soup = BeautifulSoup(html_content, 'html.parser')
 
-        # Se filtra la información
-        Status = soup.find('td', id = 'estatusOperacion').text.strip()
-        empleado = {}
-        empleado["Mensaje"] = soup.find('td', id = 'mensage').text.strip()
-        empleado["Status"] = Status
-        empleado["CURP"] = CURP
+            # Se filtra la información
+            Status = soup.find('td', id = 'estatusOperacion').text.strip()
+            empleado = {}
+            empleado["Mensaje"] = soup.find('td', id = 'mensage').text.strip()
+            empleado["Status"] = Status
+            empleado["CURP"] = CURP
 
-        # Si es estatus es correcto
-        if(Status == "EXITOSO"):
-            # Se obtiene el estatus de la CURP
-            Status_CURP = soup.find('td', id = 'statusCurp').text.strip()
-            # Si la CURP es válida
-            if(Status_CURP != "BSU"):
-                # Se obtiene el resto de la información
-                empleado["CURP"] = soup.find('td', id = 'CURP').text.strip()
-                empleado["Nombre"] = soup.find('td', id = 'nombres').text.strip()
-                empleado["ApPaterno"] = soup.find('td', id = 'apellido1').text.strip()
-                empleado["ApMaterno"] = soup.find('td', id = 'apellido2').text.strip()
-                empleado["Sexo"] = soup.find('td', id = 'sexo').text.strip()
-                empleado["FechaNacimiento"] = soup.find('td', id = 'fechNac').text.strip()
-                empleado["Edad"] = calcular_edad(datetime.strptime(empleado["FechaNacimiento"], "%d/%m/%Y"))
-                #empleado["Nacionalidad"] = soup.find('td', id = 'nacionalidad').text.strip()
-            else:
-                empleado["Status"] = "BSU"
-        # Se retorna un diccionario con la información
+            # Si es estatus es correcto
+            if(Status == "EXITOSO"):
+                # Se obtiene el estatus de la CURP
+                Status_CURP = soup.find('td', id = 'statusCurp').text.strip()
+                # Si la CURP es válida
+                if(Status_CURP != "BSU"):
+                    # Se obtiene el resto de la información
+                    empleado["CURP"] = soup.find('td', id = 'CURP').text.strip()
+                    empleado["Nombre"] = soup.find('td', id = 'nombres').text.strip()
+                    empleado["ApPaterno"] = soup.find('td', id = 'apellido1').text.strip()
+                    empleado["ApMaterno"] = soup.find('td', id = 'apellido2').text.strip()
+                    empleado["Sexo"] = soup.find('td', id = 'sexo').text.strip()
+                    empleado["FechaNacimiento"] = soup.find('td', id = 'fechNac').text.strip()
+                    empleado["Edad"] = calcular_edad(datetime.strptime(empleado["FechaNacimiento"], "%d/%m/%Y"))
+                    #empleado["Nacionalidad"] = soup.find('td', id = 'nacionalidad').text.strip()
+                else:
+                    empleado["Status"] = "BSU"
+            # Se retorna un diccionario con la información
+            return empleado
+    except requests.exceptions.Timeout:
+        print("Tiempo de respuesta vencido.")
+        empleado = {"tiempo_error": True}
+        return empleado
+    except requests.exceptions.ConnectionError:
+        print("Error de conexión.")
+        empleado = {"conexion_error": True}
+        return empleado
+    except requests.exceptions.RequestException:
+        print("Se produjo una ambigüedad.")
+        empleado = {"error": True}
         return empleado
 
 # Función para eliminar los caracteres "" de un string y poder visualizar en HTML
