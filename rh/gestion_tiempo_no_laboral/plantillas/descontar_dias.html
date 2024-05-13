@@ -1,0 +1,138 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+        <tr>
+            <th colspan="4">EMPLEADO SELECCIONADO</th>
+        </tr>
+        <tr>
+            <th>No. Empleado:</th>
+            <th>CURP:</th>
+            <th>Nombre(s):</th>
+            <th>Apellidos</th>
+        </tr>
+        <tr>
+            <input type="hidden" id="idPersona" name="idPersona" value="">
+            <td id="NumeroEmpleado"></td>
+            <td id="CurpEmpleado"></td>
+            <td id="NombreEmpleado"></td>
+            <td id="ApellidosEmpleado"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Crear">Crear</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Buscar">Buscar</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active oculta-empleado" id="Crear">
+            <form id="formularioDescontarDias">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group datepicker-group" id="NumEmpl">
+                            <label for="lblNumEmp">No. Empleado:</label>
+                            <input id="NumeroEmpleadoSeleccionado" name="NumEmplSel" class="form-control obligatorio botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label id="lblQuincena" for="lblQuincena">Quincena<span id="AQuincena" class="form-text"></span>:</label>
+                            <select id="Quincena" name="Quincena" class="obligatorio form-control">
+                                <option value = "0">-- Seleccione --</option>
+                                {% for quincena in Quincenas %}
+                                <option value="{{quincena.idQuincena}}">{{quincena.Descripcion}}</option>
+                                {% endfor %}
+                            </select>
+                            <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label id="lblPorcentaje" for="lblPorcentaje">Porcentaje<span id="APorcentaje" class="form-text"></span>:</label>
+                            <select id="Porcentaje" name="Porcentaje" class="obligatorio form-control">
+                                <option value = "0">-- Seleccione --</option>
+                                {% for porcentaje in Porcentajes %}
+                                <option value="{{porcentaje.idPorcentaje}}">{{porcentaje.Porcentaje}}</option>
+                                {% endfor %}
+                            </select>
+                            <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label id="lblDescontarDias" for="lblDescontarDias">Dias a descontar<span id="ADescontarDias" class="form-text"></span></label>
+                            <input type="text" id="DescontarDias" name="DescontarDias" class="form-control obligatorio">
+                            <small id="EDescontarDias" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pull-right form-group">
+                    <button class="btn btn-primary" type="button" id="btnGuardarDescontarDias">
+                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="Buscar">
+            <form id="formularioBuscarDescontarDias">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row">
+                <div class="form-group">
+                    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+                </div>
+                <div class="table-responsive" style="width: 100%;">
+                    <table class="table table-striped" id="TablaResultadosDescontarDias" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                            </tr>
+                            <tr>
+                                <th>Porcentaje</th>
+                                <th>Días</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Aquí se agregarán las filas de resultados de empleados -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('gestion_tiempo_no_laboral.static', filename='scripts/descontar_dias.js') }}"></script>
+{% endblock %}

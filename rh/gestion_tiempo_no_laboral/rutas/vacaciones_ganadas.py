@@ -10,7 +10,7 @@ from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
 def vacaciones_ganadas():
     return render_template('/vacaciones_ganadas.html', title = 'Vacaciones ganadas')
 
-@gestion_tiempo_no_laboral.route('/rh/gestion-*tiempo-no-laboral/obtener-dias-persona', methods = ['POST'])
+@gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/obtener-dias-persona', methods = ['POST'])
 def obtener_dias_persona():
     idPersona = request.form.get("idPersona")
 

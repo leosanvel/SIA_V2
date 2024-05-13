@@ -344,3 +344,12 @@ def serialize_datetime(obj):
     if isinstance(obj, datetime): 
         return obj.isoformat() 
     raise TypeError("Type not serializable")
+
+def calcular_quincena():
+    hoy = datetime.now()
+    mes = hoy.month
+    quincena = mes*2
+    if((hoy.day//16) == 0):
+        quincena = quincena - 1
+
+    return quincena
