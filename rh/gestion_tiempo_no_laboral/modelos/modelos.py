@@ -69,8 +69,8 @@ class rDiasPersona(db.Model):
             if hasattr(self, attr):
                 setattr(self, attr, value)
 
-class rEmpleadoDiasPorciento(db.Model):
-    __tablename__ = "rempleadodiasporciento"
+class rDiasPorciento(db.Model):
+    __tablename__ = "rdiasporciento"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 

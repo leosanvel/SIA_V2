@@ -4,7 +4,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
-from rh.gestion_tiempo_no_laboral.modelos.modelos import rEmpleadoDiasPorciento
+from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPorciento
 from catalogos.modelos.modelos import kQuincena, kPorcentajes
 from general.herramientas.funciones import calcular_quincena
 
@@ -33,11 +33,11 @@ def guardar_descontar_dias():
     descontar_dias_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     print(descontar_dias_data)
 
-    descontar_dias_existente = db.session.query(rEmpleadoDiasPorciento).filter_by(idPersona = descontar_dias_data["idPersona"], idQuincena = descontar_dias_data["idQuincena"]).first()
+    descontar_dias_existente = db.session.query(rDiasPorciento).filter_by(idPersona = descontar_dias_data["idPersona"], idQuincena = descontar_dias_data["idQuincena"]).first()
     if(descontar_dias_existente):
         descontar_dias_existente.update(**descontar_dias_data)
     else:
-        nuevo_descontar_dias = rEmpleadoDiasPorciento(**descontar_dias_data)
+        nuevo_descontar_dias = rDiasPorciento(**descontar_dias_data)
         db.session.add(nuevo_descontar_dias)
     
     db.session.commit()
@@ -47,7 +47,7 @@ def guardar_descontar_dias():
 @gestion_tiempo_no_laboral.route("/rh/gestion-tiempo-no-laboral/buscar-descontar-dias", methods = ['POST'])
 def buscar_descontar_dias():
     idPersona = request.form.get("idPersona")
-    descontar_dias_existente = db.session.query(rEmpleadoDiasPorciento).filter_by(idPersona = idPersona).all()
+    descontar_dias_existente = db.session.query(rDiasPorciento).filter_by(idPersona = idPersona).all()
 
     lista_porcentajes = []
     Porcentajes = db.session.query(kPorcentajes).order_by(kPorcentajes.idPorcentaje.asc()).all()
@@ -80,7 +80,7 @@ def eliminar_descontar_dias():
 
     descontar_dias_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
 
-    descontar_dias_eliminar = db.session.query(rEmpleadoDiasPorciento).filter_by(idPersona = descontar_dias_data["idPersona"], idQuincena = descontar_dias_data["idQuincena"], idPorcentaje = descontar_dias_data["idPorcentaje"], Dias = descontar_dias_data["Dias"]).delete()
+    descontar_dias_eliminar = db.session.query(rDiasPorciento).filter_by(idPersona = descontar_dias_data["idPersona"], idQuincena = descontar_dias_data["idQuincena"], idPorcentaje = descontar_dias_data["idPorcentaje"], Dias = descontar_dias_data["Dias"]).delete()
     db.session.commit()
     if descontar_dias_eliminar > 0:
         print("Los días a descontar se eliminaron correctamente.")
