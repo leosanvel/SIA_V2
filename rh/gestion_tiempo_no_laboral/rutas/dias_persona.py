@@ -82,8 +82,13 @@ def buscar_dias_persona():
     lista_dias = []
     for dia in diasPersonas:
         if dia is not None:
+            Nombre = dia.Empleado.Persona.Nombre
+            ApPaterno = dia.Empleado.Persona.ApPaterno
+            ApMaterno = dia.Empleado.Persona.ApMaterno
             dia_dict = dia.__dict__
             dia_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            dia_dict.pop("Empleado")
+            dia_dict["Nombre"] = Nombre + ' ' + ApPaterno + ' ' + ApMaterno
             lista_dias.append(dia_dict)
     return jsonify(lista_dias)
 

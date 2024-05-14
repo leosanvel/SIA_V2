@@ -48,11 +48,14 @@ class rDiasPersona(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idPersona = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, db.ForeignKey('rempleado.idPersona'), primary_key = True)
     idPeriodo = db.Column(db.Integer, primary_key = True)
     DiasGanados = db.Column(db.Integer, nullable = True)
     Fecha = db.Column(db.Date, primary_key = True)
     Activo = db.Column(db.Integer, nullable = False)
+
+    # Relación
+    Empleado = db.relationship('rEmpleado', back_populates = "DiasPersona", uselist = False, single_parent = True)
 
     def __init__(self, idPersona, idPeriodo, DiasGanados, Fecha, Activo):
         self.idPersona = idPersona

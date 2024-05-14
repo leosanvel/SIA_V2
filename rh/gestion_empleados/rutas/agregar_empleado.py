@@ -262,7 +262,7 @@ def buscar_empleado():
     )
 
     if esModal:
-        filtro_comun = and_(filtro_comun, rEmpleado.Activo == 1)
+        filtro_comun = and_(filtro_comun, rEmpleado.Activo == 1, tPersona.idTipoPersona == 1)
 
     # Agregar la búsqueda por partes del nombre
     if len(parametros_separados)>1:
