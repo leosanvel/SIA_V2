@@ -49,30 +49,32 @@ function cargarPeriodoVacacional(){
                 text = `
                 <tr>
                     <td>
-                        <div class="form-group datepicker-group"  style="z-index: 10;">
+                        <div class="form-group datepicker-group"  style="z-index: 10; width: 175px">
                             <input type="text" id="FechaInicio${PeriodoVacacional.idPeriodoVacacional}" class="form-control fecha" value="${FechaInicioFormateada}" readonly>
                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                             <small id="EFechaInicio${PeriodoVacacional.idPeriodoVacacional}" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </td>
                     <td>
-                        <div class="form-group datepicker-group"  style="z-index: 10;">
+                        <div class="form-group datepicker-group"  style="z-index: 10; width: 175px">
                             <input type="text" id="FechaFin${PeriodoVacacional.idPeriodoVacacional}" class="form-control fecha" value="${FechaFinFormateada}" readonly>
                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                             <small id="EFechaInicio${PeriodoVacacional.idPeriodoVacacional}" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </td>
                     <td>
-                        <select id="Periodo${PeriodoVacacional.idPeriodoVacacional}" name="Periodo${PeriodoVacacional.idPeriodoVacacional}" class="form-control" disabled>
-                            <option value="1">PP</option>
-                            <option value="2">SP</option>
-                            <option value="3">VG</option>
-                        </select>
-                        <script>
-                            $("#Periodo${PeriodoVacacional.idPeriodoVacacional}").val(${PeriodoVacacional.idPeriodo});
-                        </script>
+                        <div class="form-group" style="z-index: 10; width: 75px">
+                            <select id="Periodo${PeriodoVacacional.idPeriodoVacacional}" name="Periodo${PeriodoVacacional.idPeriodoVacacional}" class="form-control" disabled>
+                                <option value="1">PP</option>
+                                <option value="2">SP</option>
+                                <option value="3">VG</option>
+                            </select>
+                            <script>
+                                $("#Periodo${PeriodoVacacional.idPeriodoVacacional}").val(${PeriodoVacacional.idPeriodo});
+                            </script>
+                        </div>
                     </td>
-                    <td><textarea rows="3" class="form-control" id="Descripcion${PeriodoVacacional.idPeriodoVacacional}" style="resize: none; width: 300px;" readonly>${PeriodoVacacional.Descripcion}</textarea></td> 
+                    <td><textarea rows="3" class="form-control" id="Descripcion${PeriodoVacacional.idPeriodoVacacional}" style="resize: none; width: 450px;" readonly>${PeriodoVacacional.Descripcion}</textarea></td> 
                     <td><button type="button" class="btn btn-primary" id="Generar${PeriodoVacacional.idPeriodoVacacional}" onclick="generar(${PeriodoVacacional.idPeriodoVacacional})">Generar</button></td>
                 </tr>
                 `
