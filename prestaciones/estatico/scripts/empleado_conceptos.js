@@ -146,7 +146,7 @@ function buscar_empleado_concepto() {
                             <input type="text" class="form-control" id="idConcepto${cont}" value="${empleado_concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly style="width: 450px"></input>
+                            <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly style="width: 370px"></input>
                         </td>
                         <td>
                             <input type="text" class="form-control" id="Porcentaje${cont}" value="${empleado_concepto.Porcentaje}" readonly></input>
@@ -157,11 +157,13 @@ function buscar_empleado_concepto() {
                         `;
 
                     if (empleado_concepto.NumeroContrato != "1") {
-                        console.log("HAY NUMERO CONTRATO");
                         fechaInicial = convertirFechaParaVisualizacion(empleado_concepto.FechaInicio);
                         fechaFinal = convertirFechaParaVisualizacion(empleado_concepto.FechaInicio);
 
                         text = text + `
+                            <td>
+                            <input type="text" class="form-control" id="NumeroContrato${cont}" value="${empleado_concepto.NumeroContrato}" readonly style="width: 100px"></input>
+                            </td>
                             <td>
                             <input type="text" class="form-control" id="FechaInicio${cont}" value="${fechaInicial}" readonly style="width: 140px"></input>
                             </td>
@@ -283,6 +285,10 @@ function modal_agregar_concepto() {
     $("#Monto").val("0.00");
     $("#Porcentaje").val("0.000");
     $("#editar").val(false);
+    
+    $("#NumeroContrato").val("");
+    $("#FechaInicioContrato").val("");
+    $("#FechaFinContrato").val("");
 
     $("#contenedorCheckboxContrato").hide();
     $("#ContenedorContrato").hide();
@@ -306,6 +312,10 @@ function modal_editar_elemento(consecutivo) {
     $("#Concepto").val($("#idConcepto" + consecutivo).val());
     $("#Monto").val($("#Monto" + consecutivo).val());
     $("#Porcentaje").val($("#Porcentaje" + consecutivo).val());
+
+    $("#NumeroContrato").val($("#NumeroContrato" + consecutivo).val());
+    $("#FechaInicioContrato").val($("#FechaInicio" + consecutivo).val());
+    $("#FechaFinContrato").val($("#FechaFin" + consecutivo).val());
 
     $("#TipoConcepto").prop('disabled', true);
     $("#Concepto").prop('disabled', true);
