@@ -82,7 +82,6 @@ def checar_incidencias(NumQuincena):
         for incidencia in incidencias_existentes:
             dias = incidencia.FechaFin - incidencia.FechaInicio
             fecha_aux = incidencia.FechaInicio
-            #print(dias)
             for i in range(0, dias.days + 1, 1):
                 fecha_aux += timedelta(days = i)
                 checador = db.session.query(tChecador).filter_by(idPersona = incidencia.idPersona, NumeroQuincena = NumQuincena, Fecha = fecha_aux).first()

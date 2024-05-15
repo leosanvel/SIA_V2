@@ -58,6 +58,10 @@ def crear_usuario():
 def dar_todos_los_permisos(Usuario):
     paginas = db.session.query(kPagina).all()
 
+    # Eliminar permisos anteriores
+    paginaUsuario = db.session.query(rPPUsuario).filter_by(Usuario = Usuario).delete()
+    db.session.commit()
+    
     pagina_data = {}
     pagina_data["Usuario"] = Usuario
     pagina_data["idPermiso"] = 1

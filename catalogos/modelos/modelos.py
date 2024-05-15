@@ -291,12 +291,14 @@ class kQuincena(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idQuincena = db.Column(db.Integer, primary_key = True)
+    Quincena = db.Column(db.Integer, nullable = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     Descripcion = db.Column(db.String(50), nullable = True)
 
-    def __init__(self, idQuincena, FechaInicio, FechaFin, Descripcion):
+    def __init__(self, idQuincena, Quincena, FechaInicio, FechaFin, Descripcion):
         self.idQuincena = idQuincena
+        self,Quincena = Quincena
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.Descripcion = Descripcion
@@ -510,10 +512,11 @@ class kConcepto(db.Model):
     Monto = db.Column(db.Numeric(11, 2), nullable = True)
     ClaveSAT = db.Column(db.String(25), nullable = False)
     idTipoPago = db.Column(db.Integer, nullable = False)
+    Contrato = db.Column(db.Integer)
     Activo = db.Column(db.Integer, nullable = False)
 
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
@@ -522,6 +525,7 @@ class kConcepto(db.Model):
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
+        self.Contrato = Contrato
         self.Activo = Activo
     
     def update(self, **kwargs):

@@ -125,7 +125,6 @@ def guardar_o_modificar_justificante(justificante_data):
 
 def restar_diaspersona(idPersona, listadias, listaperiodo, listafecha, dias):
     for indice, tupla in enumerate(zip(listadias, listaperiodo, listafecha)):
-        # print(listadias[indice], listaperiodo[indice], listafecha[indice])
         try:
             DiasPersonas_existente = db.session.query(rDiasPersona).filter_by(idPersona = idPersona, idPeriodo = listaperiodo[indice], DiasGanados = listadias[indice], Fecha = datetime.strptime(listafecha[indice], '%d/%m/%Y')).one()
             print(DiasPersonas_existente)
