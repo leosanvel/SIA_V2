@@ -4,6 +4,7 @@ from datetime import date, datetime
 from app import db
 from .rutas import nomina
 from catalogos.modelos.modelos import kQuincena
+from nomina.modelos.modelos import tNomina
 
 @nomina.route("/nomina/crear-nomina", methods = ['GET', 'POST'])
 def crear_nomina():
@@ -37,6 +38,16 @@ def guardar_crear_nomina():
     }
 
     nomina_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    
 
-    return jsonify({"guardado": True})
+    nomina_nueva = None
+    
+    nomina_existente = db.session.query(tNomina).filter_by(idQuincena = nomina_data["idQuincena"]).first()
+    if nomina_existente is not None:
+        nomina_nueva = tNomina(**nomina_data)
+        db.session.add(nomina_nueva)
+        db.session.commit()
+
+        return jsonify({"guardado": True})
+    
+    else:
+        return jsonify({"guardado": False})

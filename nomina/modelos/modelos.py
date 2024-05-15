@@ -7,15 +7,17 @@ class tNomina(db.Model):
 
     idNomina = db.Column(db.Integer, primary_key = True)
     idQuincena = db.Column(db.Integer, nullable = True)
+    Nomina = db.Column(db.String(10), nullable = True)
     Descripcion = db.Column(db.Text, nullable = True)
     Estatus = db.Column(db.Integer, nullable = True)
     Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     idPersonaEmisor = db.Column(db.Integer, nullable = True)
     PeriodoQuincena = db.Column(db.Integer, nullable = True)
 
-    def __init__(self, idQuincena, Descripcion, Estatus, idPersonaEmisor, PeriodoQuincena):
+    def __init__(self, idQuincena, Nomina, Descripcion, Estatus, idPersonaEmisor, PeriodoQuincena):
         # self.idNomina = idNomina
         self.idQuincena = idQuincena
+        self.Nomina = Nomina
         self.Descripcion = Descripcion
         self.Estatus = Estatus
         # self.Fecha = Fecha

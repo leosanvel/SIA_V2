@@ -38,8 +38,10 @@ function guardar_crear_nomina(event){
             url: "/nomina/guardar-crear-nomina",
             data: $("#formularioCrearNomina").serialize(),
             success: function(data){
-                if(data){
-
+                if(data.guardado){
+                    abrirModal("Nomina creada", "Los datos de la nómina han sido creados de manera correcta.", "recargar");
+                }else{
+                    abrirModal("Nomina ya existe", "Los datos de la nómina ya existen.", "recargar");
                 }
             }
         });
