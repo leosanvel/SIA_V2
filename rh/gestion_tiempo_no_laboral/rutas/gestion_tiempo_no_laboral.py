@@ -6,3 +6,4 @@ from . import dias_festivos
 from . import dias_persona
 from . import periodo_vacacional
 from . import vacaciones_ganadas
+from . import descontar_dias

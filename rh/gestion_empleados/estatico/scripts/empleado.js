@@ -341,8 +341,13 @@ $gmx(document).ready(function () {
                     $('#formularioEscolaridad')[0].reset();
                     $('#formularioDomicilioParticular')[0].reset();
                     $('#formularioDomicilioFiscal')[0].reset();
-
-                    if (data.Status) { //No está registrado
+                    if(data.tiempo_error){
+                        $("#spinnerCURP").hide();
+                        $("#EBCURP").text("No hay respuesta del servidor RENAPO.");
+                    }else if(data.conexion_error){
+                        $("#spinnerCURP").hide();
+                        $("#EBCURP").text("Error en la conexión.");
+                    }else if (data.Status) { //No está registrado
                         if (data.Status == "EXITOSO") { //Curp encontrada
                             $("#Nombre").val(data.Nombre);
                             $("#Paterno").val(data.ApPaterno);

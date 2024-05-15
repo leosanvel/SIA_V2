@@ -42,9 +42,10 @@ function cargarDiasPersona(){
                     console.log(diaPersona.Activo);
                     text = `
                     <tr>
-                        <td><input type="text" class="form-control" id="NumEmpleado${cont}" value="${diaPersona.idPersona}" readonly></td>
                         <td>
-                        <select id="Periodo${cont}" name="Periodo${cont}" class="form-control" disabled>
+                            <input type="text" class="form-control" id="NumEmpleado${cont}" value="${diaPersona.Nombre}" readonly style="width: 500px;"></td>
+                        <td>
+                        <select id="Periodo${cont}" name="Periodo${cont}" class="form-control" disabled style="width: 75px;">
                             <option value="1">PP</option>
                             <option value="2">SP</option>
                             <option value="3">VG</option>
@@ -53,16 +54,16 @@ function cargarDiasPersona(){
                             $("#Periodo${cont}").val(${diaPersona.idPeriodo});
                         </script>
                     </td>
-                    <td><input type="text" class="form-control" id="DiasGanados${cont}" value="${diaPersona.DiasGanados}" readonly></td>
+                    <td><input type="text" class="form-control" id="DiasGanados${cont}" value="${diaPersona.DiasGanados}" readonly style="width: 75px;"></td>
                     <td>
-                        <div class="form-group datepicker-group"  style="z-index: 7;">
+                        <div class="form-group datepicker-group"  style="z-index: 7; width: 175px">
                             <input type="text" id="Fecha${cont}" class="form-control fecha" value="${FechaFormateada}" readonly>
                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                             <small id="EFechaInicio${cont}" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </td>
                     <td>
-                        <select id="ActDiasPersona${cont}" name="ActDiasPersona${cont}" class="obligatorio form-control" value="${diaPersona.Activo}" disabled>
+                        <select id="ActDiasPersona${cont}" name="ActDiasPersona${cont}" class="obligatorio form-control" value="${diaPersona.Activo}" disabled style="width: 120px;">
                             <option value="0">Inactivo</option>
                             <option value="1">Activo</option>
                         </select>
