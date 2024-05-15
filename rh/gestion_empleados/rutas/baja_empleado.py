@@ -81,8 +81,6 @@ def dar_baja_empleado():
     FechaEfectoFormateado = datetime.strptime(FechaEfecto, '%d/%m/%Y')
 
     checkboxConservarVacaciones = request.form.get("checkboxConservarVacaciones")
-    print("checkboxConservarVacaciones")
-    print(checkboxConservarVacaciones)
     
     try:
         quincena = db.session.query(kQuincena).filter(

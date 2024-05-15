@@ -510,10 +510,11 @@ class kConcepto(db.Model):
     Monto = db.Column(db.Numeric(11, 2), nullable = True)
     ClaveSAT = db.Column(db.String(25), nullable = False)
     idTipoPago = db.Column(db.Integer, nullable = False)
+    Contrato = db.Column(db.Integer)
     Activo = db.Column(db.Integer, nullable = False)
 
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
@@ -522,6 +523,7 @@ class kConcepto(db.Model):
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
+        self.Contrato = Contrato
         self.Activo = Activo
     
     def update(self, **kwargs):
