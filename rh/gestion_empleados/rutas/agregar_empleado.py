@@ -144,28 +144,45 @@ def guardar_empleado():
     nueva_escolaridad = None
     correo_enviado = False
     respuesta = {}
+    empleado_data['Activo'] = 1
+    empleado_puesto_data['idEstatusEP'] = 1
 
     try:
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
         empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         escolaridad_existente = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
+        empleado_puesto_existente = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).first()
         existe = 1
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
-        # if not(empleado_existente.Activo == int(empleado_data["Activo"])):
-        #     if(int(empleado_data["Activo"]) == 1):
-        #         envia_correo("informatica","Reactivar",empleado_existente)
-        #         crea_solicitud("Reactivar",empleado_existente)
-        #         correo_enviado = True
-        #     if(int(empleado_data["Activo"]) == 0):
-        #         envia_correo("informatica","Baja",empleado_existente)
-        #         crea_solicitud("Baja",empleado_existente)
-        #         correo_enviado = True
+        if not(empleado_existente.Activo == int(empleado_data["Activo"])):
+            if(int(empleado_data["Activo"]) == 1):
+                envia_correo("informatica","Reactivar",empleado_existente)
+                crea_solicitud("Reactivar",empleado_existente)
+                correo_enviado = True
+            if(int(empleado_data["Activo"]) == 0):
+                envia_correo("informatica","Baja",empleado_existente)
+                crea_solicitud("Baja",empleado_existente)
+                correo_enviado = True
         print("Actualiza")
         persona_data["idPersona"] = idPersona
         persona_existente.update(**persona_data)
         empleado_existente.update(**empleado_data)
         escolaridad_existente.update(**escolaridad_data)
+        if(not empleado_puesto_existente.idEstatusEP):
+            empleado_puesto_data["idPersona"] = idPersona
+            empleado_puesto_data['FechaInicio'] = datetime.now().date()
+            empleado_puesto_data['FechaTermino'] = None
+            empleado_puesto_data['idEstatusEP'] = 1
+            empleado_puesto_data['idCausaBaja'] = None
+            empleado_puesto_data['Observaciones'] = None
+            empleado_puesto_data['FechaEfecto'] = None
+            empleado_puesto_data['idQuincena'] = None
+            nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
+            db.session.add(nuevo_empleado_puesto)
+            db.session.commit()
+            nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
+
         # Actualizar los atributos de 'empleado_existente' con los valores de 'empleado_data'
         #for attr, value in persona_data.items():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
@@ -209,16 +226,12 @@ def guardar_empleado():
 
         nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
-        print(nueva_persona)
         nuevo_empleado = rEmpleado(**empleado_data)
         db.session.add(nuevo_empleado)
-        print(nuevo_empleado)
         nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
         db.session.add(nuevo_empleado_puesto)
-        print(nuevo_empleado_puesto)
         nueva_escolaridad = rPersonaEscolaridad(**escolaridad_data)
         db.session.add(nueva_escolaridad)
-        print(nueva_escolaridad)
         respuesta["guardado"] = True
 
     # Realizar cambios en la base de datos
@@ -249,7 +262,7 @@ def buscar_empleado():
     )
 
     if esModal:
-        filtro_comun = and_(filtro_comun, rEmpleado.Activo == 1)
+        filtro_comun = and_(filtro_comun, rEmpleado.Activo == 1, tPersona.idTipoPersona == 1)
 
     # Agregar la búsqueda por partes del nombre
     if len(parametros_separados)>1:
@@ -353,7 +366,7 @@ def guardar_datos_bancarios():
         if(Edo_Cuenta and archivo_permitido(Edo_Cuenta.filename, EXTENCIONES_PERMITIDAS)):
             if(datos_bancarios["Clabe"] != ""):
                 filename = secure_filename(datos_bancarios["Clabe"] + '_' + str(idPersona) + '.pdf')
-                dir = os.path.join(current_app.root_path, "rh", "empleado", "documentos", "estados_cuenta", filename)
+                dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta", filename)
                 Edo_Cuenta.save(dir)
 
         return jsonify({"guardado": True})

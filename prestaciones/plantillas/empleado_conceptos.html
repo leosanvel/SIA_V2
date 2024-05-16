@@ -50,9 +50,17 @@
 
 <div class="row">
     <form id="formResultadoEmpleadoConceptos">
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" id="btnAbrirModalAgregarEmpleadoConcepto" class="btn btn-primary"
+                    style="display: none;">Agregar concepto</button>
+                <br>
+            </div>
+        </div>
         <div class="table-responsive" style="width: 100%;">
             <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
                 <thead>
+                    <br>
                     <tr>
                         <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
                     </tr>
@@ -64,6 +72,9 @@
                         <th>Concepto</th>
                         <th>Porcentaje</th>
                         <th>Monto</th>
+                        <th>Numero de Contrato</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -72,13 +83,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <button type="button" id="btnAbrirModalAgregarEmpleadoConcepto" class="btn btn-primary"
-                    style="display: none;">Agregar concepto</button>
-            </div>
-            <br>
-        </div>
+
     </form>
 </div>
 
@@ -163,9 +168,59 @@
 
                         </div>
                         <br>
+                        <div class="row">
+                            <br>
+                            <div class="col-md-6">
+                                <div class="form-group" id="contenedorCheckboxContrato">
+                                    <input type="checkbox" id="checkboxContrato" name="checkboxContrato">
+                                    <label for="checkboxContrato" class="file">Contrato</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ContenedorContrato">
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group" id="contenedorNumeroContrato">
+                                        <label for="lblNumeroContrato">Número de Contrato<span id="ANumeroContrato"
+                                                class="form-text">*</span>:</label>
+                                        <input type="text" name="NumeroContrato" id="NumeroContrato" placeholder=""
+                                            class="obligatorio form-control">
+                                        <small id="ENumeroContrato"
+                                            class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                          
+                                <div class="col-md-4">
+                                    <div class="form-group datepicker-group" style="z-index: 10000;">
+                                        <label for="lblFechaInicio">Fecha Inicio<span id="AFechaInicio"
+                                                class="form-text"></span>:</label>
+                                        <input type="text" id="FechaInicioContrato" name="FechaInicioContrato"
+                                            class="form-control obligatorio">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFechaInicio"
+                                            class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group datepicker-group" style="z-index: 10000;">
+                                        <label for="lblFechaFin">Fecha Fin<span id="AFechaFin"
+                                                class="form-text"></span>:</label>
+                                        <input type="text" id="FechaFinContrato" name="FechaFinContrato"
+                                            class="form-control obligatorio">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
 
                         <hr />
                         <input type="hidden" id="consecutivo" name="consecutivo" value="">
+                        <input type="hidden" id="editar" name="editar" value="">
                     </form>
 
 

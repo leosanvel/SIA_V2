@@ -39,7 +39,6 @@ $gmx(document).ready(function () {
 
 function modal_crear_concepto() {
     $('#ModalCrearConcepto').modal('show');
-    $("#btnEliminarConcepto").hide();
     $("#Estatus").val("2");
     $("#ContenedorEstatus").hide();
 
@@ -63,6 +62,7 @@ function modal_crear_concepto() {
     $("#TipoPago").val("0");
     $("#Monto").val("0.00");
     $("#Porcentaje").val("0.000");
+    $("#Contrato").val("0");
     $("#checkboxporcentaje").prop('checked', true);
     habilita_porcentaje_o_monto();
 }
@@ -100,7 +100,8 @@ function crear_concepto() {
             data: $("#frmCrearConcepto, #consecutivo").serialize(),
             success: function (data) {
                 if (data) {
-                    abrirModal("Información guardada", "operación realizada con éxito", "recargar");
+                    abrirModal("Información guardada", "Operación realizada con éxito", "");
+                    $('#ModalCrearConcepto').modal('hide');
                 }
             }
         });
@@ -130,6 +131,7 @@ function buscar_concepto() {
                 respuesta.ListaConceptos.forEach(function (concepto) {
                     text = `
                     <tr>  
+                    <input type="hidden" id="Contrato${cont}" value="${concepto.Contrato}"></input>
                         <td>
                             <input type="text" class="form-control" id="TipoConcepto${cont}" value="${concepto.idTipoConcepto}" readonly></input></td>
                         </td>
@@ -224,7 +226,6 @@ function pago_fijo_variable(TipoPago) {
 function editar_concepto(consecutivo) {
 
     $('#ModalCrearConcepto').modal('show');
-    $("#btnEliminarConcepto").show();
 
     $("#consecutivo").val(consecutivo);
 
@@ -245,6 +246,7 @@ function editar_concepto(consecutivo) {
     $("#Abreviatura").val($("#Abreviatura" + consecutivo).val());
     $("#ClaveSAT").val($("#ClaveSAT" + consecutivo).val());
     $("#TipoPago").val($("#TipoPago" + consecutivo).val());
+    $("#Contrato").val(parseInt($("#Contrato" + consecutivo).val())+1);
 
     if ($("#TipoPago").val() == "2") {//Si es == 2 (Variable)
 
@@ -265,8 +267,6 @@ function editar_concepto(consecutivo) {
     }
 
     $("#ContenedorEstatus").show();
-    console.log($("#Activo" + consecutivo).val() + 1)
-    console.log($("#Activo" + consecutivo).val() + 1)
     $("#Estatus").val(parseInt($("#Activo" + consecutivo).val()) + 1);
 }
 

@@ -92,6 +92,10 @@ function obtenerInfoEmpleado() {
                 $("#idGrupo").val(data.idGrupo);
                 $("#idCC").val(data.idCentroCosto);
                 cargarPlaza();
+                if(data.idEstatusEP){
+                    console.log("HOLA");
+                    $("#idPlazaHom").append(`<option value = ${data.idPuesto}>${data.Puesto}</option>`);
+                }
                 $("#idPlazaHom").val(data.idPuesto);
                 $("#idUbicacion").val(data.idCentroCosto);
                 $("#HoraEntrada").val(data.HoraEntrada);
@@ -104,9 +108,10 @@ function obtenerInfoEmpleado() {
                 $("#NumQuincena").val(data.idQuincena);
                 $("#idEstatus").val(data.Activo);
 
-                $("#idCC").prop("disabled", true);
-                $("#idPlazaHom").prop("disabled", true);
-                $("#idUbicacion").prop("disabled", true);
+                if(data.Activo){
+                    $("#idCC").prop("disabled", true);
+                    $("#idPlazaHom").prop("disabled", true);
+                }
 
             }
         }

@@ -69,7 +69,7 @@ function obtener_periodos(){
         $.ajax({
             async: false,
             type: "POST",
-            url: "/rh/gestion-*tiempo-no-laboral/obtener-dias-persona",
+            url: "/rh/gestion-tiempo-no-laboral/obtener-dias-persona",
             data: {
                 "idPersona": $("#idPersona").val()
             },

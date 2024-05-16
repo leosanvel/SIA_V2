@@ -291,7 +291,7 @@ class kQuincena(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idQuincena = db.Column(db.Integer, primary_key = True)
-    Quincena = db.Column(db.Integer, primary_key = True)
+    Quincena = db.Column(db.Integer, nullable = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     Descripcion = db.Column(db.String(50), nullable = True)
@@ -513,12 +513,13 @@ class kConcepto(db.Model):
     Monto = db.Column(db.Numeric(11, 2), nullable = True)
     ClaveSAT = db.Column(db.String(25), nullable = False)
     idTipoPago = db.Column(db.Integer, nullable = False)
+    Contrato = db.Column(db.Integer)
     PartidaAntp = db.Column(db.Integer, nullable = False)
     Partida = db.Column(db.Integer, nullable = False)
     Fecha = db.Column(db.Date, nullable = True)
     Activo = db.Column(db.Integer, nullable = False)
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, PartidaAntp, Partida, Fecha, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
@@ -529,6 +530,7 @@ class kConcepto(db.Model):
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
+        self.Contrato = Contrato
         self.PartidaAntp = PartidaAntp
         self.Partida = Partida
         self.Fecha = Fecha
