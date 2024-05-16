@@ -1,5 +1,9 @@
 {% extends "crear_usuario.html" %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('informatica.static', filename='css/estilos.css') }}">
+{% endblock %}
+
 {% block titulo_pestanas %}
 <li class="nav-item "><a class="nav-link" data-toggle="tab" href="#Permisos">Buscar</a></li>
 {% endblock %}
@@ -11,8 +15,7 @@
     <div class="row">
         <div class="form-group  datepicker-group" id="ssBuscarUsuario">
             <label for="lblNumEmp">Usuario</label>
-            <input id="BuscarUsuario" name="BuscarUsuario"
-                class="form-control botonModalBuscaUsuario" type="text">
+            <input id="BuscarUsuario" name="BuscarUsuario" class="form-control botonModalBuscaUsuario" type="text">
             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
             <small id="EBuscarUsuario" class="etiquetaError form-text form-text-error"></small>
         </div>
@@ -53,48 +56,49 @@
 
     <div class="row">
 
-        <div class="tree" >
+        <div class="tree">
             <ul>
-                <li>
+                <li class="folder">
                     <input type="checkbox" id="folder1">
-                    <label for="folder1" class="folder">Menú 1</label>
+                    <label for="folder1">Menú 1</label>
                     <ul>
-                        <li>
+                        <li class="folder">
                             <input type="checkbox" id="submenu1-1">
-                            <label for="submenu1-1" class="folder">Submenú 1-1</label>
+                            <label for="submenu1-1">Submenú 1-1</label>
                             <ul>
                                 <li>
                                     <input type="checkbox" id="subsubmenu1-1-1">
-                                    <label for="subsubmenu1-1-1" class="file">Sub-submenú 1-1-1</label>
+                                    <label for="subsubmenu1-1-1">Sub-submenú 1-1-1</label>
                                 </li>
                                 <li>
                                     <input type="checkbox" id="subsubmenu1-1-2">
-                                    <label for="subsubmenu1-1-2" class="file">Sub-submenú 1-1-2</label>
+                                    <label for="subsubmenu1-1-2">Sub-submenú 1-1-2</label>
                                 </li>
                             </ul>
                         </li>
                         <li>
                             <input type="checkbox" id="submenu1-2">
-                            <label for="submenu1-2" class="file">Submenú 1-2</label>
+                            <label for="submenu1-2">Submenú 1-2</label>
                         </li>
                     </ul>
                 </li>
-                <li>
+                <li class="folder">
                     <input type="checkbox" id="folder2">
-                    <label for="folder2" class="folder">Menú 2</label>
+                    <label for="folder2">Menú 2</label>
                     <ul>
                         <li>
                             <input type="checkbox" id="submenu2-1">
-                            <label for="submenu2-1" class="file">Submenú 2-1</label>
+                            <label for="submenu2-1">Submenú 2-1</label>
                         </li>
                         <li>
                             <input type="checkbox" id="submenu2-2">
-                            <label for="submenu2-2" class="file">Submenú 2-2</label>
+                            <label for="submenu2-2">Submenú 2-2</label>
                         </li>
                     </ul>
                 </li>
             </ul>
         </div>
+
 
 
     </div>

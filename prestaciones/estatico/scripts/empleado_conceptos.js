@@ -135,10 +135,6 @@ function buscar_empleado_concepto() {
 
                     text = `
                     <tr>
-                        
-                        <td>
-                            <input type="text" class="form-control" id="NumeroEmpleado${cont}" value="${empleado_concepto.NumeroEmpleado}" readonly></input></td>
-                        </td>
                         <td>
                             <input type="text" class="form-control" id="idTipoConcepto${cont}" value="${empleado_concepto.idTipoConcepto}" readonly></input>
                         </td>

@@ -1,5 +1,26 @@
 $(document).ready(function() {
     
+    var folders = document.querySelectorAll('.folder');
+    folders.forEach(function (folder) {
+        folder.addEventListener('click', function (event) {
+            if (!event.target.matches('li')) return; // Si el clic no fue en un label, no hacer nada
+            var checkbox = this.querySelector('input[type="checkbox"]');
+            var isOpen = this.classList.toggle('expanded');
+            event.stopPropagation(); // Detener la propagación del evento
+        });
+    });
+
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('click', function (e) {
+            var isChecked = e.target.checked;
+            var descendants = this.parentElement.querySelectorAll('input[type="checkbox"]');
+            descendants.forEach(function (descendant) {
+                descendant.checked = isChecked;
+            });
+        });
+    });
+
     $("#btnBuscaUsuario").click(buscar_concepto);
 });
 
