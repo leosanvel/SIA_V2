@@ -1,0 +1,23 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+
+    <form id="formularioGenerarNomina">
+        <div class="row">
+            <div class="pull-right">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#foo" type="button"
+                    id="btnGenerarNomina">
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                    Generar Nómina
+                </button>
+            </div>
+        </div>
+    </form>
+    <hr>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('nomina.static', filename='scripts/generarNomina_script.js') }}"></script>
+{% endblock %}

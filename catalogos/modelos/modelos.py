@@ -503,27 +503,35 @@ class kPlazas(db.Model):
 class kConcepto(db.Model):
     __tablename__ = "kconcepto"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
-
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     idConcepto = db.Column(db.String(5), primary_key = True)
     Concepto = db.Column(db.String(250), nullable = False)
     Abreviatura = db.Column(db.String(25), nullable = False)
+    Gravable = db.Column(db.Integer, nullable = False)
+    idTipoEmpleado = db.Column(db.Integer, nullable = False)
     Porcentaje = db.Column(db.Numeric(11, 3), nullable = True)
     Monto = db.Column(db.Numeric(11, 2), nullable = True)
     ClaveSAT = db.Column(db.String(25), nullable = False)
     idTipoPago = db.Column(db.Integer, nullable = False)
+    PartidaAntp = db.Column(db.Integer, nullable = False)
+    Partida = db.Column(db.Integer, nullable = False)
+    Fecha = db.Column(db.Date, nullable = True)
     Activo = db.Column(db.Integer, nullable = False)
 
-
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, PartidaAntp, Partida, Fecha, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
         self.Abreviatura = Abreviatura
+        self.Gravable = Gravable
+        self.idTipoEmpleado = idTipoEmpleado
         self.Porcentaje = Porcentaje
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
+        self.PartidaAntp = PartidaAntp
+        self.Partida = Partida
+        self.Fecha = Fecha
         self.Activo = Activo
     
     def update(self, **kwargs):
@@ -687,3 +695,24 @@ class kEstadoSolicitud(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class kCalculoISR(db.Model):
+    __tablename__ = "kcalculoisr"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+    
+    idAnioFiscal = db.Column(db.Integer, primary_key = True)
+    TipoCalculo = db.Column(db.String(50), primary_key = True)
+    Consecutivo = db.Column(db.Integer, primary_key = True)
+    LimiteInferior = db.Column(db.Numeric(11, 2), nullable = True)
+    LimiteSuperior = db.Column(db.Numeric(11, 2), nullable = True)
+    CuotaFija = db.Column(db.Numeric(11, 2), nullable = True)
+    Porcentaje = db.Column(db.Numeric(11, 2), nullable = True)
+
+    def __init__(self,idAnioFiscal, TipoCalculo, Consecutivo, LimiteInferior, LimiteSuperior, CuotaFija, Porcentaje):
+        self.idAnioFiscal = idAnioFiscal
+        self.TipoCalculo = TipoCalculo
+        self.Consecutivo = Consecutivo   
+        self.LimiteInferior = LimiteInferior        
+        self.LimiteSuperior = LimiteSuperior
+        self.CuotaFija = CuotaFija     
+        self.Porcentaje = Porcentaje
