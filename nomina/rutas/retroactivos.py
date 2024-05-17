@@ -6,7 +6,7 @@ from .rutas import nomina
 from rh.gestion_empleados.modelos.empleado import rEmpleado, tPersona
 from rh.gestion_asistencias.modelos.modelos import kTipoProceso
 from catalogos.modelos.modelos import kQuincena
-from nomina.modelos.modelos import rDiasRetroactivos
+from nomina.modelos.modelos import rDiasRetroactivo
 
 @nomina.route("/nomina/retroactivos", methods = ['GET', 'POST'])
 def retroactivos():
@@ -38,7 +38,7 @@ def guardar_retroactivos():
         if empleados is not None:
             for id_empleado in empleados:
                 retroactivos_data['idPersona'] = int(id_empleado)
-                retroactivos_nuevo = rDiasRetroactivos(**retroactivos_data)
+                retroactivos_nuevo = rDiasRetroactivo(**retroactivos_data)
                 db.session.add(retroactivos_nuevo)
 
             db.session.commit()
@@ -48,9 +48,9 @@ def guardar_retroactivos():
             return({"guardado": False})
         
     elif request.form.get('TipoProceso') == '1':
-        retroactivos_existente = db.session.query(rDiasRetroactivos).filter_by(idPersona = retroactivos_data["idPersona"], idQuincena = retroactivos_data["idQuincena"]).first()
+        retroactivos_existente = db.session.query(rDiasRetroactivo).filter_by(idPersona = retroactivos_data["idPersona"], idQuincena = retroactivos_data["idQuincena"]).first()
         if retroactivos_existente is None:
-            retroactivos_nuevo = rDiasRetroactivos(**retroactivos_data)
+            retroactivos_nuevo = rDiasRetroactivo(**retroactivos_data)
             db.session.add(retroactivos_nuevo)
             db.session.commit()
             return({"guardado": True})        
@@ -61,7 +61,7 @@ def guardar_retroactivos():
 def buscar_retroactivos():
     idPersona = request.form.get("idPersona")
     lista_retroactivos = []
-    retroactivos = db.session.query(rDiasRetroactivos).filter_by(idPersona = idPersona).all()
+    retroactivos = db.session.query(rDiasRetroactivo).filter_by(idPersona = idPersona).all()
     for retroactivo in retroactivos:
         retroactivo_dict = retroactivo.__dict__
         retroactivo_dict.pop("_sa_instance_state", None)

@@ -6,6 +6,20 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
+                    <label for="lblTipoNomina">Tipo de nómina<span id="ATipoNomina" class="form-text">*</span>:</label>
+                    <select id="TipoNomina" name="TipoNomina" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% if TipoNominas %}
+                            {% for TipoNomina in TipoNominas %}
+                                <option value="{{TipoNomina.idTipoNomina}}">{{TipoNomina.TipoNomina}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <small id="ETipoNomina" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
                     <label for="lblQuincena">Número de Quincena<span id="AQuincena" class="form-text">*</span>:</label>
                     <select id="Quincena" name="Quincena" class="obligatorio form-control">
                         <option value="0">-- Seleccione --</option>
@@ -23,9 +37,9 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="lblDescripcion">Descripcion<span id="ADescripcion" class="form-text"></span>:</label>
-                    <textarea id="Descripcion" name="Descripcion" class="form-control obligatorio" rows="3" style="resize: none;" readonly></textarea>
-                    <small id="EDescripcion" class="etiquetaError form-text form-text-error"></small>
+                    <label for="lblNombreNomina">Nombre de la nómina<span id="ANombreNomina" class="form-text"></span>:</label>
+                    <input type="text" id="NombreNomina" name="NombreNomina" class="form-control obligatorio">
+                    <small id="ENombreNomina" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
             <div class="col-md-5">
@@ -38,7 +52,7 @@
             <div class="col-md-3">
                 <div class="form-group datepicker-group" style="z-index: 1;">
                     <label for="lblFechaPago">Fecha de Pago<span id="AFechaPago" class="form-text"></span>:</label>
-                    <input type="text" id="FechaPago" name="FechaPago" class="form-control obligatorio fecha" readonly>
+                    <input type="text" id="FechaPago" name="FechaPago" class="form-control obligatorio fecha">
                     <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                     <small id="EFechaPago" class="etiquetaError form-text form-text-error"></small>
                 </div>
@@ -57,15 +71,25 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="lblSMM">S.M.M<span id="ASMM" class="form-text"></span>:</label>
-                    <input type="text" id="SMM" name="SMM" class="form-control obligatorio" readonly>
+                    <input type="text" id="SMM" name="SMM" class="form-control obligatorio">
                     <small id="ESMM" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="lblsdoMMensual">Sueldo M. Mensual<span id="ASdoMMensual" class="form-text"></span>:</label>
-                    <input type="text" id="SdoMMensual" name="SdoMMensual" class="form-control obligatorio" readonly>
-                    <small id="ESdoMMensual" class="etiquetaError form-text form-text-error"></small>
+                    <label for="lblSueldoMensual">Sueldo M. Mensual<span id="ASueldoMensual" class="form-text"></span>:</label>
+                    <input type="text" id="SueldoMensual" name="SueldoMensual" class="form-control obligatorio">
+                    <small id="ESueldoMensual" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblDescripcion">Descripcion<span id="ADescripcion" class="form-text"></span>:</label>
+                    <textarea id="Descripcion" name="Descripcion" class="form-control obligatorio" rows="3" style="resize: none;" readonly></textarea>
+                    <small id="EDescripcion" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
         </div>

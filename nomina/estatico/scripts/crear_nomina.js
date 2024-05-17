@@ -1,6 +1,11 @@
 $gmx(document).ready(function(){
     $("#Quincena").change(cargar_info_crear_quincena);
     $("#btnCrearNomina").click(guardar_crear_nomina);
+    $("#FechaPago").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeYear: true,
+        changeMonth: true
+    });
 });
 
 function cargar_info_crear_quincena(){
@@ -47,3 +52,4 @@ function guardar_crear_nomina(event){
         });
     }
 }
+
