@@ -1,0 +1,207 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+
+
+</form>
+<div class="form-group">
+    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+</div>
+
+<div class="row">
+    <form id="formResultadoConceptos">
+        
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table table-striped" id="tablaResultadosConceptos" style="display: none;">
+                <thead>
+                    <br>
+                    <tr>
+                        <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
+                    </tr>
+                    <tr>
+                        <input type="hidden" id="TipoPago" name="TipoPago" value="">
+                        <th>idTipoConcepto</th>
+                        <th>idConcepto</th>
+                        <th>Concepto</th>
+                        <th>Abreviatura</th>
+                        <!-- <th>Porcentaje</th> -->
+                        <!-- <th>Monto</th> -->
+                        <th>ClaveSAT</th>
+                        <!-- <th>idTipoPago</th> -->
+                        <!-- <th>Contrato</th> -->
+                        <!-- <th>ExtraeArchivo</th>
+                        <th>Activo</th> -->
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán las filas de resultados de empleados -->
+                </tbody>
+            </table>
+        </div>
+
+    </form>
+</div>
+
+
+
+
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
+        Verificar los campos capturados.</div>
+</div>
+
+
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalAgregaEmpleadoConcepto" tabindex="-1"
+    aria-labelledby="tituloModalAgregaEmpleadoConcepto" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalAgregaEmpleadoConcepto">Agregar concepto</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalAgregaEmpleadoConcepto">
+
+                    <form name="frmCrearConceptoEmpleado" id="frmCrearConceptoEmpleado" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
+                                        class="form-text">*</span>:</label>
+                                <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    {% if TipoConcepto %}
+                                    {% for row in TipoConcepto %}
+                                    <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
+                                    {% endfor %}
+                                    {% endif %}
+                                </select>
+                                <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <br>
+                            <div class="col-md-12">
+                                <label for="lblConcepto">Concepto<span id="AConcepto"
+                                        class="form-text">*</span>:</label>
+                                <select id="Concepto" name="Concepto" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                </select>
+                                <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <br>
+                            <div class="col-md-6">
+                                <div class="form-group" id="contenedorCheckbox">
+                                    <input type="checkbox" id="checkboxporcentaje">
+                                    <label for="checkboxporcentaje" class="file">Porcentaje</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" id="PorcentajeContenedor">
+                                    <label for="lblPorcentaje">Porcentaje<span id="APorcentaje"
+                                            class="form-text">*</span>:</label>
+                                    <input type="number" name="Porcentaje" id="Porcentaje" placeholder="" value="0.000"
+                                        class="obligatorio form-control">
+                                    <small id="EPorcentaje" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group" id="MontoContenedor">
+                                    <label for="lblMonto">Monto<span id="AMonto" class="form-text">*</span>:</label>
+                                    <input type="number" name="Monto" id="Monto" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EMonto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
+                        <div class="row">
+                            <br>
+                            <div class="col-md-6">
+                                <div class="form-group" id="contenedorCheckboxContrato">
+                                    <input type="checkbox" id="checkboxContrato" name="checkboxContrato">
+                                    <label for="checkboxContrato" class="file">Contrato</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ContenedorContrato">
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group" id="contenedorNumeroContrato">
+                                        <label for="lblNumeroContrato">Número de Contrato<span id="ANumeroContrato"
+                                                class="form-text">*</span>:</label>
+                                        <input type="text" name="NumeroContrato" id="NumeroContrato" placeholder=""
+                                            class="obligatorio form-control">
+                                        <small id="ENumeroContrato"
+                                            class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                          
+                                <div class="col-md-4">
+                                    <div class="form-group datepicker-group" style="z-index: 10000;">
+                                        <label for="lblFechaInicio">Fecha Inicio<span id="AFechaInicio"
+                                                class="form-text"></span>:</label>
+                                        <input type="text" id="FechaInicioContrato" name="FechaInicioContrato"
+                                            class="form-control obligatorio">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFechaInicio"
+                                            class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group datepicker-group" style="z-index: 10000;">
+                                        <label for="lblFechaFin">Fecha Fin<span id="AFechaFin"
+                                                class="form-text"></span>:</label>
+                                        <input type="text" id="FechaFinContrato" name="FechaFinContrato"
+                                            class="form-control obligatorio">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <br>
+
+                        <hr />
+                        <input type="hidden" id="consecutivo" name="consecutivo" value="">
+                        <input type="hidden" id="editar" name="editar" value="">
+                    </form>
+
+
+
+
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModalAgregaEmpleadoConcepto" class="btn btn-primary"
+                    data-dismiss="modal" data-comportamiento="nada">Cancelar</button>
+                <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary">Agregar</button>
+                <button type="button" id="btnEliminarEmpleadoConcepto" class="btn btn-primary" style="display: none;"
+                    data-dismiss="modal">Eliminar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('prestaciones.static', filename='scripts/importar_conceptos.js') }}"></script>
+{% endblock %}
