@@ -20,7 +20,6 @@ def importar_conceptos():
 @prestaciones.route('/prestaciones/filtrar-conceptos-extrae-archivo', methods = ['POST'])
 def filtrar_conceptos_extraeArchivo():
     conceptos = db.session.query(kConcepto).filter_by(ExtraeArchivo = 1).all()
-    print(type(conceptos))
     lista_conceptos = []
     for elemento in conceptos:
         if elemento is not None:
@@ -30,4 +29,32 @@ def filtrar_conceptos_extraeArchivo():
     if not lista_conceptos:
         return jsonify({"NoEncontrado":True}) 
     return jsonify(lista_conceptos)
+
+@prestaciones.route('/prestaciones/extraer-concepto-de-archivo', methods = ['POST'])
+def extraer_concepto_archivo():
+    archivo = request.files['archivo']
+
+    # Verificar que se haya recibido un archivo y que sea un archivo de texto
+    if archivo and archivo.filename.endswith('.txt'):
+        # Leer el contenido del archivo
+        contenido = archivo.read().decode('utf-8')
+
+        concepto = porcentaje = monto = None
+
+        # Buscar las variables en el archivo
+        for linea in contenido.split('\n'):
+            if 'concepto' in linea:
+                concepto = linea.split('=')[1].strip()
+            elif 'porcentaje' in linea:
+                porcentaje = linea.split('=')[1].strip()
+            elif 'monto' in linea:
+                monto = linea.split('=')[1].strip()
+
+        # Verificar si se encontraron todas las variables
+        if concepto is not None or porcentaje is not None and monto is not None:
+            return jsonify({"Obtenido": True, "concepto": concepto, "porcentaje": porcentaje, "monto": monto})
+        else:
+            return jsonify({"ErrorLectura": True, "mensaje": "No se encontraron todas las variables"})
+    else:
+        return jsonify({"ArchivoInvalido": True, "mensaje": "No se recibió un archivo de texto o el archivo está vacío"})
 

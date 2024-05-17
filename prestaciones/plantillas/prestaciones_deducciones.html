@@ -66,6 +66,7 @@
                     </tr>
                     <tr>
                         <input type="hidden" id="TipoPago" name="TipoPago" value="">
+                        <th></th>
                         <th>Tipo de Concepto</th>
                         <th>id Concepto</th>
                         <th>Concepto</th>
@@ -74,7 +75,6 @@
                         <th>Numero de Contrato</th>
                         <th>Fecha Inicio</th>
                         <th>Fecha Fin</th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,7 +94,6 @@
     <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
         Verificar los campos capturados.</div>
 </div>
-
 
 <!-- Ventana Modal -->
 <div class="modal fade" id="ModalAgregaEmpleadoConcepto" tabindex="-1"
@@ -167,16 +166,16 @@
 
                         </div>
                         <br>
-                        <div class="row">
-                            <br>
-                            <div class="col-md-6">
-                                <div class="form-group" id="contenedorCheckboxContrato">
-                                    <input type="checkbox" id="checkboxContrato" name="checkboxContrato">
-                                    <label for="checkboxContrato" class="file">Contrato</label>
+                       
+                        <div id="ContenedorContrato" class="form-group" >
+
+                            <div class="row">
+                                <br>
+                                <div class="col-md-6">
+                                    <label for="checkboxContrato" class="file">Contrato:</label>
                                 </div>
+                                <br><br>
                             </div>
-                        </div>
-                        <div id="ContenedorContrato">
 
                             <div class="row">
                                 <div class="col-md-3">
@@ -189,7 +188,7 @@
                                             class="etiquetaError form-text form-text-error"></small>
                                     </div>
                                 </div>
-                          
+
                                 <div class="col-md-4">
                                     <div class="form-group datepicker-group" style="z-index: 10000;">
                                         <label for="lblFechaInicio">Fecha Inicio<span id="AFechaInicio"
@@ -246,6 +245,6 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('prestaciones.static', filename='scripts/empleado_conceptos.js') }}"></script>
+<script src="{{ url_for('prestaciones.static', filename='scripts/prestaciones_deducciones.js') }}"></script>
 <script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
 {% endblock %}
