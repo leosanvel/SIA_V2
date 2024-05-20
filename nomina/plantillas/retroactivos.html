@@ -1,0 +1,170 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+        <tr>
+            <th colspan="4">EMPLEADO SELECCIONADO</th>
+        </tr>
+        <tr>
+            <th>No. Empleado:</th>
+            <th>CURP:</th>
+            <th>Nombre(s):</th>
+            <th>Apellidos</th>
+        </tr>
+        <tr>
+            <input type="hidden" id="idPersona" name="idPersona" value="">
+            <td id="NumeroEmpleado"></td>
+            <td id="CurpEmpleado"></td>
+            <td id="NombreEmpleado"></td>
+            <td id="ApellidosEmpleado"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Crear">Crear</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#Buscar">Buscar</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <style>
+            .tab-content form .form-control {
+                margin-bottom: 0 !important;
+                /* Anula el margen inferior */
+            }
+        </style>
+
+        <div class="tab-pane active oculta-empleado" id="Crear">
+            <!-- Contenido de la pestaña Datos Personales -->
+            <form id="formularioRetroactivos">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="lblTipoProceso">Tipo de Proceso<span id="ATipoProceso"
+                                class="form-text">*</span>:</label>
+                        <select id="TipoProceso" name="TipoProceso" class="obligatorio form-control">
+                            {% for row in TipoProceso %}
+                            <option value="{{row.idTipoProceso}}">{{row.TipoProceso}}</option>
+                            {% endfor %}
+                        </select>
+                        <small id="ETipoProceso" class="etiquetaError form-text form-text-error"></small>
+                    </div>
+                </div>
+
+                <hr>
+
+            
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroEmpleadoSeleccionado" name="NumeroEmpleadoSeleccionado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="lblQuincena">Número de Quincena<span id="AQuincena" class="form-text">*</span>:</label>
+                            <select id="Quincena" name="Quincena" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                {% if Quincenas %}
+                                    {% for Quincena in Quincenas %}
+                                        <option value="{{Quincena.idQuincena}}">{{Quincena.Descripcion}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="lblDiasRetroactivos">Dias retroactivos<span id="ADiasRetroactivos" class="form-text">*</span>:</label>
+                            <input type="text" id="DiasRetroactivos" name="DiasRetroactivos" class="form-control obligatorio">
+                            <small id="EDiasRetroactivos" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lblDescripcion">Descripcion<span id="ADescripcion" class="form-text"></span>:</label>
+                            <textarea id="Descripcion" name="Descripcion" class="form-control obligatorio" rows="3" style="resize: none;"></textarea>
+                            <small id="EDescripcion" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="pull-right form-group">
+                            <button class="btn btn-primary" type="button" id="btnGuardarRetroactivos">
+                                <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="Buscar">
+            <form id="formularioBuscarRetroactivos">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                            <label for="lblNumEmp">No. Empleado</label>
+                            <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                class="form-control botonModalBuscaEmpleado" type="text">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="form-group">
+                <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+            </div>
+
+            <div class="row">
+                <div class="table-responsive" style="width: 100%;">
+                    <table class="table table-striped" id="tablaResultadosRetroactivos" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                            </tr>
+                            <tr>
+                                <th>No. Quincena</th>
+                                <th>Días retroactivos</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('nomina.static', filename='scripts/retroactivos.js') }}"></script>
+{% endblock %}
