@@ -1,7 +1,7 @@
 from .rutas import prestaciones
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app
 from flask_login import current_user
-
+import os
 from app import db
 from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago
 from prestaciones.modelos.modelos import rEmpleadoConcepto, rEmpleadoSueldo
@@ -36,6 +36,7 @@ def extraer_concepto_archivo():
 
     # Verificar que se haya recibido un archivo y que sea un archivo de texto
     if archivo and archivo.filename.endswith('.txt'):
+
         # Leer el contenido del archivo
         contenido = archivo.read().decode('utf-8')
 
@@ -51,10 +52,35 @@ def extraer_concepto_archivo():
                 monto = linea.split('=')[1].strip()
 
         # Verificar si se encontraron todas las variables
-        if concepto is not None or porcentaje is not None and monto is not None:
+        print( "AQUI EMPIEZA")
+        print(concepto)
+        print(porcentaje)        
+        print(monto)
+
+        directorio_archivos = os.path.join(current_app.root_path, "prestaciones", "docs")
+        if not os.path.exists(directorio_archivos):
+            os.makedirs(directorio_archivos)
+        nombre_unico = obtener_nombre_unico("Archivo.txt")
+        filepath = os.path.join(directorio_archivos, nombre_unico)
+        archivo.save(filepath)
+        
+        if concepto is not None or porcentaje is not None or monto is not None:
             return jsonify({"Obtenido": True, "concepto": concepto, "porcentaje": porcentaje, "monto": monto})
         else:
             return jsonify({"ErrorLectura": True, "mensaje": "No se encontraron todas las variables"})
     else:
         return jsonify({"ArchivoInvalido": True, "mensaje": "No se recibió un archivo de texto o el archivo está vacío"})
 
+def obtener_nombre_unico(nombre_original):
+    base, extension = os.path.splitext(nombre_original)
+    contador = 1
+    nombre_unico = f"{base}_{contador}{extension}"
+    directorio_archivos = os.path.join(current_app.root_path, "prestaciones", "docs")
+    ruta_completa = os.path.join(directorio_archivos, nombre_unico)
+    
+    while os.path.exists(ruta_completa):
+        contador += 1
+        nombre_unico = f"{base}_{contador}{extension}"
+        ruta_completa = os.path.join(directorio_archivos, nombre_unico)
+    
+    return nombre_unico
