@@ -1,25 +1,5 @@
-$(document).ready(function() {
-    
-    var folders = document.querySelectorAll('.folder');
-    folders.forEach(function (folder) {
-        folder.addEventListener('click', function (event) {
-            if (!event.target.matches('li')) return; // Si el clic no fue en un label, no hacer nada
-            var checkbox = this.querySelector('input[type="checkbox"]');
-            var isOpen = this.classList.toggle('expanded');
-            event.stopPropagation(); // Detener la propagación del evento
-        });
-    });
+$(document).ready(function () {
 
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('click', function (e) {
-            var isChecked = e.target.checked;
-            var descendants = this.parentElement.querySelectorAll('input[type="checkbox"]');
-            descendants.forEach(function (descendant) {
-                descendant.checked = isChecked;
-            });
-        });
-    });
 
     $("#btnBuscaUsuario").click(buscar_concepto);
 });
@@ -42,19 +22,24 @@ function buscar_concepto() {
                     <tr>
                         
                         <td>
-                            <input type="text" class="form-control" id="TipoConcepto" value="${usuario.Usuario}" readonly></input></td>
+                            <input type="text" class="form-control" id="TipoConcepto${cont}" value="${usuario.Usuario}" readonly></input></td>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idConcepto" value="${usuario.Contrasenia}" readonly></input>
+                            <input type="text" class="form-control" id="idConcepto${cont}" value="${usuario.Contrasenia}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto" value="${usuario.PrimerIngreso}" readonly></input>
+                            <input type="text" class="form-control" id="Concepto${cont}" value="${usuario.PrimerIngreso}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Abreviatura" value="${usuario.idPersona}" readonly></input>
+                            <input type="text" class="form-control" id="Abreviatura${cont}" value="${usuario.idPersona}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Porcentaje" value="${usuario.Activo}" readonly></input>
+                            <input type="text" class="form-control" id="Porcentaje${cont}" value="${usuario.Activo}" readonly></input>
+                        </td>
+                        <td>
+                        <div>
+                        <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="modal_editar_elemento(${cont})"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> </button>
+                        </div>
                         </td>
 
                     </tr>
@@ -66,4 +51,11 @@ function buscar_concepto() {
         }
     })
 
+}
+
+
+function modal_editar_elemento(consecutivo) {
+
+    $('#ModalAgregarUsuario').modal('show');
+    
 }

@@ -12,9 +12,11 @@ from datetime import datetime
 
 @prestaciones.route('/prestaciones/importar-conceptos')
 def importar_conceptos():
-
+    conceptos = db.session.query(kConcepto).filter_by(ExtraeArchivo = 1).all()
+    print(conceptos)
     return render_template('/importar_conceptos.html', title ='Importar conceptos',
-                            current_user=current_user)
+                            current_user=current_user,
+                            conceptos = conceptos)
 
 
 @prestaciones.route('/prestaciones/filtrar-conceptos-extrae-archivo', methods = ['POST'])
@@ -52,11 +54,6 @@ def extraer_concepto_archivo():
                 monto = linea.split('=')[1].strip()
 
         # Verificar si se encontraron todas las variables
-        print( "AQUI EMPIEZA")
-        print(concepto)
-        print(porcentaje)        
-        print(monto)
-
         directorio_archivos = os.path.join(current_app.root_path, "prestaciones", "docs")
         if not os.path.exists(directorio_archivos):
             os.makedirs(directorio_archivos)
