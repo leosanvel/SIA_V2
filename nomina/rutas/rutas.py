@@ -8,3 +8,4 @@ from . import generar_CFDI
 from . import validar_clabe
 from . import generar_Nomina
 from . import retroactivos
+from . import calendario_pagos
