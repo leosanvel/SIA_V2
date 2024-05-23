@@ -26,8 +26,8 @@ def generar_CFDI():
 
 @nomina.route('/Nomina/crearCFDI', methods = ['POST', 'GET'])
 @permisos_de_consulta
-def crear_CFDI():
-
+def crear_CFDI():    
+    
     numero_nomina = request.form.get("idNomina")
     numero_serie = 0
     Nomina = db.session.query(tNomina).filter_by(idNomina=numero_nomina,Estatus=2).first()

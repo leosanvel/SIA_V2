@@ -154,7 +154,7 @@ def crear_Nomina():
                 else:
                     if EConcepto.Porcentaje > 0:                        
                         ImporteADescontar = round((SueldoBruto * EConcepto.Porcentaje) / 100,2)         
-                        print("Concepto: ",str(EConcepto.idConcepto)," - sueldo bruto: ", str(SueldoBruto),"- Porcentaje: ",str(EConcepto.Porcentaje),"- Importe: ",str(ImporteADescontar))                   
+                        #print("Concepto: ",str(EConcepto.idConcepto)," - sueldo bruto: ", str(SueldoBruto),"- Porcentaje: ",str(EConcepto.Porcentaje),"- Importe: ",str(ImporteADescontar))                   
                     else:
                         ImporteADescontar = EConcepto.Monto
                 
@@ -172,7 +172,7 @@ def crear_Nomina():
                         Importe = Importe + round(((ImporteADescontar*2) / 30) * (DiasRetroactivo),2)
 
                 Importe = Importe * -1
-                print(str(Importe))
+                #print(str(Importe))
                 nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
                 db.session.add(nuevoregistro)
                 db.session.commit()
@@ -184,4 +184,15 @@ def crear_Nomina():
         else:
             respuesta = "0"
     
-    return jsonify({"respuesta":respuesta})
+        CConcepto = db.session.query(rNominaPersonas.idConcepto).filter_by().group_by(rNominaPersonas.idTipoConcepto,rNominaPersonas.idConcepto).all()
+                    
+        #print(CConcepto[type])     
+        listaNom=[]
+        listaNom.append({"Concepto":"2","Total":"150","Importe":"215415"})
+        listaNom.append({"Concepto":"3","Total":"250","Importe":"315415"})        
+        listaNom.append({"Concepto":"4","Total":"350","Importe":"415415"})
+        
+              
+        
+
+    return jsonify({"respuesta":respuesta,"listanomina":listaNom})

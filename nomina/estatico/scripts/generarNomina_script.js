@@ -9,6 +9,30 @@ function abrirAdModal() {
         $("#GenerarNominaModal").modal('show');
     }
 }
+function MostarNomina(listanomina){
+    
+        $("#tblNomina").show();
+        
+        $("#tblNomina tbody").empty();
+
+        listanomina.forEach(function (concepto) {
+            text = `
+            <tr>  
+                <td>
+                    <label>"${concepto.Concepto}"</label>"
+                </td>
+                <td>
+                    <label>"${concepto.Importe}"</label>"
+                </td>
+            </tr>
+            `;
+            $("#tblNomina tbody").append(text);
+        });
+
+}
+
+
+
 function generarNomina() {
     $.ajax({
         async: false,
@@ -22,8 +46,9 @@ function generarNomina() {
                 abrirModal("Archivo Generado", "La nómina se procesó correctamente.", "");
             }
             else{                
-                abrirModal("Error", "La nómina no fue procesada.", "");
+                abrirModal("Error", "La nómina no fue procesada.", "");                
             }
+            MostarNomina(data.listanomina);
 
         }
     });
