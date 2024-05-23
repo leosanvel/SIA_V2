@@ -6,9 +6,11 @@ class tNomina(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idNomina = db.Column(db.Integer, primary_key = True)
+    idTipoNomina = db.Column(db.String(1), nullable = True)
     idQuincena = db.Column(db.Integer, nullable = True)
     Nomina = db.Column(db.String(10))
     Descripcion = db.Column(db.Text, nullable = True)
+    Observaciones = db.Column(db.Text, nullable = True)
     Estatus = db.Column(db.Integer, nullable = True)
     Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     FechaPago = db.Column(db.Date)
@@ -18,14 +20,16 @@ class tNomina(db.Model):
     idPersonaEmisor = db.Column(db.Integer, nullable = True)
     PeriodoQuincena = db.Column(db.Integer, nullable = True)
 
-    def __init__(self, idNomina, idQuincena, Nomina, Descripcion, Estatus, Fecha,FechaPago, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena):
+    def __init__(self, idNomina, idTipoNomina, idQuincena, Nomina, Descripcion, Observaciones, Estatus, Fecha,FechaPago, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena):
         self.idNomina = idNomina
+        self.idTipoNomina = idTipoNomina
         self.idQuincena = idQuincena
         self.Nomina = Nomina
         self.Descripcion = Descripcion
+        self.Observaciones = Observaciones
         self.Estatus = Estatus
         self.Fecha = Fecha
-        self.FechaPago
+        self.FechaPago = FechaPago
         self.FechaInicial = FechaInicial
         self.FechaFinal = FechaFinal
         self.Quincena = Quincena
@@ -39,6 +43,25 @@ class tNomina(db.Model):
 
 class rNominaPersona(db.Model):
     __tablename__ = "rnominapersona"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idNomina = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, primary_key = True)
+    DiasLaborados = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idNomina, idPersona, DiasLaborados):
+        self.idNomina = idNomina
+        self.idPersona = idPersona
+        self.DiasLaborados = DiasLaborados
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+        
+class rDiasLaborados(db.Model):
+    __tablename__ = "rdiaslaborados"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 

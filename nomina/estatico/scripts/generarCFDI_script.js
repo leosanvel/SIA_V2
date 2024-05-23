@@ -5,7 +5,7 @@ $gmx(document).ready(function () {
 
 function abrirAdModal() {
     if (validarFormulario($("#formularioGenerarCFDI")).valido) {
-        $("#MensajeAdModal").html("¿Está seguro que desea generar el CFDI de la quincena " + $("#NumQuincena").val() + "?");
+        $("#MensajeAdModal").html("¿Está seguro que desea generar el CFDI de la quincena " + $("#idNomina").val() + "?");
         $("#GenerarCFDIModal").modal('show');
     }
 }
@@ -22,20 +22,12 @@ function generarCFDI() {
             console.log("TERMINADO")
             $("#GenerarCFDIModal").modal('hide');
 
-            if (data.respuesta == "existente") {
-                abrirModal("Archivo existente", "Los archivos fueron creados con anterioridad.", "");
+            if (data.respuesta == "1") {
+                abrirModal("CFDI", "Los archivos fueron creados correctamente.", "");
+                var urlDescarga = data.url_descarga;
+                $("#btnDescargaZIP ").show();
+                $("#btnDescargaZIP ").wrap('<a href="' + urlDescarga + '" download></a>');
             }
-
-            if (data.respuesta == "creado") {
-                abrirModal("Archivo Generado", "Los archivos han sido generados correctamente.", "");
-            }
-
-
-            // Manejar la respuesta JSON para obtener la URL de descarga
-            var urlDescarga = data.url_descarga;
-            $("#btnDescargaZIP ").show();
-            // Crear un enlace de descarga dinámico
-            $("#btnDescargaZIP ").wrap('<a href="' + urlDescarga + '" download></a>');
         }
     });
 }

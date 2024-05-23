@@ -19,16 +19,16 @@ import os, zipfile
 @permisos_de_consulta
 
 def generar_CFDI():
-    Quincenas = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
+    Nominas = db.session.query(tNomina).filter_by(Estatus=2).all()
     return render_template('/generarCFDI.html', title='Generar CFDI',
-                           Quincenas = Quincenas,
+                           Nominas = Nominas,
                            )
 
 @nomina.route('/Nomina/crearCFDI', methods = ['POST', 'GET'])
 @permisos_de_consulta
 def crear_CFDI():
 
-    numero_nomina = 2
+    numero_nomina = request.form.get("idNomina")
     numero_serie = 0
     Nomina = db.session.query(tNomina).filter_by(idNomina=numero_nomina,Estatus=2).first()
     if Nomina:
@@ -176,15 +176,10 @@ def crear_CFDI():
                     archivo.write("TABLA|DEPNOMINA|ATRIBUTO|DescripNomina|" + str(descripcion_nomina) +"\n")
                     archivo.write("TABLA|FormaPago|ATRIBUTO|FormadePago|PUE Pago en una sola exhibición \n")
                     archivo.write("TABLA|MetodPago|ATRIBUTO|MetododePago|TRANSFERENCIA ELECTRONICA \n")
-
-    
-    
-    
-    respuesta = "creado"    
-    if os.path.isfile(directorio + nombre_archivo + ".zip"):
-        os.remove(directorio + nombre_archivo + ".zip")
+        respuesta = "1"    
+    else:
+        respuesta = "0"
         
-    os.makedirs(directorio)
     crea_zip(rutas_archivos, directorio, nombre_carpeta)
     return jsonify({"url_descarga": url_for('nomina.descargar_cfdi_zip', nombre_archivo=nombre_carpeta), "respuesta":respuesta})
 

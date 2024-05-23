@@ -4,6 +4,32 @@
 
     <form id="formularioGenerarNomina">
         <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblidNomina">Seleccione nómina<span id="AidNomina"
+                            class="form-text">*</span>:</label>
+                    <select id="idNomina" name="idNomina" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% if Nominas %}
+                        {% for Nomina in Nominas %}
+                        <option value="{{Nomina.idNomina}}">{{Nomina.Nomina}}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                    <small id="EidQuincena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="lblObservaciones">Observaciones<span id="AObservaciones" class="form-text">*</span>:</label>
+                    <textarea id="Observaciones" name="Observaciones" class="obligatorio form-control"></textarea>
+                    <small id="EObservaciones" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="pull-right">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#foo" type="button"
                     id="btnGenerarNomina">
@@ -13,6 +39,24 @@
             </div>
         </div>
     </form>
+
+    <div class="modal fade" id="GenerarNominaModal" tabindex="1" aria-labelledby="Advertencia" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Advertencia">Advertencia</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="MensajeAdModal"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnCancelar" class="btn btn-primary"
+                        data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnGenerarNomina_modal" class="btn btn-primary">Generar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <hr>
 </div>
 {% endblock %}

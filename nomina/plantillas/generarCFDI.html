@@ -6,21 +6,19 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="lblNumQuincena">Número de Quincena<span id="ANumQuincena"
+                    <label for="lblidNomina">Seleccione nómina<span id="AidNomina"
                             class="form-text">*</span>:</label>
-                    <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                    <select id="idNomina" name="idNomina" class="obligatorio form-control">
                         <option value="0">-- Seleccione --</option>
-
-                        {% if Quincenas %}
-                        {% for Quincena in Quincenas %}
-                        <option value="{{Quincena.idQuincena}}">{{Quincena.Descripcion}}</option>
+                        {% if Nominas %}
+                        {% for Nomina in Nominas %}
+                        <option value="{{Nomina.idNomina}}">{{Nomina.Nomina}}</option>
                         {% endfor %}
                         {% endif %}
                     </select>
-                    <small id="ENumQuincena" class="etiquetaError form-text form-text-error"></small>
+                    <small id="EidNomina" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
-
         </div>
         <div class="row">
             <div class="pull-right">
@@ -32,10 +30,6 @@
             </div>
         </div>
     </form>
-
-
-
-
     <div class="modal fade" id="GenerarCFDIModal" tabindex="1" aria-labelledby="Advertencia" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

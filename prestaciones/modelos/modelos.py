@@ -1,5 +1,26 @@
 from app import db
 
+class rDiasRetroactivo(db.Model):
+    __bind_key__ = 'db2'
+    __tablename__ = "rdiasretroactivo"
+    __table_arg__ = {"mysql_engine":"InnoDB","mysql_charset":"utf8mb4"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idQuincena = db.Column(db.Integer, primary_key = True)
+    Dias = db.Column(db.Integer)
+    Descripcion =  db.Column(db.String(25))
+
+    def __init__(self, idPersona, idQuincena, Dias, Descripcion):
+        self.idPersona = idPersona
+        self.idQuincena = idQuincena
+        self.Dias = Dias
+        self.Descripcion = Descripcion
+        
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
 class rEmpleadoConcepto(db.Model):
     __bind_key__ = 'db2'
     __tablename__ = "rempleadoconcepto"
@@ -13,18 +34,14 @@ class rEmpleadoConcepto(db.Model):
     Monto = db.Column(db.Numeric(11, 2))
     FechaInicio = db.Column(db.Date)
     FechaFin = db.Column(db.Date)
-    NumeroContrato = db.Column(db.String(5), primary_key = True)
-    FechaInicio = db.Column(db.Date, nullable = True)
-    FechaFin = db.Column(db.Date, nullable = True)
-
-    def __init__(self, idPersona, idTipoConcepto, idConcepto, Porcentaje, Monto, NumeroContrato, FechaInicio, FechaFin):
+    
+    def __init__(self, idPersona, idTipoConcepto, idConcepto, Contrato, Porcentaje, Monto, FechaInicio, FechaFin):
         self.idPersona = idPersona
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Contrato = Contrato
         self.Porcentaje = Porcentaje
         self.Monto = Monto
-        self.NumeroContrato = NumeroContrato
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         
