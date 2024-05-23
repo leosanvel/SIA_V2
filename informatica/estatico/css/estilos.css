@@ -1,17 +1,46 @@
-.estado-solicitud {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
+/* Directorio en árbol */
+.tree ul {
+    list-style-type: none;
+    padding-left: 0;
 }
 
-.completado {
-    background-color: green;
+
+.tree .folder > ul {
+    display: none;
+    padding-left: 20px; /* Ajustar espacio de sangría para submenús */
 }
 
-.en-progreso {
-    background-color: yellow;
+.tree .folder.expanded > ul {
+    display: block;
 }
 
-.pendiente {
-    background-color: red;
+
+
+.tree .folder > ul > li{
+    padding-left: 30px; /* Ajustar espacio de sangría para sub-sub-submenús */
 }
+
+
+    .tree ul {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+
+    .tree .folder {
+        cursor: pointer;
+    }
+
+    .tree .file {
+        cursor: pointer;
+    }
+
+    .tree .folder:before {
+        content: "\25B6"; /* Triángulo apuntando a la derecha */
+    display: inline-block;
+    margin-right: 5px;
+    }
+
+    .tree .folder.expanded:before {
+        content: "\25BC"; /* Triángulo apuntando hacia abajo */
+    }
+

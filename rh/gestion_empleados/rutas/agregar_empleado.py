@@ -389,6 +389,9 @@ def guardar_conceptos():
                 datos_conceptos["idConcepto"] = concepto.idConcepto
                 datos_conceptos["Porcentaje"] = concepto.Porcentaje
                 datos_conceptos["Monto"] = concepto.Monto
+                datos_conceptos["NumeroContrato"] = 1
+                datos_conceptos["FechaInicio"] = None
+                datos_conceptos["FechaFin"] = None
                 nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
                 db.session.add(nuevo_concepto)
         

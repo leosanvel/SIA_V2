@@ -514,12 +514,13 @@ class kConcepto(db.Model):
     ClaveSAT = db.Column(db.String(25), nullable = False)
     idTipoPago = db.Column(db.Integer, nullable = False)
     Contrato = db.Column(db.Integer)
+    ExtraeArchivo = db.Column(db.Integer)
     PartidaAntp = db.Column(db.Integer, nullable = False)
     Partida = db.Column(db.Integer, nullable = False)
     Fecha = db.Column(db.Date, nullable = True)
     Activo = db.Column(db.Integer, nullable = False)
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, ExtraeArchivo, PartidaAntp, Partida, Fecha, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
@@ -531,6 +532,7 @@ class kConcepto(db.Model):
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
         self.Contrato = Contrato
+        self.ExtraeArchivo = ExtraeArchivo
         self.PartidaAntp = PartidaAntp
         self.Partida = Partida
         self.Fecha = Fecha

@@ -1,5 +1,9 @@
 {% extends "crear_usuario.html" %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('informatica.static', filename='css/estilos.css') }}">
+{% endblock %}
+
 {% block titulo_pestanas %}
 <li class="nav-item "><a class="nav-link" data-toggle="tab" href="#Permisos">Buscar</a></li>
 {% endblock %}
@@ -11,8 +15,7 @@
     <div class="row">
         <div class="form-group  datepicker-group" id="ssBuscarUsuario">
             <label for="lblNumEmp">Usuario</label>
-            <input id="BuscarUsuario" name="BuscarUsuario"
-                class="form-control botonModalBuscaUsuario" type="text">
+            <input id="BuscarUsuario" name="BuscarUsuario" class="form-control botonModalBuscaUsuario" type="text">
             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
             <small id="EBuscarUsuario" class="etiquetaError form-text form-text-error"></small>
         </div>
@@ -41,6 +44,7 @@
                             <th>PrimerIngreso</th>
                             <th>idPersona</th>
                             <th>Activo</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,58 +55,96 @@
         </form>
     </div>
 
-    <div class="row">
+    
+</div>
+<br>
 
-        <div class="tree" >
-            <ul>
-                <li>
-                    <input type="checkbox" id="folder1">
-                    <label for="folder1" class="folder">Menú 1</label>
-                    <ul>
-                        <li>
-                            <input type="checkbox" id="submenu1-1">
-                            <label for="submenu1-1" class="folder">Submenú 1-1</label>
-                            <ul>
-                                <li>
-                                    <input type="checkbox" id="subsubmenu1-1-1">
-                                    <label for="subsubmenu1-1-1" class="file">Sub-submenú 1-1-1</label>
-                                </li>
-                                <li>
-                                    <input type="checkbox" id="subsubmenu1-1-2">
-                                    <label for="subsubmenu1-1-2" class="file">Sub-submenú 1-1-2</label>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <input type="checkbox" id="submenu1-2">
-                            <label for="submenu1-2" class="file">Submenú 1-2</label>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <input type="checkbox" id="folder2">
-                    <label for="folder2" class="folder">Menú 2</label>
-                    <ul>
-                        <li>
-                            <input type="checkbox" id="submenu2-1">
-                            <label for="submenu2-1" class="file">Submenú 2-1</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" id="submenu2-2">
-                            <label for="submenu2-2" class="file">Submenú 2-2</label>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalAgregarUsuario" tabindex="-1"
+    aria-labelledby="tituloModalAgregarUsuario" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalAgregarUsuario">Agregar permisos</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalAgregarUsuario">
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                                <label for="lblNumEmp">No. Empleado</label>
+                                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                    class="form-control botonModalBuscaEmpleado" type="text">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblUsuario">Nombre de Usuario<span id="AUsuario"
+                                    class="form-text">*</span>:</label>
+                            <input type="text" name="Usuario" id="Usuario" placeholder=""
+                                class="obligatorio form-control">
+                            <small id="EUsuario" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblContrasena">Contraseña<span id="AContrasena"
+                                    class="form-text">*</span>:</label>
+                            <input type="password" name="Contrasena" id="Contrasena" placeholder=""
+                                class="obligatorio form-control">
+                            <small id="EContrasena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                        </div>
+
+                </div>
+
+                    <div class="row" id="arbolPaginas" >
+                        <div class="row">
+                            <label>Permisos:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" id="checkbox1">
+                            <label for="checkbox1">Escritura</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" id="checkbox2">
+                            <label for="checkbox2">Lectura</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" id="checkbox3">
+                            <label for="checkbox3">Inactiva</label>
+                        </div>
+                        <br>
+                        <br>
+                    
+                        <div class="row">
+                            <label>Páginas:</label>
+                        </div>
+                        <div id="menu-container" class="tree"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModalAgregaEmpleadoConcepto" class="btn btn-primary"
+                    data-dismiss="modal" data-comportamiento="nada">Cancelar</button>
+                <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary">Aceptar</button>
+                <button type="button" id="btnEliminarEmpleadoConcepto" class="btn btn-primary" style="display: none;"
+                    data-dismiss="modal">Eliminar</button>
+
+            </div>
         </div>
-
-
     </div>
 </div>
+
+
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
 
 <script src="{{ url_for('informatica.static', filename='scripts/modificar_usuario.js') }}"></script>
+<script src="{{ url_for('informatica.static', filename='scripts/permisos_usuario.js') }}"></script>
 {% endblock %}

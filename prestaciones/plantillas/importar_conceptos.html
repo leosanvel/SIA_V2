@@ -1,0 +1,66 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+
+
+</form>
+<div class="form-group">
+    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+</div>
+
+<div class="row">
+    <form id="formResultadoConceptos">
+
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table table-striped" id="tablaResultadosConceptos" style="display: none;">
+                <thead>
+                    <br>
+                    <tr>
+                        <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
+                    </tr>
+                    <tr>
+                        <input type="hidden" id="TipoPago" name="TipoPago" value="">
+                        <th>idTipoConcepto</th>
+                        <th>idConcepto</th>
+                        <th>Concepto</th>
+                        <th>Abreviatura</th>
+                        <th>Monto</th>
+                        <th>Porcentaje</th>
+                        <th>ClaveSAT</th>
+                        <!-- <th>idTipoPago</th> -->
+                        <!-- <th>Contrato</th> -->
+                        <!-- <th>ExtraeArchivo</th>
+                        <th>Activo</th> -->
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán las filas de resultados de empleados -->
+                </tbody>
+            </table>
+        </div>
+
+    </form>
+</div>
+
+
+
+
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
+        Verificar los campos capturados.</div>
+</div>
+
+
+
+{% endblock %}
+
+
+
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('prestaciones.static', filename='scripts/importar_conceptos.js') }}"></script>
+{% endblock %}

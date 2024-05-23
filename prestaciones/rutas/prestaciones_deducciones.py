@@ -13,7 +13,7 @@ from datetime import datetime
 @prestaciones.route('/prestaciones/prestaciones-deducciones')
 def empleado_conceptos():
     tiposConcepto = db.session.query(kTipoConcepto).all()
-    return render_template('/empleado_conceptos.html', title ='Prestaciones y deducciones',
+    return render_template('/prestaciones_deducciones.html', title ='Prestaciones y deducciones',
                             current_user=current_user,
                             TipoConcepto = tiposConcepto)
 
@@ -126,10 +126,11 @@ def obtener_concepto():
     if conceptos is not None:
         concepto_dict = conceptos.__dict__
         concepto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+        return jsonify({"concepto": concepto_dict,
+                       "NoEncontrado":False},)
 
-    if not concepto_dict:
+    else:
         return jsonify({"NoEncontrado":True}) 
-    return jsonify(concepto_dict)
 
 
 @prestaciones.route('/prestaciones/eliminar-empleado-concepto', methods = ['POST'])

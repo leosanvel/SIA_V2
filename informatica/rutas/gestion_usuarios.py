@@ -4,7 +4,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from autenticacion.modelos.modelos import rUsuario
-from general.modelos.modelos import rPPUsuario, kPagina
+from general.modelos.modelos import rPPUsuario, kPagina, kMenu, kSubMenu
 
 from app import db
 
@@ -89,3 +89,24 @@ def buscar_usuario():
             lista_usuarios.append(usuario_dict)
     
     return jsonify(lista_usuarios)
+
+@informatica.route('/informatica/gestion-usuarios/carga-arbol-paginas', methods=['POST', 'GET'])
+def carga_arbol_paginas():
+    paginas = db.session.query(kPagina).filter_by(Activo=1).all()
+
+    lista_paginas = []
+    for pagina in paginas:
+        try:
+            menu = db.session.query(kMenu).filter_by(idMenu = pagina.idMenu).one()
+            submenu = db.session.query(kSubMenu).filter_by(idMenu = pagina.idMenu, idSubMenu = pagina.idSubMenu).one()
+            pagina_data = {
+                "Menu": menu.Menu,
+                "SubMenu": submenu.SubMenu,
+                "Pagina": pagina.Pagina,
+                "URL": pagina.URL
+            }
+            lista_paginas.append(pagina_data)
+        except NoResultFound:
+            return jsonify({"error":True})
+    print(lista_paginas)    
+    return jsonify(lista_paginas)

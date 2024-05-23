@@ -16,7 +16,8 @@ $gmx(document).ready(function () {
 
     $("#TipoConcepto").on("change", function () { filtrar_tipo_concepto("true"); });
     $("#btnEliminarEmpleadoConcepto").on("click", function () { eliminar_empleado_concepto(); });
-    $("#Concepto").change(pago_fijo_variable);
+
+    $("#Concepto").on("change", function () { pago_fijo_variable(); });
 
     $("#Concepto").change(function () {
         var concepto = $(this).val();
@@ -132,13 +133,17 @@ function buscar_empleado_concepto() {
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
                 var cont = 1;
                 data.forEach(function (empleado_concepto) {
-
                     text = `
                     <tr>
-                        
-                        <td>
-                            <input type="text" class="form-control" id="NumeroEmpleado${cont}" value="${empleado_concepto.NumeroEmpleado}" readonly></input></td>
-                        </td>
+                    <td>
+                    <div>
+                        <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="modal_editar_elemento(${cont})"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> </button>
+                    </div>
+                    </td>
+                
+                `;
+                    text = text + `
+                    
                         <td>
                             <input type="text" class="form-control" id="idTipoConcepto${cont}" value="${empleado_concepto.idTipoConcepto}" readonly></input>
                         </td>
@@ -174,16 +179,10 @@ function buscar_empleado_concepto() {
                     }
 
 
-                    text = text + `
-                        <td>
-                        <div>
-                            <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="modal_editar_elemento(${cont})"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> </button>
-                        </div>
-                        </td>
-                    </tr>
-                    `;
+
                     cont++;
                     $("#tablaResultadosEmpleadoConceptos tbody").append(text);
+                    $("#tablaResultadosEmpleadoConceptos tbody").append("</tr>");
                 });
             }
         }
@@ -196,11 +195,12 @@ function pago_fijo_variable() {
         type: "POST",
         url: "/prestaciones/obtener-concepto",
         data: $("#TipoConcepto, #Concepto").serialize(),
-        success: function (concepto) {
-            if (concepto.NoEncontrado) {
+        success: function (respuesta) {
+
+            if (respuesta.NoEncontrado == true) {
                 abrirModal("ERROR", "Error", "");
             } else {
-                if (concepto.idTipoPago == "2") {//Si es == 2 (Variable)
+                if (respuesta.concepto.idTipoPago == "2") {//Si es == 2 (Variable)
                     $("#contenedorCheckbox").show();
                     $("#Monto").val("0.00");
                     $("#Porcentaje").val("0.000");
@@ -210,14 +210,14 @@ function pago_fijo_variable() {
                 } else {
                     $("#contenedorCheckbox").hide();
 
-                    $("#Monto").val(concepto.Monto);
-                    $("#Porcentaje").val(concepto.Porcentaje);
+                    $("#Monto").val(respuesta.concepto.Monto);
+                    $("#Porcentaje").val(respuesta.concepto.Porcentaje);
 
                     $("#Monto").prop('readonly', true);
                     $("#Porcentaje").prop('readonly', true);
                 }
 
-                if (concepto.Contrato == "1") {
+                if (respuesta.concepto.Contrato == "1") {
                     $("#NumeroContrato").addClass("obligatorio");
                     $("#FechaInicioContrato").addClass("obligatorio");
                     $("#FechaFinContrato").addClass("obligatorio");
@@ -285,13 +285,13 @@ function modal_agregar_concepto() {
     $("#Monto").val("0.00");
     $("#Porcentaje").val("0.000");
     $("#editar").val(false);
-    
+
     $("#NumeroContrato").val("");
     $("#FechaInicioContrato").val("");
     $("#FechaFinContrato").val("");
 
-    $("#contenedorCheckboxContrato").hide();
     $("#ContenedorContrato").hide();
+
 
 }
 
@@ -320,7 +320,21 @@ function modal_editar_elemento(consecutivo) {
     $("#TipoConcepto").prop('disabled', true);
     $("#Concepto").prop('disabled', true);
 
-    // pago_fijo_variable();
+    console.log("NUMERO CONTRATO");
+    console.log($("#NumeroContrato" + consecutivo).val());
+    if ($("#NumeroContrato" + consecutivo).val() !== undefined) {
+        console.log("hay numero de contrato");
+        if ($("#NumeroContrato" + consecutivo).val() == "1") {
+
+            $("#ContenedorContrato").hide();
+        }else {
+            $("#ContenedorContrato").show();
+        }
+        
+    } else {
+        console.log("UNDEFINED");
+        $("#ContenedorContrato").hide();
+    }
 }
 
 function eliminar_empleado_concepto() {
