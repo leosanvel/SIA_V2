@@ -64,27 +64,6 @@ class rNominaPersona(db.Model):
             if hasattr(self, attr):
                 setattr(self, attr, value)
 
-class rDiasRetroactivo(db.Model):
-    __tablename__ = "rdiasretroactivo"
-    __bind_key__ = 'db2'
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
-
-    idPersona = db.Column(db.Integer, primary_key = True)
-    idQuincena = db.Column(db.Integer, primary_key = True)
-    Dias = db.Column(db.Integer, nullable = True)
-    Descripcion = db.Column(db.Text, nullable = True)
-
-    def __init__(self, idPersona, idQuincena, Dias, Descripcion):
-        self.idPersona = idPersona
-        self.idQuincena = idQuincena
-        self.Dias = Dias
-        self.Descripcion = Descripcion
-
-    def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            if hasattr(self, attr):
-                setattr(self, attr, value)
-
 class kTipoNomina(db.Model):
     __tablename__ = "ktiponomina"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}

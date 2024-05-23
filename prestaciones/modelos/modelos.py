@@ -29,17 +29,17 @@ class rEmpleadoConcepto(db.Model):
     idPersona = db.Column(db.Integer, primary_key = True)
     idTipoConcepto = db.Column(db.String(1), primary_key = True)
     idConcepto = db.Column(db.String(5), primary_key = True)
-    Contrato = db.Column(db.String(25))
+    NumeroContrato = db.Column(db.String(25), primary_key = True)
     Porcentaje = db.Column(db.Numeric(11, 3))
     Monto = db.Column(db.Numeric(11, 2))
-    FechaInicio = db.Column(db.Date)
-    FechaFin = db.Column(db.Date)
+    FechaInicio = db.Column(db.Date, nullable=True)
+    FechaFin = db.Column(db.Date, nullable=True)
     
-    def __init__(self, idPersona, idTipoConcepto, idConcepto, Contrato, Porcentaje, Monto, FechaInicio, FechaFin):
+    def __init__(self, idPersona, idTipoConcepto, idConcepto, NumeroContrato, Porcentaje, Monto, FechaInicio, FechaFin):
         self.idPersona = idPersona
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
-        self.Contrato = Contrato
+        self.NumeroContrato = NumeroContrato
         self.Porcentaje = Porcentaje
         self.Monto = Monto
         self.FechaInicio = FechaInicio
