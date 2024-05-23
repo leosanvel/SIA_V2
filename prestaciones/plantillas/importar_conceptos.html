@@ -1,52 +1,40 @@
 {% extends "plantilla_base.html" %}
 {% block content %}
 
+<div class="col-md-4">
+    <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
+    <select id="Concepto" name="Concepto" class="obligatorio form-control">
+        <option value="0">-- Seleccione --</option>
+        {% if conceptos %}
+        {% for row in conceptos %}
+        <option value="{{row.idConcepto}}">{{row.Concepto}}</option>
+        {% endfor %}
+        {% endif %}
+    </select>
+    <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+</div>
+<div class="col-md-6">
+    <div class="form-group hidden-xs" bis_skin_checked="1">
+        <label for="ExtraeArchivo">Extraer información<span class="form-text">*</span>:</label>
+        <input type="file" id="ExtraeArchivo${cont}" name="ExtraeArchivo${cont}" class="obligatorio">
+        <small id="EExtraeArchivo${cont}" class="etiquetaError form-text form-text-error"></small>
+    </div>
+</div>
 
+<div class="col-md-2">
+    <button type="button" class="btn btn-primary" id="SubirArchivo${cont}" onclick="subir_archivo(cont)">Subir archivo</button>
+</div>
 
 </form>
 <div class="form-group">
     <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
 </div>
 
-<div class="row">
-    <form id="formResultadoConceptos">
-
-        <div class="table-responsive" style="width: 100%;">
-            <table class="table table-striped" id="tablaResultadosConceptos" style="display: none;">
-                <thead>
-                    <br>
-                    <tr>
-                        <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
-                    </tr>
-                    <tr>
-                        <input type="hidden" id="TipoPago" name="TipoPago" value="">
-                        <th>idTipoConcepto</th>
-                        <th>idConcepto</th>
-                        <th>Concepto</th>
-                        <th>Abreviatura</th>
-                        <th>Monto</th>
-                        <th>Porcentaje</th>
-                        <th>ClaveSAT</th>
-                        <!-- <th>idTipoPago</th> -->
-                        <!-- <th>Contrato</th> -->
-                        <!-- <th>ExtraeArchivo</th>
-                        <th>Activo</th> -->
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se agregarán las filas de resultados de empleados -->
-                </tbody>
-            </table>
-        </div>
-
-    </form>
-</div>
 
 
 
-
+<br>
+<br>
 <br>
 <div class="row">
     <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
