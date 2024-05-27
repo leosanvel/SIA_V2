@@ -8,7 +8,7 @@
             <option value="0">-- Seleccione --</option>
             {% if conceptos %}
             {% for row in conceptos %}
-            <option value="{{row.idConcepto}}">{{row.Concepto}}</option>
+            <option value="{{row.idConcepto}}">{{row.idTipoConcepto}} - {{row.idConcepto}} - {{row.Concepto}}</option>
             {% endfor %}
             {% endif %}
         </select>

@@ -2,6 +2,8 @@ $(document).ready(function () {
 
 
     $("#btnBuscaUsuario").click(buscar_concepto);
+    // $("#btnCrearUsuarioModal").on("click", function (event) { crear_usuario(); });
+    $("#btnCrearUsuarioModal").click(crear_usuario);
 });
 
 function buscar_concepto() {
@@ -22,19 +24,19 @@ function buscar_concepto() {
                     <tr>
                         
                         <td>
-                            <input type="text" class="form-control" id="TipoConcepto${cont}" value="${usuario.Usuario}" readonly></input></td>
+                            <input type="text" class="form-control" id="Usuario${cont}" value="${usuario.Usuario}" readonly></input></td>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idConcepto${cont}" value="${usuario.Contrasenia}" readonly></input>
+                            <input type="text" class="form-control" id="Contrasenia${cont}" value="${usuario.Contrasenia}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto${cont}" value="${usuario.PrimerIngreso}" readonly></input>
+                            <input type="text" class="form-control" id="PrimerIngreso${cont}" value="${usuario.PrimerIngreso}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Abreviatura${cont}" value="${usuario.idPersona}" readonly></input>
+                            <input type="text" class="form-control" id="idPersona${cont}" value="${usuario.idPersona}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Porcentaje${cont}" value="${usuario.Activo}" readonly></input>
+                            <input type="text" class="form-control" id="Activo${cont}" value="${usuario.Activo}" readonly></input>
                         </td>
                         <td>
                         <div>
@@ -57,5 +59,30 @@ function buscar_concepto() {
 function modal_editar_elemento(consecutivo) {
 
     $('#ModalAgregarUsuario').modal('show');
+
+}
+
+function crear_usuario() {
     
+    if (validarFormulario($("#frmCreaUsuario")).valido) {
+        // Serializar los datos del formulario
+        var formData = $("#frmCreaUsuario").serializeArray();
+        
+        var checkboxStates = getCheckboxStates();
+        // Añadir los datos de checkboxStates al formData
+        formData.push({ name: 'checkboxStates', value: JSON.stringify(checkboxStates) });
+
+        $.ajax({
+            type: "POST",
+            url: "/informatica/gestion-usuarios/crear-usuario",
+            data: $.param(formData),  // Serializar formData a una cadena de consulta
+            success: function (data) {
+                if (data.Error) {
+                    abrirModal("Error", "ERROR.", "");
+                } else {
+                    abrirModal("Cambios efectuados", "Los cambios se han realizado correctamente.", "");
+                }
+            }
+        });
+    }
 }

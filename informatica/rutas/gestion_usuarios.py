@@ -7,6 +7,7 @@ from autenticacion.modelos.modelos import rUsuario
 from general.modelos.modelos import rPPUsuario, kPagina, kMenu, kSubMenu
 
 from app import db
+import json
 
 @informatica.route('/informatica/gestion-usuarios', methods=['POST', 'GET'])
 def gestion_usuarios():
@@ -20,56 +21,69 @@ def crear_usuario():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         
         'idPersona' : 'idPersona',
-        'Usuario' : 'Usuario',
-        'Contrasena' : 'Contrasenia',
+        'ModalUsuario' : 'Usuario',
+        'ModalContrasena' : 'Contrasenia',
         'PrimerIngreso' : 'PrimerIngreso',
         'Activo' : 'Activo'
     }
     usuario_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    usuario_data["PrimerIngreso"] = 0
-    usuario_data["Activo"] = 1
+    if usuario_data["PrimerIngreso"] is None:
+        usuario_data["PrimerIngreso"] = 0
+    if usuario_data["Activo"] is None:
+        usuario_data["Activo"] = 1
+        
+    
     nombre_usuario = usuario_data.get("Usuario", None)
     idPersona = usuario_data.get("idPersona", None)
     respuesta = {}
-    if idPersona:    
-        try:
-            usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
-            respuesta["existente"] = True
-            respuesta["usuario"] = usuario_a_modificar.Usuario
-            # for key, value in usuario_data.items():
-            #     setattr(usuario_a_modificar, key, value)
-            # respuesta["modificado"] = True
-        except NoResultFound:
-            usuario = rUsuario(**usuario_data)
-            db.session.add(usuario)
-            respuesta["creado"] = True
-            respuesta["usuario"] = usuario_data["Usuario"]
+    # if idPersona:    
+    try:
+        usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
+        respuesta["existente"] = True
+        respuesta["usuario"] = usuario_a_modificar.Usuario
 
-        if respuesta.get('creado', False):
-            dar_todos_los_permisos(nombre_usuario)
-
-            # Realizar cambios en la base de datos
-            db.session.commit()
+    except NoResultFound:
+        usuario = rUsuario(**usuario_data)
+        db.session.add(usuario)
+        respuesta["creado"] = True
+        respuesta["usuario"] = usuario_data["Usuario"]
+    
+    paginas_json = request.form.get("checkboxStates")
+    if paginas_json:
+        paginas = json.loads(paginas_json)
     else:
-        respuesta["noidPersona"] = True
+        paginas = []
+    dar_permisos(paginas, nombre_usuario)
 
+    # Realizar cambios en la base de datos
+    db.session.commit()
+    # else:
+    #     respuesta["noidPersona"] = True
+
+    print(respuesta)
     return jsonify(respuesta)
 
-def dar_todos_los_permisos(Usuario):
-    paginas = db.session.query(kPagina).all()
+def dar_permisos(paginas, usuario):
 
     # Eliminar permisos anteriores
-    paginaUsuario = db.session.query(rPPUsuario).filter_by(Usuario = Usuario).delete()
+    paginaUsuario = db.session.query(rPPUsuario).filter_by(Usuario = usuario).delete()
     db.session.commit()
     
     pagina_data = {}
-    pagina_data["Usuario"] = Usuario
-    pagina_data["idPermiso"] = 1
-    for pagina in paginas:
-        pagina_data["idMenu"] = pagina.idMenu
-        pagina_data["idSubMenu"] = pagina.idSubMenu
-        pagina_data["idPagina"] = pagina.idPagina
+    pagina_data["Usuario"] = usuario
 
+    
+        
+    for pagina in paginas:
+        
+        if pagina["estado"] == "escritura":
+            pagina_data["idPermiso"] = 1
+        if pagina["estado"] == "lectura":
+            pagina_data["idPermiso"] = 0
+
+        pagina_data["idMenu"] = pagina["idMenu"]
+        pagina_data["idSubMenu"] = pagina["idSubMenu"]
+        pagina_data["idPagina"] = pagina["idPagina"]
         nueva_pagina = rPPUsuario(**pagina_data)
         db.session.add(nueva_pagina)
     print("permisos agregados")
@@ -103,10 +117,12 @@ def carga_arbol_paginas():
                 "Menu": menu.Menu,
                 "SubMenu": submenu.SubMenu,
                 "Pagina": pagina.Pagina,
-                "URL": pagina.URL
+                "URL": pagina.URL,
+                "idPagina": pagina.idPagina,
+                "idMenu": pagina.idMenu,
+                "idSubMenu": pagina.idSubMenu,
             }
             lista_paginas.append(pagina_data)
         except NoResultFound:
             return jsonify({"error":True})
-    print(lista_paginas)    
     return jsonify(lista_paginas)

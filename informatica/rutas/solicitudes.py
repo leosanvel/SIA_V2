@@ -23,7 +23,7 @@ def solicitudes():
 @permisos_de_consulta
 def carga_solicitudes():
     empleado_existente =  db.session.query(rEmpleado).order_by(asc(rEmpleado.idPersona)).first()
-    crea_solicitud("Reactivar",empleado_existente)
+
     try:
         # solicitudes = db.session.query(rSolicitudEstado).all()
         solicitudes = db.session.query(rSolicitudEstado).order_by(asc(rSolicitudEstado.idEstadoSolicitud)).all()

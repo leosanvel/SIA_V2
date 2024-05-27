@@ -5,18 +5,16 @@ $(document).ready(function () {
     var folders = document.querySelectorAll('.folder');
     folders.forEach(function (folder) {
         folder.addEventListener('click', function (event) {
-
-            if (!event.target.matches('li')) return; // Si el clic no fue en un label, no hacer nada
+            if (!event.target.matches('li')) return;
             var checkbox = this.querySelector('input[type="checkbox"]');
             var isOpen = this.classList.toggle('expanded');
-            event.stopPropagation(); // Detener la propagación del evento
+            event.stopPropagation();
         });
     });
 
     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(function (checkbox) {
         checkbox.addEventListener('click', function (e) {
-
             el = $(this);
             var isChecked = el.data('checked');
 
@@ -28,25 +26,17 @@ $(document).ready(function () {
                     el.data('checked', 1);
                     el.prop('checked', false);
                     el.prop('indeterminate', true);
-
                     break;
-
                 case 1:
                     el.data('checked', 2);
                     el.prop('checked', true);
                     el.prop('indeterminate', false);
-
-
                     break;
-
                 default:
                     el.data('checked', 0);
                     el.prop('checked', false);
                     el.prop('indeterminate', false);
-
-
             }
-
 
             var descendants = this.parentElement.querySelectorAll('input[type="checkbox"]');
 
@@ -54,34 +44,27 @@ $(document).ready(function () {
                 descendant.dataset.checked = el.data('checked');
 
                 switch (isChecked) {
-
                     case 0:
                         descendant.checked = false;
                         descendant.indeterminate = false;
-
                         break;
-
                     case 1:
                         descendant.checked = false;
                         descendant.indeterminate = true;
-
                         break;
-
                     default:
                         descendant.checked = true;
                         descendant.indeterminate = false;
                 }
-
             });
-
         });
     });
 
-    $("#checkbox1").prop('checked',true)
-    $("#checkbox1").on("click", function (event) {event.preventDefault(); });
-    $("#checkbox2").prop('indeterminate',true)
+    $("#checkbox1").prop('checked', true)
+    $("#checkbox1").on("click", function (event) { event.preventDefault(); });
+    $("#checkbox2").prop('indeterminate', true)
     $("#checkbox2").on("click", function (event) { event.preventDefault(); });
-    $("#checkbox3").prop('checked',false)
+    $("#checkbox3").prop('checked', false)
     $("#checkbox3").on("click", function (event) { event.preventDefault(); });
 });
 
@@ -99,73 +82,58 @@ function cargar_arbol_paginas() {
 
                 // Agrupar páginas por menú y submenú
                 paginas_usuario.forEach(function (pagina) {
+                    var menuId = pagina.idMenu;
+                    var menuName = pagina.Menu;
+                    var submenuId = pagina.idSubMenu;
+                    var submenuName = pagina.SubMenu;
+                    var paginaId = pagina.idPagina;
+                    var paginaName = pagina.Pagina;
 
-                    var menu = pagina.Menu;
-                    var submenu = pagina.SubMenu;
-
-                    if (!menuTree[menu]) {
-                        menuTree[menu] = {};
+                    if (!menuTree[menuId]) {
+                        menuTree[menuId] = {
+                            id: menuId,
+                            name: menuName,
+                            submenus: {}
+                        };
                     }
 
-                    if (!menuTree[menu][submenu]) {
-                        menuTree[menu][submenu] = [];
+                    if (!menuTree[menuId].submenus[submenuId]) {
+                        menuTree[menuId].submenus[submenuId] = {
+                            id: submenuId,
+                            name: submenuName,
+                            pages: []
+                        };
                     }
 
-                    menuTree[menu][submenu].push(pagina.Pagina);
+                    menuTree[menuId].submenus[submenuId].pages.push({
+                        id: paginaId,
+                        name: paginaName
+                    });
                 });
 
-                // Generar el árbol de menú
                 var menuContainer = $('#menu-container');
                 menuContainer.empty();
                 generateMenu(menuContainer, menuTree);
             }
         }
     })
-
 }
+
 function generateMenu(parentElement, menuItems, parentId = '', level = 0) {
     var ul = $('<ul>');
-    $.each(menuItems, function (menu, submenus) {
-        var menuId = parentId + 'menu-' + menu;
-        console.log("menuId");
-        console.log("-"+menu+"-");
+    $.each(menuItems, function (menuId, menu) {
+        var menuElementId = parentId + 'menu-' + menuId;
         
-        if(menu.trim() !== ''){
-            // var li = $('<li>', { class: 'folder' + (level === 0 ? ' expanded' : '') });
-            // var li = $('<li>', { class: 'folder' + ' expanded' });
-            var li = $('<li>', { class: 'folder'});
-            var checkbox = $('<input>', { type: 'checkbox', id: menuId });
-            var label = $('<label>', { for: menuId, text: menu });
-            li.append(checkbox, label);
-        }else{
-            var li = $('<li>');
-        }
+        var li = $('<li>', { class: 'folder' });
+        var checkbox = $('<input>', { type: 'checkbox', id: menuElementId });
+        var label = $('<label>', { for: menuElementId, text: menu.name });
+        var hiddenInput = $('<input>', { type: 'hidden', value: menu.id, class: 'menu-id' });
+        li.append(checkbox, label, hiddenInput);
 
-
+        var submenus = menu.submenus;
         var hasSubmenus = typeof submenus === 'object' && !Array.isArray(submenus);
         if (hasSubmenus) {
-            var subMenuNames = Object.keys(submenus);
-
-            if ( subMenuNames[0].trim() !== '') {
-            }else{
-            }
-            li.append(generateMenu($('<ul>'), submenus, menuId + '-', level + 1));
-        } else if (Array.isArray(submenus)) {
-            var subUl = $('<ul>');
-            submenus.forEach(function (page, index) {
-                
-                var pageId = menuId + '-' + index;
-                var pageLi = $('<li>');
-                var pageCheckbox = $('<input>', { type: 'checkbox', id: pageId });
-                var pageLabel = $('<label>', { for: pageId, text: page });
-
-                pageLi.append(pageCheckbox, pageLabel);
-                subUl.append(pageLi);
-            });
-
-           
-            li.append(subUl);
-
+            li.append(generateSubMenu(submenus, menuElementId, level + 1));
         }
 
         ul.append(li);
@@ -174,3 +142,59 @@ function generateMenu(parentElement, menuItems, parentId = '', level = 0) {
     parentElement.append(ul);
     return parentElement;
 }
+
+function generateSubMenu(submenus, parentId, level) {
+    var ul = $('<ul>');
+    $.each(submenus, function (submenuId, submenu) {
+        var submenuElementId = parentId + '-submenu-' + submenuId;
+        
+        var li = $('<li>', { class: 'folder' });
+        var checkbox = $('<input>', { type: 'checkbox', id: submenuElementId });
+        var label = $('<label>', { for: submenuElementId, text: submenu.name });
+        var hiddenInput = $('<input>', { type: 'hidden', value: submenu.id, class: 'submenu-id' });
+        li.append(checkbox, label, hiddenInput);
+
+        var pages = submenu.pages;
+        var subUl = $('<ul>');
+        pages.forEach(function (page) {
+            var pageElementId = submenuElementId + '-page-' + page.id;
+            var pageLi = $('<li>');
+            var pageCheckbox = $('<input>', { type: 'checkbox', id: pageElementId });
+            var pageLabel = $('<label>', { for: pageElementId, text: page.name });
+            var pageHiddenInput = $('<input>', { type: 'hidden', value: page.id, class: 'page-id' });
+
+            pageLi.append(pageCheckbox, pageLabel, pageHiddenInput);
+            subUl.append(pageLi);
+        });
+
+        li.append(subUl);
+        ul.append(li);
+    });
+
+    return ul;
+}
+
+function getCheckboxStates() {
+    var states = [];
+
+    $('input[type="checkbox"]').each(function () {
+        var checkbox = $(this);
+        var li = checkbox.closest('li');
+        var state = {
+            idMenu: li.parents('ul').prev('input.menu-id').val(),
+            idSubMenu: li.parents('ul').prev('input.submenu-id').val(),
+            idPagina: li.find('input.page-id').val(),
+            estado: checkbox.prop('indeterminate') ? 'lectura' : (checkbox.prop('checked') ? 'escritura' : 'inactiva')
+        };
+
+        // solo guarda cuando hay ID y haya sido seleccionado (menu, submenu, or page)
+        if(state.estado != 'inactiva'){
+            if (state.idMenu && state.idSubMenu && state.idPagina) {
+                states.push(state);
+            }}
+    });
+
+    return states;
+}
+
+// solo guarda los que tienen id (menu, submenu, y pagina)

@@ -34,13 +34,12 @@ function subir_archivo() {
                 success: function (concepto) {
 
                     if (concepto.Obtenido) {
-
-                        abrirModal("Información cargada",
-                            `
-                        Concepto: ${concepto.concepto} <br> <br>
-                        Porcentaje: ${concepto.porcentaje}<br><br>
-                        Monto: ${concepto.monto}
-                        `, "");
+                        var nombres = ""
+                        concepto.lista_nombres.forEach(function (nombre) {
+                            console.log(nombre);
+                            nombres += nombre;
+                        });
+                        abrirModal("Información cargada",nombres, "");
 
                     }
 

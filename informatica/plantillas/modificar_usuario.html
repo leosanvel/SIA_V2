@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="form-group  datepicker-group" id="ssBuscarUsuario">
-            <label for="lblNumEmp">Usuario</label>
+            <label for="lblBuscarUsuario">Usuario</label>
             <input id="BuscarUsuario" name="BuscarUsuario" class="form-control botonModalBuscaUsuario" type="text">
             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
             <small id="EBuscarUsuario" class="etiquetaError form-text form-text-error"></small>
@@ -55,13 +55,13 @@
         </form>
     </div>
 
-    
+
 </div>
 <br>
 
 <!-- Ventana Modal -->
-<div class="modal fade" id="ModalAgregarUsuario" tabindex="-1"
-    aria-labelledby="tituloModalAgregarUsuario" aria-hidden="true">
+<div class="modal fade" id="ModalAgregarUsuario" tabindex="-1" aria-labelledby="tituloModalAgregarUsuario"
+    aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -70,73 +70,75 @@
             <div class="modal-body">
                 <div id="contenidoModalAgregarUsuario">
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                                <label for="lblNumEmp">No. Empleado</label>
-                                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                                    class="form-control botonModalBuscaEmpleado" type="text">
-                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                    <form id="frmCreaUsuario">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                                    <label for="lblNumEmp">No. Empleado</label>
+                                    <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                                        class="form-control botonModalBuscaEmpleado" type="text">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="lblUsuario">Nombre de Usuario<span id="AUsuario"
-                                    class="form-text">*</span>:</label>
-                            <input type="text" name="Usuario" id="Usuario" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EUsuario" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                        </div>
-                        <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="lblContrasena">Contraseña<span id="AContrasena"
-                                    class="form-text">*</span>:</label>
-                            <input type="password" name="Contrasena" id="Contrasena" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EContrasena" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                        </div>
-
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblModalUsuario">Usuario<span id="AModalUsuario"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="ModalUsuario" id="ModalUsuario" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EModalUsuario" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblModalContrasena">Contraseña<span id="AModalContrasena"
+                                            class="form-text">*</span>:</label>
+                                    <input type="password" name="ModalContrasena" id="ModalContrasena" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EModalContrasena"
+                                        class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                    </form>
                 </div>
 
-                    <div class="row" id="arbolPaginas" >
-                        <div class="row">
-                            <label>Permisos:</label>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="checkbox" id="checkbox1">
-                            <label for="checkbox1">Escritura</label>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="checkbox" id="checkbox2">
-                            <label for="checkbox2">Lectura</label>
-                        </div>
-                        <div class="col-md-3">
-                            <input type="checkbox" id="checkbox3">
-                            <label for="checkbox3">Inactiva</label>
-                        </div>
-                        <br>
-                        <br>
-                    
-                        <div class="row">
-                            <label>Páginas:</label>
-                        </div>
-                        <div id="menu-container" class="tree"></div>
+                <div class="row" id="arbolPaginas">
+                    <div class="row">
+                        <label>Permisos:</label>
                     </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="btnCierreModalAgregaEmpleadoConcepto" class="btn btn-primary"
-                    data-dismiss="modal" data-comportamiento="nada">Cancelar</button>
-                <button type="button" id="btnCrearEmpleadoConcepto" class="btn btn-primary">Aceptar</button>
-                <button type="button" id="btnEliminarEmpleadoConcepto" class="btn btn-primary" style="display: none;"
-                    data-dismiss="modal">Eliminar</button>
+                    <div class="col-md-3">
+                        <input type="checkbox" id="checkbox1">
+                        <label for="checkbox1">Escritura</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" id="checkbox2">
+                        <label for="checkbox2">Lectura</label>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="checkbox" id="checkbox3">
+                        <label for="checkbox3">Inactiva</label>
+                    </div>
+                    <br>
+                    <br>
 
+                    <div class="row">
+                        <label>Páginas:</label>
+                    </div>
+                    <div id="menu-container" class="tree"></div>
+                </div>
             </div>
         </div>
+        <div class="modal-footer">
+            <button type="button" id="btnCierreModalAgregaUsuario" class="btn btn-primary" data-dismiss="modal"
+                data-comportamiento="nada">Cancelar</button>
+            <button type="button" id="btnCrearUsuarioModal" class="btn btn-primary">Aceptar</button>
+            <button type="button" id="btnEliminarUsuario" class="btn btn-primary" style="display: none;"
+                data-dismiss="modal">Eliminar</button>
+
+        </div>
     </div>
+</div>
 </div>
 
 
