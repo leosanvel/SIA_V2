@@ -123,7 +123,7 @@ function generateMenu(parentElement, menuItems, parentId = '', level = 0) {
     var ul = $('<ul>');
     $.each(menuItems, function (menuId, menu) {
         var menuElementId = parentId + 'menu-' + menuId;
-        
+
         var li = $('<li>', { class: 'folder' });
         var checkbox = $('<input>', { type: 'checkbox', id: menuElementId });
         var label = $('<label>', { for: menuElementId, text: menu.name });
@@ -147,7 +147,7 @@ function generateSubMenu(submenus, parentId, level) {
     var ul = $('<ul>');
     $.each(submenus, function (submenuId, submenu) {
         var submenuElementId = parentId + '-submenu-' + submenuId;
-        
+
         var li = $('<li>', { class: 'folder' });
         var checkbox = $('<input>', { type: 'checkbox', id: submenuElementId });
         var label = $('<label>', { for: submenuElementId, text: submenu.name });
@@ -188,13 +188,55 @@ function getCheckboxStates() {
         };
 
         // solo guarda cuando hay ID y haya sido seleccionado (menu, submenu, or page)
-        if(state.estado != 'inactiva'){
+        if (state.estado != 'inactiva') {
             if (state.idMenu && state.idSubMenu && state.idPagina) {
                 states.push(state);
-            }}
+            }
+        }
     });
 
     return states;
 }
 
-// solo guarda los que tienen id (menu, submenu, y pagina)
+function actualizarEstadoCheckboxes(consecutivo) {
+    var nombre_usuario = $("#Usuario" + consecutivo).val();
+    $.ajax({
+        type: "POST",
+        data: { nombre_usuario: nombre_usuario },
+        url: "/informatica/gestion-usuarios/carga-paginas-usuario",
+        success: function (lista_paginas) {
+
+            if (lista_paginas.error) {
+                abrirModal("Error", "Error", "")
+            }
+            else {
+                lista_paginas.forEach(function (pagina) {
+                    var idMenu = pagina.idMenu;
+                    var idSubMenu = pagina.idSubMenu;
+                    var idPagina = pagina.idPagina;
+                    var estadoPagina = pagina.estado;
+
+                    var checkboxId = `menu-${idMenu}-submenu-${idSubMenu}-page-${idPagina}`;
+                                        
+                    if ($(`#${checkboxId}`).length) {
+                        console.log("----");
+                        if (estadoPagina === 1) {
+                            console.log("checked");
+                            
+                            $(`#${checkboxId}`).prop('indeterminate', false);
+                            $(`#${checkboxId}`).prop('checked', true);
+                        } else if (estadoPagina === 0) {
+                            console.log("indeterminate");
+                            $(`#${checkboxId}`).prop('checked', false);
+                            $(`#${checkboxId}`).prop('indeterminate', true);
+                        } else{
+                            console.log("false");
+                            $(`#${checkboxId}`).prop('checked', false);
+                            $(`#${checkboxId}`).prop('indeterminate', false);
+                        }
+                    }
+                });
+            }
+        }
+    })
+}

@@ -2,7 +2,7 @@ from .rutas import informatica
 from flask import render_template, request, jsonify
 from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import func
+from sqlalchemy import or_
 from autenticacion.modelos.modelos import rUsuario
 from general.modelos.modelos import rPPUsuario, kPagina, kMenu, kSubMenu
 
@@ -11,7 +11,7 @@ import json
 
 @informatica.route('/informatica/gestion-usuarios', methods=['POST', 'GET'])
 def gestion_usuarios():
-    return render_template('/modificar_usuario.html', title='Usuario',
+    return render_template('/crear_usuario.html', title='Gestión de usuarios',
                            current_user=current_user)
 
 
@@ -27,11 +27,15 @@ def crear_usuario():
         'Activo' : 'Activo'
     }
     usuario_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
+    if usuario_data["idPersona"] =="":
+        usuario_data["idPersona"] = None
     if usuario_data["PrimerIngreso"] is None:
         usuario_data["PrimerIngreso"] = 0
     if usuario_data["Activo"] is None:
         usuario_data["Activo"] = 1
         
+    editar = request.form.get("editar")
+    
     
     nombre_usuario = usuario_data.get("Usuario", None)
     idPersona = usuario_data.get("idPersona", None)
@@ -39,8 +43,12 @@ def crear_usuario():
     # if idPersona:    
     try:
         usuario_a_modificar = db.session.query(rUsuario).filter_by(Usuario = nombre_usuario).one()
-        respuesta["existente"] = True
-        respuesta["usuario"] = usuario_a_modificar.Usuario
+        if editar=="true":
+            respuesta["usuario"] = usuario_a_modificar.Usuario
+            respuesta["editado"] = True
+        else:
+            respuesta["existente"] = True
+        
 
     except NoResultFound:
         usuario = rUsuario(**usuario_data)
@@ -53,13 +61,12 @@ def crear_usuario():
         paginas = json.loads(paginas_json)
     else:
         paginas = []
-    dar_permisos(paginas, nombre_usuario)
 
     # Realizar cambios en la base de datos
     db.session.commit()
-    # else:
-    #     respuesta["noidPersona"] = True
-
+    
+    dar_permisos(paginas, nombre_usuario)
+    
     print(respuesta)
     return jsonify(respuesta)
 
@@ -86,23 +93,40 @@ def dar_permisos(paginas, usuario):
         pagina_data["idPagina"] = pagina["idPagina"]
         nueva_pagina = rPPUsuario(**pagina_data)
         db.session.add(nueva_pagina)
+        db.session.commit()
     print("permisos agregados")
 
 
 @informatica.route('/informatica/gestion-usuarios/buscar-usuario', methods = ['POST', 'GET'])
 def buscar_usuario():
      
-    usuario_busq = request.form.get("BuscarUsuario")
+    usuario_busq = request.form.get("BuscarUsuario", None)
+    idPersona = request.form.get("idPersona", None)
+    query = db.session.query(rUsuario)
     
-    usuarios = db.session.query(rUsuario).filter(rUsuario.Usuario.contains(usuario_busq)).all()
+    if idPersona == "":
+        if usuario_busq == "":
+            idPersona = None
+            query = query.filter(rUsuario.idPersona == idPersona)
+        else:
+            query = query.filter(rUsuario.Usuario.contains(usuario_busq))
+    else:
+        query = query.filter(rUsuario.idPersona == idPersona)
+        if usuario_busq != "":
+            query = query.filter(rUsuario.Usuario.contains(usuario_busq))
+
+    usuarios = query.all()
+    
     lista_usuarios = []
     for usuario in usuarios:
         if usuario is not None:
             usuario_dict = usuario.__dict__
             usuario_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             lista_usuarios.append(usuario_dict)
-    
-    return jsonify(lista_usuarios)
+    if lista_usuarios:
+        return jsonify(lista_usuarios)
+    else:
+        return jsonify({"NoEncontrado":True})
 
 @informatica.route('/informatica/gestion-usuarios/carga-arbol-paginas', methods=['POST', 'GET'])
 def carga_arbol_paginas():
@@ -121,6 +145,31 @@ def carga_arbol_paginas():
                 "idPagina": pagina.idPagina,
                 "idMenu": pagina.idMenu,
                 "idSubMenu": pagina.idSubMenu,
+            }
+            lista_paginas.append(pagina_data)
+        except NoResultFound:
+            return jsonify({"error":True})
+    return jsonify(lista_paginas)
+
+
+@informatica.route('/informatica/gestion-usuarios/carga-paginas-usuario', methods=['POST', 'GET'])
+def carga_paginas_usuario():
+    nombre_usuario = request.form.get("nombre_usuario", None)
+    print("nombre_usuario:")
+    print(nombre_usuario)
+
+    paginas = db.session.query(rPPUsuario).filter_by(Usuario=nombre_usuario).all()
+
+    lista_paginas = []
+    for pagina in paginas:
+        try:
+            menu = db.session.query(kMenu).filter_by(idMenu = pagina.idMenu).one()
+            submenu = db.session.query(kSubMenu).filter_by(idMenu = pagina.idMenu, idSubMenu = pagina.idSubMenu).one()
+            pagina_data = {
+                "idPagina": pagina.idPagina,
+                "idMenu": pagina.idMenu,
+                "idSubMenu": pagina.idSubMenu,
+                "estado": pagina.idPermiso,
             }
             lista_paginas.append(pagina_data)
         except NoResultFound:

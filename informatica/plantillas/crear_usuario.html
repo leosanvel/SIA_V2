@@ -1,109 +1,192 @@
 {% extends "plantilla_base.html" %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('informatica.static', filename='css/estilos.css') }}">
+{% endblock %}
+
 {% block content %}
+<form name="frmCrearUsuario" id="frmCrearUsuario">
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                <label for="lblNumEmp">No. Empleado</label>
+                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                    class="form-control botonModalBuscaEmpleado" type="text">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+        <div class="col-md-4">
+
+            <div class="form-group  datepicker-group" id="ssBuscarUsuario">
+                <label for="lblBuscarUsuario">Usuario</label>
+                <input id="BuscarUsuario" name="BuscarUsuario" class="form-control botonModalBuscaUsuario" type="text">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                <small id="EBuscarUsuario" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" id="btnBuscarUsuario" class="btn btn-primary pull-left">Buscar</button>
+        </div>
+        <div class="col-md-6">
+            <button type="button" id="btnNuevoUsuario" class="btn btn-primary pull-right">Nuevo usuario</button>
+        </div>
+    </div>
+    <hr />
+
+    <div class="row">
+        <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+            <tr>
+                <th colspan="4">EMPLEADO SELECCIONADO</th>
+            </tr>
+            <tr>
+                <th>No. Empleado:</th>
+                <th>CURP:</th>
+                <th>Nombre(s):</th>
+                <th>Apellidos</th>
+            </tr>
+            <tr>
+                <input type="hidden" id="idPersona" name="idPersona" value="">
+                <td id="NumeroEmpleado"></td>
+                <td id="CurpEmpleado"></td>
+                <td id="NombreEmpleado"></td>
+                <td id="ApellidosEmpleado"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <hr />
+
+    <div class="row">
+        <form id="formResultadoUsuarios">
+            <div class="table-responsive">
+                <table class="table table-striped" id="tablaResultadoUsuarios" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Contrasenia</th>
+                            <th>PrimerIngreso</th>
+                            <th>idPersona</th>
+                            <th>Activo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <hr />
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
+        <strong>Error:</strong>
+        verificar los campos capturados.
+    </div>
+</form>
 
 
-<div class="row">
-    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
-        <tr>
-            <th colspan="4">EMPLEADO SELECCIONADO</th>
-        </tr>
-        <tr>
-            <th>No. Empleado:</th>
-            <th>CURP:</th>
-            <th>Nombre(s):</th>
-            <th>Apellidos</th>
-        </tr>
-        <tr>
-            <input type="hidden" id="idPersona" name="idPersona" value="">
-            <td id="NumeroEmpleado"></td>
-            <td id="CurpEmpleado"></td>
-            <td id="NombreEmpleado"></td>
-            <td id="ApellidosEmpleado"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
-</div>
 
 
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item active"><a class="nav-link oculta-empleado" data-toggle="tab" href="#Agregar">Crear</a></li>
-        {% block titulo_pestanas %}{% endblock %}
-    </ul>
-    <div class="tab-content">
-        <style>
-            .tab-content form .form-control {
-                margin-bottom: 0 !important;
-                /* Anula el margen inferior */
-            }
-        </style>
 
-        <div class="tab-pane active oculta-empleado" id="Agregar">
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalAgregarUsuario" tabindex="-1" aria-labelledby="tituloModalAgregarUsuario"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalAgregarUsuario">Agregar usuario</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalAgregarUsuario">
 
-
-            <form name="frmCrearUsuario" id="frmCrearUsuario" method="post">
-                <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                                <label for="lblNumEmp">No. Empleado</label>
-                                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                                    class="form-control botonModalBuscaEmpleado" type="text">
-                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                    <form id="frmCreaUsuario">
+                        <input type="hidden" id="editar" name="editar" value="">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                                    <label for="lblNumEmp">No. Empleado</label>
+                                    <input id="NumeroEmpleadoModal" name="NumeroEmpleadoModal"
+                                        class="form-control botonModalBuscaEmpleado" type="text">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblModalUsuario">Usuario<span id="AModalUsuario"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="ModalUsuario" id="ModalUsuario" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EModalUsuario" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblModalContrasena">Contraseña<span id="AModalContrasena"
+                                            class="form-text">*</span>:</label>
+                                    <input type="password" name="ModalContrasena" id="ModalContrasena" placeholder=""
+                                        class="obligatorio form-control">
+                                    <small id="EModalContrasena"
+                                        class="etiquetaError form-text form-text-error"></small>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblUsuario">Nombre de Usuario<span id="AUsuario"
-                                    class="form-text">*</span>:</label>
-                            <input type="text" name="Usuario" id="Usuario" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EUsuario" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                        </div>
-                        <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="lblContrasena">Contraseña<span id="AContrasena"
-                                    class="form-text">*</span>:</label>
-                            <input type="password" name="Contrasena" id="Contrasena" placeholder=""
-                                class="obligatorio form-control">
-                            <small id="EContrasena" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                        </div>
-
+                    </form>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <button type="button" id="btnCrearUsuario" class="btn btn-primary pull-right">Crear
-                            usuario</button>
+
+                <div class="row" id="arbolPaginas">
+                    <div class="row">
+                        <label>Permisos:</label>
                     </div>
-                </div>
-                <hr />
-                <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
-                    <strong>Error:</strong>
-                    verificar los campos capturados.
-                </div>
-            </form>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="checkbox" id="checkbox1">
+                            <label for="checkbox1">Escritura</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" id="checkbox2">
+                            <label for="checkbox2">Lectura</label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="checkbox" id="checkbox3">
+                            <label for="checkbox3">Inactiva</label>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
 
+                    <div class="row">
+                        <label>Páginas:</label>
+                    </div>
 
+                    <div id="menu-container" class="tree"></div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModalAgregaUsuario" class="btn btn-primary" data-dismiss="modal"
+                    data-comportamiento="nada">Cancelar</button>
+                <button type="button" id="btnCrearUsuarioModal" class="btn btn-primary">Aceptar</button>
+                <button type="button" id="btnEliminarUsuario" class="btn btn-primary" style="display: none;"
+                    data-dismiss="modal">Eliminar</button>
+
+            </div>
         </div>
-        {% block contenido_pestanas %}{% endblock %}
-
     </div>
 </div>
-
-<br>
-<div class="row">
-    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
-        Verificar los campos capturados.</div>
-</div>
-
 
 {% endblock %}
 
@@ -114,4 +197,5 @@
 
 <script src="{{ url_for('informatica.static', filename='scripts/crear_usuario.js') }}"></script>
 <script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('informatica.static', filename='scripts/permisos_usuario.js') }}"></script>
 {% endblock %}
