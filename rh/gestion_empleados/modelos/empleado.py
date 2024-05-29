@@ -152,6 +152,7 @@ class rEmpleado(db.Model):
     # Relacion
     Persona = db.relationship("tPersona", back_populates = "Empleado", single_parent = True, cascade = "all, delete-orphan")
     EmpleadoPuestos = db.relationship("rEmpleadoPuesto", back_populates = "Empleado", cascade = "all, delete-orphan")
+    DiasPersona = db.relationship("rDiasPersona", back_populates = "Empleado", cascade = "all, delete-orphan")
 
     def __init__(self, idPersona, NumeroEmpleado, idTipoEmpleado, idTipoAlta, idGrupo, HoraEntrada, HoraSalida, FecIngGobierno, FecIngFonaes, idQuincena, NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
         self.idPersona = idPersona

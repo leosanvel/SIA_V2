@@ -18,7 +18,7 @@ def periodo_vacacional():
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/cargar-periodo-vacacional', methods = ['POST'])
 def cargar_periodo_vacacional():
     PeriodoVacacional = db.session.query(kPeriodoVacacional).all()
-    #print(PeriodoVacacional)
+
     lista_periodo = []
     for periodo in PeriodoVacacional:
         if periodo is not None:
@@ -36,7 +36,7 @@ def guardar_periodo_vacacional():
     data["FechaFin"] = request.form.get("fechaFinFormateada")
     data["idPeriodo"] = request.form.get("Periodo")
     data["Descripcion"] = request.form.get("Descripcion")
-    #print(data)
+
     try:
         PeriodoVacacional_existente = db.session.query(kPeriodoVacacional).filter_by(FechaInicio = data["FechaInicio"], FechaFin = data['FechaFin']).one()
         for attr, value in data.items():

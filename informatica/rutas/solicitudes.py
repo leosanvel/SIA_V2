@@ -19,9 +19,11 @@ def solicitudes():
     return render_template('/solicitudes.html', title ='Solicitudes',
                             current_user=current_user)
 
-@informatica.route('/informatica/cargar_solicitudes', methods=['POST', 'GET'])
+@informatica.route('/informatica/solicitudes/cargar-solicitudes', methods=['POST', 'GET'])
 @permisos_de_consulta
 def carga_solicitudes():
+    empleado_existente =  db.session.query(rEmpleado).order_by(asc(rEmpleado.idPersona)).first()
+    crea_solicitud("Reactivar",empleado_existente)
     try:
         # solicitudes = db.session.query(rSolicitudEstado).all()
         solicitudes = db.session.query(rSolicitudEstado).order_by(asc(rSolicitudEstado.idEstadoSolicitud)).all()
@@ -55,7 +57,7 @@ def carga_solicitudes():
         "estadosSolicitud" : lista_estados,    
         "Solicitudes" : lista_solicitudes})    
 
-@informatica.route("/Informatica/guardaSolicitud", methods = ['POST'])
+@informatica.route("/informatica/solicitudes/guarda-solicitud", methods = ['POST'])
 def guarda_solicitud():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         'idSolicitud': 'idSolicitud',
@@ -86,7 +88,7 @@ def guardar_o_modificar_solicitud(solicitud_data):
         envia_correo("rh","solicitud_completada",solicitud_a_modificar)
 
 
-@informatica.route("/Informatica/cancela_solicitud", methods = ['POST', 'GET'])
+@informatica.route("/informatica/solicitudes/cancela-solicitud", methods = ['POST', 'GET'])
 @permisos_de_consulta
 def cancela_sancion():
     idSolicitud = request.form.get('idSolicitud')

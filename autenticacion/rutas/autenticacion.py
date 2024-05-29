@@ -8,6 +8,7 @@ from general.modelos.modelos import rPPUsuario, kMenu, kSubMenu, kPagina
 # from app import app_instance
 from sqlalchemy.orm.exc import NoResultFound
 from general.herramientas.funciones import permisos_de_consulta
+from informatica.rutas.gestion_usuarios import dar_todos_los_permisos
 from app import app
 
 autenticacion = Blueprint('autenticacion', __name__, template_folder = '../plantillas', static_folder='../estatico', static_url_path='/scripts')
@@ -33,6 +34,11 @@ def login():
             session['tiempo_sesion'] = app.config["PERMANENT_SESSION_LIFETIME"].total_seconds()
             login_user(user)
 
+            # TEST: Damos todos los permisos a los usuarios. ELIMINAR!!! !!!!!!!!!!!!!!!!!!
+            dar_todos_los_permisos(user_db.Usuario)
+            
+            
+            db.session.commit()
             idPaginasUsuario = db.session.query(rPPUsuario).filter_by(Usuario=user_db.Usuario).all()
 
             paginas_usuario = []

@@ -6,6 +6,7 @@ from app import db
 from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import and_, or_
 
 @catalogos.route('/catalogos/conceptos')
 def catalogos_conceptos():
@@ -31,10 +32,12 @@ def crear_concepto():
         'TipoPago' : 'idTipoPago',
         'Porcentaje' : 'Porcentaje',
         'Monto' : 'Monto',
+        'Contrato' : 'Contrato',
         'Estatus' : 'Activo'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     concepto_data["Activo"] = int(concepto_data["Activo"]) - 1
+    concepto_data["Contrato"] = int(concepto_data["Contrato"]) - 1
     nuevo_concepto = None
     try:
         concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).one()
@@ -71,6 +74,7 @@ def concepto():
             query = query.filter(kConcepto.Concepto.contains(partes[2]))
         else:
             query = query.filter(kConcepto.Concepto.contains(concepto))
+        
         conceptos = query.all()
     else:
         conceptos = []
@@ -103,7 +107,8 @@ def concepto():
 @catalogos.route('/catalogos/actualizar-busqueda-conceptos', methods=['GET'])
 def actualizar_busqueda_conceptos():
     texto_busqueda = request.args.get('texto_busqueda', '')
-    resultados = kConcepto.query.filter(kConcepto.Concepto.ilike(f'%{texto_busqueda}%')).all()
+    # resultados = kConcepto.query.filter(kConcepto.Concepto.ilike(f'%{texto_busqueda}%')).all()
+    resultados = kConcepto.query.filter(or_(kConcepto.Concepto.ilike(f'%{texto_busqueda}%') , kConcepto.idConcepto.ilike(f'%{texto_busqueda}%') )).all()
     resultados_json = [{'idTipoConcepto': resultado.idTipoConcepto,
                         'idConcepto': resultado.idConcepto,
                         'Concepto': resultado.Concepto,

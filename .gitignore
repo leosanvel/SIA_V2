@@ -7,8 +7,10 @@ __pycache__/
 /.vscode/
 nomina/docs
 nomina/CFDI
+nomina/Doctos
 rh/gestion_asistencias/archivos/~$Plantilla_Reporte_Incidencias.xlsx
 rh/gestion_empleados/docs
 rh/gestion_asistencias/archivos/generados
 SIA.code-workspace
-nomina/docs_plantillas/~$Plantilla_Calendario_de_Pagos.xlsx
+rh/gestion_empleados/archivos/estados_cuenta
+prestaciones/docsnomina/docs_plantillas/~$Plantilla_Calendario_de_Pagos.xlsx

@@ -1,0 +1,92 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <form id="formularioCrearNomina">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblQuincena">Número de Quincena<span id="AQuincena" class="form-text">*</span>:</label>
+                    <select id="Quincena" name="Quincena" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% if Quincenas %}
+                            {% for Quincena in Quincenas %}
+                                <option value="{{Quincena.idQuincena}}">{{Quincena.Descripcion}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblDescripcion">Descripcion<span id="ADescripcion" class="form-text"></span>:</label>
+                    <textarea id="Descripcion" name="Descripcion" class="form-control obligatorio" rows="3" style="resize: none;" readonly></textarea>
+                    <small id="EDescripcion" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label for="lblConceptoPago">Concepto de pago<span id="AConceptoPago" class="form-text"></span>:</label>
+                    <input type="text" id="ConceptoPago" name="ConceptoPago" class="form-control obligatorio" readonly>
+                    <small id="EConceptoPago" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaPago">Fecha de Pago<span id="AFechaPago" class="form-text"></span>:</label>
+                    <input type="text" id="FechaPago" name="FechaPago" class="form-control obligatorio fecha" readonly>
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaPago" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblPeriodo">Periodo<span id="APeriodo" class="form-text"></span>:</label>
+                    <input type="text" id="Periodo" name="Periodo" class="form-control obligatorio" readonly>
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EPeriodo" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblSMM">S.M.M<span id="ASMM" class="form-text"></span>:</label>
+                    <input type="text" id="SMM" name="SMM" class="form-control obligatorio" readonly>
+                    <small id="ESMM" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblsdoMMensual">Sueldo M. Mensual<span id="ASdoMMensual" class="form-text"></span>:</label>
+                    <input type="text" id="SdoMMensual" name="SdoMMensual" class="form-control obligatorio" readonly>
+                    <small id="ESdoMMensual" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right form-group">
+                    <button class="btn btn-primary" type="button" id="btnCrearNomina">
+                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                        Crear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('nomina.static', filename='scripts/crear_nomina.js') }}"></script>
+{% endblock %}
