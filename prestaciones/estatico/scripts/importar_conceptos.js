@@ -31,22 +31,53 @@ function subir_archivo() {
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (concepto) {
+                success: function (resp) {
 
-                    if (concepto.Obtenido) {
-                        var nombres = ""
-                        concepto.lista_nombres.forEach(function (nombre) {
-                            console.log(nombre);
-                            nombres += nombre;
+                    if (resp.Obtenido) {
+
+                        var tablaHTML = '<table class="table table-striped">';
+                        tablaHTML += '<thead><tr>' +
+                            '<th>Ramo</th>' +
+                            '<th>PAGSUBPAG</th>' +
+                            '<th>Numero ISSSTE</th>' +
+                            '<th>RFC</th>' +
+                            '<th>Nombre</th>' +
+                            '<th>Clave Cobro</th>' +
+                            '<th>TPOD</th>' +
+                            '<th>Pzo Qna</th>' +
+                            '<th>Periodo 1</th>' +
+                            '<th>Periodo 2</th>' +
+                            '<th>Concepto</th>' +
+                            '<th>Importe</th>' +
+                            '<th>Numero Prestamo</th>' +
+                            '</tr></thead><tbody>';
+
+                        resp.lista_empleados.forEach(function (empleado) {
+                            tablaHTML += '<tr>' +
+                            '<td>' + empleado.Ramo + '</td>' +
+                            '<td>' + empleado.PAGSUBPAG + '</td>' +
+                            '<td>' + empleado.NumeroISSSTE + '</td>' +
+                            '<td>' + empleado.RFC + '</td>' +
+                            '<td>' + empleado.Nombre + '</td>' +
+                            '<td>' + empleado.ClaveCobro + '</td>' +
+                            '<td>' + empleado.TPOD + '</td>' +
+                            '<td>' + empleado.PzoQna + '</td>' +
+                            '<td>' + empleado.Periodo1 + '</td>' +
+                            '<td>' + empleado.Periodo2 + '</td>' +
+                            '<td>' + empleado.Concepto + '</td>' +
+                            '<td>' + empleado.Importe + '</td>' +
+                            '<td>' + empleado.NumeroPrestamo + '</td>' +
+                            '</tr>';
                         });
-                        abrirModal("Información cargada",nombres, "");
+                        tablaHTML += '</tbody></table>';
+                        abrirModal("Información cargada", tablaHTML, "");
 
                     }
 
-                    if (concepto.ArchivoInvalido) {
+                    if (resp.ArchivoInvalido) {
                         abrirModal("Formato desconocido", "El archivo no tiene un formato válido.", "");
                     }
-                    if (concepto.ErrorLectura) {
+                    if (resp.ErrorLectura) {
                         abrirModal("Error de lectura", "El archivo no contiene la información o formato requerido", "");
                     }
 

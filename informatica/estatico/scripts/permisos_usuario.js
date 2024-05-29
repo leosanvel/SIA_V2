@@ -1,74 +1,10 @@
 $(document).ready(function () {
 
-    cargar_arbol_paginas();
+    cargar_paginas_arbol();
 
-    var folders = document.querySelectorAll('.folder');
-    folders.forEach(function (folder) {
-        folder.addEventListener('click', function (event) {
-            if (!event.target.matches('li')) return;
-            var checkbox = this.querySelector('input[type="checkbox"]');
-            var isOpen = this.classList.toggle('expanded');
-            event.stopPropagation();
-        });
-    });
-
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('click', function (e) {
-            el = $(this);
-            var isChecked = el.data('checked');
-
-            if (isChecked === undefined) {
-                var isChecked = 1;
-            }
-            switch (isChecked) {
-                case 0:
-                    el.data('checked', 1);
-                    el.prop('checked', false);
-                    el.prop('indeterminate', true);
-                    break;
-                case 1:
-                    el.data('checked', 2);
-                    el.prop('checked', true);
-                    el.prop('indeterminate', false);
-                    break;
-                default:
-                    el.data('checked', 0);
-                    el.prop('checked', false);
-                    el.prop('indeterminate', false);
-            }
-
-            var descendants = this.parentElement.querySelectorAll('input[type="checkbox"]');
-
-            descendants.forEach(function (descendant) {
-                descendant.dataset.checked = el.data('checked');
-
-                switch (isChecked) {
-                    case 0:
-                        descendant.checked = false;
-                        descendant.indeterminate = false;
-                        break;
-                    case 1:
-                        descendant.checked = false;
-                        descendant.indeterminate = true;
-                        break;
-                    default:
-                        descendant.checked = true;
-                        descendant.indeterminate = false;
-                }
-            });
-        });
-    });
-
-    $("#checkbox1").prop('checked', true)
-    $("#checkbox1").on("click", function (event) { event.preventDefault(); });
-    $("#checkbox2").prop('indeterminate', true)
-    $("#checkbox2").on("click", function (event) { event.preventDefault(); });
-    $("#checkbox3").prop('checked', false)
-    $("#checkbox3").on("click", function (event) { event.preventDefault(); });
 });
 
-function cargar_arbol_paginas() {
+function cargar_paginas_arbol() {
     $.ajax({
         async: false,
         type: "POST",
@@ -111,15 +47,16 @@ function cargar_arbol_paginas() {
                     });
                 });
 
+
                 var menuContainer = $('#menu-container');
                 menuContainer.empty();
-                generateMenu(menuContainer, menuTree);
+                generarArbolCheck(menuContainer, menuTree);
             }
         }
     })
 }
 
-function generateMenu(parentElement, menuItems, parentId = '', level = 0) {
+function generarArbolCheck(parentElement, menuItems, parentId = '', level = 0) {
     var ul = $('<ul>');
     $.each(menuItems, function (menuId, menu) {
         var menuElementId = parentId + 'menu-' + menuId;
@@ -133,27 +70,100 @@ function generateMenu(parentElement, menuItems, parentId = '', level = 0) {
         var submenus = menu.submenus;
         var hasSubmenus = typeof submenus === 'object' && !Array.isArray(submenus);
         if (hasSubmenus) {
-            li.append(generateSubMenu(submenus, menuElementId, level + 1));
+            li.append(generarSubMenu(submenus, menuElementId, level + 1));
         }
 
         ul.append(li);
     });
 
     parentElement.append(ul);
+
+    var folders = document.querySelectorAll('.folder');
+    folders.forEach(function (folder) {
+        folder.addEventListener('click', function (event) {
+            if (!event.target.matches('li')) return;
+            var checkbox = this.querySelector('input[type="checkbox"]');
+            var isOpen = this.classList.toggle('expanded');
+            event.stopPropagation();
+        });
+    });
+
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('click', function (e) {
+            el = $(this);
+            var isChecked = el.data('checked');
+
+            if (isChecked === undefined) {
+                isChecked = 1;
+            }
+            switch (isChecked) {
+                case 0:
+                    el.data('checked', 1);
+                    el.prop('checked', false);
+                    el.prop('indeterminate', true);
+                    break;
+                case 1:
+                    el.data('checked', 2);
+                    el.prop('checked', true);
+                    el.prop('indeterminate', false);
+                    break;
+                default:
+                    el.data('checked', 0);
+                    el.prop('checked', false);
+                    el.prop('indeterminate', false);
+            }
+
+            var descendants = this.parentElement.querySelectorAll('input[type="checkbox"]');
+
+            descendants.forEach(function (descendant) {
+                descendant.dataset.checked = el.data('checked');
+
+                switch (isChecked) {
+                    case 0:
+                        descendant.checked = false;
+                        descendant.indeterminate = false;
+                        break;
+                    case 1:
+                        descendant.checked = false;
+                        descendant.indeterminate = true;
+                        break;
+                    default:
+                        descendant.checked = true;
+                        descendant.indeterminate = false;
+                }
+            });
+
+            updateParentCheckboxes(this);
+
+
+        });
+    });
+
+    //Deshabilitar checkboxes para el LABEL
+    $("#checkbox1").prop('checked', true)
+    $("#checkbox1").on("click", function (event) { event.preventDefault(); });
+    $("#checkbox2").prop('indeterminate', true)
+    $("#checkbox2").on("click", function (event) { event.preventDefault(); });
+    $("#checkbox3").prop('checked', false)
+    $("#checkbox3").on("click", function (event) { event.preventDefault(); });
+
     return parentElement;
 }
 
-function generateSubMenu(submenus, parentId, level) {
+function generarSubMenu(submenus, parentId, level) {
     var ul = $('<ul>');
     $.each(submenus, function (submenuId, submenu) {
         var submenuElementId = parentId + '-submenu-' + submenuId;
-
-        var li = $('<li>', { class: 'folder' });
-        var checkbox = $('<input>', { type: 'checkbox', id: submenuElementId });
-        var label = $('<label>', { for: submenuElementId, text: submenu.name });
-        var hiddenInput = $('<input>', { type: 'hidden', value: submenu.id, class: 'submenu-id' });
-        li.append(checkbox, label, hiddenInput);
-
+        if (submenu.name.trim() !== '') {
+            var li = $('<li>', { class: 'folder' });
+            var checkbox = $('<input>', { type: 'checkbox', id: submenuElementId });
+            var label = $('<label>', { for: submenuElementId, text: submenu.name });
+            var hiddenInput = $('<input>', { type: 'hidden', value: submenu.id, class: 'submenu-id' });
+            li.append(checkbox, label, hiddenInput);
+        } else {
+            var li = $('<li>');
+        }
         var pages = submenu.pages;
         var subUl = $('<ul>');
         pages.forEach(function (page) {
@@ -174,7 +184,7 @@ function generateSubMenu(submenus, parentId, level) {
     return ul;
 }
 
-function getCheckboxStates() {
+function leerEstadosCheckbox() {
     var states = [];
 
     $('input[type="checkbox"]').each(function () {
@@ -217,26 +227,63 @@ function actualizarEstadoCheckboxes(consecutivo) {
                     var estadoPagina = pagina.estado;
 
                     var checkboxId = `menu-${idMenu}-submenu-${idSubMenu}-page-${idPagina}`;
-                                        
+
                     if ($(`#${checkboxId}`).length) {
                         console.log("----");
                         if (estadoPagina === 1) {
-                            console.log("checked");
-                            
                             $(`#${checkboxId}`).prop('indeterminate', false);
                             $(`#${checkboxId}`).prop('checked', true);
                         } else if (estadoPagina === 0) {
-                            console.log("indeterminate");
                             $(`#${checkboxId}`).prop('checked', false);
                             $(`#${checkboxId}`).prop('indeterminate', true);
-                        } else{
-                            console.log("false");
+                        } else {
                             $(`#${checkboxId}`).prop('checked', false);
                             $(`#${checkboxId}`).prop('indeterminate', false);
                         }
+                        updateParentCheckboxes($(`#${checkboxId}`));
                     }
                 });
             }
         }
     })
+}
+
+function updateParentCheckboxes(childCheckbox) {
+    var parentCheckbox = $(childCheckbox).closest('li').parents('li').children('input[type="checkbox"]');
+
+    parentCheckbox.each(function() {
+        var parent = $(this);
+        var allSiblings = parent.closest('li').find('ul > li > input[type="checkbox"]');
+        var allChecked = true;
+        var allUnchecked = true;
+        var anyIndeterminate = false;
+
+        allSiblings.each(function () {
+            if (this.checked) {
+                allUnchecked = false;
+            } else {
+                allChecked = false;
+            }
+            if (this.indeterminate) {
+                anyIndeterminate = true;
+            }
+        });
+
+        if (allChecked) {
+            parent.prop('checked', true);
+            parent.prop('indeterminate', false);
+            parent.data('checked', 2);
+        } else if (allUnchecked && !anyIndeterminate) {
+            parent.prop('checked', false);
+            parent.prop('indeterminate', false);
+            parent.data('checked', 0);
+        } else {
+            parent.prop('checked', false);
+            parent.prop('indeterminate', true);
+            parent.data('checked', 1);
+        }
+
+        // Propagar el cambio a niveles superiores
+        updateParentCheckboxes(parent);
+    });
 }

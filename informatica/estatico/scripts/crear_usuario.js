@@ -96,12 +96,12 @@ function crear_usuario() {
         // Serializar los datos del formulario
         var formData = $("#frmCreaUsuario").serializeArray();
 
-        var checkboxStates = getCheckboxStates();
+        var estadosCheckbox = leerEstadosCheckbox();
 
         idPersona = $("#idPersona").val();
         formData.push({ name: 'idPersona', value: idPersona });
-        // Añadir los datos de checkboxStates al formData
-        formData.push({ name: 'checkboxStates', value: JSON.stringify(checkboxStates) });
+        // Añadir los datos de estadosCheckbox al formData
+        formData.push({ name: 'estadosCheckbox', value: JSON.stringify(estadosCheckbox) });
 
         $.ajax({
             type: "POST",
