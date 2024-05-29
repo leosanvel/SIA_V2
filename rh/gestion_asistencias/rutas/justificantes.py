@@ -63,11 +63,15 @@ def guarda_Justificante():
             justificante_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
             guardar_o_modificar_justificante(justificante_data)
 
-    if(int(justificante_data["idTipo"]) == 7):
+    if(int(justificante_data["idTipo"]) == 7): #Vacaciones
         listadias = request.form.get("listaDias").split(',')
         listaperiodo = request.form.get("listaPeriodo").split(',')
         listafecha = request.form.get("listaFecha").split(',')
         restar_diaspersona(justificante_data["idPersona"], listadias, listaperiodo, listafecha, dias)
+
+    if(int(justificante_data["idTipo"]) == 3): #Incapacidad
+        print("Es incapacidad")
+
 
     return jsonify(justificante_data)
 
