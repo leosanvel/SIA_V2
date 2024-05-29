@@ -46,8 +46,8 @@ app.register_blueprint(general)
 
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO INFORMATICA
-# from informatica.rutas.rutas import informatica
-# app.register_blueprint(informatica)
+from informatica.rutas.rutas import informatica
+app.register_blueprint(informatica)
 
 
 # MÓDULO PRINCIPAL
@@ -86,5 +86,5 @@ app.register_blueprint(prestaciones)
 from consultas.rutas.rutas import consultas
 app.register_blueprint(consultas)
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()

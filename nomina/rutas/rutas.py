@@ -5,3 +5,5 @@ nomina = Blueprint('nomina', __name__, template_folder='../plantillas', static_f
 # from . import enviar_nomina
 # from . import validar_clabe
 from . import generar_CFDI
+from . import validar_clabe
+from . import crear_nomina

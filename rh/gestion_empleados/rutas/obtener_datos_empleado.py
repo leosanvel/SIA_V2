@@ -21,11 +21,11 @@ from general.herramientas.funciones import serialize_datetime
 @gestion_empleados.route('/rh/gestion-empleados/obtener-info-empleado', methods = ['POST'])
 def obtener_info_empleado():
     idPersona = session.get('idPersona', None)
-    empleadopuesto_datos = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
-    print(empleadopuesto_datos)
+    empleadopuesto_datos = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
     empleado_datos = {}
     if empleadopuesto_datos is not None:
         idCentroCosto = empleadopuesto_datos.Puesto.idCentroCosto
+        Puesto = empleadopuesto_datos.Puesto.Puesto
         idQuincena = empleadopuesto_datos.Empleado.idQuincena
         persona_data = empleadopuesto_datos.Empleado.Persona
         empleado_data = empleadopuesto_datos.Empleado
@@ -34,20 +34,15 @@ def obtener_info_empleado():
         empleadopuesto_datos_dict.pop("_sa_instance_state", None)
         empleadopuesto_datos_dict.pop("Empleado")
         empleadopuesto_datos_dict.pop("Puesto")
-        #print(empleadopuesto_datos_dict)
         persona_data_dict = persona_data.__dict__
         persona_data_dict.pop("_sa_instance_state", None)
-        #print(persona_data_dict)
         empleado_data_dict = empleado_data.__dict__
         empleado_data_dict.pop("_sa_instance_state", None)
         empleado_data_dict.pop("Persona")
-        #print(empleado_data_dict)
         puesto_data_dict = puesto_data.__dict__
         puesto_data_dict.pop("_sa_instance_state", None)
-        #print(puesto_data_dict)
-        empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto}
+        empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto, 'Puesto': Puesto}
         empleado_datos["idQuincena"] = idQuincena
-        #print(empleado_datos)
     return jsonify(empleado_datos)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])

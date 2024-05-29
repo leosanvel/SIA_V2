@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from collections import defaultdict
+import requests.exceptions
 from sqlalchemy import and_, or_
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import time, date, datetime
@@ -16,6 +17,7 @@ from email.message import EmailMessage
 from catalogos.modelos.modelos import kQuincena
 from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador
 from rh.gestion_empleados.modelos.empleado import rEmpleado
+from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina
 
 def permisos_de_consulta(view_func):
@@ -41,39 +43,52 @@ def consultar_curp(CURP):
     # Unión de la URL con la CURP a consultar
     url = url + CURP
 
-    # Obtención del HTML de respuesta a la consulta
-    page = requests.get(url, verify=False)
+    try:
+        # Obtención del HTML de respuesta a la consulta
+        page = requests.get(url, verify=False, timeout = 2)
 
-    # Si la respuesta es correcta
-    if page.status_code == 200:
-        html_content = page.text
-        soup = BeautifulSoup(html_content, 'html.parser')
+        # Si la respuesta es correcta
+        if page.status_code == 200:
+            html_content = page.text
+            soup = BeautifulSoup(html_content, 'html.parser')
 
-        # Se filtra la información
-        Status = soup.find('td', id = 'estatusOperacion').text.strip()
-        empleado = {}
-        empleado["Mensaje"] = soup.find('td', id = 'mensage').text.strip()
-        empleado["Status"] = Status
-        empleado["CURP"] = CURP
+            # Se filtra la información
+            Status = soup.find('td', id = 'estatusOperacion').text.strip()
+            empleado = {}
+            empleado["Mensaje"] = soup.find('td', id = 'mensage').text.strip()
+            empleado["Status"] = Status
+            empleado["CURP"] = CURP
 
-        # Si es estatus es correcto
-        if(Status == "EXITOSO"):
-            # Se obtiene el estatus de la CURP
-            Status_CURP = soup.find('td', id = 'statusCurp').text.strip()
-            # Si la CURP es válida
-            if(Status_CURP != "BSU"):
-                # Se obtiene el resto de la información
-                empleado["CURP"] = soup.find('td', id = 'CURP').text.strip()
-                empleado["Nombre"] = soup.find('td', id = 'nombres').text.strip()
-                empleado["ApPaterno"] = soup.find('td', id = 'apellido1').text.strip()
-                empleado["ApMaterno"] = soup.find('td', id = 'apellido2').text.strip()
-                empleado["Sexo"] = soup.find('td', id = 'sexo').text.strip()
-                empleado["FechaNacimiento"] = soup.find('td', id = 'fechNac').text.strip()
-                empleado["Edad"] = calcular_edad(datetime.strptime(empleado["FechaNacimiento"], "%d/%m/%Y"))
-                #empleado["Nacionalidad"] = soup.find('td', id = 'nacionalidad').text.strip()
-            else:
-                empleado["Status"] = "BSU"
-        # Se retorna un diccionario con la información
+            # Si es estatus es correcto
+            if(Status == "EXITOSO"):
+                # Se obtiene el estatus de la CURP
+                Status_CURP = soup.find('td', id = 'statusCurp').text.strip()
+                # Si la CURP es válida
+                if(Status_CURP != "BSU"):
+                    # Se obtiene el resto de la información
+                    empleado["CURP"] = soup.find('td', id = 'CURP').text.strip()
+                    empleado["Nombre"] = soup.find('td', id = 'nombres').text.strip()
+                    empleado["ApPaterno"] = soup.find('td', id = 'apellido1').text.strip()
+                    empleado["ApMaterno"] = soup.find('td', id = 'apellido2').text.strip()
+                    empleado["Sexo"] = soup.find('td', id = 'sexo').text.strip()
+                    empleado["FechaNacimiento"] = soup.find('td', id = 'fechNac').text.strip()
+                    empleado["Edad"] = calcular_edad(datetime.strptime(empleado["FechaNacimiento"], "%d/%m/%Y"))
+                    #empleado["Nacionalidad"] = soup.find('td', id = 'nacionalidad').text.strip()
+                else:
+                    empleado["Status"] = "BSU"
+            # Se retorna un diccionario con la información
+            return empleado
+    except requests.exceptions.Timeout:
+        print("Tiempo de respuesta vencido.")
+        empleado = {"tiempo_error": True}
+        return empleado
+    except requests.exceptions.ConnectionError:
+        print("Error de conexión.")
+        empleado = {"conexion_error": True}
+        return empleado
+    except requests.exceptions.RequestException:
+        print("Se produjo una ambigüedad.")
+        empleado = {"error": True}
         return empleado
 
 # Función para eliminar los caracteres "" de un string y poder visualizar en HTML
@@ -86,12 +101,10 @@ def eliminar_caracter(cad):
             indices.append(pos)
     
     if(indices):
-        #print(indices)
         for i in indices:
             i = i - indices.index(i)
             cad_aux = cad_aux[:i] + cad_aux[i + 1:]
     
-    #print(cad_aux)
 
     return cad_aux
 
@@ -103,6 +116,7 @@ def archivo_permitido(filename, EXTENCIONES_PERMITIDAS):
 
 
 def envia_correo(receptor, motivo, objeto):
+    print("Función de correo ejecutada")
     return 0
     # Configura los detalles del servidor SMTP
     smtp_server = 'smtp.gmail.com'
@@ -332,3 +346,27 @@ def serialize_datetime(obj):
     if isinstance(obj, datetime): 
         return obj.isoformat() 
     raise TypeError("Type not serializable")
+
+def calcular_quincena():
+    hoy = datetime.now()
+    mes = hoy.month
+    quincena = mes*2
+    if((hoy.day//16) == 0):
+        quincena = quincena - 1
+
+    return quincena
+
+def crea_solicitud(motivo,empleado_existente):
+    solicitud_data = {
+        "idSolicitud" : None,
+        "Solicitud" : motivo,
+        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + ".",
+        "idEstadoSolicitud" : 1,
+    }
+    
+    
+    nueva_solicitud = rSolicitudEstado(**solicitud_data)
+    db.session.add(nueva_solicitud)
+    # Realizar cambios en la base de datos
+    db.session.commit()
+    print("Solicitud agregada a la base de datos")
