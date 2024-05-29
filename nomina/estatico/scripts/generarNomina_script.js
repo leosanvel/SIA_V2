@@ -1,6 +1,7 @@
 $gmx(document).ready(function () {
     $("#btnGenerarNomina").click(abrirAdModal);
     $("#btnGenerarNomina_modal").click(generarNomina);
+    $('#calendar').datepicker();
 });
 
 function abrirAdModal() {
@@ -9,30 +10,6 @@ function abrirAdModal() {
         $("#GenerarNominaModal").modal('show');
     }
 }
-function MostarNomina(listanomina){
-    
-        $("#tblNomina").show();
-        
-        $("#tblNomina tbody").empty();
-
-        listanomina.forEach(function (concepto) {
-            text = `
-            <tr>  
-                <td>
-                    <label>"${concepto.Concepto}"</label>"
-                </td>
-                <td>
-                    <label>"${concepto.Importe}"</label>"
-                </td>
-            </tr>
-            `;
-            $("#tblNomina tbody").append(text);
-        });
-
-}
-
-
-
 function generarNomina() {
     $.ajax({
         async: false,
@@ -40,16 +17,31 @@ function generarNomina() {
         url: "/Nomina/crearNomina",
         data: $("#formularioGenerarNomina").serialize(),
         success: function (data) {
-            $("#GenerarNominaModal").modal('hide');
-            
+            $("#GenerarNominaModal").modal('hide');            
             if (data.respuesta == "1") {
-                abrirModal("Archivo Generado", "La nómina se procesó correctamente.", "");
+                abrirModal("Archivo Generado", "La nómina se procesó correctamente.", "");                
+                $("#tblNomina").show();       
+                $("#tblNomina tbody").empty();
+                data.listanomina.forEach(function(concepto) {
+                    text = `
+                    <tr>  
+                        <td>
+                            <label>${concepto.idConcepto}</label>
+                        </td>
+                        <td>
+                            <label>${concepto.Empleados}</label>
+                        </td>
+                        <td>
+                            <label>${concepto.Importe}</label>
+                        </td>
+                    </tr>
+                    `;
+                    $("#tblNomina tbody").append(text);
+                });
             }
             else{                
                 abrirModal("Error", "La nómina no fue procesada.", "");                
-            }
-            MostarNomina(data.listanomina);
-
+            }            
         }
     });
 }

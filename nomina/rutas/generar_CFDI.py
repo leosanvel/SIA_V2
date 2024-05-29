@@ -38,7 +38,7 @@ def crear_CFDI():
         fecha_pago = Nomina.FechaPago
         fecha_inicial = Nomina.FechaInicial
         fecha_final = Nomina.FechaFinal
-        observaciones_nomina = Nomina.Descripcion
+        observaciones_nomina = Nomina.Observaciones
         descripcion_nomina = Nomina.Descripcion
         nombre_carpeta = numero_quincena + mes_pago + anio_pago 
         directorio = "nomina/Doctos/" + nombre_carpeta + "/CFDI/"

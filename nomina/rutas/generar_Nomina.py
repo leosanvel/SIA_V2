@@ -24,9 +24,11 @@ def generar_Nomina():
 @permisos_de_consulta
 def crear_Nomina():
 
+    PrimaVacional = request.form.get("chkPV")
     NumNomina = request.form.get("idNomina")   
     Observaciones = request.form.get("Observaciones") 
     FechaHoy = datetime.now()
+    listaNomina=[]
     
     Nomina = db.session.query(tNomina).filter_by(idNomina=NumNomina,Estatus = 1).first()
     if Nomina:
@@ -42,10 +44,10 @@ def crear_Nomina():
         if ConsNominaPersonas:
             db.session.query(rNominaPersonas).filter_by(idNomina = NumNomina).delete()
             db.session.commit()
-        Empleados = db.session.query(rEmpleado).filter_by(idPersona=2191,idTipoEmpleado = 2,Activo = 1).all()
-        #Empleados = db.session.query(rEmpleado).filter_by(idTipoEmpleado = 2,Activo = 1).all()
+        #Empleados = db.session.query(rEmpleado).filter_by(idPersona=5574,idTipoEmpleado = 2,Activo = 1).all()
+        Empleados = db.session.query(rEmpleado).filter_by(idTipoEmpleado = 2,Activo = 1).all()
         for Empleado in Empleados:
-    ###-----Días trabajados
+###---------Días trabajados
             DiasTrabajados = 15
             DiasDescuento = 0
             DiasRetroactivo = 0
@@ -83,7 +85,6 @@ def crear_Nomina():
                     SueldoGravable = SueldoGravable + EConcepto.Monto
                     SueldoDiario07 = round(EConcepto.Monto / 30,2)                    
                     SueldoBruto = SueldoBruto + round((EConcepto.Monto / 30) * DiasTrabajados,2)
-                    print(str(SueldoBruto))
                     Sueldo07 = round((EConcepto.Monto / 30) * DiasTrabajados,2)                    
                     Importe = round((EConcepto.Monto / 30) * (DiasTrabajados - DiasDescuento),2)
                     if DiasRetroactivo > 0:
@@ -120,11 +121,20 @@ def crear_Nomina():
 
                 if EConcepto.idConcepto == "77" or EConcepto.idConcepto == "A1" or EConcepto.idConcepto == "A2" or EConcepto.idConcepto == "A3" or EConcepto.idConcepto == "A4" or EConcepto.idConcepto == "A5":
                     SueldoBruto = SueldoBruto + EConcepto.Monto
-                    print(str(SueldoBruto))
-                    
+
                 nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
                 db.session.add(nuevoregistro)
                 db.session.commit()
+
+                if PrimaVacional == "1":
+                    PV = db.session.query(rNominaPersonas).filter_by(idNomina=NumNomina,idPersona=Empleado.idPersona,idTipoConcepto="P",idConcepto="32").first()
+                    if not PV:      
+                        
+                                          
+                        Importe = ((Sueldo07 * 2) / 30) * 5
+                        nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',"P","32",Importe)
+                        db.session.add(nuevoregistro)
+                        db.session.commit()
 #-----------Deducciones                
             Importe = 0
             ImporteADescontar = 0
@@ -149,50 +159,47 @@ def crear_Nomina():
                             Importe = round((ImporteADescontar / 30) * (DiasTrabajados - DiasDescuento),2)
                             if DiasRetroactivo > 0:
                                 Importe = Importe + round((ImporteADescontar / 30) * (DiasRetroactivo),2)
-                elif EConcepto.idConcepto == "50":
+                elif EConcepto.idConcepto == "50":                    
                     ImporteADescontar = round(((Sueldo07 + SueldoCG) * EConcepto.Porcentaje) / 100,2)
                 else:
                     if EConcepto.Porcentaje > 0:                        
-                        ImporteADescontar = round((SueldoBruto * EConcepto.Porcentaje) / 100,2)         
-                        #print("Concepto: ",str(EConcepto.idConcepto)," - sueldo bruto: ", str(SueldoBruto),"- Porcentaje: ",str(EConcepto.Porcentaje),"- Importe: ",str(ImporteADescontar))                   
+                        ImporteADescontar = (SueldoBruto * EConcepto.Porcentaje) / 100
                     else:
                         ImporteADescontar = EConcepto.Monto
                 
                 CalcularMonto = 0
                 if EConcepto.idConcepto != "1":
-                    #print("Concepto: ",str(EConcepto.idConcepto)," - sueldo bruto: ", str(SueldoAPagar))
                     if SueldoAPagar > 0:
                         CalcularMonto = 1
                     else:
-                        Importe = 0
+                        if EConcepto.idConcepto == "50" or EConcepto.idConcepto == "100" or EConcepto.idConcepto == "77D":
+                            CalcularMonto = 1
+                        else: 
+                            Importe = 0
                 
-                if CalcularMonto == 1:                    
-                    Importe = round(((ImporteADescontar * 2) / 30) * (DiasTrabajados - DiasDescuento),2)
-                    if DiasRetroactivo > 0:
-                        Importe = Importe + round(((ImporteADescontar*2) / 30) * (DiasRetroactivo),2)
-
+                ImporteRetro = 0
+                if CalcularMonto == 1:
+                    if DiasRetroactivo > 0:                    
+                        Importe = ((ImporteADescontar * 2) / 30) * (DiasTrabajados - DiasDescuento)                    
+                        ImporteRetro = ((ImporteADescontar*2) / 30) * DiasRetroactivo
+                        Importe = round(Importe,2) + round(ImporteRetro,2)  
+                    else:
+                        Importe = ((ImporteADescontar * 2) / 30) * (DiasTrabajados - DiasDescuento)
+                        
                 Importe = Importe * -1
-                #print(str(Importe))
+                
                 nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
                 db.session.add(nuevoregistro)
                 db.session.commit()
-
-                #print(str(Empleado.NumeroEmpleado))
-
-            Nomina.update(Observaciones = Observaciones)        
-            respuesta = "1"
-        else:
-            respuesta = "0"
-    
-        CConcepto = db.session.query(rNominaPersonas.idConcepto).filter_by().group_by(rNominaPersonas.idTipoConcepto,rNominaPersonas.idConcepto).all()
-                    
-        #print(CConcepto[type])     
-        listaNom=[]
-        listaNom.append({"Concepto":"2","Total":"150","Importe":"215415"})
-        listaNom.append({"Concepto":"3","Total":"250","Importe":"315415"})        
-        listaNom.append({"Concepto":"4","Total":"350","Importe":"415415"})
+            print ("01"); 
+            Nomina.update(Observaciones = Observaciones)            
+        print ("Prev");    
+        CConcepto = db.session.query(rNominaPersonas.idConcepto.label("idConcepto"),func.count().label("Empleados"),func.sum(rNominaPersonas.Importe).label("Importe")).filter_by(idNomina=NumNomina).group_by(rNominaPersonas.idConcepto).order_by(rNominaPersonas.idTipoConcepto,rNominaPersonas.idConcepto).all()            
+        for CC in CConcepto:
+            listaNomina.append({"idConcepto":CC.idConcepto,"Empleados":CC.Empleados,"Importe":CC.Importe})        
+        respuesta = "1"
+        print ("Finalizo");
+    else:
+        respuesta = "0"
         
-              
-        
-
-    return jsonify({"respuesta":respuesta,"listanomina":listaNom})
+    return jsonify({"respuesta":respuesta,"listanomina":listaNomina})

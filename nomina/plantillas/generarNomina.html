@@ -21,11 +21,22 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="form-group">
                     <label for="lblObservaciones">Observaciones<span id="AObservaciones" class="form-text">*</span>:</label>
                     <textarea id="Observaciones" name="Observaciones" class="obligatorio form-control"></textarea>
                     <small id="EObservaciones" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                          <input id="chkPV" name="chkPV" type="checkbox" value="0"> Prima vacacional
+                        </label>
+                      </div>
                 </div>
             </div>
         </div>
@@ -40,16 +51,18 @@
         </div>
 
         <div class="row">
-            <table class="table-responsive" id="tblNomina" style="display: none;">
+            <table class="table table-striped" name="tblNomina" id="tblNomina" style="display: none;" >
+                <thead>
                 <tr>
-                    <th>Concepto</td>
+                    <th>Clave</td>
+                    <th>Número de registros</th>
                     <th>Importe</th>
                 </tr>
+                </thead>
                 <tbody> 
                 </tbody>
             </table>
         </div>
-
     </form>
 
     <div class="modal fade" id="GenerarNominaModal" tabindex="1" aria-labelledby="Advertencia" aria-hidden="true">

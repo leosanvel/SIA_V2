@@ -187,12 +187,12 @@ class rNominaPersonas(db.Model):
 
     idNomina = db.Column(db.Integer, primary_key = True)
     idPersona = db.Column(db.Integer, primary_key = True)
-    idTipoConcepto = db.Column(db.String(1), primary_key = True)
-    idConcepto = db.Column(db.String(5), primary_key = True)
     idCentroCosto = db.Column(db.Integer, nullable = True)
     idNivel = db.Column(db.Text, nullable = True)
+    idTipoConcepto = db.Column(db.String(1), primary_key = True)
+    idConcepto = db.Column(db.String(5), primary_key = True)    
     Importe = db.Column(db.Numeric(11, 2))
-
+    
     def __init__(self, idNomina, idPersona, idCentroCosto, idNivel, idTipoConcepto, idConcepto, Importe):
         self.idNomina = idNomina
         self.idPersona = idPersona
