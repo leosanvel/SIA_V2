@@ -90,7 +90,7 @@ def guardar_o_modificar_solicitud(solicitud_data):
 
 @informatica.route("/informatica/solicitudes/cancela-solicitud", methods = ['POST', 'GET'])
 @permisos_de_consulta
-def cancela_sancion():
+def cancela_solicitud():
     idSolicitud = request.form.get('idSolicitud')
     solicitud = db.session.query(rSolicitudEstado).filter_by(idSolicitud = idSolicitud).first()
     if solicitud is not None:
