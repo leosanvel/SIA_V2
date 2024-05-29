@@ -16,7 +16,7 @@ class rUsuario(db.Model):
     __bind_key__ = 'db2'
     __tablename__ = 'rusuario'
     __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
-    idPersona = db.Column(db.Integer, nullable = False)
+    idPersona = db.Column(db.Integer, nullable = True)
     Usuario = db.Column(db.String(32), primary_key = True, nullable = False)
     Contrasenia = db.Column(db.String(32), nullable = False)
     PrimerIngreso = db.Column(db.Date, nullable = False)

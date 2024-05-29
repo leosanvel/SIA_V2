@@ -93,7 +93,6 @@ function obtenerInfoEmpleado() {
                 $("#idCC").val(data.idCentroCosto);
                 cargarPlaza();
                 if(data.idEstatusEP){
-                    console.log("HOLA");
                     $("#idPlazaHom").append(`<option value = ${data.idPuesto}>${data.Puesto}</option>`);
                 }
                 $("#idPlazaHom").val(data.idPuesto);

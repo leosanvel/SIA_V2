@@ -301,6 +301,10 @@ $gmx(document).ready(function () {
             // Recargar la página
             window.location.href = "/principal/sia";
         }
+        if (comportamiento === 'cerrar_modales') {
+            // cerrar todas las ventanas modales
+            $('.modal').modal('hide');
+        }
 
     });
 

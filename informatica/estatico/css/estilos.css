@@ -1,3 +1,21 @@
+.estado-solicitud {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.completado {
+    background-color: green;
+}
+
+.en-progreso {
+    background-color: yellow;
+}
+
+.pendiente {
+    background-color: red;
+}
+
 /* Directorio en árbol */
 .tree ul {
     list-style-type: none;
