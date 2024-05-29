@@ -33,11 +33,13 @@ def crear_concepto():
         'Porcentaje' : 'Porcentaje',
         'Monto' : 'Monto',
         'Contrato' : 'Contrato',
+        'ExtraeArchivo' : 'ExtraeArchivo',
         'Estatus' : 'Activo'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     concepto_data["Activo"] = int(concepto_data["Activo"]) - 1
     concepto_data["Contrato"] = int(concepto_data["Contrato"]) - 1
+    concepto_data["ExtraeArchivo"] = int(concepto_data["ExtraeArchivo"]) - 1
     nuevo_concepto = None
     try:
         concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).one()

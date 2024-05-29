@@ -1,0 +1,56 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="col-md-4">
+    <form name="frmConceptos" id="frmConceptos" method="post">
+        <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
+        <select id="Concepto" name="Concepto" class="obligatorio form-control">
+            <option value="0">-- Seleccione --</option>
+            {% if conceptos %}
+            {% for row in conceptos %}
+            <option value="{{row.idConcepto}}">{{row.idTipoConcepto}} - {{row.idConcepto}} - {{row.Concepto}}</option>
+            {% endfor %}
+            {% endif %}
+        </select>
+        <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+    </form>
+</div>
+<div class="col-md-6">
+    <div class="form-group hidden-xs" bis_skin_checked="1">
+        <label for="ExtraeArchivo">Extraer información<span class="form-text">*</span>:</label>
+        <input type="file" id="ExtraeArchivo" name="ExtraeArchivo" class="obligatorio">
+        <small id="EExtraeArchivo" class="etiquetaError form-text form-text-error"></small>
+    </div>
+</div>
+
+<div class="col-md-2">
+    <button type="button" class="btn btn-primary" id="btnSubirArchivo">Subir archivo</button>
+</div>
+
+</form>
+<div class="form-group">
+    <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+</div>
+
+
+
+
+<br>
+<br>
+<br>
+<div class="row">
+    <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
+        Verificar los campos capturados.</div>
+</div>
+
+
+
+{% endblock %}
+
+
+
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('prestaciones.static', filename='scripts/importar_conceptos.js') }}"></script>
+{% endblock %}

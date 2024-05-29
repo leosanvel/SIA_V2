@@ -1,6 +1,11 @@
 $gmx(document).ready(function(){
     $("#Quincena").change(cargar_info_crear_quincena);
     $("#btnCrearNomina").click(guardar_crear_nomina);
+    $("#FechaPago").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeYear: true,
+        changeMonth: true
+    });
 });
 
 function cargar_info_crear_quincena(){
@@ -38,10 +43,13 @@ function guardar_crear_nomina(event){
             url: "/nomina/guardar-crear-nomina",
             data: $("#formularioCrearNomina").serialize(),
             success: function(data){
-                if(data){
-
+                if(data.guardado){
+                    abrirModal("Nomina creada", "Los datos de la nómina han sido creados de manera correcta.", "recargar");
+                }else{
+                    abrirModal("Nomina ya existe", "Los datos de la nómina ya existen.", "recargar");
                 }
             }
         });
     }
 }
+

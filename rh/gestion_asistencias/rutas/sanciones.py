@@ -14,7 +14,7 @@ from datetime import datetime
 def gestiona_sanciones():
     TipoSancion = db.session.query(kTipoSancion).filter_by(Activo = 1).all()
     Porcentajes = db.session.query(kPorcentajes).filter_by(Activo = 1).all()
-    return render_template('/Sanciones.html', title='Sanciones',
+    return render_template('/Sanciones.html', title='Licencias',
                            current_user=current_user,
                            TipoSancion = TipoSancion,
                            Porcentajes = Porcentajes)
