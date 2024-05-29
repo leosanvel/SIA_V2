@@ -34,14 +34,16 @@ class kGrado(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
     
     idGrado = db.Column(db.Integer, primary_key = True)
-    Grado = db.Column(db. String(50), nullable = True)
+    Grado = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "Grado", cascade = "all, delete-orphan")
 
-    def __init__(self, idGrado, Grado):
+    def __init__(self, idGrado, Grado, Activo):
         self.idGrado = idGrado
         self.Grado = Grado
+        self.Activo = Activo
 
 class kCaracterOcupacional(db.Model):
     __tablename__ = "kcaracterocupacional"
@@ -49,7 +51,7 @@ class kCaracterOcupacional(db.Model):
 
     idCaracterOcupacional = db.Column(db.Integer, primary_key = True)
     CaracterOcupacional = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "CaracterOcupacional", cascade = "all, delete-orphan")
@@ -65,7 +67,7 @@ class kNivel(db.Model):
 
     idNivel = db.Column(db.Integer, primary_key = True)
     Nivel = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "Nivel", cascade = "all, delete-orphan")
@@ -80,9 +82,9 @@ class kGrupo(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idGrupo = db.Column(db.Integer, primary_key = True)
-    idTipoAlta = db.Column(db.Integer, nullable = True)
-    Grupo = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    idTipoAlta = db.Column(db.Integer, primary_key = True)
+    Grupo = db.Column(db.String(100), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
     idEsquemaHonorarios = db.Column(db.Integer, nullable = True)
 
     # Relación
@@ -101,7 +103,7 @@ class kZonaEconomica(db.Model):
 
     idZonaEconomica = db.Column(db.Integer, primary_key = True)
     ZonaEconomica = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "ZonaEconomica", cascade = "all, delete-orphan")
@@ -117,7 +119,7 @@ class kRamo(db.Model):
 
     idRamo = db.Column(db.Integer, primary_key = True)
     Ramo = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     UAs = db.relationship("kUA", back_populates = "Ramo", cascade = "all, delete-orphan")
@@ -131,10 +133,10 @@ class kUA(db.Model):
     __tablename__ = "kua"
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idRamo = db.Column(db.Integer, db.ForeignKey(kRamo.idRamo), nullable = True)
+    idRamo = db.Column(db.Integer, db.ForeignKey(kRamo.idRamo), primary_key = True)
     idUA = db.Column(db.Integer, primary_key = True)
     UA = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     #Relación
     Ramo = db.relationship('kRamo', back_populates = "UAs", uselist = False, single_parent = True)
@@ -152,7 +154,7 @@ class kEstatusPuesto(db.Model):
 
     idEstatusPuesto = db.Column(db.Integer, primary_key = True)
     EstatusPuesto = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "EstatusPuesto", cascade = "all, delete-orphan")
@@ -168,7 +170,7 @@ class kCentroTrabajo(db.Model):
 
     idCentroTrabajo = db.Column(db.Integer, primary_key = True)
     CentroTrabajo = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
     
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "CentroTrabajo", cascade = "all, delete-orphan")
@@ -184,7 +186,7 @@ class kTipoPlazaPuesto(db.Model):
 
     idTipoPlazaPuesto = db.Column(db.Integer, primary_key = True)
     TipoPlazaPuesto = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "TipoPlazaPuesto", cascade = "all, delete-orphan")
@@ -200,7 +202,7 @@ class kVigencia(db.Model):
 
     idVigencia = db.Column(db.Integer, primary_key = True)
     Vigencia = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     #Relación
     Puestos = db.relationship('tPuesto', back_populates = "Vigencia", cascade = "all, delete-orphan")
@@ -217,7 +219,7 @@ class kTipoPersona(db.Model):
 
     idTipoPersona = db.Column(db.Integer, primary_key = True)
     TipoPersona = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relacion
     Personas = db.relationship("tPersona", back_populates = "TipoPersona", cascade = "all, delete-orphan")
@@ -235,8 +237,8 @@ class kNacionalidad(db.Model):
     idNacionalidad = db.Column(db.Integer, primary_key = True)
     Nacionalidad = db.Column(db.String(50), nullable = True)
     idNacionalidadFP = db.Column(db.String(5), nullable = True)
-    idPaisFP = db.Column(db.String(10), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    idPaisFP = db.Column(db.Integer, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idNacionalidad, Nacionalidad, idNacionalidadFP, idPaisFP, Activo):
         self.idNacionalidad = idNacionalidad
@@ -250,8 +252,8 @@ class kEstadoCivil(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idEstadoCivil = db.Column(db.Integer, primary_key = True)
-    EstadoCivil = db.Column(db.String(30), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    EstadoCivil = db.Column(db.String(15), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idEstadoCivil, EstadoCivil, Activo):
         self.idEstadoCivil = EstadoCivil
@@ -263,8 +265,8 @@ class kTipoEmpleado(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idTipoEmpleado = db.Column(db.Integer, primary_key = True)
-    TipoEmpleado = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    TipoEmpleado = db.Column(db.String(20), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idTipoEmpleado, TipoEmpleado, Activo):
         self.idTipoEmpleado = idTipoEmpleado
@@ -277,8 +279,8 @@ class kTipoAlta(db.Model):
 
     idTipoAlta = db.Column(db.Integer, primary_key = True)
     idTipoEmpleado = db.Column(db.Integer, primary_key = True)
-    TipoAlta = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    TipoAlta = db.Column(db.String(25), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idTipoAlta, idTipoEmpleado, TipoAlta, Activo):
         self.idTipoAlta = idTipoAlta
@@ -308,8 +310,8 @@ class kEscolaridad(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idEscolaridad = db.Column(db.Integer, primary_key = True)
-    Escolaridad = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Escolaridad = db.Column(db.String(45), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idEscolaridad, Escolaridad, Activo):
         self.idEscolaridad = idEscolaridad
@@ -332,8 +334,8 @@ class kNivelEscolaridad(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idNivelEscolaridad = db.Column(db.Integer, primary_key = True)
-    NivelEscolaridad = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    NivelEscolaridad = db.Column(db.String(25), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idNivelEscolaridad, NivelEscolaridad, Activo):
         self.idNivelEscolaridad = idNivelEscolaridad
@@ -344,8 +346,8 @@ class kInstitucionEscolar(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idInstitucionEscolar = db.Column(db.Integer, primary_key = True)
-    InstitucionEscolar = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    InstitucionEscolar = db.Column(db.String(250), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idInstitucionEscolar, InstitucionEscolar, Activo):
         self.idInstitucionEscolar = idInstitucionEscolar
@@ -368,8 +370,8 @@ class kFormacionEducativa(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idFormacionEducativa = db.Column(db.Integer, primary_key = True)
-    FormacionEducativa = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    FormacionEducativa = db.Column(db.String(250), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idFormacionEducativa, FormacionEducativa, Activo):
         self.idFormacionEducativa = idFormacionEducativa
@@ -393,9 +395,9 @@ class kEntidad(db.Model):
 
     idEntidad = db.Column(db.Integer, primary_key = True)
     Consecutivo = db.Column(db.Integer, primary_key = True)
-    Entidad = db.Column(db.String(50), nullable = True)
-    Abreviatura = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Entidad = db.Column(db.String(45), nullable = True)
+    Abreviatura = db.Column(db.String(20), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idEntidad, Consecutivo, Entidad, Abreviatura, Activo):
         self.idEntidad = idEntidad
@@ -412,7 +414,7 @@ class kMunicipio(db.Model):
     idMunicipio = db.Column(db.Integer, primary_key = True)
     Consecutivo = db.Column(db.Integer, primary_key = True)
     Municipio = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idEntidad, idMunicipio, Consecutivo, Municipio, Activo):
         self.idEntidad = idEntidad
@@ -430,7 +432,7 @@ class kLocalidad(db.Model):
     idLocalidad = db.Column(db.Integer, primary_key = True)
     Consecutivo = db.Column(db.Integer, primary_key = True)
     Localidad = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idEntidad, idMunicipio, idLocalidad, Consecutivo, Localidad, Activo):
         self.idEntidad = idEntidad
@@ -446,7 +448,7 @@ class kTipoAsentamiento(db.Model):
 
     idTipoAsentamiento = db.Column(db.Integer, primary_key = True)
     TipoAsentamiento = db.Column(db.String(45), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idTipoAsentamiento, TipoAsentamiento, Activo):
         self.idTipoAsentamiento = idTipoAsentamiento
@@ -459,7 +461,7 @@ class kVialidad(db.Model):
 
     idVialidad = db.Column(db.Integer, primary_key = True)
     Vialidad = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idVialidad, Vialidad, Activo):
         self. idVialidad = idVialidad
@@ -477,7 +479,7 @@ class kCodigoPostal(db.Model):
     idAsentamiento = db.Column(db.Integer, primary_key = True)
     Consecutivo = db.Column(db.Integer, primary_key = True)
     Asentamiento = db.Column(db.String(250), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, CodigoPostal, idEntidad, idMunicipio, idTipoAsentamiento, idAsentamiento, Consecutivo, Asentamiento, Activo):
         self.CodigoPostal = CodigoPostal
@@ -508,24 +510,36 @@ class kConcepto(db.Model):
     idConcepto = db.Column(db.String(5), primary_key = True)
     Concepto = db.Column(db.String(250), nullable = False)
     Abreviatura = db.Column(db.String(25), nullable = False)
+    Gravable = db.Column(db.Integer,nullable=True)
+    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
     Porcentaje = db.Column(db.Numeric(11, 3), nullable = True)
     Monto = db.Column(db.Numeric(11, 2), nullable = True)
-    ClaveSAT = db.Column(db.String(25), nullable = False)
+    ClaveSAT = db.Column(db.String(10), nullable = False)
     idTipoPago = db.Column(db.Integer, nullable = False)
     Contrato = db.Column(db.Integer)
+    PartidaAntp = db.Column(db.Integer, nullable=True)
+    Partida = db.Column(db.Integer, nullable=True)
+    Fecha = db.Column(db.Date, nullable=True)
+    ExtraeArchivo = db.Column(db.Integer, nullable=True)
     Activo = db.Column(db.Integer, nullable = False)
 
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, ExtraeArchivo, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
         self.Abreviatura = Abreviatura
+        self.Gravable = Gravable
+        self.idTipoEmpleado = idTipoEmpleado
         self.Porcentaje = Porcentaje
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
         self.idTipoPago = idTipoPago
         self.Contrato = Contrato
+        self.PartidaAntp = PartidaAntp
+        self.Partida = Partida
+        self.Fecha = Fecha
+        self.ExtraeArchivo = ExtraeArchivo
         self.Activo = Activo
     
     def update(self, **kwargs):
@@ -585,17 +599,22 @@ class kBancos(db.Model):
 
     idBanco = db.Column(db.Integer, primary_key = True)
     Codigo = db.Column(db.String(3), nullable = True)
-    Clave = db.Column(db.String(5), nullable = True)
     Nombre = db.Column(db.String(50), nullable = True)
+    Clave = db.Column(db.String(5), nullable = True)
+    ClaveSICOP =  db.Column(db.String(5), nullable = True)
+    Activo =  db.Column(db.Integer, nullable = True)
 
     # Relacion
     BancoPersonas = db.relationship("rBancoPersona", back_populates = "Banco", cascade = "all, delete-orphan")
 
-    def __init__(self, idBanco, Codigo, Clave, Nombre):
+    def __init__(self, idBanco, Codigo, Nombre, Clave, ClaveSICOP, Activo):
         self.idBanco = idBanco
         self.Codigo = Codigo
-        self.Clave = Clave
         self.Nombre = Nombre
+        self.Clave = Clave
+        self.ClaveSICOP = ClaveSICOP
+        self.Activo = Activo
+        
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():
@@ -608,7 +627,7 @@ class kPoliticas(db.Model):
 
     idPolitica = db.Column(db.Integer, primary_key = True)
     Politica = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idPolitica, Politica, Activo):
         self.idPolitica = idPolitica
@@ -626,7 +645,7 @@ class kTipoSancion(db.Model):
 
     idTipoSancion = db.Column(db.Integer, primary_key = True)
     TipoSancion = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idTipoSancion, TipoSancion, Activo):
         self.idTipoSancion = idTipoSancion
@@ -644,7 +663,7 @@ class kPorcentajes(db.Model):
 
     idPorcentaje = db.Column(db.Integer, primary_key = True)
     Porcentaje = db.Column(db.String(10), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idPorcentaje, Porcentaje, Activo):
         self.idPorcentaje = idPorcentaje
