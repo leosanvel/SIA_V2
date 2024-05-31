@@ -61,21 +61,3 @@ class rDomicilio(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
-
-class kTipoDomicilio(db.Model):
-    __tablename__ = "ktipodomicilio"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
-
-    idTipoDomicilio = db.Column(db.Integer, primary_key = True)
-    TipoDomicilio = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
-
-    def __init__(self, idTipoDomicilio, TipoDomicilio, Activo):
-        self.idTipoDomicilio = idTipoDomicilio
-        self.TipoDomicilio = TipoDomicilio
-        self.Activo = Activo
-
-    def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            if hasattr(self, attr):
-                setattr(self, attr, value)

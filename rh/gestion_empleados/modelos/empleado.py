@@ -247,8 +247,10 @@ class rBancoPersona(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci", "schema": "db2"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
-    Clabe = db.Column(db.String(18), primary_key = True)
     idBanco = db.Column(db.String(50), db.ForeignKey(kBancos.idBanco), nullable = True)
+    Clabe = db.Column(db.String(18), primary_key = True)
+    NumeroCuenta = db.Column(db.Integer, nullable = True)
+    FechaAlta = db.Column(db.Date, nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
     Verificado = db.Column(db.Integer, nullable = True)
 

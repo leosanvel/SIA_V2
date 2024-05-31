@@ -5,7 +5,8 @@ from openpyxl.styles import NamedStyle, Border, Side, Alignment
 
 from app import db
 from .rutas import nomina
-from nomina.modelos.modelos import kMeses, kQuincenaCalendario, kActividadCalendario, tFechasCalendario
+from nomina.modelos.modelos import tFechasCalendario
+from catalogos.modelos.modelos import kMeses, kQuincenaCalendario, kActividadCalendario
 
 @nomina.route("/nomina/calendario-pagos", methods = ['GET', 'POST'])
 def calendario_pagos():

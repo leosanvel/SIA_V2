@@ -4,7 +4,7 @@ from datetime import date
 from app import db
 from .rutas import nomina
 from rh.gestion_empleados.modelos.empleado import rEmpleado, tPersona
-from rh.gestion_asistencias.modelos.modelos import kTipoProceso
+from catalogos.modelos.modelos import kTipoProceso
 from catalogos.modelos.modelos import kQuincena
 from nomina.modelos.modelos import rDiasRetroactivo
 
