@@ -16,17 +16,49 @@
     background-color: red;
 }
 
-
 /* Directorio en árbol */
 .tree ul {
     list-style-type: none;
-    padding-left: 280px;
+    padding-left: 0;
 }
 
-.tree .folder>ul {
+
+.tree .folder > ul {
     display: none;
+    padding-left: 20px; /* Ajustar espacio de sangría para submenús */
 }
 
-.tree .folder.expanded>ul {
+.tree .folder.expanded > ul {
     display: block;
 }
+
+
+
+.tree .folder > ul > li{
+    padding-left: 30px; /* Ajustar espacio de sangría para sub-sub-submenús */
+}
+
+
+    .tree ul {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+
+    .tree .folder {
+        cursor: pointer;
+    }
+
+    .tree .file {
+        cursor: pointer;
+    }
+
+    .tree .folder:before {
+        content: "\25B6"; /* Triángulo apuntando a la derecha */
+    display: inline-block;
+    margin-right: 5px;
+    }
+
+    .tree .folder.expanded:before {
+        content: "\25BC"; /* Triángulo apuntando hacia abajo */
+    }
+

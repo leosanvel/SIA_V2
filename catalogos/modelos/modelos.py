@@ -689,6 +689,7 @@ class kTipoPlazaPuesto(db.Model):
     idTipoPlazaPuesto = db.Column(db.Integer, primary_key = True)
     TipoPlazaPuesto = db.Column(db.String(150), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "TipoPlazaPuesto", cascade = "all, delete-orphan")
