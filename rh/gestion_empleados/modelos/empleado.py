@@ -7,18 +7,18 @@ class tPersona(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
-    CURP = db.Column(db.String(18), nullable = True)
-    Nombre = db.Column(db.String(50), nullable = True)
-    ApPaterno = db.Column(db.String(50), nullable = True)
-    ApMaterno = db.Column(db.String(50), nullable = True)
-    Sexo = db.Column(db.String(20), nullable = True)
+    CURP = db.Column(db.String(18), nullable = False)
+    Nombre = db.Column(db.String(50), nullable = False)
+    ApPaterno = db.Column(db.String(50), nullable = False)
+    ApMaterno = db.Column(db.String(50), nullable = False)
+    Sexo = db.Column(db.String(15), nullable = True)
     FechaNacimiento = db.Column(db.Date, nullable = True)
-    RFC = db.Column(db.String(13), nullable = True)
+    RFC = db.Column(db.String(13), nullable = False)
     idNacionalidad = db.Column(db.Integer, nullable = True)
     CalidadMigratoria = db.Column(db.String(100), nullable = True)
     TelCasa = db.Column(db.String(10), nullable = True)
     TelCelular = db.Column(db.String(10), nullable = True)
-    idTipoPersona = db.Column(db.Integer, db.ForeignKey(kTipoPersona.idTipoPersona), nullable = True)
+    idTipoPersona = db.Column(db.Integer, db.ForeignKey(kTipoPersona.idTipoPersona), nullable = False)
     idEstadoCivil = db.Column(db.Integer, nullable = True)
     CorreoPersonal = db.Column(db.String(150), nullable = True)
 
@@ -56,7 +56,7 @@ class tPuesto(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    # idRamo = db.Column(db.Integer, nullable = True)
+    idRamo = db.Column(db.Integer, nullable = True)
     idUA = db.Column(db.Integer, db.ForeignKey(kUA.idUA), nullable = True)
     ConsecutivoPuesto = db.Column(db.Integer, primary_key = True)
     CodigoPuesto = db.Column(db.String(50), nullable = True)
@@ -105,24 +105,43 @@ class tPuesto(db.Model):
 
     EmpleadoPuestos = db.relationship("rEmpleadoPuesto", back_populates = "Puesto", cascade = "all, delete-orphan")
 
-    def __init__(self, idPuesto, ConsecutivoPuesto, ReferenciaTabular, Puesto, idUA, idZonaEconomica, idTipoPlazaPuesto,
-                 idCaracterOcupacional, idTipoFuncion, idGrupo, idGrado, idNivel, idCentroTrabajo, idCentroCosto, idEstatusPuesto, idVigencia):
-        self.idPuesto = idPuesto
-        self.ConsecutivoPuesto = ConsecutivoPuesto
-        self.ReferenciaTabular = ReferenciaTabular
-        self.Puesto = Puesto
-        # self.idRamo = idRamo
+    def __init__(self, idRamo, idUA, ConsecutivoPuesto, CodigoPuesto, Puesto, idZonaEconomica, ReferenciaTabular, ConsPuesto, idTipoPlazaPuesto,
+                 idCaracterOcupacional, idTipoFuncion, NivelSalarial, Tabulador, CodigoPresupuestal, OrdinalCP, idGrupo, idGrado, idNivel, idEstatusPuesto, 
+                 idVigencia, FechaInicio, FechaFin, idCentroTrabajo, FolioSival, RegimenLaboral, RemuneracionTotal, TitularAU, DeclaracionPatrimonial,
+                 PlazasSubordinadas, PuestoJefe, PresupuestalJefe, idCentroCosto):
+        self.idRamo = idRamo
         self.idUA = idUA
+        self.ConsecutivoPuesto = ConsecutivoPuesto
+        self.CodigoPuesto = CodigoPuesto
+        self.Puesto = Puesto
         self.idZonaEconomica = idZonaEconomica
+        self.ReferenciaTabular = ReferenciaTabular
+        self.ConsPuesto = ConsPuesto
         self.idTipoPlazaPuesto = idTipoPlazaPuesto
         self.idCaracterOcupacional = idCaracterOcupacional
         self.idTipoFuncion = idTipoFuncion
+        self.NivelSalarial = NivelSalarial
+        self.Tabulador = Tabulador
+        self.CodigoPresupuestal = CodigoPresupuestal
+        self.OrdinalCP = OrdinalCP
         self.idGrupo = idGrupo
         self.idGrado = idGrado
         self.idNivel = idNivel
-        self.idCentroTrabajo = idCentroTrabajo
-        self.idCentroCosto = idCentroCosto
         self.idEstatusPuesto = idEstatusPuesto
+        self.idVigencia = idVigencia
+        self.FechaInicio = FechaInicio
+        self.FechaFin = FechaFin
+        self.idCentroTrabajo = idCentroTrabajo
+        self.FolioSival = FolioSival
+        self.RegimenLaboral = RegimenLaboral
+        self.RemuneracionTotal = RemuneracionTotal
+        self.TitularAU = TitularAU
+        self.DeclaracionPatrimonial = DeclaracionPatrimonial
+        self.PlazasSubordinadas = PlazasSubordinadas
+        self.PuestoJefe = PuestoJefe
+        self.PresupuestalJefe = PresupuestalJefe
+        self.idCentroCosto = idCentroCosto
+        
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():
@@ -135,8 +154,8 @@ class rEmpleado(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, db.ForeignKey(tPersona.idPersona), primary_key = True)
-    NumeroEmpleado = db.Column(db.Integer, nullable = True)
-    idTipoEmpleado = db.Column(db.Integer, primary_key = True)
+    NumeroEmpleado = db.Column(db.Integer, nullable = False)
+    idTipoEmpleado = db.Column(db.Integer, nullable = True)
     idTipoAlta = db.Column(db.Integer, nullable = True)
     idGrupo = db.Column(db.Integer, nullable = True)
     HoraEntrada = db.Column(db.String(20), nullable = True)
@@ -144,10 +163,10 @@ class rEmpleado(db.Model):
     FecIngGobierno = db.Column(db.Date, nullable = True)
     FecIngFonaes = db.Column(db.Date, nullable = True)
     idQuincena = db.Column(db.Integer, nullable = True)
-    NoISSSTE = db.Column(db.Integer, nullable = True)
+    NoISSSTE = db.Column(db.BigInteger, nullable = True)
     FecAltaISSSTE = db.Column(db.Date, nullable = True)
     CorreoInstitucional = db.Column(db.String(150), nullable = True)
-    Activo = db.Column(db.Integer, nullable = True)
+    Activo = db.Column(db.Integer, nullable = False)
 
     # Relacion
     Persona = db.relationship("tPersona", back_populates = "Empleado", single_parent = True, cascade = "all, delete-orphan")
@@ -182,29 +201,38 @@ class rEmpleadoPuesto(db.Model):
 
     idPersona = db.Column(db.Integer, db.ForeignKey(rEmpleado.idPersona), primary_key = True)
     idPuesto = db.Column(db.Integer, db.ForeignKey(tPuesto.ConsecutivoPuesto), primary_key = True)
+    ClavePresupuestaSIA = db.Column(db.String(50), nullable = True)
+    CodigoPlazaSia = db.Column(db.String(50), nullable = True)
+    CodigoPuestoSIA = db.Column(db.String(25), nullable = True)
+    RHNETSIA = db.Column(db.String(25), nullable = True)
+    idNivel = db.Column(db.Integer, nullable = True)
     FechaInicio = db.Column(db.Date, primary_key = True)
     FechaTermino = db.Column(db.Date, nullable = True)
+    idCausaBaja = db.Column(db.Integer, nullable = False)
+    Observaciones = db.Column(db.String(300), nullable = False)
+    FechaEfecto = db.Column(db.Date, nullable = False)
+    idQuincena = db.Column(db.Integer, nullable = False)
     idEstatusEP = db.Column(db.Integer, primary_key = True) # ACTIVO o INACTIVO
-    
-    idCausaBaja = db.Column(db.Integer)
-    Observaciones = db.Column(db.String(300), nullable = True)
-    FechaEfecto = db.Column(db.Date, nullable = True)
-    idQuincena = db.Column(db.Integer)
 
     # Relacion
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, FechaInicio, FechaTermino, idEstatusEP, idCausaBaja, Observaciones, FechaEfecto,idQuincena):
+    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
+        self.ClavePresupuestaSIA = ClavePresupuestaSIA
+        self.CodigoPlazaSia = CodigoPlazaSIA
+        self.CodigoPuestoSIA = CodigoPuestoSIA
+        self.RHNETSIA = RHNETSIA
+        self.idNivel = idNivel
         self.FechaInicio = FechaInicio
         self.FechaTermino = FechaTermino
-        self.idEstatusEP = idEstatusEP
         self.idCausaBaja = idCausaBaja
-        self.Ovservaciones = Observaciones
+        self.Observaciones = Observaciones
         self.FechaEfecto = FechaEfecto
         self.idQuincena = idQuincena
+        self.idEstatusEP = idEstatusEP
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():
@@ -273,6 +301,7 @@ class rSerieNomina(db.Model):
     __tablename__ = 'rserienomina'
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
     idNomina = db.Column(db.Integer, primary_key = True)
     SerieInicial = db.Column(db.Integer, nullable = True)
     SerieFinal = db.Column(db.Integer, nullable= True)

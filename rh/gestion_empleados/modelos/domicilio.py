@@ -17,8 +17,8 @@ class rDomicilio(db.Model):
     Vialidad = db.Column(db.String(45), nullable = True)
     NumExterior = db.Column(db.String(45), nullable = True)
     NumInterior = db.Column(db.String(45), nullable = True)
-    SinNumero = db.Column(db.Boolean, nullable = True)
-    DomicilioConocido = db.Column(db.Boolean, nullable = True)
+    SinNumero = db.Column(db.Integer, nullable = True)
+    DomicilioConocido = db.Column(db.Integer, nullable = True)
     idTipoVialidad01 = db.Column(db.Integer, nullable = True)
     Vialidad01 = db.Column(db.String(45), nullable = True)
     idTipoVialidad02 = db.Column(db.Integer, nullable = True)
@@ -26,7 +26,7 @@ class rDomicilio(db.Model):
     idTipoVialidad03 = db.Column(db.Integer, nullable = True)
     Vialidad03 = db.Column(db.String(45), nullable = True)
     Descripcion = db.Column(db.Text, nullable = True)
-    idDomicilio = db.Column(db.Integer, nullable = True)
+    idDomicilio = db.Column(db.Integer, nullable = False)
 
     # Relacion
     Persona = db.relationship('tPersona', back_populates = "Domicilios", uselist = False, single_parent = True)
