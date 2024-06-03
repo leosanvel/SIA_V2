@@ -7,7 +7,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rEmpleado
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
 from sqlalchemy import and_
-from datetime import datetime
+from datetime import date, datetime
+
 
 
 @gestion_asistencias.route('/rh/gestion-asistencias/sanciones', methods = ['POST', 'GET'])
@@ -32,10 +33,21 @@ def guarda_Sancion():
         'Descripcion' : 'Descripcion',
     }
     sancion_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
+
+
     fechasConsecutivas = request.form.get("checkFechasConsecutivas") # (True or None)
     if fechasConsecutivas:
         sancion_data['FechaInicio'] = datetime.strptime(sancion_data['FechaInicio'], '%d/%m/%Y')
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
+        if sancion_data['idSancion'] == '2': #Artículo 37
+                mapeo_descuentos = { #NombreEnFormulario : nombreEnBase
+                    'DiasPagados1' : 'DiasPagados1',
+                    'PorcentajePagado1' : 'PorcentajePagado1',
+                    'DiasPagados2' : 'DiasPagados2',
+                    'PorcentajePagado2' : 'idPorcentaPorcentajePagado2je',
+                }
+                descuentos_data = {mapeo_descuentos[key]: request.form.get(key) for key in mapeo_descuentos.keys()}
+                condicionales_articulo_37(sancion_data, descuentos_data)
         guardar_o_modificar_sancion(sancion_data)
     else:
         FechasFlatpickr = request.form.get("FechasFlatpickr")
@@ -45,6 +57,8 @@ def guarda_Sancion():
             sancion_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
             sancion_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
             
+            if sancion_data['idSancion'] == '2': #Artículo 37
+                condicionales_articulo_37(sancion_data)
             guardar_o_modificar_sancion(sancion_data)
     return jsonify(sancion_data)
 
@@ -157,3 +171,62 @@ def cancela_sancion():
         return jsonify(SancionPersona_dict)
     else:
         return jsonify(False)
+    
+
+
+    
+@gestion_asistencias.route('/rh/gestion-asistencias/calculo-dias-articulo-37', methods = ['POST'])
+def calculo_dias_articulo_37():
+    idPersona = request.form.get("idPersona")
+    puesto_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
+    
+    if puesto_empleado is not None:
+        fecha_inicio = puesto_empleado.FechaInicio # tipo datetime.date
+        print("fecha_inicio")
+        print(fecha_inicio)
+        hoy = date.today()
+
+        # Calcular la diferencia en días
+        diferencia_dias = (hoy - fecha_inicio).days
+
+        # Convertir la diferencia en semanas
+        diferencia_semanas = diferencia_dias / 7
+
+        resultado = {}
+        # if diferencia_semanas > (52*10):  #52 semanas * 10 años
+        if diferencia_dias > (365*10):  #365 dias * 10 años
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 60
+            resultado["DiasPagados2"] = 60
+        elif diferencia_dias > (365*5):  # 5 años
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 45
+            resultado["DiasPagados2"] = 45
+        elif diferencia_dias > (365):  # 1 año
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 30
+            resultado["DiasPagados2"] = 30
+        else:   #menos de 1 año
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 15
+            resultado["DiasPagados2"] = 15
+
+        resultado["DiasPuesto"] = diferencia_dias
+        resultado["FechaInicioPuesto"] = fecha_inicio
+
+
+        print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
+        print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
+        print("Después sin pago")
+        return jsonify(resultado)
+            
+    return jsonify({"Error":True})
+
+
+def condicionales_articulo_37(sancion_data, descuentos_data):
+
+    pass
