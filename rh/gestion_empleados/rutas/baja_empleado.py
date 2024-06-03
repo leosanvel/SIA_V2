@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, session, jsonify, redirect, current_app, send_from_directory
 from flask_login import current_user
-from sqlalchemy import or_, inspect, func, and_
+from sqlalchemy import or_, inspect, func, and_, cast, String
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from datetime import timedelta, datetime
@@ -95,7 +95,8 @@ def dar_baja_empleado():
 
     respuesta = {}
     try:
-        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idPuesto = idPuesto, FechaTermino = None).one()
+        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idPuesto == idPuesto, or_(cast(rEmpleadoPuesto.FechaTermino, String).like("0000-00-00"), rEmpleadoPuesto.FechaTermino == None)).one()
+        print(empleadoPuesto)
         # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
         empleadoPuesto.Puesto.idEstatusPuesto = 2
 
