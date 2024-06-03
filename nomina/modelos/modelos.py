@@ -6,24 +6,35 @@ class tNomina(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idNomina = db.Column(db.Integer, primary_key = True)
-    idQuincena = db.Column(db.Integer, nullable = True)
-    Nomina = db.Column(db.String(10), nullable = True)
-    Descripcion = db.Column(db.Text, nullable = True)
-    Estatus = db.Column(db.Integer, nullable = True)
+    idTipoNomina = db.Column(db.String(1), nullable = False)
+    idQuincena = db.Column(db.Integer, nullable = False)
+    Nomina = db.Column(db.String(10), nullable = False)
+    Descripcion = db.Column(db.String(100), nullable = False)
+    Observaciones = db.Column(db.String(50), nullable = False)
+    Estatus = db.Column(db.Integer, nullable = False)
     Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     FechaPago = db.Column(db.Date, nullable = True)
-    idPersonaEmisor = db.Column(db.Integer, nullable = True)
-    PeriodoQuincena = db.Column(db.Integer, nullable = True)
-    SMM = db.Column(db.Numeric(11, 2), nullable = True)
-    SueldoMensual = db.Column(db.Numeric(11, 2), nullable = True)
+    FechaInicial = db.Column(db.Date, nullable = True)
+    FechaFinal = db.Column(db.Date, nullable = True)
+    Quincena = db.Column(db.String(2), nullable = False)
+    idPersonaEmisor = db.Column(db.Integer, nullable = False)
+    PeriodoQuincena = db.Column(db.Integer, nullable = False)
+    SMM = db.Column(db.Numeric(11, 2), nullable = False)
+    SueldoMensual = db.Column(db.Numeric(11, 2), nullable = False)
 
-    def __init__(self, idQuincena, Nomina, Descripcion, Estatus, FechaPago, idPersonaEmisor, PeriodoQuincena, SMM, SueldoMensual):
+    def __init__(self, idTipoNomina, idQuincena, Nomina, Descripcion, Observaciones, Estatus, Fecha, FechaPago, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena, SMM, SueldoMensual):
         # self.idNomina = idNomina
+        self.idTipoNomina = idTipoNomina
         self.idQuincena = idQuincena
         self.Nomina = Nomina
         self.Descripcion = Descripcion
+        self.Observaciones = Observaciones
         self.Estatus = Estatus
+        self.Fecha = Fecha
         self.FechaPago = FechaPago
+        self.FechaInicial = FechaInicial
+        self.FechaFinal = FechaFinal
+        self.Quincena = Quincena
         self.idPersonaEmisor = idPersonaEmisor
         self.PeriodoQuincena = PeriodoQuincena
         self.SMM = SMM
@@ -34,19 +45,27 @@ class tNomina(db.Model):
             if hasattr(self, attr):
                 setattr(self, attr, value)
 
-class rNominaPersona(db.Model):
-    __tablename__ = "rnominapersona"
+class rNominaPersonas(db.Model):
+    __tablename__ = "rnominapersonas"
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idNomina = db.Column(db.Integer, primary_key = True)
     idPersona = db.Column(db.Integer, primary_key = True)
-    DiasLaborados = db.Column(db.Integer, nullable = True)
+    idCentroCosto = db.Column(db.Integer, nullable = False)
+    idNivel = db.Column(db.Integer, nullable = False)
+    idTipoConcepto = db.Column(db.String(1), nullable = False)
+    idConcepto = db.Column(db.String(5), nullable = False)
+    Importe = db.Column(db.Numeric(11, 2), nullable = False)
 
-    def __init__(self, idNomina, idPersona, DiasLaborados):
+    def __init__(self, idNomina, idPersona, idCentroCosto, idNivel, idTipoConcepto, idConcepto, Importe):
         self.idNomina = idNomina
         self.idPersona = idPersona
-        self.DiasLaborados = DiasLaborados
+        self.idCentroCosto = idCentroCosto
+        self.idNivel = idNivel
+        self.idTipoConcepto = idTipoConcepto
+        self.idConcepto = idConcepto
+        self.Importe = Importe
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():
@@ -74,18 +93,45 @@ class rDiasRetroactivo(db.Model):
             if hasattr(self, attr):
                 setattr(self, attr, value)
 
-class kTipoNomina(db.Model):
-    __tablename__ = "ktiponomina"
+class tFechasCalendario(db.Model):
+    __tablename__ = "tfechascalendario"
+    __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idTipoNomina = db.Column(db.Integer, primary_key = True)
-    TipoNomina = db.Column(db.String(100), nullable = True)
-    Activo = db.Column(db.Integer, nullable = True)
+    idMes = db.Column(db.Integer, primary_key = True)
+    idQuincenaCalendario = db.Column(db.Integer, primary_key = True)
+    idActividadCalendario = db.Column(db.Integer, primary_key = True)
+    Periodo = db.Column(db.Integer, primary_key = True)
+    FechaInicio = db.Column(db.Date, nullable = True)
+    FechaFin = db.Column(db.Date, nullable = True)
 
-    def __init__(self, idTipoNomina, TipoNomina, Activo):
-        self.idTipoNomina = idTipoNomina
-        self.TipoNomina = TipoNomina
-        self.Activo = Activo
+    def __init__(self, idMes, idQuincenaCalendario, idActividadCalendario, Periodo, FechaInicio, FechaFin):
+        self.idMes = idMes
+        self.idQuincenaCalendario = idQuincenaCalendario
+        self.idActividadCalendario = idActividadCalendario
+        self.Periodo = Periodo
+        self.FechaInicio = FechaInicio
+        self.FechaFin = FechaFin
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+
+class rDiasLaborados(db.Model):
+    __tablename__ = "rdiaslaborados"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idNomina = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, primary_key = True)
+    DiasLaborados = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idNomina, idPersona, DiasLaborados):
+        self.idNomina = idNomina
+        self.idPersona = idPersona
+        self.DiasLaborados = DiasLaborados
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

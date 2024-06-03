@@ -12,7 +12,7 @@ from .gestion_asistencias import gestion_asistencias
 from app import db
 from general.herramientas.funciones import *
 from catalogos.modelos.modelos import kQuincena, kTipoEmpleado
-from nomina.modelos.modelos import rNominaPersona
+from nomina.modelos.modelos import rDiasLaborados
 
 import os
 from flask import send_from_directory
@@ -108,7 +108,7 @@ def genera_reporte_incidencias():
             "DiasLaborados": diasLaborados,
         }
 
-        nueva_nomina_persona = rNominaPersona(**nomina_persona)
+        nueva_nomina_persona = rDiasLaborados(**nomina_persona)
         db.session.add(nueva_nomina_persona)
         db.session.commit()
 

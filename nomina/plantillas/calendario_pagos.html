@@ -1,0 +1,122 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <form id="formularioCalendarioPagos">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="lblMes">Mes<span id="AMes" class="form-text">*</span>:</label>
+                    <select id="Mes" name="Mes" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% if Meses %}
+                            {% for Mes in Meses %}
+                                <option value="{{Mes.idMes}}">{{Mes.Mes}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <small id="EMes" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblConcepto">Concepto<span id="AConcepto" class="form-text">*</span>:</label>
+                    <select id="Concepto" name="Concepto" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                    </select>
+                    <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="lblActividad">Actividad<span id="AActividad" class="form-text">*</span>:</label>
+                    <select id="Actividad" name="Actividad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% if Actividades %}
+                            {% for Actividad in Actividades %}
+                                <option value="{{Actividad.idActividadCalendario}}">{{Actividad.ActividadCalendario}}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaInicio">Fecha de Inicio<span id="AFechaInicio" class="form-text">*</span>:</label>
+                    <input type="text" id="FechaInicio" name="FechaInicio" class="form-control obligatorio fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaInicio" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaFin">Fecha Fin<span id="AFechaFin" class="form-text">*</span>:</label>
+                    <input type="text" id="FechaFin" name="FechaFin" class="form-control obligatorio fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="lblAnio">Año<span id="AAnio" class="form-text"></span>:</label>
+                <input type="text" id="Anio" name="Anio" class="form-control obligatorio" value="{{Anio}}" readonly>
+                <small id="EAnio" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right form-group">
+                    <button class="btn btn-primary" type="button" id="btnAgregarAlCalendario">
+                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                        Agregar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table table-striped" id="tablaFechasCalendario" style="display: none">
+                <thead>
+                    <tr>
+                        <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                    </tr>
+                    <tr>
+                        <th>Año</th>
+                        <th>Mes</th>
+                        <th>Concepto</th>
+                        <th>Actividad</th>
+                        <th>Fecha inicio</th>
+                        <th>Fecha fin</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="pull-right form-group">
+                <button class="btn btn-primary" type="button" id="btnGenerarCalendario">
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                    Generar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('nomina.static', filename='scripts/calendario_pagos.js') }}"></script>
+{% endblock %}

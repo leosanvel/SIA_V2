@@ -6,8 +6,7 @@ from sqlalchemy import and_,func
 from datetime import datetime, time
 
 from app import db
-from rh.gestion_tiempo_no_laboral.modelos.modelos import kPeriodoVacacional
-from catalogos.modelos.modelos import kQuincena, kTipoIncidencia
+from catalogos.modelos.modelos import kQuincena, kTipoIncidencia, kPeriodoVacacional
 from rh.gestion_asistencias.modelos.modelos import rPoliticaPersona, tIncidencia, tChecador
 from rh.gestion_empleados.modelos.empleado import rEmpleado
 
