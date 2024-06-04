@@ -4,6 +4,7 @@ $gmx(document).ready(function(){
     $("#btnGenerarCalendario").click(generar_calendario);
     configuraDatepickers("FechaInicio", "FechaFin", "");
     obtener_fecha();
+    $("#VoBoCheck").change(VoBo_seleccionado);
 });
 
 function obtener_select_concepto(){
@@ -106,6 +107,9 @@ function obtener_fecha(){
                     $(`#ActividadCalendario${cont}`).val(fecha.idActividadCalendario);
                     cont++;
                 });
+                if(data.Fechas.length >= 1){
+                    $("#divVoBoCheck").show();
+                }
             }
         }
     })
@@ -157,4 +161,12 @@ function configuraDatepickers(idInicio, idFin, data, FechaInicio, FechaFin) {
             }
         }
     });
+}
+
+function VoBo_seleccionado(){
+    if($("#VoBoCheck").is(":checked")){
+        $("#btnGenerarCalendario").show();
+    }else{
+        $("#btnGenerarCalendario").hide();
+    }
 }
