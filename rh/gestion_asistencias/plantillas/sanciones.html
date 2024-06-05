@@ -73,7 +73,7 @@
                     </div>
 
                     <div class="col-md-3">
-                        <div class="form-group">
+                        <div class="form-group" id="contenedorPorcentaje">
                             <label for="lblPorcentajes">Porcentaje<span id="APorcentajes"
                                     class="form-text">*</span>:</label>
                             <select id="idPorcentaje" name="idPorcentaje" class="obligatorio form-control">
@@ -140,11 +140,91 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row" id="contenedorDetallesDescuentos" style="display: none;">
+                    <h3><span class="icon-infocircle" aria-hidden="true"></span> Detalles de descuentos por Artículo 37</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="lblFecIni">Fecha de inicio en el puesto:</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <input type="text" id="FechaInicioPuesto" name="FechaInicioPuesto"
+                                    class="form-control fecha" readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaInicioPuesto" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Descuentos:</h4>
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label for="lblFecIni">Primeros</label>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <input type="text" id="DiasPagados1" name="DiasPagados1"
+                                class="form-control obligatorio" readonly>
+                                <small id="EDiasPagados1" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="lblFecIni">días pagados al:</label>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <input type="text" id="PorcentajePagado1" name="PorcentajePagado1"
+                                class="form-control obligatorio" readonly>
+                                <small id="EPorcentajePagado1" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-1 pull-left">
+                            <label>%</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-1">
+                            <label for="lblFecIni">Después,</label>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <input type="text" id="DiasPagados2" name="DiasPagados2"
+                                class="form-control obligatorio" readonly>
+                                <small id="EDiasPagados2" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="lblFecIni">días pagados al:</label>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <input type="text" id="PorcentajePagado2" name="PorcentajePagado2"
+                                class="form-control obligatorio" readonly>
+                                <small id="EPorcentajePagado2" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-1 pull-left">
+                            <label>%</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="lblFecIni">Después sin pago.</label>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="row">
 
                 </div>
+
                 <div class="row pull-right">
-                    <button class="btn btn-primary btn-sm" type="button" id="btnGuardaSancion">
+                    <button class="btn btn-primary" type="button" id="btnGuardaSancion">
                         <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
                         Guardar
                     </button>

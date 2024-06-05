@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from sqlalchemy import and_, or_
 from app import db
 from autenticacion.modelos.modelos import User, rUsuario
-from general.modelos.modelos import rPPUsuario, kMenu, kSubMenu, kPagina
+from general.modelos.modelos import rPPUsuario
+from catalogos.modelos.modelos import kMenu, kSubMenu, kPagina
 # from app import app_instance
 from sqlalchemy.orm.exc import NoResultFound
 from general.herramientas.funciones import permisos_de_consulta

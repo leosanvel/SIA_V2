@@ -17,8 +17,8 @@ class rDomicilio(db.Model):
     Vialidad = db.Column(db.String(45), nullable = True)
     NumExterior = db.Column(db.String(45), nullable = True)
     NumInterior = db.Column(db.String(45), nullable = True)
-    SinNumero = db.Column(db.Boolean, nullable = True)
-    DomicilioConocido = db.Column(db.Boolean, nullable = True)
+    SinNumero = db.Column(db.Integer, nullable = True)
+    DomicilioConocido = db.Column(db.Integer, nullable = True)
     idTipoVialidad01 = db.Column(db.Integer, nullable = True)
     Vialidad01 = db.Column(db.String(45), nullable = True)
     idTipoVialidad02 = db.Column(db.Integer, nullable = True)
@@ -26,7 +26,7 @@ class rDomicilio(db.Model):
     idTipoVialidad03 = db.Column(db.Integer, nullable = True)
     Vialidad03 = db.Column(db.String(45), nullable = True)
     Descripcion = db.Column(db.Text, nullable = True)
-    idDomicilio = db.Column(db.Integer, nullable = True)
+    idDomicilio = db.Column(db.Integer, nullable = False)
 
     # Relacion
     Persona = db.relationship('tPersona', back_populates = "Domicilios", uselist = False, single_parent = True)
@@ -56,24 +56,6 @@ class rDomicilio(db.Model):
         self.Vialidad03 = Vialidad03
         self.Descripcion = Descripcion
         self.idDomicilio = idDomicilio
-
-    def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            if hasattr(self, attr):
-                setattr(self, attr, value)
-
-class kTipoDomicilio(db.Model):
-    __tablename__ = "ktipodomicilio"
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
-
-    idTipoDomicilio = db.Column(db.Integer, primary_key = True)
-    TipoDomicilio = db.Column(db.String(50), nullable = True)
-    Activo = db.Column(db.Boolean, nullable = True)
-
-    def __init__(self, idTipoDomicilio, TipoDomicilio, Activo):
-        self.idTipoDomicilio = idTipoDomicilio
-        self.TipoDomicilio = TipoDomicilio
-        self.Activo = Activo
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

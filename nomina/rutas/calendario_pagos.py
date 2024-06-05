@@ -5,7 +5,8 @@ from openpyxl.styles import NamedStyle, Border, Side, Alignment
 
 from app import db
 from .rutas import nomina
-from nomina.modelos.modelos import kMeses, kQuincenaCalendario, kActividadCalendario, tFechasCalendario
+from nomina.modelos.modelos import tFechasCalendario
+from catalogos.modelos.modelos import kMeses, kQuincenaCalendario, kActividadCalendario
 
 @nomina.route("/nomina/calendario-pagos", methods = ['GET', 'POST'])
 def calendario_pagos():
@@ -107,18 +108,19 @@ def generar_calendario_pagos():
 
     wb = openpyxl.load_workbook(filename="nomina/docs_plantillas/Plantilla_Calendario_de_Pagos.xlsx", rich_text=True)
 
-    wb.active
+    #wb.active
 
     datos_a_insertar = {
         'PERIODO': str(anio)
     }
 
-    trimestre_1 = wb['1er_Trim']
-    trimestre_2 = wb['2do_Trim']
-    trimestre_3 = wb['3er_Trim']
-    trimestre_4 = wb['4o_Trim']
+    hojas = ['1er_Trim', '2do_Trim', '3er_Trim', '4o_Trim']
 
-    for row in trimestre_1.iter_rows():
+    estilo_texto_centrado = NamedStyle(name="texto_centrado")
+    estilo_texto_centrado.alignment = Alignment(horizontal='center', vertical='center')
+    estilo_borde_izq = Border(right=Side(style='thin'))
+
+    for row in wb[hojas[1]].iter_rows():
         for cell in row:
             if cell.value and isinstance(cell.value, str):
                 for key, value in datos_a_insertar.items():
@@ -126,84 +128,89 @@ def generar_calendario_pagos():
 
     for fecha in Fechas:
         if fecha.idMes == 1 or fecha.idMes == 2 or fecha.idMes == 3:
-            if fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 1:
-                fila = '10'
-            
-            elif fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 2:
-                fila = '13'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 1:
-                fila = '17'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 2:
-                fila = '20'
-
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 1:
-                fila = '24'
-            
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 2:
-                fila = '27'
+            fila = calcular_fila(fecha.idMes, fecha.idQuincenaCalendario)
+            columna = calcular_columna(fecha.idActividadCalendario)
+            hoja = 0
 
         elif fecha.idMes == 4 or fecha.idMes == 5 or fecha.idMes == 6:
-            if fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 1:
-                fila = '10'
-            
-            elif fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 2:
-                fila = '13'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 1:
-                fila = '17'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 2:
-                fila = '20'
-
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 1:
-                fila = '24'
-            
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 2:
-                fila = '27'
+            fila = calcular_fila(fecha.idMes, fecha.idQuincenaCalendario)
+            columna = calcular_columna(fecha.idActividadCalendario)
+            hoja = 1
 
         elif fecha.idMes == 7 or fecha.idMes == 8 or fecha.idMes == 9:
-            if fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 1:
-                fila = '10'
-            
-            elif fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 2:
-                fila = '13'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 1:
-                fila = '17'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 2:
-                fila = '20'
-
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 1:
-                fila = '24'
-            
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 2:
-                fila = '27'
+            fila = calcular_fila(fecha.idMes, fecha.idQuincenaCalendario)
+            columna = calcular_columna(fecha.idActividadCalendario)
+            hoja = 2
 
         elif fecha.idMes == 4 or fecha.idMes == 5 or fecha.idMes == 6:
-            if fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 1:
-                fila = '10'
-            
-            elif fecha.idMes % 3 == 1 and fecha.idQuincenaCalendario == 2:
-                fila = '13'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 1:
-                fila = '17'
-
-            elif fecha.idMes % 3 == 2 and fecha.idQuincenaCalendario == 2:
-                fila = '20'
-
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 1:
-                fila = '24'
-            
-            elif fecha.idMes % 3 == 0 and fecha.idQuincenaCalendario == 2:
-                fila = '27'
+            fila = calcular_fila(fecha.idMes, fecha.idQuincenaCalendario)
+            columna = calcular_columna(fecha.idActividadCalendario)
+            hoja = 3
 
         else:
             print("Error en el mes.")
 
+        if(fecha.FechaInicio == fecha.FechaFin):
+            rango = columna[0] + fila + ':' + columna[2] + fila
+            wb[hojas[hoja]].merge_cells(rango)
+            wb[hojas[hoja]][columna[0] + fila] = fecha.FechaInicio.day
+            wb[hojas[hoja]][columna[0] + fila].style = estilo_texto_centrado
+
+        else:
+            wb[hojas[hoja]][columna[0] + fila] = fecha.FechaInicio.day
+            wb[hojas[hoja]][columna[0] + fila].style = estilo_texto_centrado
+            wb[hojas[hoja]][columna[1] + fila] = '-'
+            wb[hojas[hoja]][columna[1] + fila].style = estilo_texto_centrado
+            wb[hojas[hoja]][columna[2] + fila] = fecha.FechaFin.day
+            wb[hojas[hoja]][columna[2] + fila].style = estilo_texto_centrado
+            wb[hojas[hoja]][columna[2] + fila].border = estilo_borde_izq
+
+
     wb.save("nomina/documentos/CALENDARIO DE PAGOS " + str(anio) + ".xlsx")
 
     return({"guardado": True})
+
+def calcular_fila(Mes, Quincena):
+    if Mes % 3 == 1 and Quincena == 1:
+        fila = '10'
+            
+    elif Mes % 3 == 1 and Quincena == 2:
+        fila = '13'
+
+    elif Mes % 3 == 2 and Quincena == 1:
+        fila = '17'
+
+    elif Mes % 3 == 2 and Quincena == 2:
+        fila = '20'
+
+    elif Mes % 3 == 0 and Quincena == 1:
+        fila = '24'
+            
+    elif Mes % 3 == 0 and Quincena == 2:
+        fila = '27'
+
+    return fila
+
+def calcular_columna(Actividad):
+    if Actividad == 1:
+        columna = ['D', 'E', 'F']
+
+    elif Actividad == 2:
+        columna = ['G', 'H', 'I']
+
+    elif Actividad == 3:
+        columna = ['J', 'K', 'L']
+
+    elif Actividad == 4:
+        columna = ['M', 'N', 'O']
+    
+    elif Actividad == 5:
+        columna = ['P', 'Q', 'R']
+
+    elif Actividad == 6:
+        columna = ['S', 'T', 'U']
+
+    elif Actividad == 7:
+        columna = ['V', 'W', 'X']
+
+    return columna

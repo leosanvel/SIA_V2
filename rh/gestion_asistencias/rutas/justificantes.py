@@ -7,10 +7,10 @@ from datetime import datetime, time
 import numpy as np
 
 from app import db
-from rh.gestion_asistencias.modelos.modelos import kTipoProceso, kTipoJustificante, rTipoProcesoJustificante, tJustificante, tChecador
-from rh.gestion_tiempo_no_laboral.modelos.modelos import kPeriodoVacacional, rDiasPersona
+from rh.gestion_asistencias.modelos.modelos import tJustificante, tChecador
+from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
 from rh.gestion_empleados.modelos.empleado import rEmpleado
-from catalogos.modelos.modelos import kQuincena
+from catalogos.modelos.modelos import kQuincena, kTipoProceso, kTipoJustificante, kPeriodoVacacional, rTipoProcesoJustificante
 
 @gestion_asistencias.route('/rh/gestion-asistencias/justificantes', methods = ['POST', 'GET'])
 def gestiona_justificantes():

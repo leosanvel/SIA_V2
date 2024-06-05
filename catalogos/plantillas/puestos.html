@@ -1,0 +1,50 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 pull-left">
+            <button type="button" class="btn btn-primary" id="btnModalCrearPuesto">Crear nuevo puesto</button>
+        </div>
+
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-4 pull-left">
+            <div class="form-group hidden-xs" bis_skin_checked="1">
+                <label for="lblArchivo">Cargar documento<span id="AArchivo" class="form-text">*</span>:</label>
+                <input type="file" id="Archivo" name="Archivo" class="opcional">
+                <small id="EArchivo" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+
+        <div class="col-md-4 pull-right">
+            <button type="button" class="btn btn-primary" id="btnCargarArchivo">Cargar archivo</button>
+        </div>
+    </div>
+    <br>
+    <form id="formularioBuscarPuesto">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="lblPuesto">Buscar puesto:</label>
+                    <input type="text" id="PuestoExistente" class="obligatorio form-control"
+                        oninput="this.value = this.value.toUpperCase()">
+                    <div class="dropdown">
+                        <div id="lista_puestos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <!-- Aquí se mostrarán los resultados -->
+                        </div>
+                    </div>
+                    <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/puestos.js') }}"></script>
+{% endblock %}

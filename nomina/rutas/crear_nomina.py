@@ -4,7 +4,8 @@ from datetime import date, datetime
 from app import db
 from .rutas import nomina
 from catalogos.modelos.modelos import kQuincena
-from nomina.modelos.modelos import tNomina, kTipoNomina
+from nomina.modelos.modelos import tNomina
+from catalogos.modelos.modelos import kTipoNomina
 
 @nomina.route("/nomina/crear-nomina", methods = ['GET', 'POST'])
 def crear_nomina():

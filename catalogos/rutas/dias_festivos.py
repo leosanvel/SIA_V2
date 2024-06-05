@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from .rutas import catalogos
 from app import db
-from rh.gestion_tiempo_no_laboral.modelos.modelos import kDiasFestivos
+from catalogos.modelos.modelos import kDiasFestivos
 
 @catalogos.route('/catalogos/dias-festivos', methods = ['POST', 'GET'])
 def catalogo_diasfestivos():
