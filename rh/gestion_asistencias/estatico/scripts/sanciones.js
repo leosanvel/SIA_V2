@@ -121,7 +121,7 @@ function guardar_sancion() {
             data: $("#formularioCreaSancion, #idPersona").serialize(),
             success: function (data) {
                 if (data.idPersona) {
-                    abrirModal("Información guardada", "La sanción se creó con éxito", "recargar");
+                    abrirModal("Información guardada", "La sanción se creó con éxito", "");
                 }
             }
         });
@@ -185,7 +185,7 @@ function busca_sancion() {
                         <td>
                             <div class="form-group datepicker-group" style="z-index: 10;">
                                 <input type="text" id="fechaInicioFormateada${sancion.idSancionPersona}"
-                                     value="${fechaInicioFormateada}" class="form-control" readonly>
+                                     value="${fechaInicioFormateada}" class="form-control" style="width: 170px;" readonly>
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                 <small id="EFechaInicio"
                                     class="etiquetaError form-text form-text-error"></small>
@@ -194,7 +194,7 @@ function busca_sancion() {
                         <td>
                             <div class="form-group datepicker-group" style="z-index: 1;">
                                 <input type="text" id="fechaFinFormateada${sancion.idSancionPersona}"
-                                     value="${fechaFinFormateada}" class="form-control" readonly>
+                                     value="${fechaFinFormateada}" class="form-control" style="width: 170px;" readonly>
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                 <small id="EFechaInicio"
                                     class="etiquetaError form-text form-text-error"></small>

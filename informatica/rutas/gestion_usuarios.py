@@ -56,7 +56,7 @@ def crear_usuario():
         respuesta["creado"] = True
         respuesta["usuario"] = usuario_data["Usuario"]
     
-    paginas_json = request.form.get("checkboxStates")
+    paginas_json = request.form.get("estadosCheckbox")
     if paginas_json:
         paginas = json.loads(paginas_json)
     else:
@@ -66,8 +66,7 @@ def crear_usuario():
     db.session.commit()
     
     dar_permisos(paginas, nombre_usuario)
-    
-    print(respuesta)
+
     return jsonify(respuesta)
 
 def dar_permisos(paginas, usuario):
@@ -92,6 +91,7 @@ def dar_permisos(paginas, usuario):
         pagina_data["idSubMenu"] = pagina["idSubMenu"]
         pagina_data["idPagina"] = pagina["idPagina"]
         nueva_pagina = rPPUsuario(**pagina_data)
+
         db.session.add(nueva_pagina)
         db.session.commit()
     print("permisos agregados")
@@ -155,8 +155,6 @@ def carga_arbol_paginas():
 @informatica.route('/informatica/gestion-usuarios/carga-paginas-usuario', methods=['POST', 'GET'])
 def carga_paginas_usuario():
     nombre_usuario = request.form.get("nombre_usuario", None)
-    print("nombre_usuario:")
-    print(nombre_usuario)
 
     paginas = db.session.query(rPPUsuario).filter_by(Usuario=nombre_usuario).all()
 
