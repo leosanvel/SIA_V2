@@ -64,7 +64,9 @@ function cargar_archivo(){
         contentType: false,
         processData: false,
         success: function(data){
-
+            if(data.guardado){
+                abrirModal("Datos cargados", "Los datos se han cargado correctamente.", "recargar");
+            }
         }
     });
 }
