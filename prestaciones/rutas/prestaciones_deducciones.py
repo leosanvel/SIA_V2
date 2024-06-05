@@ -40,7 +40,8 @@ def crear_empleado_concepto():
         # Formatear la fecha en el formato 'YYYY-MM-DD'
         concepto_data['FechaInicio'] = fecha_inicio_dt.strftime('%Y-%m-%d')
         concepto_data['FechaFin'] = fecha_fin_dt.strftime('%Y-%m-%d')
-    
+    concepto_data['PagoUnico'] = 0
+
     editar = request.form.get('editar')
     contrato = request.form.get('checkboxContrato')
     

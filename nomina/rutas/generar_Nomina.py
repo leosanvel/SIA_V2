@@ -9,7 +9,7 @@ from catalogos.modelos.modelos import *
 from autenticacion.modelos.modelos import *
 from nomina.modelos.modelos import *
 from rh.gestion_empleados.modelos.empleado import rEmpleado, tPuesto, rEmpleadoPuesto
-from prestaciones.modelos.modelos import rEmpleadoConcepto, rDiasRetroactivo
+from prestaciones.modelos.modelos import rEmpleadoConcepto
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
 
 @nomina.route('/nomina/generar-nomina', methods = ['POST', 'GET'])

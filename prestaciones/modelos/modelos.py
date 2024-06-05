@@ -1,26 +1,5 @@
 from app import db
 
-class rDiasRetroactivo(db.Model):
-    __bind_key__ = 'db2'
-    __tablename__ = "rdiasretroactivo"
-    __table_arg__ = {"mysql_engine":"InnoDB","mysql_charset":"utf8mb4"}
-
-    idPersona = db.Column(db.Integer, primary_key = True)
-    idQuincena = db.Column(db.Integer, primary_key = True)
-    Dias = db.Column(db.Integer)
-    Descripcion =  db.Column(db.String(25))
-
-    def __init__(self, idPersona, idQuincena, Dias, Descripcion):
-        self.idPersona = idPersona
-        self.idQuincena = idQuincena
-        self.Dias = Dias
-        self.Descripcion = Descripcion
-        
-    def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            if hasattr(self, attr):
-                setattr(self, attr, value)
-
 class rEmpleadoConcepto(db.Model):
     __bind_key__ = 'db2'
     __tablename__ = "rempleadoconcepto"

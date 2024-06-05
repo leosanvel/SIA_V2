@@ -6,7 +6,7 @@ from .rutas import nomina
 from rh.gestion_empleados.modelos.empleado import rEmpleado, tPersona
 from catalogos.modelos.modelos import kTipoProceso
 from catalogos.modelos.modelos import kQuincena
-from prestaciones.modelos.modelos import rDiasRetroactivo
+from nomina.modelos.modelos import rDiasRetroactivo
 
 @nomina.route("/nomina/retroactivos", methods = ['GET', 'POST'])
 def retroactivos():
