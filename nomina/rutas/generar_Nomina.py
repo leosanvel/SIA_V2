@@ -8,9 +8,8 @@ from general.herramientas.funciones import *
 from catalogos.modelos.modelos import *
 from autenticacion.modelos.modelos import *
 from nomina.modelos.modelos import *
-from rh.gestion_empleados.modelos.empleado import rEmpleado
+from rh.gestion_empleados.modelos.empleado import rEmpleado, tPuesto, rEmpleadoPuesto
 from prestaciones.modelos.modelos import rEmpleadoConcepto, rDiasRetroactivo
-from nomina.modelos.modelos import *
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
 
 @nomina.route('/nomina/generar-nomina', methods = ['POST', 'GET'])
@@ -28,9 +27,8 @@ def crear_Nomina():
     NumNomina = request.form.get("idNomina")   
     Observaciones = request.form.get("Observaciones") 
     FechaHoy = datetime.now()
-    listaNomina=[]
     
-    Nomina = db.session.query(tNomina).filter_by(idNomina=NumNomina,Estatus = 1).first()
+    Nomina = db.session.query(tNomina).filter_by(idNomina=NumNomina,Estatus=1).first()
     if Nomina:
         strNomina = Nomina.Nomina
         AnioFiscal = Nomina.FechaPago.strftime("%Y")
@@ -52,6 +50,17 @@ def crear_Nomina():
             DiasDescuento = 0
             DiasRetroactivo = 0
             DiasSancion = 0
+            nivel_salarial = ""
+            centro_costo = ""
+
+            PuestoEmpleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = Empleado.idPersona).first()
+            if PuestoEmpleado:
+                Puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = PuestoEmpleado.idPuesto).first()
+                if Puesto:
+                    nivel_salarial = Puesto.NivelSalarial
+                    CentroCostos = db.session.query(kCentroCostos).filter_by(idCentroCosto = Puesto.idCentroCosto).first()
+                    if CentroCostos:
+                        centro_costo = CentroCostos.Clave
 
             DLaborados = db.session.query(rDiasLaborados).filter_by(idNomina=NumNomina,idPersona=Empleado.idPersona).first()
             if DLaborados:
@@ -61,7 +70,7 @@ def crear_Nomina():
             if DRetroactivos:
                 DiasRetroactivo = DRetroactivos.Dias                
 
-            nuevoregistro = rNominaPersonas(NumNomina,Empleado.idPersona,'','','P','DT',DiasTrabajados + DiasRetroactivo - DiasDescuento)
+            nuevoregistro = rNominaPersonas(NumNomina,Empleado.idPersona,centro_costo,nivel_salarial,'P','DT',DiasTrabajados + DiasRetroactivo - DiasDescuento)
             db.session.add(nuevoregistro)
             db.session.commit()
 
@@ -122,19 +131,18 @@ def crear_Nomina():
                 if EConcepto.idConcepto == "77" or EConcepto.idConcepto == "A1" or EConcepto.idConcepto == "A2" or EConcepto.idConcepto == "A3" or EConcepto.idConcepto == "A4" or EConcepto.idConcepto == "A5":
                     SueldoBruto = SueldoBruto + EConcepto.Monto
 
-                nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
+                nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,centro_costo,nivel_salarial,EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
                 db.session.add(nuevoregistro)
                 db.session.commit()
 
                 if PrimaVacional == "1":
                     PV = db.session.query(rNominaPersonas).filter_by(idNomina=NumNomina,idPersona=Empleado.idPersona,idTipoConcepto="P",idConcepto="32").first()
                     if not PV:      
-                        
-                                          
-                        Importe = ((Sueldo07 * 2) / 30) * 5
-                        nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',"P","32",Importe)
-                        db.session.add(nuevoregistro)
-                        db.session.commit()
+                        if (Nomina.FechaPago - Empleado.FecIngFonaes).strftime("%M") >= 6:                                          
+                            Importe = ((Sueldo07 * 2) / 30) * 5
+                            nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,centro_costo,nivel_salarial,"P","32",Importe)
+                            db.session.add(nuevoregistro)
+                            db.session.commit()
 #-----------Deducciones                
             Importe = 0
             ImporteADescontar = 0
@@ -188,18 +196,15 @@ def crear_Nomina():
                         
                 Importe = Importe * -1
                 
-                nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,'','',EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
+                nuevoregistro = rNominaPersonas(NumNomina,EConcepto.idPersona,centro_costo,nivel_salarial,EConcepto.idTipoConcepto,EConcepto.idConcepto,Importe)
                 db.session.add(nuevoregistro)
                 db.session.commit()
-            print ("01"); 
-            Nomina.update(Observaciones = Observaciones)            
-        print ("Prev");    
-        CConcepto = db.session.query(rNominaPersonas.idConcepto.label("idConcepto"),func.count().label("Empleados"),func.sum(rNominaPersonas.Importe).label("Importe")).filter_by(idNomina=NumNomina).group_by(rNominaPersonas.idConcepto).order_by(rNominaPersonas.idTipoConcepto,rNominaPersonas.idConcepto).all()            
-        for CC in CConcepto:
-            listaNomina.append({"idConcepto":CC.idConcepto,"Empleados":CC.Empleados,"Importe":CC.Importe})        
+        Nomina.update(Observaciones = Observaciones)
+        db.session.commit()
         respuesta = "1"
-        print ("Finalizo");
+        print("Proceso terminado")
     else:
         respuesta = "0"
+        print("Error")
         
-    return jsonify({"respuesta":respuesta,"listanomina":listaNomina})
+    return jsonify({"respuesta":respuesta})

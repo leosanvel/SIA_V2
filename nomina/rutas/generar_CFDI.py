@@ -41,7 +41,12 @@ def crear_CFDI():
         observaciones_nomina = Nomina.Observaciones
         descripcion_nomina = Nomina.Descripcion
         nombre_carpeta = numero_quincena + mes_pago + anio_pago 
-        directorio = "nomina/Doctos/" + nombre_carpeta + "/CFDI/"
+        directorio = "nomina/Doctos/" + nombre_carpeta
+        if not os.path.exists(directorio):
+            os.mkdir(directorio)
+        directorio = directorio + "/CFDI/"
+        if not os.path.exists(directorio):
+            os.mkdir(directorio)
 
         rutas_archivos = []
 
@@ -181,14 +186,9 @@ def crear_CFDI():
         respuesta = "0"
         
     crea_zip(rutas_archivos, directorio, nombre_carpeta)
-    return jsonify({"url_descarga": url_for('nomina.descargar_cfdi_zip', nombre_archivo=nombre_carpeta), "respuesta":respuesta})
+    return jsonify({"respuesta":respuesta,"url_descarga": url_for('nomina.descargar_archivo', nombrecarpeta=nombre_carpeta, nombre_archivo=nombre_carpeta+'.',extencion_archivo='zip'),})
 
 def crea_zip(rutas, destino , nombre_archivo):
     with zipfile.ZipFile(destino + nombre_archivo +".zip", "w") as zipf:
         for ruta_archivo in rutas:
             zipf.write(ruta_archivo, os.path.basename(ruta_archivo))
-
-@nomina.route('/Nomina/descargar_cfdi_zip/<nombre_archivo>')
-def descargar_cfdi_zip(nombre_archivo):
-    directorio_archivos = os.path.join(current_app.root_path, "nomina", "CFDI", nombre_archivo)
-    return send_from_directory(directory=directorio_archivos, path=nombre_archivo+ ".zip", as_attachment=True)
