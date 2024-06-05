@@ -54,7 +54,6 @@ function verifica_seleccion() {
                 success: function (respuesta) {
                     if (respuesta.Error) {
                         $("#FechaInicioPuesto").val('');
-                        $("#DiasPuesto").val('');
                         $("#DiasPagados1").val('');
                         $("#PorcentajePagado1").val('');
                         $("#DiasPagados2").val('');
@@ -64,7 +63,6 @@ function verifica_seleccion() {
 
                         var fecha = convertirFechaParaVisualizacion(respuesta.FechaInicioPuesto);
                         $("#FechaInicioPuesto").val(fecha);
-                        $("#DiasPuesto").val(respuesta.DiasPuesto);
                         $("#DiasPagados1").val(respuesta.DiasPagados1);
                         $("#PorcentajePagado1").val(respuesta.PorcentajePagado1);
                         $("#DiasPagados2").val(respuesta.DiasPagados2);

@@ -217,7 +217,6 @@ def calculo_dias_articulo_37():
             resultado["DiasPagados1"] = 15
             resultado["DiasPagados2"] = 15
 
-        resultado["DiasPuesto"] = diferencia_dias
         resultado["FechaInicioPuesto"] = fecha_inicio
 
 
@@ -229,115 +228,85 @@ def calculo_dias_articulo_37():
     return jsonify({"Error":True})
 
 
-def condicionales_articulo_37(sancion, descuentos):
-    # Impresión de Ejemplo de variables sancion y descuentos:
-    # sancion
-    # <class 'dict'>
-    # {'idSancionPersona': None, 'idPersona': '5574', 'idSancion': '2', 'idPorcentaje': '0', 'FechaInicio': datetime.datetime(2024, 6, 6, 0, 0), 'FechaFin': datetime.datetime(2024, 6, 21, 0, 0), 'Descripcion': 'A'}
-    # descuentos
-    # <class 'dict'>
-    # {'DiasPagados1': '45', 'PorcentajePagado1': '100', 'DiasPagados2': '45', 'PorcentajePagado2': '50'}
-
-    idPersona = sancion['idPersona']
-    idSancion = sancion['idSancion']
+def condicionales_articulo_37(licencia, descuentos):
+    idPersona = licencia['idPersona']
+    idSancion = licencia['idSancion']
     
-    sanciones_art37 = db.session.query(rSancionPersona).filter_by(idPersona=idPersona, idSancion=idSancion).order_by(rSancionPersona.FechaFin.desc()).all()
+    licencias_previas = db.session.query(rSancionPersona).filter_by(idPersona=idPersona, idSancion=idSancion).order_by(rSancionPersona.FechaFin.desc()).all()
+    fechas = {}
 
-    fecha_inicio_sancion_actual = sancion['FechaInicio'].date()
-    fecha_inicio_periodo = sancion['FechaInicio'].date()
-    fecha_fin_periodo = sancion['FechaFin'].date()
-    fecha_fin_sancion_actual = sancion['FechaFin'].date()
-    for sancion_art37 in sanciones_art37:
-        print("sancion_art37")
-        print(sancion_art37)
-        # Verificar que la fecha de sancion['FechaInicio'] no esté dentro del rango de fechas anteriores
-        if (sancion_art37.FechaInicio <= fecha_inicio_periodo <= sancion_art37.FechaFin) or (sancion_art37.FechaFin == fecha_inicio_periodo - timedelta(days=1)) :
-            print("Entro1")
-            if (sancion_art37.FechaInicio <= fecha_inicio_sancion_actual <= sancion_art37.FechaFin):
-                print("Entro2")
-                fecha_inicio_sancion_actual = sancion_art37.FechaFin + timedelta(days=1)
-            fecha_inicio_periodo = sancion_art37.FechaInicio
+    fechas["inicio_licencia_actual"] = licencia['FechaInicio'].date()
+    fechas["inicio_periodo"] = licencia['FechaInicio'].date()
+    fechas["fin_periodo"] = licencia['FechaFin'].date()
+    fechas["fin_licencia_actual"] = licencia['FechaFin'].date()
+    
+    for licencia_previa in licencias_previas:
+        # Verificar que la fecha de licencia['FechaInicio'] no esté dentro del rango de fechas anteriores
+        if (licencia_previa.FechaInicio <= fechas["inicio_periodo"] <= licencia_previa.FechaFin) or (licencia_previa.FechaFin == fechas["inicio_periodo"] - timedelta(days=1)) :
 
-        if (sancion_art37.FechaInicio <= fecha_fin_periodo <= sancion_art37.FechaFin) or (sancion_art37.FechaInicio == fecha_fin_periodo + timedelta(days=1)) :
-            print("Entro3")
-            fecha_fin_sancion_actual = sancion_art37.FechaInicio - timedelta(days=1)
-            fecha_fin_periodo = sancion_art37.FechaFin
-    print("------------------------------")
-    print("fecha_inicio_periodo")
-    print(fecha_inicio_periodo)
-    print("fecha_fin_periodo")
-    print(fecha_fin_periodo)
-    print("fecha_inicio_sancion_actual")
-    print(fecha_inicio_sancion_actual)
-    print("fecha_fin_sancion_actual")
-    print(fecha_fin_sancion_actual)
-    print("------------------------------")
+            if (licencia_previa.FechaInicio <= fechas["inicio_licencia_actual"] <= licencia_previa.FechaFin):
 
-    print("------------------------------")
-    desc = {}
-    desc["DiasPagados"] = descuentos["DiasPagados1"]
-    desc["PorcentajePagado"] = descuentos["PorcentajePagado1"]
-    fecha_inicio_AUX, fecha_fin_AUX = divide_fechas_art37(fecha_inicio_sancion_actual, fecha_inicio_periodo, fecha_fin_periodo, fecha_fin_sancion_actual, sancion, desc)
-    print("------------------------------")
+                fechas["inicio_licencia_actual"] = licencia_previa.FechaFin + timedelta(days=1)
+            fechas["inicio_periodo"] = licencia_previa.FechaInicio
+
+        if (licencia_previa.FechaInicio <= fechas["fin_periodo"] <= licencia_previa.FechaFin) or (licencia_previa.FechaInicio == fechas["fin_periodo"] + timedelta(days=1)) :
+
+            fechas["fin_licencia_actual"] = licencia_previa.FechaInicio - timedelta(days=1)
+            fechas["fin_periodo"] = licencia_previa.FechaFin
 
 
-    desc["DiasPagados"] = descuentos["DiasPagados2"]
-    desc["PorcentajePagado"] = descuentos["PorcentajePagado2"]
-    divide_fechas_art37(fecha_inicio_AUX, fecha_inicio_periodo, fecha_fin_periodo, fecha_fin_AUX, sancion, desc)
-    print("------------------------------")
-
+    reparte_dias_totales(fechas, licencia, descuentos)
     return 0
 
-def divide_fechas_art37(fecha_inicio_sancion_actual, fecha_inicio_periodo, fecha_fin_periodo, fecha_fin_sancion_actual, sancion, descuentos):
 
-    # Agregar los días de la nueva sanción al contador de días consecutivos
-    # dias_consecutivos_anteriores = (fecha_fin_periodo - fecha_inicio_periodo).days + 1
 
-    # contar los días sin tomar en cuenta la licencia actual
-    dias_consecutivos_anteriores = (fecha_fin_periodo - fecha_inicio_periodo).days - (fecha_fin_sancion_actual - fecha_inicio_sancion_actual).days
 
-    dias_licencia_actual = (fecha_fin_sancion_actual - fecha_inicio_sancion_actual).days + 1
-    dias_art37 = dias_consecutivos_anteriores + dias_licencia_actual
-    dias_restantes = int(descuentos["DiasPagados"]) - dias_consecutivos_anteriores
+def reparte_dias_totales(fechas, licencia, descuentos):
 
-    print("Días consecutivos anteriores:" + str(dias_consecutivos_anteriores))
-    print("Días licencia actual:" + str(dias_licencia_actual))
-    print("Días Totales:" + str(dias_art37))
-    print("Días restantes:" + str(dias_restantes))
     
-    if dias_licencia_actual <= 0 :
-        print("----Estos días ya están asignados al artículo 37-----")
-        print("----No se guardará ninguna información-----")
-    else:
-        if dias_restantes > 0 :
-            print("dias_restantes > 0")
-            if dias_restantes < dias_licencia_actual:
-                print("dias_restantes < dias_licencia_actual")
-                fecha_fin = fecha_inicio_sancion_actual + timedelta(days=dias_restantes-1)
-                sancion["FechaFin"] = fecha_fin
-                sancion["FechaInicio"] = fecha_inicio_sancion_actual
-                sancion["idPorcentaje"] = descuentos["PorcentajePagado"]
-                
-                print("SANCION--")
-                print(sancion)
-                guardar_o_modificar_sancion(sancion)
-                
-                fecha_inicio_sancion_actual = fecha_fin + timedelta(days=1)
-            
-            else:
-                print("else: (dias_restantes < dias_licencia_actual)")
-                sancion["idPorcentaje"] = descuentos["PorcentajePagado"]
-                sancion["FechaInicio"] = fecha_inicio_sancion_actual
-                sancion["FechaFin"] = fecha_fin_sancion_actual
-                print("SANCION--")
-                print(sancion)
-                guardar_o_modificar_sancion(sancion)
+    # if dias_totales < dias_consecutivos_anteriores:
+    #     elimina anteriores
 
-    if dias_licencia_actual > 0 :
-        print("Algunos días ya están asignados al artículo 37")
-        print("Las fechas de la nueva licencia son:")
-        print("FechaInicio:")
-        print(fecha_inicio_sancion_actual)
-        print("FechaFin:")
-        print(fecha_fin_sancion_actual)
-        return fecha_inicio_sancion_actual,fecha_fin_sancion_actual
+    descuento_keys = sorted([key for key in descuentos.keys() if key.startswith("DiasPagados")])
+    for dias_descuento in descuento_keys:
+
+        dias_periodo = (fechas["fin_periodo"] - fechas["inicio_periodo"]).days + 1
+        if dias_periodo > 0:
+            print("Descuento" + dias_descuento[-1])
+    
+            porcentaje_key = f"PorcentajePagado{dias_descuento[-1]}"
+            
+            licencia["FechaInicio"] = fechas["inicio_periodo"]
+            print("int(descuentos[dias_descuento])")
+            print(int(descuentos[dias_descuento]))
+            if int(descuentos[dias_descuento]) < dias_periodo:
+                print("CAso1")
+                fecha_fin = fechas["inicio_periodo"] + timedelta(days=int(descuentos[dias_descuento]) - 1)
+                licencia["FechaFin"] = fecha_fin
+                fechas["inicio_periodo"] = fecha_fin + timedelta(days=1)
+            else:
+                print("Caso2")
+                licencia["FechaFin"] =  fechas["fin_periodo"]
+                fechas["inicio_periodo"] = fechas["fin_periodo"] + timedelta(days=1)
+
+            licencia["idPorcentaje"] = descuentos[porcentaje_key]
+            print("licencia")
+            print(licencia)
+            guardar_o_modificar_sancion(licencia)
+            
+    dias_periodo = (fechas["fin_periodo"] - fechas["inicio_periodo"]).days + 1
+    if dias_periodo > 0:
+        licencia["FechaInicio"] = fechas["inicio_periodo"]
+        licencia["FechaFin"] = fechas["fin_periodo"]
+        licencia["idPorcentaje"] = 0
+        guardar_o_modificar_sancion(licencia)
+
+        print("dias_periodo")
+        print(dias_periodo)
+    else:
+        print("dias_periodo")
+        print(dias_periodo)
+
+
+
+        
