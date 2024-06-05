@@ -95,7 +95,7 @@ def dar_baja_empleado():
 
     respuesta = {}
     try:
-        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idPuesto == idPuesto, or_(cast(rEmpleadoPuesto.FechaTermino, String).like("0000-00-00"), rEmpleadoPuesto.FechaTermino == None)).one()
+        empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idPuesto == idPuesto, or_(cast(rEmpleadoPuesto.FechaTermino, String).like("0000-00-00"), rEmpleadoPuesto.FechaTermino == None), rEmpleadoPuesto.idEstatusEP == 1).one()
         print(empleadoPuesto)
         # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
         empleadoPuesto.Puesto.idEstatusPuesto = 2

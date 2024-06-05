@@ -56,14 +56,15 @@ def crear_usuario():
         respuesta["creado"] = True
         respuesta["usuario"] = usuario_data["Usuario"]
     
-    paginas_json = request.form.get("checkboxStates")
+    paginas_json = request.form.get("estadosCheckbox")
+    print(paginas_json)
     if paginas_json:
         paginas = json.loads(paginas_json)
     else:
         paginas = []
 
     # Realizar cambios en la base de datos
-    db.session.commit()
+    #db.session.commit()
     
     dar_permisos(paginas, nombre_usuario)
     
@@ -74,7 +75,7 @@ def dar_permisos(paginas, usuario):
 
     # Eliminar permisos anteriores
     paginaUsuario = db.session.query(rPPUsuario).filter_by(Usuario = usuario).delete()
-    db.session.commit()
+    #db.session.commit()
     
     pagina_data = {}
     pagina_data["Usuario"] = usuario
@@ -93,7 +94,7 @@ def dar_permisos(paginas, usuario):
         pagina_data["idPagina"] = pagina["idPagina"]
         nueva_pagina = rPPUsuario(**pagina_data)
         db.session.add(nueva_pagina)
-        db.session.commit()
+        #db.session.commit()
     print("permisos agregados")
 
 
