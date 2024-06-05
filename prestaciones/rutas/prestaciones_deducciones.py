@@ -28,6 +28,7 @@ def crear_empleado_concepto():
         'NumeroContrato': 'NumeroContrato',
         'FechaInicioContrato': 'FechaInicio',
         'FechaFinContrato': 'FechaFin',
+        'PagoUnico': 'PagoUnico'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     if concepto_data['NumeroContrato'] is None:
