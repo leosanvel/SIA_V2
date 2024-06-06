@@ -14,8 +14,6 @@ def gestion_usuarios():
     return render_template('/crear_usuario.html', title='Gestión de usuarios',
                            current_user=current_user)
 
-
-
 @informatica.route('/informatica/gestion-usuarios/crear-usuario', methods=['POST', 'GET'])
 def crear_usuario():
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
@@ -35,8 +33,7 @@ def crear_usuario():
         usuario_data["Activo"] = 1
         
     editar = request.form.get("editar")
-    
-    
+        
     nombre_usuario = usuario_data.get("Usuario", None)
     idPersona = usuario_data.get("idPersona", None)
     respuesta = {}
@@ -57,7 +54,6 @@ def crear_usuario():
         respuesta["usuario"] = usuario_data["Usuario"]
     
     paginas_json = request.form.get("estadosCheckbox")
-    print(paginas_json)
     if paginas_json:
         paginas = json.loads(paginas_json)
     else:
@@ -67,20 +63,16 @@ def crear_usuario():
     #db.session.commit()
     
     dar_permisos(paginas, nombre_usuario)
-    
-    print(respuesta)
+
     return jsonify(respuesta)
 
 def dar_permisos(paginas, usuario):
-
     # Eliminar permisos anteriores
     paginaUsuario = db.session.query(rPPUsuario).filter_by(Usuario = usuario).delete()
-    #db.session.commit()
+    db.session.commit()
     
     pagina_data = {}
     pagina_data["Usuario"] = usuario
-
-    
         
     for pagina in paginas:
         
@@ -93,8 +85,9 @@ def dar_permisos(paginas, usuario):
         pagina_data["idSubMenu"] = pagina["idSubMenu"]
         pagina_data["idPagina"] = pagina["idPagina"]
         nueva_pagina = rPPUsuario(**pagina_data)
+
         db.session.add(nueva_pagina)
-        #db.session.commit()
+        db.session.commit()
     print("permisos agregados")
 
 
@@ -156,8 +149,6 @@ def carga_arbol_paginas():
 @informatica.route('/informatica/gestion-usuarios/carga-paginas-usuario', methods=['POST', 'GET'])
 def carga_paginas_usuario():
     nombre_usuario = request.form.get("nombre_usuario", None)
-    print("nombre_usuario:")
-    print(nombre_usuario)
 
     paginas = db.session.query(rPPUsuario).filter_by(Usuario=nombre_usuario).all()
 

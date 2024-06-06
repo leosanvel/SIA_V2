@@ -3,7 +3,7 @@ from flask import render_template, request, jsonify
 from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import inspect, or_
-import pandas as pd
+# import pandas as pd
 
 from app import db
 from rh.gestion_empleados.modelos.empleado import tPuesto
@@ -34,7 +34,7 @@ def cargar_archivo_puestos():
 
     columnas = inspect(tPuesto).all_orm_descriptors.keys()
 
-    df = pd.read_excel(archivo)
+    # df = pd.read_excel(archivo)
 
     #print(df.set_index(columnas).to_dict('records'))
 

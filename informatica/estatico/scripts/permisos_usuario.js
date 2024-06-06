@@ -162,7 +162,10 @@ function generarSubMenu(submenus, parentId, level) {
             var hiddenInput = $('<input>', { type: 'hidden', value: submenu.id, class: 'submenu-id' });
             li.append(checkbox, label, hiddenInput);
         } else {
+
             var li = $('<li>');
+            var hiddenInput = $('<input>', { type: 'hidden', value: submenu.id, class: 'submenu-id' });
+            li.append(hiddenInput);
         }
         var pages = submenu.pages;
         var subUl = $('<ul>');
@@ -189,6 +192,7 @@ function leerEstadosCheckbox() {
 
     $('input[type="checkbox"]').each(function () {
         var checkbox = $(this);
+
         var li = checkbox.closest('li');
         var state = {
             idMenu: li.parents('ul').prev('input.menu-id').val(),
@@ -196,9 +200,10 @@ function leerEstadosCheckbox() {
             idPagina: li.find('input.page-id').val(),
             estado: checkbox.prop('indeterminate') ? 'lectura' : (checkbox.prop('checked') ? 'escritura' : 'inactiva')
         };
-
         // solo guarda cuando hay ID y haya sido seleccionado (menu, submenu, or page)
+
         if (state.estado != 'inactiva') {
+
             if (state.idMenu && state.idSubMenu && state.idPagina) {
                 states.push(state);
             }
@@ -229,7 +234,7 @@ function actualizarEstadoCheckboxes(consecutivo) {
                     var checkboxId = `menu-${idMenu}-submenu-${idSubMenu}-page-${idPagina}`;
 
                     if ($(`#${checkboxId}`).length) {
-                        console.log("----");
+                        
                         if (estadoPagina === 1) {
                             $(`#${checkboxId}`).prop('indeterminate', false);
                             $(`#${checkboxId}`).prop('checked', true);
@@ -251,7 +256,7 @@ function actualizarEstadoCheckboxes(consecutivo) {
 function updateParentCheckboxes(childCheckbox) {
     var parentCheckbox = $(childCheckbox).closest('li').parents('li').children('input[type="checkbox"]');
 
-    parentCheckbox.each(function() {
+    parentCheckbox.each(function () {
         var parent = $(this);
         var allSiblings = parent.closest('li').find('ul > li > input[type="checkbox"]');
         var allChecked = true;

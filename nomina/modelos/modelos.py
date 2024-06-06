@@ -22,8 +22,8 @@ class tNomina(db.Model):
     SMM = db.Column(db.Numeric(11, 2), nullable = False)
     SueldoMensual = db.Column(db.Numeric(11, 2), nullable = False)
 
-    def __init__(self, idTipoNomina, idQuincena, Nomina, Descripcion, Observaciones, Estatus, Fecha, FechaPago, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena, SMM, SueldoMensual):
-        # self.idNomina = idNomina
+    def __init__(self, idNomina, idTipoNomina, idQuincena, Nomina, Descripcion, Observaciones, Estatus, FechaPago, Fecha, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena, SMM, SueldoMensual):
+        self.idNomina = idNomina
         self.idTipoNomina = idTipoNomina
         self.idQuincena = idQuincena
         self.Nomina = Nomina
@@ -136,4 +136,4 @@ class rDiasLaborados(db.Model):
     def update(self, **kwargs):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
-                setattr(self, attr, value)
+                setattr(self, attr, value)                
