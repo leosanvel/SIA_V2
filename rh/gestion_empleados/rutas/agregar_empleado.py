@@ -213,6 +213,11 @@ def guardar_empleado():
         empleado_data['FecAltaISSSTE'] = None
         empleado_data['Activo'] = 1
 
+        empleado_puesto_data['ClavePresupuestaSIA'] = None
+        empleado_puesto_data['CodigoPlazaSIA'] = None
+        empleado_puesto_data['CodigoPuestoSIA'] = None
+        empleado_puesto_data['RHNETSIA'] = None
+        empleado_puesto_data['idNivel'] = None
         empleado_puesto_data['FechaInicio'] = datetime.now().date()
         empleado_puesto_data['FechaTermino'] = None
         empleado_puesto_data['idEstatusEP'] = 1
@@ -392,6 +397,7 @@ def guardar_conceptos():
                 datos_conceptos["NumeroContrato"] = 1
                 datos_conceptos["FechaInicio"] = None
                 datos_conceptos["FechaFin"] = None
+                datos_conceptos["PagoUnico"] = 0
                 nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
                 db.session.add(nuevo_concepto)
         
