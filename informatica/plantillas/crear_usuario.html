@@ -75,10 +75,10 @@
                         </tr>
                         <tr>
                             <th>Usuario</th>
-                            <th>Contrasenia</th>
-                            <th>PrimerIngreso</th>
-                            <th>idPersona</th>
-                            <th>Activo</th>
+                            <th>Contraseña</th>
+                            <th>Primer Ingreso</th>
+                            <th>No. Empleado</th>
+                            <th>Estado</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -115,16 +115,7 @@
                     <form id="frmCreaUsuario">
                         <input type="hidden" id="editar" name="editar" value="">
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                                    <label for="lblNumEmp">No. Empleado</label>
-                                    <input id="NumeroEmpleadoModal" name="NumeroEmpleadoModal"
-                                        class="form-control botonModalBuscaEmpleado" type="text">
-                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-8 pull-center">
                                 <div class="form-group">
                                     <label for="lblModalUsuario">Usuario<span id="AModalUsuario"
                                             class="form-text">*</span>:</label>
@@ -133,7 +124,9 @@
                                     <small id="EModalUsuario" class="etiquetaError form-text form-text-error"></small>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
                                 <div class="form-group">
                                     <label for="lblModalContrasena">Contraseña<span id="AModalContrasena"
                                             class="form-text">*</span>:</label>
@@ -144,6 +137,33 @@
                                 </div>
                             </div>
                         </div>
+
+
+
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                                    <label for="lblNumEmp">No. Empleado</label>
+                                    <input id="NumeroEmpleadoModal" name="NumeroEmpleadoModal"
+                                        class="form-control botonModalBuscaEmpleado" type="text">
+                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group" id="ContenedorEstado">
+                                    <label for="lblModalEstado">Estado:</label>
+                                    <select name="ModalEstado" id="ModalEstado" placeholder="" class="obligatorio form-control">
+                                        <option value="0">Inactivo</option>
+                                        <option value="1">Activo</option>
+                                        <small id="EEstado" class="etiquetaError form-text form-text-error"></small>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </form>
                 </div>
 
