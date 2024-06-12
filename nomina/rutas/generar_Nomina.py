@@ -155,7 +155,7 @@ def crear_Nomina():
                     else:
                         ImporteADescontar = 7.28                
                 
-                elif EConcepto.idConcepto == "1":                                               
+                elif EConcepto.idConcepto == "1":         
                     CalculoISR = db.session.query(kCalculoISR).filter_by(idAnioFiscal = AnioFiscal).all()
                     for ISR in CalculoISR: 
                         if SueldoGravable >= ISR.LimiteInferior and SueldoGravable <= ISR.LimiteSuperior:
@@ -163,10 +163,9 @@ def crear_Nomina():
                             Importe = (Importe * ISR.Porcentaje) / 100
                             Importe = Importe + ISR.CuotaFija
                             ImporteADescontar = Importe
-
                             Importe = round((ImporteADescontar / 30) * (DiasTrabajados - DiasDescuento),2)
                             if DiasRetroactivo > 0:
-                                Importe = Importe + round((ImporteADescontar / 30) * (DiasRetroactivo),2)
+                                Importe = Importe + round((ImporteADescontar / 30) * (DiasRetroactivo),2)                    
                 elif EConcepto.idConcepto == "50":                    
                     ImporteADescontar = round(((Sueldo07 + SueldoCG) * EConcepto.Porcentaje) / 100,2)
                 else:
