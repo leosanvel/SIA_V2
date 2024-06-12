@@ -218,7 +218,7 @@ function busca_sancion() {
                             </div>
                         </td>
                         <td>
-                            <div style="display: block;">
+                            <div style="display: none;">
                                 <button type="button" class="btn btn-primary oculta-empleado"
                                     id="Editar_Aceptar${sancion.idSancionPersona}"
                                     onclick="editar_aceptar(${sancion.idSancionPersona})">Editar</button>
