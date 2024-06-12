@@ -4,6 +4,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import or_
 from autenticacion.modelos.modelos import rUsuario
+from rh.gestion_empleados.modelos.empleado import rEmpleado
 from general.modelos.modelos import rPPUsuario, kPagina, kMenu, kSubMenu
 
 from app import db
@@ -116,6 +117,9 @@ def buscar_usuario():
         if usuario is not None:
             usuario_dict = usuario.__dict__
             usuario_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            empleado = db.session.query(rEmpleado).filter_by(idPersona = usuario.idPersona).first()
+            if empleado is not None:
+                usuario_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
             lista_usuarios.append(usuario_dict)
     if lista_usuarios:
         return jsonify(lista_usuarios)
