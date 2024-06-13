@@ -41,7 +41,7 @@ def modificar_empleado():
     empleado  = db.session.query(tPersona).filter_by(idPersona = idSelec).first()
 
     # Catalogos para el empleado
-    TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1).order_by(kTipoPersona.idTipoPersona).all()
+    TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1,idTipoPersona = 1).order_by(kTipoPersona.idTipoPersona).all()
     EstCiv_datos = db.session.query(kEstadoCivil).filter_by(Activo = 1).order_by(kEstadoCivil.idEstadoCivil).all()
     Nacionalidad_datos = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.idNacionalidad).all()
     TipoEmpleado_datos = db.session.query(kTipoEmpleado).filter_by(Activo = 1).order_by(kTipoEmpleado.idTipoEmpleado).all()
