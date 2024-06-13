@@ -19,9 +19,9 @@ class rEmpleadoConcepto(db.Model):
         self.idPersona = idPersona
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
+        self.NumeroContrato = NumeroContrato
         self.Porcentaje = Porcentaje
         self.Monto = Monto
-        self.NumeroContrato = NumeroContrato
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.PagoUnico = PagoUnico

@@ -28,6 +28,7 @@ def crear_empleado_concepto():
         'NumeroContrato': 'NumeroContrato',
         'FechaInicioContrato': 'FechaInicio',
         'FechaFinContrato': 'FechaFin',
+        'PagoUnico': 'PagoUnico'
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     if concepto_data['NumeroContrato'] is None:
@@ -40,7 +41,8 @@ def crear_empleado_concepto():
         # Formatear la fecha en el formato 'YYYY-MM-DD'
         concepto_data['FechaInicio'] = fecha_inicio_dt.strftime('%Y-%m-%d')
         concepto_data['FechaFin'] = fecha_fin_dt.strftime('%Y-%m-%d')
-    
+    concepto_data['PagoUnico'] = 0
+
     editar = request.form.get('editar')
     contrato = request.form.get('checkboxContrato')
     
