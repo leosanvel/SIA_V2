@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+    <ul class = "nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#IngresarEstCiv">Ingresar nuevo dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarEstCiv">Modificar datos</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="IngresarEstCiv">
+            <form id="formularioEstadoCivil">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblEstCiv">Nuevo estado civil<span id="AEstCiv" class="form-text"></span>:</label>
+                            <input type="text" id="EstCiv" name="EstCiv" class="obligatorio form-control">
+                            <small id="EEstCiv" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblActEstCiv">Activo<span id="AActEstCiv" class="form-text"></span>:</label>
+                            <select id="ActEstCiv" name="ActEstCiv" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                <option value="1">Inactivo</option>
+                                <option value="2">Activo</option>
+                            </select>
+                            <small id="EActEstCiv" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="pull-right">
+                            <button class="btn btn-primary oculta-empleado" type="button" id="guardarEstCiv" onclick="guardar_modificar_estadocivil()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="ModificarEstCiv">
+            <table class="table">
+                <thead>
+                    <tr>
+                    {% for columna in columns %}
+                        <th>{{columna}}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                {% for data in estadocivil_t %}
+                <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" id="idEstCiv{{data.idEstadoCivil}}" value="{{data.idEstadoCivil}}" readonly></td>
+                        <td><input type="text" class="form-control" id="EstCiv{{data.idEstadoCivil}}" value="{{data.EstadoCivil}}" readonly></td>
+                        <td>
+                            <select id="ActEstCiv{{data.idEstadoCivil}}" name="ActEstCiv{{data.idEstadoCivil}}" class="obligatorio form-control" value="{{data.Activo}}" disabled>
+                                <option value="0">Inactivo</option>
+                                <option value="1">Activo</option>
+                            </select>
+                            <script>
+                                document.ready = document.getElementById("ActEstCiv{{data.idEstadoCivil}}").value = "{{data.Activo}}"
+                            </script>
+                        </td>
+                        <td><button type="button" class="btn btn-primary oculta-empleado" id="Editar_Aceptar{{data.idEstadoCivil}}" onclick="activar_editar('{{data.idEstadoCivil}}')">Editar</button></td>
+                        <td><button type="button" class="btn btn-secondary oculta-empleado" id="Cancelar{{data.idEstadoCivil}}" onclick="cancelar('{{data.idEstadoCivil}}', '{{data.EstadoCivil}}', '{{data.Activo}}')" style="display: none">Cancelar</button></td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('estadocivil.static', filename='scripts/scripts_estadocivil.js')}}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

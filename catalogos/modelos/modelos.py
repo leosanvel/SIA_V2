@@ -66,8 +66,8 @@ class kCalculoISR(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci", "schema": "db1"}
 
     idAnioFiscal = db.Column(db.Integer, primary_key = True)
-    TipoCalculo = db.Column(db.String(2))
-    Consecutivo = db.Column(db.Integer)
+    TipoCalculo = db.Column(db.String(2), primary_key = True)
+    Consecutivo = db.Column(db.Integer, primary_key = True)
     LimiteInferior = db.Column(db.Numeric(11, 2))
     LimiteSuperior = db.Column(db.Numeric(11, 2))
     CuotaFija = db.Column(db.Numeric(11, 2))

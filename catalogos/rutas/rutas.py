@@ -13,3 +13,4 @@ from . import centro_costos
 from . import dias_festivos
 from . import escuela
 from . import puestos
+from . import estado_civil

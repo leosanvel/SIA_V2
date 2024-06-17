@@ -2,20 +2,11 @@
 {% block content %}
 
 <div class="container">
-<!--
-    <div class="row">
-        <!--
-        <div class="col-md-4 pull-left">
-            <button type="button" class="btn btn-primary" id="btnModalCrearPuesto">Crear nuevo puesto</button>
-        </div>
--->
-    </div>
-    <br>
     <div class="row">
         <div class="col-md-4 pull-left">
             <div class="form-group hidden-xs" bis_skin_checked="1">
                 <label for="lblArchivo">Cargar documento<span id="AArchivo" class="form-text">*</span>:</label>
-                <input type="file" id="Archivo" name="Archivo" class="opcional">
+                <input type="file" id="Archivo" name="Archivo" class="opcional" accept=".xlsx, .xls, .csv">
                 <small id="EArchivo" class="etiquetaError form-text form-text-error"></small>
             </div>
         </div>
@@ -25,14 +16,18 @@
         </div>
     </div>
     <br>
+    <div class="row">
+        <div class="col-md-4 pull-left">
+            <button type="button" class="btn btn-primary" id="btnModalCrearPuesto">Crear nuevo puesto</button>
+        </div>
+    </div>
+    <br>
     <form id="formularioBuscarPuesto">
-        <!--
         <div class="row">
-            <!--
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lblPuesto">Buscar puesto:</label>
-                    <input type="text" id="PuestoExistente" class="obligatorio form-control"
+                    <input type="text" id="PuestoExistente" name="PuestoExistente" class="obligatorio form-control"
                         oninput="this.value = this.value.toUpperCase()">
                     <div class="dropdown">
                         <div id="lista_puestos" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -41,10 +36,440 @@
                     <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
-            -->
         </div>
-        -->
+
+        <div class="row pull-right">
+            <button class="btn btn-primary btn-sm" type="button" id="btnBuscaPuesto">
+                <span class="icon-search" aria-hidden="true"></span> Buscar
+            </button>
+        </div>
     </form>
+    <div class="form-group">
+        <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+    </div>
+    <div class="row">
+        <form id="formularioResultadoPuestos">
+            <div class="table-responsive">
+                <table class="table table-striped" id="tablaResultadosPuestos" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th colspan="11">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <th>Puesto</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+    <br>
+    <!-- Ventana Modal -->
+     <div class="modal fade" id="ModalCrearPuesto" tabindex="-1" aria-labelledby="tituloModalCrearPuesto" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tituloModalCrearPuesto">Crear nuevo puesto</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="contenidoModalCrearPuesto">
+                        <form name="formularioCrearPuesto" id="formularioCrearPuesto">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblRamo">Ramo<span id="ARamo" class="form-text">*</span>:</label>
+                                        <select id="Ramo" name="Ramo" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if Ramo %}
+                                                {% for row in Ramo %}
+                                                    <option value="{{row.idRamo}}">{{row.Ramo}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ERamo" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblUA">UA<span id="AUA" class="form-text">*</span>:</label>
+                                        <select id="UA" name="UA" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if UA %}
+                                                {% for row in UA %}
+                                                    <option value="{{row.idUA}}">{{row.UA}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="EUA" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblCodigoPuesto">Código puesto<span id="ACodigoPuesto" class="form-text">*</span>:</label>
+                                        <input type="text" name="CodigoPuesto" id="CodigoPuesto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblZonaEconomica">Zona Económica<span id="AZonaEconomica" class="form-text">*</span>:</label>
+                                        <select id="ZonaEconomica" name="ZonaEconomica" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if ZonaEconomica %}
+                                                {% for row in ZonaEconomica %}
+                                                    <option value="{{row.idZonaEconomica}}">{{row.ZonaEconomica}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="EZonaEconomica" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="lblPuesto">Puesto<span id="APuesto" class="form-text">*</span>:</label>
+                                        <textarea name="Puesto" id="Puesto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()" rows="2" style="resize: none;"></textarea>
+                                        <small id="EPuesto" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblReferenciaTabular">Referencia tabular<span id="AReferenciaTabular" class="form-text">*</span>:</label>
+                                        <input type="text" name="ReferenciaTabular" id="ReferenciaTabular" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="EReferenciaTabular" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblConsPuesto">Cons puesto<span id="AConsPuesto" class="form-text">*</span>:</label>
+                                        <input type="text" name="ConsPuesto" id="ConsPuesto" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="EConsPuesto" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblTipoPlazaPuesto">Tipo plaza puesto<span id="ATipoPlazaPuesto" class="form-text">*</span>:</label>
+                                        <select id="TipoPlazaPuesto" name="TipoPlazaPuesto" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if TipoPlazaPuesto %}
+                                                {% for row in TipoPlazaPuesto %}
+                                                    <option value="{{row.idTipoPlazaPuesto}}">{{row.TipoPlazaPuesto}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ETipoPlazaPuesto" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblCaracterOcupacional">Caracter ocupacional<span id="ACaracterOcupacional" class="form-text">*</span>:</label>
+                                        <select id="CaracterOcupacional" name="CaracterOcupacional" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if CaracterOcupacional %}
+                                                {% for row in CaracterOcupacional %}
+                                                    <option value="{{row.idCaracterOcupacional}}">{{row.CaracterOcupacional}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ECaracterOcupacional" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblTipoFuncion">Tipo función<span id="ATipoFuncion" class="form-text">*</span>:</label>
+                                        <select id="TipoFuncion" name="TipoFuncion" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if TipoFuncion %}
+                                                {% for row in TipoFuncion %}
+                                                    <option value="{{row.idTipoFuncion}}">{{row.TipoFuncion}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ETipoFuncion" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblNivelSalarial">Nivel salarial<span id="ANivelSalarial" class="form-text">*</span>:</label>
+                                        <input type="text" name="NivelSalarial" id="NivelSalarial" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="ENivelSalarial" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblTabulador">Tabulador<span id="ATabulador" class="form-text">*</span>:</label>
+                                        <input type="text" name="Tabulador" id="Tabulador" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="ETabulador" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblCodigoPresupuestal">Código presupuestal<span id="ACodigoPresupuestal" class="form-text">*</span>:</label>
+                                        <input type="text" name="CodigoPresupuestal" id="CodigoPresupuestal" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="ECodigoPresupuestal" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblOrdinalCP">Ordinal CP<span id="AOrdinalCP" class="form-text">*</span>:</label>
+                                        <input type="text" name="OrdinalCP" id="OrdinalCP" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="EOrdinalCP" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblGrupo">Grupo<span id="AGrupo" class="form-text">*</span>:</label>
+                                        <select id="Grupo" name="Grupo" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if Grupo %}
+                                                {% for row in Grupo %}
+                                                    <option value="{{row.idGrupo}}">{{row.Grupo}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="EGrupo" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblGrado">Grado<span id="AGrado" class="form-text">*</span>:</label>
+                                        <select id="Grado" name="Grado" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if Grado %}
+                                                {% for row in Grado %}
+                                                    <option value="{{row.idGrado}}">{{row.Grado}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="EGrado" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblNivel">Nivel<span id="ANivel" class="form-text">*</span>:</label>
+                                        <select id="Nivel" name="Nivel" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if Nivel %}
+                                                {% for row in Nivel %}
+                                                    <option value="{{row.idNivel}}">{{row.Nivel}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ENivel" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblEstatusPuesto">Estatus puesto<span id="AEstatusPuesto" class="form-text">*</span>:</label>
+                                        <select id="EstatusPuesto" name="EstatusPuesto" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if EstatusPuesto %}
+                                                {% for row in EstatusPuesto %}
+                                                    <option value="{{row.idEstatusPuesto}}">{{row.EstatusPuesto}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="EEstatusPuesto" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblVigencia">Vigencia<span id="AVigencia" class="form-text">*</span>:</label>
+                                        <select id="Vigencia" name="Vigencia" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if Vigencia %}
+                                                {% for row in Vigencia %}
+                                                    <option value="{{row.idVigencia}}">{{row.Vigencia}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="EVigencia" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group datepicker-group" style="z-index: 1;">
+                                        <label for="lblFechaInicio">Fecha inicio<span id="AFechaInicio"
+                                                class="form-text">*</span>:</label>
+                                        <input type="text" id="FechaInicio" name="FechaInicio"
+                                            class="form-control obligatorio fecha">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFechaInicio" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group datepicker-group" style="z-index: 1;">
+                                        <label for="lblFechaFin">Fecha Fin<span id="AFechaFin"
+                                                class="form-text">*</span>:</label>
+                                        <input type="text" id="FechaFin" name="FechaFin" class="form-control obligatorio fecha">
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblCentroTrabajo">Centro trabajo<span id="ACentroTrabajo" class="form-text">*</span>:</label>
+                                        <select id="CentroTrabajo" name="CentroTrabajo" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if CentroTrabajo %}
+                                                {% for row in CentroTrabajo %}
+                                                    <option value="{{row.idCentroTrabajo}}">{{row.CentroTrabajo}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ECentroTrabajo" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblFolioSival">Folio sival<span id="AFolioSival" class="form-text">*</span>:</label>
+                                        <input type="text" name="FolioSival" id="FolioSival" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="EFolioSival" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblRegimenLaboral">Regimen laboral<span id="ARegimenLaboral" class="form-text">*</span>:</label>
+                                        <input type="text" name="RegimenLaboral" id="RegimenLaboral" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="ERegimenLaboral" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblRemuneracionTotal">Remuneración total<span id="ARemuneracionTotal" class="form-text">*</span>:</label>
+                                        <input type="text" name="RemuneracionTotal" id="RemuneracionTotal" class="obligatorio form-control" oninput="this.value = this.value.toUpperCase()">
+                                        <small id="ERemuneracionTotal" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblTitularAU">Titular AU<span id="ATitularAU" class="form-text">*</span>:</label>
+                                        <input type="text" name="TitularAU" id="TitularAU" class="obligatorio form-control">
+                                        <small id="ETitularAU" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblDeclaracionPatrimonial">Declaración patrimonial<span id="ADeclaracionPatrimonial" class="form-text">*</span>:</label>
+                                        <input type="text" name="DeclaracionPatrimonial" id="DeclaracionPatrimonial" class="obligatorio form-control">
+                                        <small id="EDeclaracionPatrimonial" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblPlazasSubordinadas">Plazas subordinadas<span id="APlazasSubordinadas" class="form-text">*</span>:</label>
+                                        <input type="text" name="PlazasSubordinadas" id="PlazasSubordinadas" class="obligatorio form-control">
+                                        <small id="EPlazasSubordinadas" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblPuestoJefe">Puesto jefe<span id="APuestoJefe" class="form-text">*</span>:</label>
+                                        <input type="text" name="PuestoJefe" id="PuestoJefe" class="obligatorio form-control">
+                                        <small id="EPuestoJefe" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblPresupuestalJefe">Presupuestal jefe<span id="APresupuestalJefe" class="form-text">*</span>:</label>
+                                        <input type="text" name="PresupuestalJefe" id="PresupuestalJefe" class="obligatorio form-control">
+                                        <small id="EPresupuestalJefe" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lblCentroCosto">Centro costo<span id="ACentroCosto" class="form-text">*</span>:</label>
+                                        <select id="CentroCosto" name="CentroCosto" class="obligatorio form-control">
+                                            <option value="0">-- Seleccione --</option>
+                                            {% if CentroCostos %}
+                                                {% for row in CentroCostos %}
+                                                    <option value="{{row.idCentroCosto}}">{{row.CentroCosto}}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
+                                        <small id="ECentroCosto" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="ConsecutivoPuesto" name="ConsecutivoPuesto" value="">
+                        </form>
+
+                        <input type="hidden" id="consecutivo" name="consecutivo" value="">
+                        
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="btnCierraModalCrearPuesto" class="btn btn-primary" data-dismiss="modal"
+                        data-comportamiento="nada">Cancelar</button>
+                    <button type="button" id="btnCrearPuesto" class="btn btn-primary">Crear</button>
+                </div>
+            </div>
+        </div>
+     </div>
 </div>
 
 {% endblock %}
