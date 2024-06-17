@@ -25,7 +25,7 @@ def enviar_nomina():
     Quincenas = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
     Tipos_Empleados = db.session.query(kTipoEmpleado).order_by(kTipoEmpleado.TipoEmpleado).all()
 
-    return render_template('/reporte_incidencias.html', title='Envío a Nómina',
+    return render_template('/reporte_incidencias.html', title='Reporte de incidencias',
                            Quincenas = Quincenas,
                            Tipos_Empleados = Tipos_Empleados)
 

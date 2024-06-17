@@ -86,5 +86,10 @@ app.register_blueprint(prestaciones)
 from consultas.rutas.rutas import consultas
 app.register_blueprint(consultas)
 
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO CONSULTAS
+from innovacion_normas.puestos.rutas.puestos import puestos
+app.register_blueprint(puestos)
+
 #with app.app_context():
 #    db.create_all()

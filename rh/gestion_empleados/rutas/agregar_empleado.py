@@ -187,6 +187,7 @@ def guardar_empleado():
         #for attr, value in persona_data.items():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
         #        setattr(empleado_existente, attr, value)
+        respuesta["NumeroEmpleado"] = None
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
@@ -238,6 +239,7 @@ def guardar_empleado():
         nueva_escolaridad = rPersonaEscolaridad(**escolaridad_data)
         db.session.add(nueva_escolaridad)
         respuesta["guardado"] = True
+        respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
     # Realizar cambios en la base de datos
     db.session.commit()

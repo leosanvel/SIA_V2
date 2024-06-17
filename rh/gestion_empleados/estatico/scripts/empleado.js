@@ -21,7 +21,7 @@ function seleccionaEmpleado(idPersona) {
 
                     $("#CurpEmpleado").text(data.CURP);
                     $("#NombreEmpleado").text(data.Nombre);
-                    $("#ApellidosEmpleado").text(data.ApPaterno + ' '+ data.ApMaterno);
+                    $("#ApellidosEmpleado").text(data.ApPaterno + ' ' + data.ApMaterno);
                     $('#ModalBuscaEmpleado').modal('hide');
 
                     $("#tablaResultadosJustificantes tbody").empty();
@@ -241,7 +241,9 @@ $gmx(document).ready(function () {
                         mensajeGuardado += "-Datos personales.<br>";
                         mensajeGuardado += "-Datos de empleado.<br>";
                         mensajeGuardado += "-Datos de escolaridad.<br>";
-                        mensajeGuardado += "-Estatus.<br>"; 
+                        if(data.NumeroEmpleado){
+                           mensajeGuardado += "-El número de Empleado asignado es" + data.NumeroEmpleado;
+                        }
                         if (data.correo_enviado) {
                             mensajeGuardado += "<br>";
                             mensajeGuardado += "Una notificación ha sido enviada vía correo electrónico.<br>";
@@ -249,7 +251,7 @@ $gmx(document).ready(function () {
 
                     }
                     if(data.existe_clabe){
-                        mensajeGuardado += "-No se guardó la Clabe interbancaria porque ya hay una activa."
+                        mensajeGuardado += "-No se guardó la Clabe interbancaria porque ya hay una activa.";
                     }
                 }
             });
@@ -259,7 +261,7 @@ $gmx(document).ready(function () {
                 guardarDomicilio(1, $("#formularioDomicilioParticular"));
                 mensajeGuardado += "-Domicilio particular. <br>"
             } else {
-                mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DomicilioParticular\')">-Domicilio particular</a>. <br>';
+                mensajeError += '<a href="javascript:void(0);"  onclick="abrirPestana(\'tab-DomicilioParticular\')">-Domicilio particular</a>. <br>';
             }
         }
 
