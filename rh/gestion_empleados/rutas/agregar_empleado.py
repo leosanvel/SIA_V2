@@ -41,7 +41,7 @@ def modificar_empleado():
     empleado  = db.session.query(tPersona).filter_by(idPersona = idSelec).first()
 
     # Catalogos para el empleado
-    TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1).order_by(kTipoPersona.idTipoPersona).all()
+    TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1,idTipoPersona = 1).order_by(kTipoPersona.idTipoPersona).all()
     EstCiv_datos = db.session.query(kEstadoCivil).filter_by(Activo = 1).order_by(kEstadoCivil.idEstadoCivil).all()
     Nacionalidad_datos = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.idNacionalidad).all()
     TipoEmpleado_datos = db.session.query(kTipoEmpleado).filter_by(Activo = 1).order_by(kTipoEmpleado.idTipoEmpleado).all()
@@ -213,6 +213,11 @@ def guardar_empleado():
         empleado_data['FecAltaISSSTE'] = None
         empleado_data['Activo'] = 1
 
+        empleado_puesto_data['ClavePresupuestaSIA'] = None
+        empleado_puesto_data['CodigoPlazaSIA'] = None
+        empleado_puesto_data['CodigoPuestoSIA'] = None
+        empleado_puesto_data['RHNETSIA'] = None
+        empleado_puesto_data['idNivel'] = None
         empleado_puesto_data['FechaInicio'] = datetime.now().date()
         empleado_puesto_data['FechaTermino'] = None
         empleado_puesto_data['idEstatusEP'] = 1
@@ -392,6 +397,7 @@ def guardar_conceptos():
                 datos_conceptos["NumeroContrato"] = 1
                 datos_conceptos["FechaInicio"] = None
                 datos_conceptos["FechaFin"] = None
+                datos_conceptos["PagoUnico"] = 0
                 nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
                 db.session.add(nuevo_concepto)
         

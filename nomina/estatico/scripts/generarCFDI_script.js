@@ -1,41 +1,43 @@
 $gmx(document).ready(function () {
     $("#btnGenerarCFDI").click(abrirAdModal);
-    $("#btnGenerarCFDI_modal").click(generarCFDI);
+    $("#btnGenerarCFDI_modal").click(ProcesandoNomina);
 });
 
 function abrirAdModal() {
     if (validarFormulario($("#formularioGenerarCFDI")).valido) {
-        $("#MensajeAdModal").html("¿Está seguro que desea generar el CFDI de la quincena " + $("#NumQuincena").val() + "?");
+        $("#MensajeAdModal").html("Se van a generar los archivos para su CFDI");
         $("#GenerarCFDIModal").modal('show');
     }
 }
 
+function ProcesandoNomina(){
+    $("#GenerarCFDIModal").modal('hide');
+    $("#btnDescargaZIP ").hide();
+    window.document.getElementById("idNomina").disabled = "disabled";
+    window.document.getElementById("btnGenerarCFDI").disabled = "disabled";
+    window.document.getElementById("ImgModal").style.display = "block";
+    setTimeout(generarCFDI, 3000);
+}
 
 function generarCFDI() {
-    console.log("GENERANDO CFDI")
+    window.document.getElementById("idNomina").disabled = "";
+    window.document.getElementById("btnGenerarCFDI").disabled = "";
+    window.document.getElementById("ImgModal").style.display = "none";
     $.ajax({
         async: false,
         type: "POST",
         url: "/Nomina/crearCFDI",
         data: $("#formularioGenerarCFDI").serialize(),
         success: function (data) {
-            console.log("TERMINADO")
             $("#GenerarCFDIModal").modal('hide');
-
-            if (data.respuesta == "existente") {
-                abrirModal("Archivo existente", "Los archivos fueron creados con anterioridad.", "");
+            if (data.respuesta == "1") {
+                var urlDescarga = data.url_descarga;
+                abrirModal("CFDI", "Los archivos fueron creados correctamente.", "");
+                $("#btnDescargaZIP ").show();
+                $("#btnDescargaZIP ").wrap('<a href="' + urlDescarga + '" download></a>');
+            }else{
+                abrirModal("CFDI", "Los archivos no fueron creados.", "");
             }
-
-            if (data.respuesta == "creado") {
-                abrirModal("Archivo Generado", "Los archivos han sido generados correctamente.", "");
-            }
-
-
-            // Manejar la respuesta JSON para obtener la URL de descarga
-            var urlDescarga = data.url_descarga;
-            $("#btnDescargaZIP ").show();
-            // Crear un enlace de descarga dinámico
-            $("#btnDescargaZIP ").wrap('<a href="' + urlDescarga + '" download></a>');
         }
     });
 }

@@ -34,7 +34,8 @@ function buscar_usuario() {
                             <input type="text" class="form-control" id="PrimerIngreso${cont}" value="${usuario.PrimerIngreso}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="idPersona${cont}" value="${usuario.idPersona}" readonly></input>
+                            <input type="hidden" id="idPersona${cont}" value="${usuario.idPersona}"></input>
+                            <input type="text" class="form-control" id="NumeroEmpleado${cont}" value="${usuario.NumeroEmpleado}" readonly></input>
                         </td>
                         <td>
                             <input type="text" class="form-control" id="Activo${cont}" value="${usuario.Activo}" readonly></input>
@@ -66,10 +67,12 @@ function modal_editar_elemento(consecutivo) {
         $('#tituloModalAgregarUsuario')[0].textContent = "Modificar usuario";
         $('#btnCrearUsuarioModal')[0].textContent = "Modificar";
         $('#btnEliminarUsuario').show();
+        $('#ContenedorEstado').show();
         
-        $("#NumeroEmpleadoModal").val($("#NumeroEmpleado").val());
+        $("#NumeroEmpleadoModal").val($("#NumeroEmpleado" + consecutivo).val());
         $("#ModalUsuario").val($("#Usuario" + consecutivo).val());
         $("#ModalContrasena").val($("#Contrasenia" + consecutivo).val());
+        $("#ModalEstado").val($("#Activo" + consecutivo).val());
         $("#editar").val(true);
 
         actualizarEstadoCheckboxes(consecutivo);
@@ -82,10 +85,12 @@ function modal_editar_elemento(consecutivo) {
         $('#tituloModalAgregarUsuario')[0].textContent = "Crear usuario";
         $('#btnCrearUsuarioModal')[0].textContent = "Crear";
         $('#btnEliminarUsuario').hide();
+        $('#ContenedorEstado').hide();
 
         $("#NumeroEmpleadoModal").val($("#NumeroBuscarEmpleado").val());
         $("#ModalUsuario").val($("#BuscarUsuario").val());
         $("#ModalContrasena").val("");
+        $("#ModalEstado").val(1);
     }
 
 }

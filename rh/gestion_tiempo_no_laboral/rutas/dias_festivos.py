@@ -4,7 +4,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
-from rh.gestion_tiempo_no_laboral.modelos.modelos import kDiasFestivos
+from catalogos.modelos.modelos import kDiasFestivos
 
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/dias-festivos', methods = ['POST', 'GET'])
 def gestiona_diasfestivos():

@@ -2,167 +2,18 @@ $gmx(document).ready(function () {
 
     $("#btnGuardaSancion").click(function (event) {
         event.preventDefault();
-
-        var validaEmpleado = true;
-        var existeNumeroEmpleado = $("#idPersona").length > 0;
-        if (!existeNumeroEmpleado || $("#idPersona").val() === "") {
-            var validaEmpleado = false;
-            // campo.removeClass("form-control-error");
-            $("#NumeroEmpleadoSeleccionado").addClass("form-control-error");
-            $("#ENumEmp").text("Seleccione un empleado");
-        }
-
-        if (validarFormulario($("#formularioCreaSancion")).valido && validaEmpleado) {
-
-            var FechaInicio_string = $("#FechaInicio").val();
-            var FechaFin_string = $("#FechaFin").val();
-
-            var FechaInicio_format = convertirFechaParaEnvio(FechaInicio_string);
-            var FechaFin_format = convertirFechaParaEnvio(FechaFin_string);
-
-            $("#formularioBuscaSancion input[name='fechaInicioFormateada']").remove();
-            $("#formularioBuscaSancion input[name='fechaFinFormateada']").remove();
-
-            $("#formularioCreaSancion").append('<input type="hidden" name="fechaInicioFormateada" value="' + FechaInicio_format + '">');
-            $("#formularioCreaSancion").append('<input type="hidden" name="fechaFinFormateada" value="' + FechaFin_format + '">');
-
-            $.ajax({
-                async: false,
-                type: "POST",
-                url: "/rh/gestion-asistencias/guardar-sancion",
-                data: $("#formularioCreaSancion, #idPersona").serialize(),
-                success: function (data) {
-                    if (data.idPersona) {
-                        abrirModal("Información guardada", "La sanción se creó con éxito", "recargar");
-                    }
-                }
-            });
-        }
+        guardar_sancion();
     });
     // --------------------
     $("#btnBuscaSancion").click(function (event) {
         event.preventDefault();
-        if (!formularioVacio($("#formularioBuscaSancion"))) {
-            $.ajax({
-                async: false,
-                type: "POST",
-                url: "/rh/gestion-asistencias/buscar-sancion",
-                data: $("#formularioBuscaJustificante, #idPersona").serialize(),
+        busca_sancion();
+    });
 
-                success: function (data) {
-                    if (data.sanciones.length > 0) {
-                        console.log(data);
-                        $("#EResultado").text("");
-                        $("#tablaResultadosSanciones").show();
-                        // Limpiar la tabla existente
-                        $("#tablaResultadosSanciones tbody").empty();
-
-
-                        var opcionesPorcentaje = '';
-                        data.porcentajes.forEach(function (porcentaje) {
-                            opcionesPorcentaje += `<option value="${porcentaje.idPorcentaje}">${porcentaje.Porcentaje}%</option>`;
-                        });
-
-                        var opcionesTipos = '';
-                        data.tiposSancion.forEach(function (tiposSancion) {
-                            opcionesTipos += `<option value="${tiposSancion.idTipoSancion}">${tiposSancion.TipoSancion}</option>`;
-                        });
-
-
-                        // Iterar sobre sanciones y agregar filas a la tabla
-                        data.sanciones.forEach(function (sancion) {
-                            // Formatear las fechas
-
-                            var fechaInicioFormateada = convertirFechaParaVisualizacion(sancion.FechaInicio);
-                            var fechaFinFormateada = convertirFechaParaVisualizacion(sancion.FechaFin);
-
-                            // Agregar filas a la tabla con fechas formateadas
-                            $("#tablaResultadosSanciones tbody").append(`
-                            <tr>
-                            <input type="hidden" id="idPersona${sancion.idSancionPersona}"
-                                value="${sancion.idPersona}">
-                            <td>
-                                <input type="text" class="form-control"
-                                    id="NumEmpleado${sancion.idSancionPersona}"
-                                    value="${sancion.NumeroEmpleado}" style="width: 100px;" readonly>
-                            </td>
-                            <td>
-                                <select id="sancion${sancion.idSancionPersona}"
-                                    name="sancion${sancion.idSancionPersona}" class="obligatorio form-control"
-                                    readonly disabled>
-                                    ${opcionesTipos}
-                                </select>
-                            </td>
-
-                            <td>
-                                <div class="form-group datepicker-group" style="z-index: 10;">
-                                    <input type="text" id="fechaInicioFormateada${sancion.idSancionPersona}"
-                                         value="${fechaInicioFormateada}" class="form-control" readonly>
-                                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                    <small id="EFechaInicio"
-                                        class="etiquetaError form-text form-text-error"></small>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group datepicker-group" style="z-index: 1;">
-                                    <input type="text" id="fechaFinFormateada${sancion.idSancionPersona}"
-                                         value="${fechaFinFormateada}" class="form-control" readonly>
-                                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
-                                    <small id="EFechaInicio"
-                                        class="etiquetaError form-text form-text-error"></small>
-                                </div>
-                            </td>
-                            <td>
-                                <select id="porcentaje${sancion.idSancionPersona}"
-                                    name="Porcentaje${sancion.idSancionPersona}"
-                                    class="obligatorio form-control" readonly disabled>
-                                    ${opcionesPorcentaje}
-                                </select>
-                            </td>
-                            <td><textarea rows="3" class="form-control"
-                                    id="descripcion${sancion.idSancionPersona}"
-                                    style="resize: none; width: 300px;"
-                                    readonly>${sancion.Descripcion}</textarea></td>
-
-                            <td>
-                                <div style="display: block;">
-                                    <button type="button" class="btn btn-primary oculta-empleado"
-                                        id="Eliminar${sancion.idSancionPersona}"
-                                        onclick="eliminar(${sancion.idSancionPersona})">Eliminar</button>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="display: block;">
-                                    <button type="button" class="btn btn-primary oculta-empleado"
-                                        id="Editar_Aceptar${sancion.idSancionPersona}"
-                                        onclick="editar_aceptar(${sancion.idSancionPersona})">Editar</button>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="display: block;">
-                                    <button type="button" class="btn btn-secondary"
-                                        id="Cancelar${sancion.idSancionPersona}"
-                                        onclick="cancelar('${sancion.idSancionPersona}')"
-                                        style="display: none">Cancelar</button>
-                                </div>
-                            </td>
-                        </tr>
-                            `);
-                            $(`#porcentaje${sancion.idSancionPersona}`).val(sancion.idPorcentaje);
-                            $(`#sancion${sancion.idSancionPersona}`).val(sancion.idSancion);
-                        });
-                    } else {
-                        $("#tablaResultadosJustificantes tbody").empty();
-                        $("#tablaResultadosJustificantes").hide();
-                        $("#EResultado").text("No se encontraron coincidencias");
-                    }
-
-                }
-            });
-        }
-        else {
-            $("#EResultado").text("Ingrese un dato para buscar coincidencias");
-        }
+    $("#idSancion").on("change ", function () { verifica_seleccion(); });
+    $("#NumeroEmpleadoSeleccionado").on("change ", function () {
+        console.log("NumeroEmpleadoSeleccionado");
+        verifica_seleccion();
     });
 
     $("#BuscaFechaInicio").datepicker({ changeYear: true, changeMonth: true });
@@ -178,6 +29,228 @@ $gmx(document).ready(function () {
     $("#checkFechasConsecutivas").on("change", function () { cargaFechasConsecutivas(); });
 
 });
+
+function verifica_seleccion() {
+
+    var licencia = $("#idSancion").val()
+    var empleado = $("#idPersona").val()
+
+    if (licencia == "2") { //ARTÍCULO 37
+        $("#idPorcentaje").removeClass("obligatorio");
+
+        $("#DiasPagados1").addClass("obligatorio");
+        $("#PorcentajePagado1").addClass("obligatorio");
+        $("#DiasPagados2").addClass("obligatorio");
+        $("#PorcentajePagado2").addClass("obligatorio");
+
+        $("#contenedorPorcentaje").hide();
+
+        if (empleado != "") {
+            $("#contenedorDetallesDescuentos").show();
+            $.ajax({
+                type: "POST",
+                url: "/rh/gestion-asistencias/calculo-dias-articulo-37",
+                data: $("#idSancion, #idPersona").serialize(),
+                success: function (respuesta) {
+                    if (respuesta.Error) {
+                        $("#FechaInicioPuesto").val('');
+                        $("#DiasPagados1").val('');
+                        $("#PorcentajePagado1").val('');
+                        $("#DiasPagados2").val('');
+                        $("#PorcentajePagado2").val('');
+                        abrirModal("Error", "No se pudieron calcular los descuentos del empleado.", "");
+                    } else {
+
+                        var fecha = convertirFechaParaVisualizacion(respuesta.FechaInicioPuesto);
+                        $("#FechaInicioPuesto").val(fecha);
+                        $("#DiasPagados1").val(respuesta.DiasPagados1);
+                        $("#PorcentajePagado1").val(respuesta.PorcentajePagado1);
+                        $("#DiasPagados2").val(respuesta.DiasPagados2);
+                        $("#PorcentajePagado2").val(respuesta.PorcentajePagado2);
+                    }
+                }
+            });
+
+        }
+    } else {
+        $("#contenedorDetallesDescuentos").hide();
+        $("#idPorcentaje").addClass("obligatorio");
+        
+        $("#DiasPagados1").removeClass("obligatorio");
+        $("#PorcentajePagado1").removeClass("obligatorio");
+        $("#DiasPagados2").removeClass("obligatorio");
+        $("#PorcentajePagado2").removeClass("obligatorio");
+
+        $("#contenedorPorcentaje").show();
+    }
+
+}
+
+
+function guardar_sancion() {
+
+    var validaEmpleado = true;
+    var existeNumeroEmpleado = $("#idPersona").length > 0;
+    if (!existeNumeroEmpleado || $("#idPersona").val() === "") {
+        var validaEmpleado = false;
+        // campo.removeClass("form-control-error");
+        $("#NumeroEmpleadoSeleccionado").addClass("form-control-error");
+        $("#ENumEmp").text("Seleccione un empleado");
+    }
+
+    if (validarFormulario($("#formularioCreaSancion")).valido && validaEmpleado) {
+
+        var FechaInicio_string = $("#FechaInicio").val();
+        var FechaFin_string = $("#FechaFin").val();
+
+        var FechaInicio_format = convertirFechaParaEnvio(FechaInicio_string);
+        var FechaFin_format = convertirFechaParaEnvio(FechaFin_string);
+
+        $("#formularioBuscaSancion input[name='fechaInicioFormateada']").remove();
+        $("#formularioBuscaSancion input[name='fechaFinFormateada']").remove();
+
+        $("#formularioCreaSancion").append('<input type="hidden" name="fechaInicioFormateada" value="' + FechaInicio_format + '">');
+        $("#formularioCreaSancion").append('<input type="hidden" name="fechaFinFormateada" value="' + FechaFin_format + '">');
+
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-asistencias/guardar-sancion",
+            data: $("#formularioCreaSancion, #idPersona").serialize(),
+            success: function (data) {
+                if (data.idPersona) {
+                    abrirModal("Información guardada", "La sanción se creó con éxito", "");
+                }
+            }
+        });
+    }
+
+}
+
+function busca_sancion() {
+    if (!formularioVacio($("#formularioBuscaSancion"))) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-asistencias/buscar-sancion",
+            data: $("#formularioBuscaJustificante, #idPersona").serialize(),
+
+            success: function (data) {
+                if (data.sanciones.length > 0) {
+                    console.log(data);
+                    $("#EResultado").text("");
+                    $("#tablaResultadosSanciones").show();
+                    // Limpiar la tabla existente
+                    $("#tablaResultadosSanciones tbody").empty();
+
+
+                    var opcionesPorcentaje = '';
+                    data.porcentajes.forEach(function (porcentaje) {
+                        opcionesPorcentaje += `<option value="${porcentaje.idPorcentaje}">${porcentaje.Porcentaje}%</option>`;
+                    });
+
+                    var opcionesTipos = '';
+                    data.tiposSancion.forEach(function (tiposSancion) {
+                        opcionesTipos += `<option value="${tiposSancion.idTipoSancion}">${tiposSancion.TipoSancion}</option>`;
+                    });
+
+
+                    // Iterar sobre sanciones y agregar filas a la tabla
+                    data.sanciones.forEach(function (sancion) {
+                        // Formatear las fechas
+
+                        var fechaInicioFormateada = convertirFechaParaVisualizacion(sancion.FechaInicio);
+                        var fechaFinFormateada = convertirFechaParaVisualizacion(sancion.FechaFin);
+
+                        // Agregar filas a la tabla con fechas formateadas
+                        $("#tablaResultadosSanciones tbody").append(`
+                        <tr>
+                        <input type="hidden" id="idPersona${sancion.idSancionPersona}"
+                            value="${sancion.idPersona}">
+                        <td>
+                            <input type="text" class="form-control"
+                                id="NumEmpleado${sancion.idSancionPersona}"
+                                value="${sancion.NumeroEmpleado}" style="width: 100px;" readonly>
+                        </td>
+                        <td>
+                            <select id="sancion${sancion.idSancionPersona}"
+                                name="sancion${sancion.idSancionPersona}" class="obligatorio form-control"
+                                readonly disabled>
+                                ${opcionesTipos}
+                            </select>
+                        </td>
+
+                        <td>
+                            <div class="form-group datepicker-group" style="z-index: 10;">
+                                <input type="text" id="fechaInicioFormateada${sancion.idSancionPersona}"
+                                     value="${fechaInicioFormateada}" class="form-control" style="width: 170px;" readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaInicio"
+                                    class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <input type="text" id="fechaFinFormateada${sancion.idSancionPersona}"
+                                     value="${fechaFinFormateada}" class="form-control" style="width: 170px;" readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaInicio"
+                                    class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </td>
+                        <td>
+                            <select id="porcentaje${sancion.idSancionPersona}"
+                                name="Porcentaje${sancion.idSancionPersona}"
+                                class="obligatorio form-control" readonly disabled>
+                                ${opcionesPorcentaje}
+                            </select>
+                        </td>
+                        <td><textarea rows="3" class="form-control"
+                                id="descripcion${sancion.idSancionPersona}"
+                                style="resize: none; width: 300px;"
+                                readonly>${sancion.Descripcion}</textarea></td>
+
+                        <td>
+                            <div style="display: block;">
+                                <button type="button" class="btn btn-primary oculta-empleado"
+                                    id="Eliminar${sancion.idSancionPersona}"
+                                    onclick="eliminar(${sancion.idSancionPersona})">Eliminar</button>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: none;">
+                                <button type="button" class="btn btn-primary oculta-empleado"
+                                    id="Editar_Aceptar${sancion.idSancionPersona}"
+                                    onclick="editar_aceptar(${sancion.idSancionPersona})">Editar</button>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: block;">
+                                <button type="button" class="btn btn-secondary"
+                                    id="Cancelar${sancion.idSancionPersona}"
+                                    onclick="cancelar('${sancion.idSancionPersona}')"
+                                    style="display: none">Cancelar</button>
+                            </div>
+                        </td>
+                    </tr>
+                        `);
+                        $(`#porcentaje${sancion.idSancionPersona}`).val(sancion.idPorcentaje);
+                        $(`#sancion${sancion.idSancionPersona}`).val(sancion.idSancion);
+                    });
+                } else {
+                    $("#tablaResultadosJustificantes tbody").empty();
+                    $("#tablaResultadosJustificantes").hide();
+                    $("#EResultado").text("No se encontraron coincidencias");
+                }
+
+            }
+        });
+    }
+    else {
+        $("#EResultado").text("Ingrese un dato para buscar coincidencias");
+    }
+}
+
 function cargaFechasConsecutivas() {
     if ($("#checkFechasConsecutivas").prop("checked")) {
         $("#fechaConsecutivas").show();
@@ -256,7 +329,7 @@ function cancelar(idSancionPersona) {
 
             $("#fechaInicioFormateada" + idSancionPersona).attr("readonly", true);
             $("#fechaInicioFormateada" + idSancionPersona).datepicker("option", "disabled", true);
-            
+
             $("#fechaFinFormateada" + idSancionPersona).attr("readonly", true);
             $("#fechaFinFormateada" + idSancionPersona).datepicker("option", "disabled", true);
             $("#porcentaje" + idSancionPersona).attr("readonly", true);

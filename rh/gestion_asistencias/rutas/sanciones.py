@@ -7,7 +7,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rEmpleado
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
 from sqlalchemy import and_
-from datetime import datetime
+from datetime import date, datetime, timedelta
+
 
 
 @gestion_asistencias.route('/rh/gestion-asistencias/sanciones', methods = ['POST', 'GET'])
@@ -32,11 +33,23 @@ def guarda_Sancion():
         'Descripcion' : 'Descripcion',
     }
     sancion_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
+
+    mapeo_descuentos = { #NombreEnFormulario : nombreEnBase
+                    'DiasPagados1' : 'DiasPagados1',
+                    'PorcentajePagado1' : 'PorcentajePagado1',
+                    'DiasPagados2' : 'DiasPagados2',
+                    'PorcentajePagado2' : 'PorcentajePagado2',
+                }
+    descuentos_data = {mapeo_descuentos[key]: request.form.get(key) for key in mapeo_descuentos.keys()}
+    
     fechasConsecutivas = request.form.get("checkFechasConsecutivas") # (True or None)
     if fechasConsecutivas:
         sancion_data['FechaInicio'] = datetime.strptime(sancion_data['FechaInicio'], '%d/%m/%Y')
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
-        guardar_o_modificar_sancion(sancion_data)
+        if sancion_data['idSancion'] == '2': #Artículo 37
+            condicionales_articulo_37(sancion_data, descuentos_data)
+        else:
+            guardar_o_modificar_sancion(sancion_data)
     else:
         FechasFlatpickr = request.form.get("FechasFlatpickr")
         fechas = FechasFlatpickr.split(',')  # Separa las fechas por comas
@@ -45,7 +58,10 @@ def guarda_Sancion():
             sancion_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
             sancion_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
             
-            guardar_o_modificar_sancion(sancion_data)
+            if sancion_data['idSancion'] == '2': #Artículo 37
+                condicionales_articulo_37(sancion_data, descuentos_data)
+            else:
+                guardar_o_modificar_sancion(sancion_data)
     return jsonify(sancion_data)
 
 def guardar_o_modificar_sancion(sancion_data):
@@ -157,3 +173,141 @@ def cancela_sancion():
         return jsonify(SancionPersona_dict)
     else:
         return jsonify(False)
+    
+
+
+    
+@gestion_asistencias.route('/rh/gestion-asistencias/calculo-dias-articulo-37', methods = ['POST'])
+def calculo_dias_articulo_37():
+    idPersona = request.form.get("idPersona")
+
+    
+    puesto_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
+    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+
+    if empleado is not None:
+        fecha_inicio_gob = empleado.FecIngGobierno # tipo datetime.date
+        fecha_inicio_fon = empleado.FecIngFonaes # tipo datetime.date
+        #Verificar cuál es la fecha adecuada para hacer el cálculo correcto
+        fecha_inicio = empleado.FecIngFonaes # tipo datetime.date
+        print("fecha_inicio_fon: " + str(fecha_inicio_fon))
+        print("fecha_inicio_gob: " + str(fecha_inicio_gob))
+        hoy = date.today()
+
+        # Calcular la diferencia en días
+        diferencia_dias = (hoy - fecha_inicio).days
+
+        # Convertir la diferencia en semanas
+        diferencia_semanas = diferencia_dias / 7
+
+        resultado = {}
+        # if diferencia_semanas > (52*10):  #52 semanas * 10 años
+        if diferencia_dias > (365*10):  #365 dias * 10 años
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 60
+            resultado["DiasPagados2"] = 60
+        elif diferencia_dias > (365*5):  # 5 años
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 45
+            resultado["DiasPagados2"] = 45
+        elif diferencia_dias > (365):  # 1 año
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 30
+            resultado["DiasPagados2"] = 30
+        else:   #menos de 1 año
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 15
+            resultado["DiasPagados2"] = 15
+
+        resultado["FechaInicioPuesto"] = fecha_inicio
+
+
+        print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
+        print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
+        print("Después sin pago")
+        return jsonify(resultado)
+            
+    return jsonify({"Error":True})
+
+
+def condicionales_articulo_37(licencia, descuentos):
+    idPersona = licencia['idPersona']
+    idSancion = licencia['idSancion']
+    
+    licencias_previas = db.session.query(rSancionPersona).filter_by(idPersona=idPersona, idSancion=idSancion).order_by(rSancionPersona.FechaFin.desc()).all()
+    fechas = {}
+
+    fechas["inicio_licencia_actual"] = licencia['FechaInicio'].date()
+    fechas["inicio_periodo"] = licencia['FechaInicio'].date()
+    fechas["fin_periodo"] = licencia['FechaFin'].date()
+    fechas["fin_licencia_actual"] = licencia['FechaFin'].date()
+    
+    for licencia_previa in licencias_previas:
+        # Verificar que la fecha de licencia['FechaInicio'] no esté dentro del rango de fechas anteriores
+        if (licencia_previa.FechaInicio <= fechas["inicio_periodo"] <= licencia_previa.FechaFin) or (licencia_previa.FechaFin == fechas["inicio_periodo"] - timedelta(days=1)) :
+
+            if (licencia_previa.FechaInicio <= fechas["inicio_licencia_actual"] <= licencia_previa.FechaFin):
+
+                fechas["inicio_licencia_actual"] = licencia_previa.FechaFin + timedelta(days=1)
+            fechas["inicio_periodo"] = licencia_previa.FechaInicio
+
+        if (licencia_previa.FechaInicio <= fechas["fin_periodo"] <= licencia_previa.FechaFin) or (licencia_previa.FechaInicio == fechas["fin_periodo"] + timedelta(days=1)) :
+
+            fechas["fin_licencia_actual"] = licencia_previa.FechaInicio - timedelta(days=1)
+            fechas["fin_periodo"] = licencia_previa.FechaFin
+
+
+    reparte_dias_totales(fechas, licencia, descuentos)
+    return 0
+
+
+
+
+def reparte_dias_totales(fechas, licencia, descuentos):
+
+
+    elimina = db.session.query(rSancionPersona).filter(
+        rSancionPersona.idPersona == licencia["idPersona"],
+        rSancionPersona.idSancion == 2,
+        rSancionPersona.FechaInicio <= fechas["fin_periodo"],
+        rSancionPersona.FechaFin >= fechas["inicio_periodo"]
+    ).delete()
+
+        
+    dias_desc1 = int(descuentos["DiasPagados1"])
+    dias_desc2 = int(descuentos["DiasPagados2"])
+
+    dias_periodo = (fechas["fin_periodo"] - fechas["inicio_periodo"]).days + 1
+    dias_permitidos = dias_desc1 + dias_desc2
+
+    licencia["FechaInicio"] = fechas["inicio_periodo"]
+    licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
+    
+    if dias_periodo <= dias_desc1:
+        licencia["FechaFin"] = fechas["fin_periodo"]
+        guardar_o_modificar_sancion(licencia)
+    else:
+        licencia["FechaFin"] = fechas["inicio_periodo"] + timedelta(days=dias_desc1 - 1)
+        guardar_o_modificar_sancion(licencia)
+
+        licencia["FechaInicio"] = licencia["FechaFin"] +  timedelta(days=1)
+        if dias_periodo > dias_permitidos:
+            licencia["FechaFin"] =  licencia["FechaInicio"] + timedelta(days=dias_desc2)
+            licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+            guardar_o_modificar_sancion(licencia)
+
+
+            licencia["FechaInicio"] = licencia["FechaFin"] +  timedelta(days=1)
+            licencia["FechaFin"] = fechas["fin_periodo"]
+            licencia["idPorcentaje"] = 0 # Sin pago
+            guardar_o_modificar_sancion(licencia)
+
+
+        else:
+            licencia["FechaFin"] =  fechas["fin_periodo"]
+            licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+            guardar_o_modificar_sancion(licencia)

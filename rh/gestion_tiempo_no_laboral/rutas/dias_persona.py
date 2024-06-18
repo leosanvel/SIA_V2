@@ -5,8 +5,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 from app import db
-from rh.gestion_tiempo_no_laboral.modelos.modelos import kPeriodoVacacional, rDiasPersona
+from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
 from rh.gestion_empleados.modelos.empleado import rEmpleado
+from catalogos.modelos.modelos import kPeriodoVacacional
 
 # Dias persona
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/dias-persona', methods = ['POST', 'GET'])

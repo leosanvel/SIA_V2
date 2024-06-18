@@ -4,6 +4,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import or_
 from autenticacion.modelos.modelos import rUsuario
+from rh.gestion_empleados.modelos.empleado import rEmpleado
 from general.modelos.modelos import rPPUsuario, kPagina, kMenu, kSubMenu
 
 from app import db
@@ -13,8 +14,6 @@ import json
 def gestion_usuarios():
     return render_template('/crear_usuario.html', title='Gestión de usuarios',
                            current_user=current_user)
-
-
 
 @informatica.route('/informatica/gestion-usuarios/crear-usuario', methods=['POST', 'GET'])
 def crear_usuario():
@@ -35,8 +34,7 @@ def crear_usuario():
         usuario_data["Activo"] = 1
         
     editar = request.form.get("editar")
-    
-    
+        
     nombre_usuario = usuario_data.get("Usuario", None)
     idPersona = usuario_data.get("idPersona", None)
     respuesta = {}
@@ -56,30 +54,26 @@ def crear_usuario():
         respuesta["creado"] = True
         respuesta["usuario"] = usuario_data["Usuario"]
     
-    paginas_json = request.form.get("checkboxStates")
+    paginas_json = request.form.get("estadosCheckbox")
     if paginas_json:
         paginas = json.loads(paginas_json)
     else:
         paginas = []
 
     # Realizar cambios en la base de datos
-    db.session.commit()
+    #db.session.commit()
     
     dar_permisos(paginas, nombre_usuario)
-    
-    print(respuesta)
+
     return jsonify(respuesta)
 
 def dar_permisos(paginas, usuario):
-
     # Eliminar permisos anteriores
     paginaUsuario = db.session.query(rPPUsuario).filter_by(Usuario = usuario).delete()
     db.session.commit()
     
     pagina_data = {}
     pagina_data["Usuario"] = usuario
-
-    
         
     for pagina in paginas:
         
@@ -92,6 +86,7 @@ def dar_permisos(paginas, usuario):
         pagina_data["idSubMenu"] = pagina["idSubMenu"]
         pagina_data["idPagina"] = pagina["idPagina"]
         nueva_pagina = rPPUsuario(**pagina_data)
+
         db.session.add(nueva_pagina)
         db.session.commit()
     print("permisos agregados")
@@ -122,6 +117,9 @@ def buscar_usuario():
         if usuario is not None:
             usuario_dict = usuario.__dict__
             usuario_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            empleado = db.session.query(rEmpleado).filter_by(idPersona = usuario.idPersona).first()
+            if empleado is not None:
+                usuario_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
             lista_usuarios.append(usuario_dict)
     if lista_usuarios:
         return jsonify(lista_usuarios)
@@ -155,8 +153,6 @@ def carga_arbol_paginas():
 @informatica.route('/informatica/gestion-usuarios/carga-paginas-usuario', methods=['POST', 'GET'])
 def carga_paginas_usuario():
     nombre_usuario = request.form.get("nombre_usuario", None)
-    print("nombre_usuario:")
-    print(nombre_usuario)
 
     paginas = db.session.query(rPPUsuario).filter_by(Usuario=nombre_usuario).all()
 
