@@ -136,7 +136,25 @@ function agregarConceptos(){
         type: "POST",
         url: "/rh/gestion-empleados/agregar-conceptos",
         success: function(data){ }
-    })
+    });
+}
+
+function guardarExpediente(formulario){
+    var formData = new FormData(formulario[0]);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/agregar-expediente",
+        data: formData,
+        enctype: 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function(data){
+            if(data.NoArchivo){
+                console.log("Archivo guardado");
+            }
+        }
+    });
 }
 
 $gmx(document).ready(function () {
@@ -259,7 +277,7 @@ $gmx(document).ready(function () {
         if (!formularioVacio($("#formularioDomicilioParticular"))) {
             if (validarFormulario($("#formularioDomicilioParticular")).valido) {
                 guardarDomicilio(1, $("#formularioDomicilioParticular"));
-                mensajeGuardado += "-Domicilio particular. <br>"
+                mensajeGuardado += "-Domicilio particular. <br>";
             } else {
                 mensajeError += '<a href="javascript:void(0);"  onclick="abrirPestana(\'tab-DomicilioParticular\')">-Domicilio particular</a>. <br>';
             }
@@ -273,7 +291,7 @@ $gmx(document).ready(function () {
         if (!formularioVacio($(formulario))) {
             if (validarFormulario($(formulario)).valido) {
                 guardarDomicilio(2, $(formulario));
-                mensajeGuardado += "-Domicilio Fiscal. <br>"
+                mensajeGuardado += "-Domicilio Fiscal. <br>";
             } else {
                 mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DomicilioFiscal\')">-Domicilio fiscal</a>. <br>';
             }
@@ -282,9 +300,12 @@ $gmx(document).ready(function () {
         if(!formularioVacio($("#formularioDatosBancarios"))){
             
             if(validarFormulario($("#formularioDatosBancarios")).valido){
-                guardarDatosBancarios($("#formularioDatosBancarios"))
+                guardarDatosBancarios($("#formularioDatosBancarios"));
             }
         }
+
+        guardarExpediente($("#formularioExpediente"));
+
         var path = window.location.pathname;
         if (path === "/rh/gestion-empleados/agregar-empleado") {
             agregarConceptos();

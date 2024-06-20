@@ -77,3 +77,13 @@ def obtener_datos_bancarios():
 
 
     return jsonify(datos_bancarios)
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-expediente", methods = ["POST"])
+def obtener_expediente():
+    idPersona = session.get('idPersona', None)
+    expediente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona).first()
+    if expediente is not None:
+        expediente = expediente.__dict__
+        expediente.pop("_sa_instance_state", None)
+
+    return jsonify(expediente)

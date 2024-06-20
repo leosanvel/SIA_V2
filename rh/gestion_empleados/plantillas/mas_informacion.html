@@ -1,0 +1,65 @@
+{% extends "expedientes.html" %}
+
+{% block titulo_pestanas_4 %}
+<li class="nav-item"><a class="nav-link" id="tab-mas-informacion" data-toggle="tab" href="#MasInformacion">Mas información</a></li>
+
+{% endblock %}
+
+{% block contenido_mas_informacion %}
+<div class="tab-pane" id="MasInformacion">
+    <form id="formularioMasInformacion">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblIdioma">Idioma<span id="AIdioma" class="form-text">*</span>:</label>
+                    <select id="Idioma" name="Idioma" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Idioma %}
+                        <option value="{{row.idIdioma}}">{{row.Idioma}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EIdioma" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblIndigena">Idioma indigena<span id="AIndigena" class="form-text">*</span>:</label>
+                    <select id="Indigena" name="Indigena" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        <option value="1">Si</option>
+                        <option value="2">No</option>
+                    </select>
+                    <small id="EIndigena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblAfroamericano">Afroamericano<span id="AAfroamericano" class="form-text">*</span>:</label>
+                    <select id="Afroamericano" name="Afroamericano" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        <option value="1">Si</option>
+                        <option value="2">No</option>
+                    </select>
+                    <small id="EAfroamericano" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblDiscapacidad">Discapacidad<span id="ADiscapacidad" class="form-text">*</span>:</label>
+                    <select id="Discapacidad" name="Discapacidad" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Discapacidad %}
+                        <option value="{{row.idDiscapacidad}}">{{row.Discapacidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EDiscapacidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

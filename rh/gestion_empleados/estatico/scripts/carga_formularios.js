@@ -130,6 +130,22 @@ function obtenerDatosBanco(){
     });
 }
 
+function obtenerExpediente(){
+    $.ajax({
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-expediente",
+        success: function(data){
+            if(data){
+                for(const prop in data){
+                    if(data[prop]){
+                        $("#check" + prop).prop("checked", true);
+                    }
+                }
+            }
+        }
+    });
+}
+
 function cargarMesesSerGob() {
     // Obtiene la cadena de fecha en formato "DD/MM/AAAA"
     var fechaString = $("#FecIngresoGob").val();
@@ -460,6 +476,7 @@ $gmx(document).ready(function () {
         obtenerDomicilio(1);
         obtenerDomicilio(2);
         obtenerDatosBanco();
+        obtenerExpediente();
         $("#busquedaCurp").hide();
         $("#tablaEmpleadoSeleccionado").show();
     }

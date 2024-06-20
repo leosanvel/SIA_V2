@@ -10,4 +10,5 @@ numpy
 python-docx
 docxtpl
 docx2pdf
-pandas
+Pandas
+PyPDF2
