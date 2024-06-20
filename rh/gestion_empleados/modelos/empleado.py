@@ -348,3 +348,26 @@ class rPersonaExpediente(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class rPersonaMasInformacion(db.Model):
+    __tablename__ = "rpersonamasinformacion"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idIdioma = db.Column(db.Integer, nullable = True)
+    idIdiomaIndigena = db.Column(db.Integer, nullable = True)
+    idAfroamericano = db.Column(db.Integer, nullable = True)
+    idDiscapacidad = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idPersona, idIdioma, idIdiomaIndigena, idAfroamericano, idDiscapacidad):
+        self.idPersona = idPersona
+        self.idIdioma = idIdioma
+        self.idIdiomaIndigena = idIdiomaIndigena
+        self.idAfroamericano = idAfroamericano
+        self.idDiscapacidad = idDiscapacidad
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

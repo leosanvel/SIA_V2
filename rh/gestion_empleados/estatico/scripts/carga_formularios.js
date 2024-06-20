@@ -132,6 +132,7 @@ function obtenerDatosBanco(){
 
 function obtenerExpediente(){
     $.ajax({
+        async: false,
         type: "POST",
         url: "/rh/gestion-empleados/obtener-expediente",
         success: function(data){
@@ -144,6 +145,22 @@ function obtenerExpediente(){
             }
         }
     });
+}
+
+function obtenerMasInformacion(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-mas-informacion",
+        success: function(data){
+            if(data){
+                $("#Idioma").val(data.idIdioma);
+                $("#Indigena").val(data.idIdiomaIndigena);
+                $("#Afroamericano").val(data.idAfroamericano);
+                $("#Discapacidad").val(data.idDiscapacidad);
+            }
+        }
+    })
 }
 
 function cargarMesesSerGob() {
@@ -477,6 +494,7 @@ $gmx(document).ready(function () {
         obtenerDomicilio(2);
         obtenerDatosBanco();
         obtenerExpediente();
+        obtenerMasInformacion();
         $("#busquedaCurp").hide();
         $("#tablaEmpleadoSeleccionado").show();
     }

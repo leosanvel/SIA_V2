@@ -157,6 +157,22 @@ function guardarExpediente(formulario){
     });
 }
 
+function guardarMasInformacion(formulario){
+    var formData = new FormData(formulario[0]);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/agregar-mas-informacion",
+        data: formData,
+        enctype: 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function(data){
+
+        }
+    })
+}
+
 $gmx(document).ready(function () {
     $("#btnBuscaEmpleado").click(function (event) {
         event.preventDefault();
@@ -213,6 +229,7 @@ $gmx(document).ready(function () {
         }
 
         validarFormulario($("#formularioDatosBancarios"));
+        validarFormulario($("#formularioMasInformacion"));
 
         if (validacionExitosa) {
 
@@ -304,7 +321,17 @@ $gmx(document).ready(function () {
             }
         }
 
-        guardarExpediente($("#formularioExpediente"));
+        
+
+        if(!formularioVacio($("#formularioMasInformacion"))){
+
+            if(validarFormulario($("#formularioMasInformacion")).valido){
+                guardarMasInformacion($("#formularioMasInformacion"));
+                mensajeGuardado += "-Mas información. <br>";
+            }else{
+                mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-MasInformacion\')">-Mas información</a>. <br>';
+            }
+        }
 
         var path = window.location.pathname;
         if (path === "/rh/gestion-empleados/agregar-empleado") {
@@ -317,6 +344,8 @@ $gmx(document).ready(function () {
             $("#formularioEscolaridad"),
             $("#formularioDatosEmpleado"),
             $("#formularioDatosPersonales"),
+            $("#formularioMasInformacion"),
+            $("#formularioDatosBancarios"),
         ];
         let hayCamposOpcionales = false;
         formularios.forEach(function (formulario) {

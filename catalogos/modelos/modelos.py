@@ -1249,3 +1249,41 @@ class kTipoFuncion(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class kDiscapacidad(db.Model):
+    __tablename__ = "kdiscapacidad"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idDiscapacidad = db.Column(db.Integer, primary_key = True)
+    Discapacidad = db.Column(db.String(150), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+    
+    def __init__(self, idDiscapacidad, Discapacidad, Activo):
+        self.idDiscapacidad = idDiscapacidad
+        self.Discapacidad = Discapacidad
+        self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kIdiomas(db.Model):
+    __tablename__ = "kidiomas"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idIdioma = db.Column(db.Integer, primary_key = True)
+    Idioma = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idIdioma, Idioma, Activo):
+        self.idIdioma = idIdioma
+        self.Idioma = Idioma
+        self.Activo = Activo
+    
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

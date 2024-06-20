@@ -14,7 +14,7 @@
                     <label for="lblIdioma">Idioma<span id="AIdioma" class="form-text">*</span>:</label>
                     <select id="Idioma" name="Idioma" class="obligatorio form-control">
                         <option value="0">-- Seleccione --</option>
-                        {% for row in Idioma %}
+                        {% for row in Idiomas %}
                         <option value="{{row.idIdioma}}">{{row.Idioma}}</option>
                         {% endfor %}
                     </select>
@@ -51,7 +51,7 @@
                     <label for="lblDiscapacidad">Discapacidad<span id="ADiscapacidad" class="form-text">*</span>:</label>
                     <select id="Discapacidad" name="Discapacidad" class="obligatorio form-control">
                         <option value="0">-- Seleccione --</option>
-                        {% for row in Discapacidad %}
+                        {% for row in Discapacidades %}
                         <option value="{{row.idDiscapacidad}}">{{row.Discapacidad}}</option>
                         {% endfor %}
                     </select>

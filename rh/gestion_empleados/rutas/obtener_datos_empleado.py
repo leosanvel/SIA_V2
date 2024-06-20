@@ -87,3 +87,13 @@ def obtener_expediente():
         expediente.pop("_sa_instance_state", None)
 
     return jsonify(expediente)
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-mas-informacion", methods = ["POST"])
+def obtener_mas_informacion():
+    idPersona = session.get("idPersona", None)
+    mas_informacion = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
+    if mas_informacion is not None:
+        mas_informacion = mas_informacion.__dict__
+        mas_informacion.pop("_sa_instance_state", None)
+
+    return jsonify(mas_informacion)

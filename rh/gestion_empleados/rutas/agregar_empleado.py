@@ -49,6 +49,8 @@ def modificar_empleado():
     CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
     Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
     Escolaridad_datos = db.session.query(kEscolaridad).filter_by(Activo = 1).order_by(kEscolaridad.idEscolaridad).all()
+    Discapacidades = db.session.query(kDiscapacidad).filter_by(Activo = 1).order_by(kDiscapacidad.Discapacidad).all()
+    Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
 
     # Catalogos para el domicilio
     Entidad_datos = db.session.query(kEntidad).filter_by(Activo = 1).order_by(kEntidad.idEntidad).all()
@@ -67,7 +69,9 @@ def modificar_empleado():
                            Entidad = Entidad_datos,
                            TipoAsentamiento = TipoAsentamiento_datos,
                            Vialidad = Vialidad_datos,
-                           empleado = empleado)
+                           empleado = empleado,
+                           Discapacidades = Discapacidades,
+                           Idiomas = Idiomas)
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
@@ -109,7 +113,7 @@ def guardar_empleado():
         #'idEstatus': 'Activo',
     }
 
-    mapeo_nombres_empleado = {
+    mapeo_nombres_empleado = { #NombreEnFormulario : nombreEnBase
         'idTipoEmpleo': 'idTipoEmpleado',
         'idTipoAlta': 'idTipoAlta',
         'idGrupo': 'idGrupo',
@@ -121,11 +125,11 @@ def guardar_empleado():
         'CorreoInstitucional': 'CorreoInstitucional'
     }
 
-    mapeo_nombres_empleado_puesto = {
+    mapeo_nombres_empleado_puesto = { #NombreEnFormulario : nombreEnBase
         'idPlazaHom' : 'idPuesto'
     }
 
-    mapeo_nombres_escolaridad = {
+    mapeo_nombres_escolaridad = { #NombreEnFormulario : nombreEnBase
         'idEscolaridad': 'idEscolaridad',
         'idNivelEscolaridad': 'idNivelEscolaridad',
         'idInstitucionEscolar': 'idInstitucionEscolar',
@@ -534,6 +538,30 @@ def agregar_documentos():
     db.session.commit()
 
     return jsonify(resultado)
+
+@gestion_empleados.route("/rh/gestion-empleados/agregar-mas-informacion", methods = ["POST"])
+def agregar_mas_informacion():
+    mapeo_nombres_mas_informacion = { #NombreEnFormulario : nombreEnBase
+        'Idioma': 'idIdioma',
+        'Indigena': 'idIdiomaIndigena',
+        'Afroamericano': 'idAfroamericano',
+        'Discapacidad': 'idDiscapacidad'
+    }
+
+    mas_informacion_data = {mapeo_nombres_mas_informacion[key]: request.form.get(key) for key in mapeo_nombres_mas_informacion.keys()}
+    idPersona = session.get("idPersona", None)
+    mas_informacion_data["idPersona"] = idPersona
+
+    mas_informacion_existente = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
+    if mas_informacion_existente is not None:
+        mas_informacion_existente.update(**mas_informacion_data)
+    else:
+        nuevo_mas_informacion = rPersonaMasInformacion(**mas_informacion_data)
+        db.session.add(nuevo_mas_informacion)
+
+    db.session.commit()
+
+    return jsonify({"guardado": True})
 
 
 @gestion_empleados.route('/rh/gestion-empleados/buscar-curp', methods = ['POST'])
