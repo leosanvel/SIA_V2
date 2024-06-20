@@ -212,13 +212,14 @@ class rEmpleadoPuesto(db.Model):
     Observaciones = db.Column(db.String(300), nullable = False)
     FechaEfecto = db.Column(db.Date, nullable = False)
     idQuincena = db.Column(db.Integer, nullable = False)
+    ConservaVacaciones = db.Column(db.Integer, nullable = True)
     idEstatusEP = db.Column(db.Integer, primary_key = True) # ACTIVO o INACTIVO
 
     # Relacion
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.ClavePresupuestaSIA = ClavePresupuestaSIA
@@ -232,6 +233,7 @@ class rEmpleadoPuesto(db.Model):
         self.Observaciones = Observaciones
         self.FechaEfecto = FechaEfecto
         self.idQuincena = idQuincena
+        self.ConservaVacaciones = ConservaVacaciones
         self.idEstatusEP = idEstatusEP
 
     def update(self, **kwargs):

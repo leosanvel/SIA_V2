@@ -16,9 +16,13 @@ from email.message import EmailMessage
 
 from catalogos.modelos.modelos import kQuincena
 from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador
-from rh.gestion_empleados.modelos.empleado import rEmpleado
+from rh.gestion_empleados.modelos.empleado import rEmpleado, rEmpleadoPuesto
 from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina
+
+from prestaciones.modelos.modelos import rEmpleadoConcepto
+from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
+
 
 def permisos_de_consulta(view_func):
     @wraps(view_func)
@@ -370,3 +374,62 @@ def crea_solicitud(motivo,empleado_existente):
     # Realizar cambios en la base de datos
     db.session.commit()
     print("Solicitud agregada a la base de datos")
+
+
+def ejecutar_tareas_diarias():
+    revision_baja_empleados()
+    dias_antiguedad = verificar_antiguedad_empleados()
+    antiguedad_quinquenios(dias_antiguedad)
+    antiguedad_articulo_37(dias_antiguedad)
+    actualiza_vacaciones()
+    print("FUNCION AUTOMATICA EJEUTADA AL INICIAR EL DÍA:")
+    hoy = datetime.today().date()
+    print(hoy)
+
+
+def revision_baja_empleados():
+    hoy = datetime.today().date()
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(FechaEfecto=hoy).all()
+    print("Dando de baja a los siguientes puestos:")
+    print(puestos_empleado)
+    if puestos_empleado:
+        for puesto in puestos_empleado:
+            puesto.FechaTermino = hoy
+
+            # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
+            puesto.Puesto.idEstatusPuesto = 2
+
+            # Desactivar el puesto del empleado
+            puesto.idEstatusEP = 0
+
+            #asignar fecha termino
+            puesto.FechaTermino = datetime.today()
+
+            # desactivar empleado
+            puesto.Empleado.Activo = 0
+
+            # vaciar: rconcepto empleado
+            elimina_conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = puesto.idPersona).delete()
+
+            #Eliminar o conservar vacaciones
+            if puesto.ConservaVacaciones != 1:
+                print("vacaciones eliminadas")
+                vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = puesto.idPersona).delete()
+
+        db.session.commit()
+    else:
+        print("Ningún empleado termina Hoy")
+
+def verificar_antiguedad_empleados():
+    # Ejemplo de función para verificar la antigüedad de los empleados
+    hoy = datetime.today().date()
+    # Aquí iría la lógica para verificar la antigüedad de los empleados
+    print(f"Verificación de antigüedad realizada el {hoy}")
+
+
+def antiguedad_quinquenios(dias_antiguedad):
+    pass
+def antiguedad_articulo_37(dias_antiguedad):
+    pass
+def actualiza_vacaciones():
+    pass
