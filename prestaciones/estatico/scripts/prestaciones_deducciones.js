@@ -46,7 +46,7 @@ $gmx(document).ready(function () {
 
 });
 
-function funcionSeleccionar() { //se ejecuta al seleccionar el empleado
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado en el modal
     buscar_empleado_concepto();
 }
 

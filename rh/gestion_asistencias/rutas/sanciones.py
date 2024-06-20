@@ -147,7 +147,6 @@ def busca_Sancion():
     })
 
 @gestion_asistencias.route('/rh/gestion-empleados/eliminar-sancion', methods = ['POST'])
-
 def eliminar_Sanciones():
     idSancionPersona = request.form.get("idSancionPersona")
     try:
@@ -163,7 +162,6 @@ def eliminar_Sanciones():
     return jsonify({"eliminado": True})
 
 @gestion_asistencias.route('/rh/gestion-empleados/cancela_sancion', methods = ['POST', 'GET'])
-
 def cancela_sancion():
     idSancionPersona = request.form.get('idSancionPersona')
     SancionPersona = db.session.query(rSancionPersona).filter_by(idSancionPersona = idSancionPersona).first()
@@ -173,8 +171,6 @@ def cancela_sancion():
         return jsonify(SancionPersona_dict)
     else:
         return jsonify(False)
-    
-
 
     
 @gestion_asistencias.route('/rh/gestion-asistencias/calculo-dias-articulo-37', methods = ['POST'])
@@ -182,54 +178,73 @@ def calculo_dias_articulo_37():
     idPersona = request.form.get("idPersona")
 
     
-    puesto_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
     empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
 
     if empleado is not None:
-        fecha_inicio_gob = empleado.FecIngGobierno # tipo datetime.date
-        fecha_inicio_fon = empleado.FecIngFonaes # tipo datetime.date
-        #Verificar cuál es la fecha adecuada para hacer el cálculo correcto
-        fecha_inicio = empleado.FecIngFonaes # tipo datetime.date
-        print("fecha_inicio_fon: " + str(fecha_inicio_fon))
-        print("fecha_inicio_gob: " + str(fecha_inicio_gob))
-        hoy = date.today()
+        # Obtener y ordenar los puestos del empleado
+        puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=idPersona).order_by(rEmpleadoPuesto.FechaTermino).all()
 
-        # Calcular la diferencia en días
-        diferencia_dias = (hoy - fecha_inicio).days
+        # Encontrar el puesto activo
+        puesto_activo = next((puesto for puesto in puestos_empleado if puesto.idEstatusEP == 1), None)
+        if puesto_activo:
+            # Verificar que la FechaTermino del puesto activo sea None o mayor al día actual
+            if puesto_activo.FechaTermino is None or puesto_activo.FechaTermino > datetime.today().date():
+                fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
+               # Verificar la continuidad de los puestos
+                for puesto in puestos_empleado:
+                    if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
+                        fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
 
-        # Convertir la diferencia en semanas
-        diferencia_semanas = diferencia_dias / 7
+                hoy = date.today()
 
-        resultado = {}
-        # if diferencia_semanas > (52*10):  #52 semanas * 10 años
-        if diferencia_dias > (365*10):  #365 dias * 10 años
-            resultado["PorcentajePagado1"] = 100
-            resultado["PorcentajePagado2"] = 50
-            resultado["DiasPagados1"] = 60
-            resultado["DiasPagados2"] = 60
-        elif diferencia_dias > (365*5):  # 5 años
-            resultado["PorcentajePagado1"] = 100
-            resultado["PorcentajePagado2"] = 50
-            resultado["DiasPagados1"] = 45
-            resultado["DiasPagados2"] = 45
-        elif diferencia_dias > (365):  # 1 año
-            resultado["PorcentajePagado1"] = 100
-            resultado["PorcentajePagado2"] = 50
-            resultado["DiasPagados1"] = 30
-            resultado["DiasPagados2"] = 30
-        else:   #menos de 1 año
-            resultado["PorcentajePagado1"] = 100
-            resultado["PorcentajePagado2"] = 50
-            resultado["DiasPagados1"] = 15
-            resultado["DiasPagados2"] = 15
+                # Calcular la diferencia en días
+                diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
 
-        resultado["FechaInicioPuesto"] = fecha_inicio
+                # # Convertir la diferencia en semanas
+                # diferencia_semanas = diferencia_dias / 7
+
+                resultado = {}
+                # if diferencia_semanas > (52*10):  #52 semanas * 10 años
+                if diferencia_dias > (365*10):  #365 dias * 10 años
+                    resultado["PorcentajePagado1"] = 100
+                    resultado["PorcentajePagado2"] = 50
+                    resultado["DiasPagados1"] = 60
+                    resultado["DiasPagados2"] = 60
+                elif diferencia_dias > (365*5):  # 5 años
+                    resultado["PorcentajePagado1"] = 100
+                    resultado["PorcentajePagado2"] = 50
+                    resultado["DiasPagados1"] = 45
+                    resultado["DiasPagados2"] = 45
+                elif diferencia_dias > (365):  # 1 año
+                    resultado["PorcentajePagado1"] = 100
+                    resultado["PorcentajePagado2"] = 50
+                    resultado["DiasPagados1"] = 30
+                    resultado["DiasPagados2"] = 30
+                else:   #menos de 1 año
+                    resultado["PorcentajePagado1"] = 100
+                    resultado["PorcentajePagado2"] = 50
+                    resultado["DiasPagados1"] = 15
+                    resultado["DiasPagados2"] = 15
+
+                resultado["FechaInicioPuesto"] = fecha_inicio_consecutiva_mas_antigua
 
 
-        print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
-        print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
-        print("Después sin pago")
-        return jsonify(resultado)
+                print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
+                print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
+                print("Después sin pago")
+                return jsonify(resultado)
+                       
+                print(f"La fecha con el puesto consecutivo más antiguo es: {fecha_inicio_consecutiva_mas_antigua}")
+            else:
+                resultado["Error"] = True
+                print("El puesto activo no tiene FechaTermino válida.")
+        else:
+            resultado["Error"] = True
+            print("No hay puesto activo para este empleado.")
+# --------------------------------------
+
+        
             
     return jsonify({"Error":True})
 
