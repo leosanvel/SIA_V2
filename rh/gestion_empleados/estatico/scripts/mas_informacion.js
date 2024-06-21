@@ -18,7 +18,7 @@ $gmx(document).ready(function(){
             </div>
             <div class="col-md-2">
                 <button type="button" class="btn btn-primary remover" id="RemoverIdioma${cont}">
-                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-x-circle"></i></span>
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
                     
                     </button>
             </div>
