@@ -46,7 +46,7 @@ $gmx(document).ready(function () {
 
 });
 
-function funcionSeleccionar() { //se ejecuta al seleccionar el empleado
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado en el modal
     buscar_empleado_concepto();
 }
 
@@ -68,6 +68,13 @@ function filtrar_tipo_concepto(BuscarRepetidos) {
             if (resultados.NoEncontrado) {
                 console.log("ERROR empleado concepto");
             } else {
+                $('#Concepto').empty();
+
+                var nuevaOpcion = $('<option>', {
+                    'value': "0",
+                    'text': "-- Seleccione --"
+                });
+                $('#Concepto').append(nuevaOpcion);
 
                 resultados.forEach(function (resultado) {
                     // Crea una nueva opción HTML

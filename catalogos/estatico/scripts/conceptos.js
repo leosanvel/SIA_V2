@@ -45,6 +45,7 @@ function modal_crear_concepto() {
     $("#consecutivo").val("");
 
     $("#TipoConcepto").prop('disabled', false);
+    $("#TipoEmpleado").prop('disabled', false);
     $("#idConcepto").prop('readonly', false);
     $("#Concepto").prop('readonly', false);
     $("#Abreviatura").prop('readonly', false);
@@ -55,15 +56,19 @@ function modal_crear_concepto() {
     $('#btnCrearConcepto')[0].textContent = "Crear";
 
     $("#TipoConcepto").val("0");
+    $("#TipoEmpleado").val("0");
     $("#idConcepto").val("");
     $("#Concepto").val("");
     $("#Abreviatura").val("");
+    $("#Partida").val("");
     $("#ClaveSAT").val("");
     $("#TipoPago").val("0");
     $("#Monto").val("0.00");
     $("#Porcentaje").val("0.000");
-    $("#Contrato").val("0");
     $("#checkboxporcentaje").prop('checked', true);
+    $("#checkboxContrato").prop('checked', false);
+    $("#checkboxImportacion").prop('checked', false);
+    $("#checkboxEditable").prop('checked', false);
     habilita_porcentaje_o_monto();
 }
 
@@ -91,13 +96,15 @@ function actualizarListaDesplegable(resultados) {
 
 function crear_concepto() {
     $("#TipoConcepto").prop('disabled', false);
+    $("#TipoEmpleado").prop('disabled', false);
     $("#TipoPago").prop('disabled', false);
+    console.log($("#checkboxImportacion").prop('checked'))
     if (validarFormulario($("#frmCrearConcepto")).valido) {
         $.ajax({
             async: false,
             type: "POST",
             url: "/catalogos/crear-concepto",
-            data: $("#frmCrearConcepto, #consecutivo").serialize(),
+            data: $("#frmCrearConcepto").serialize(),
             success: function (data) {
                 if (data) {
                     abrirModal("Información guardada", "Operación realizada con éxito", "");
@@ -132,49 +139,46 @@ function buscar_concepto() {
                     text = `
                     <tr>  
                     <input type="hidden" id="Contrato${cont}" value="${concepto.Contrato}"></input>
+                    <input type="hidden" class="form-control" id="Abreviatura${cont}" value="${concepto.Abreviatura}" readonly></input>
+                    <input type="hidden" class="form-control" id="Porcentaje${cont}" value="${concepto.Porcentaje}" readonly></input>
+                    <input type="hidden" class="form-control" id="Monto${cont}" value="${concepto.Monto}" readonly></input>
+                    <input type="hidden" class="form-control" id="ClaveSAT${cont}" value="${concepto.ClaveSAT}" readonly></input>
+                    <input type="hidden" class="form-control" id="TipoPago${cont}" value="${concepto.idTipoPago}" readonly style="width: 100;"></input>
+                    <input type="hidden" class="form-control" id="Contrato${cont}" value="${concepto.Contrato}" readonly></input>
+                    <input type="hidden" class="form-control" id="Importacion${cont}" value="${concepto.ExtraeArchivo}" readonly></input>
+                    <input type="hidden" class="form-control" id="Editable${cont}" value="${concepto.Editable}" readonly></input>
+
+                    
                         <td>
                             <input type="text" class="form-control" id="TipoConcepto${cont}" value="${concepto.idTipoConcepto}" readonly></input></td>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" id="TipoEmpleado${cont}" value="${concepto.idTipoEmpleado}" readonly></input></td>
                         </td>
                         <td>
                             <input type="text" class="form-control" id="idConcepto${cont}" value="${concepto.idConcepto}" readonly></input>
                         </td>
                         <td>
-                            <input type="text" class="form-control" id="Concepto${cont}" value="${concepto.Concepto}" readonly></input>
+                            <input type="text" class="form-control" id="Concepto${cont}" value="${concepto.Concepto}" readonly style="width: 400px;"></input>
                         </td>
+                        
                         <td>
-                            <input type="text" class="form-control" id="Abreviatura${cont}" value="${concepto.Abreviatura}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Porcentaje${cont}" value="${concepto.Porcentaje}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Monto${cont}" value="${concepto.Monto}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="ClaveSAT${cont}" value="${concepto.ClaveSAT}" readonly></input>
-                        </td>
-                        <td>
-                            <select id="TipoPago${cont}" name="TipoPago${cont}" class="obligatorio form-control">
-                            </select>
-                        </div>
+                            <input type="text" class="form-control" id="Partida${cont}" value="${concepto.Partida}" readonly></input>
                         </td>
                         <td>
                             <input type="text" class="form-control" id="Activo${cont}" value="${concepto.Activo}" readonly></input>
                         </td>
-
+                     
                         <td>
                             <div style="display: block;">
-                            <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="editar_concepto(${cont})"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
-                        </div>
+                                <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="editar_concepto(${cont})"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+                            </div>
                         </td>
 
 
                     </tr>
                     `;
                     $("#tablaResultadosConceptos tbody").append(text);
-                    $("#TipoPago" + cont).html(opcionHTML);
-                    $("#TipoPago" + cont).val(concepto.idTipoPago);
-                    $("#TipoPago" + cont).prop('disabled', true);
                     cont++;
                 });
             }
@@ -235,7 +239,14 @@ function editar_concepto(consecutivo) {
     $("#Abreviatura").prop('readonly', true);
     $("#ClaveSAT").prop('readonly', true);
     $("#TipoPago").prop('disabled', false);
+    
+    $("#TipoEmpleado").prop('disabled', true);
+    $("#TipoEmpleado").val($("#TipoEmpleado" + consecutivo).val());
 
+    console.log( '$("#TipoConcepto")')
+    console.log( $("#TipoConcepto"))
+    console.log( '$("#TipoEmpleado")')
+    console.log( $("#TipoEmpleado"))
 
     $('#tituloModalCrearConcepto')[0].textContent = "Editar concepto";
     $('#btnCrearConcepto')[0].textContent = "Editar";
@@ -246,7 +257,12 @@ function editar_concepto(consecutivo) {
     $("#Abreviatura").val($("#Abreviatura" + consecutivo).val());
     $("#ClaveSAT").val($("#ClaveSAT" + consecutivo).val());
     $("#TipoPago").val($("#TipoPago" + consecutivo).val());
-    $("#Contrato").val(parseInt($("#Contrato" + consecutivo).val())+1);
+    
+
+    $("#Partida").val(parseInt($("#Partida" + consecutivo).val()));
+    $("#checkboxImportacion").prop("checked", $("#Importacion" + consecutivo).val() === '1');
+    $("#checkboxContrato").prop("checked", $("#Contrato" + consecutivo).val() === '1');
+    $("#checkboxEditable").prop("checked", $("#Editable" + consecutivo).val() === '1');
 
     if ($("#TipoPago").val() == "2") {//Si es == 2 (Variable)
 

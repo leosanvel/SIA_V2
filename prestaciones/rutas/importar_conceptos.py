@@ -10,6 +10,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import asc
 from datetime import datetime
 
+import pandas as pd
+
 @prestaciones.route('/prestaciones/importar-conceptos')
 def importar_conceptos():
     conceptos = db.session.query(kConcepto).filter_by(ExtraeArchivo = 1).all()
@@ -39,55 +41,32 @@ def extraer_concepto_archivo():
     idConcepto = request.form.get('idConcepto')
     
 # Verificar que se haya recibido un archivo y que sea un archivo de texto
-    if archivo and archivo.filename.endswith('.txt'):
-
-        # Leer el contenido del archivo
-        contenido = archivo.read().decode('utf-8')
-
-        concepto = porcentaje = monto = None
-        lista_empleados = []
-        # Buscar las variables en el archivo
-        for linea in contenido.split('\n'):
-            if linea:
-                empleado = {}
-                empleado["Ramo"] = linea[0:3].strip()
-                empleado["PAGSUBPAG"] = linea[3:8].strip()
-                empleado["NumeroISSSTE"] = linea[8:18].strip()
-                empleado["RFC"] = linea[18:31].strip()
-                empleado["Nombre"] = linea[31:71].strip()
-                empleado["ClaveCobro"] = linea[71:101].strip()
-                empleado["TPOD"] = linea[101:102].strip()
-                empleado["PzoQna"] = linea[102:105].strip()
-                empleado["Periodo1"] = linea[105:111].strip()
-                empleado["Periodo2"] = linea[111:117].strip()
-                empleado["Concepto"] = linea[117:119].strip()
-                empleado["NumeroPrestamo"] = linea[167:177].strip()
-                
-                importe_str = linea[119:126].strip()
-                if importe_str:  # Verifica si la cadena no está vacía
-                    empleado["Importe"] = round(float(importe_str)/100, 2)
-                else:
-                    empleado["Importe"] = "0.0"
-
-                # Añade el empleado a la lista
-                lista_empleados.append(empleado)
-        # Verificar si se encuentra el directorio
-        # directorio_archivos = os.path.join(current_app.root_path, "prestaciones", "docs")
-        # if not os.path.exists(directorio_archivos):
-        #     os.makedirs(directorio_archivos)
-        # nombre_unico = obtener_nombre_unico("Archivo.txt")
-        # filepath = os.path.join(directorio_archivos, nombre_unico)
-        # archivo.save(filepath)
-        
-
-
-        if lista_empleados:
+    if archivo and archivo.filename.endswith('.csv'):
+        try:
+            # Intentar leer el archivo con la codificación predeterminada utf-8
+            try:
+                df = pd.read_csv(archivo)
+            except UnicodeDecodeError:
+                # Si falla, intentar leer el archivo con la codificación latin1
+                archivo.seek(0)  # Volver al inicio del archivo
+                df = pd.read_csv(archivo, encoding='latin1')
+            
+            # Crear una nueva tabla con RFC único y suma de RETENCION_MENSUAL
+            resumen_df = df.groupby('RFC')['RETENCION_MENSUAL'].sum().reset_index()
+            
+            # Imprimir el resultado
+            print(resumen_df)
+            
+            lista_empleados = []
             return jsonify({"Obtenido": True, "lista_empleados": lista_empleados})
-        else:
+        
+        except Exception as e:
+            print(f"Error al leer el archivo: {e}")
             return jsonify({"ErrorLectura": True, "mensaje": "La extracción de información falló."})
     else:
-        return jsonify({"ArchivoInvalido": True, "mensaje": "No se recibió un archivo de texto o el archivo está vacío"})
-   
+        return jsonify({"ArchivoInvalido": True, "mensaje": "No se recibió un archivo CSV"})
+
+
 def obtener_nombre_unico(nombre_original):
     base, extension = os.path.splitext(nombre_original)
     contador = 1

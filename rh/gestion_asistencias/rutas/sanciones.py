@@ -147,7 +147,6 @@ def busca_Sancion():
     })
 
 @gestion_asistencias.route('/rh/gestion-empleados/eliminar-sancion', methods = ['POST'])
-
 def eliminar_Sanciones():
     idSancionPersona = request.form.get("idSancionPersona")
     try:
@@ -163,7 +162,6 @@ def eliminar_Sanciones():
     return jsonify({"eliminado": True})
 
 @gestion_asistencias.route('/rh/gestion-empleados/cancela_sancion', methods = ['POST', 'GET'])
-
 def cancela_sancion():
     idSancionPersona = request.form.get('idSancionPersona')
     SancionPersona = db.session.query(rSancionPersona).filter_by(idSancionPersona = idSancionPersona).first()
@@ -173,32 +171,23 @@ def cancela_sancion():
         return jsonify(SancionPersona_dict)
     else:
         return jsonify(False)
-    
-
 
     
 @gestion_asistencias.route('/rh/gestion-asistencias/calculo-dias-articulo-37', methods = ['POST'])
 def calculo_dias_articulo_37():
     idPersona = request.form.get("idPersona")
 
+    fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva(idPersona)
     
-    puesto_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
-    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-
-    if empleado is not None:
-        fecha_inicio_gob = empleado.FecIngGobierno # tipo datetime.date
-        fecha_inicio_fon = empleado.FecIngFonaes # tipo datetime.date
-        #Verificar cuál es la fecha adecuada para hacer el cálculo correcto
-        fecha_inicio = empleado.FecIngFonaes # tipo datetime.date
-        print("fecha_inicio_fon: " + str(fecha_inicio_fon))
-        print("fecha_inicio_gob: " + str(fecha_inicio_gob))
+    if fecha_inicio_consecutiva_mas_antigua is not None:
+    
         hoy = date.today()
 
         # Calcular la diferencia en días
-        diferencia_dias = (hoy - fecha_inicio).days
+        diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
 
-        # Convertir la diferencia en semanas
-        diferencia_semanas = diferencia_dias / 7
+        # # Convertir la diferencia en semanas
+        # diferencia_semanas = diferencia_dias / 7
 
         resultado = {}
         # if diferencia_semanas > (52*10):  #52 semanas * 10 años
@@ -223,15 +212,16 @@ def calculo_dias_articulo_37():
             resultado["DiasPagados1"] = 15
             resultado["DiasPagados2"] = 15
 
-        resultado["FechaInicioPuesto"] = fecha_inicio
+        resultado["FechaInicioPuesto"] = fecha_inicio_consecutiva_mas_antigua
 
 
         print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
         print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
         print("Después sin pago")
-        return jsonify(resultado)
-            
-    return jsonify({"Error":True})
+    else:
+        resultado["Error"] = True
+    return jsonify(resultado)
+
 
 
 def condicionales_articulo_37(licencia, descuentos):
@@ -311,3 +301,36 @@ def reparte_dias_totales(fechas, licencia, descuentos):
             licencia["FechaFin"] =  fechas["fin_periodo"]
             licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
             guardar_o_modificar_sancion(licencia)
+
+
+
+
+
+
+def calcula_fecha_consecutiva(idPersona):
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
+    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+
+    if empleado is not None:
+        # Obtener y ordenar los puestos del empleado
+        puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=idPersona).order_by(rEmpleadoPuesto.FechaTermino).all()
+
+        # Encontrar el puesto activo
+        puesto_activo = next((puesto for puesto in puestos_empleado if puesto.idEstatusEP == 1), None)
+        if puesto_activo:
+            # Verificar que la FechaTermino del puesto activo sea None o mayor al día actual
+            if puesto_activo.FechaTermino is None or puesto_activo.FechaTermino > datetime.today().date():
+                fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
+               # Verificar la continuidad de los puestos
+                for puesto in puestos_empleado:
+                    if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
+                        fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
+            else:
+                fecha_inicio_consecutiva_mas_antigua = None
+                print("Error: La fecha término del puesto ya ha transcurrido.")
+
+            return fecha_inicio_consecutiva_mas_antigua
+        else:
+            print("No se encontró un puesto Activo")
+    else:
+        print("Empleado no encontrado")

@@ -11,10 +11,8 @@ $gmx(document).ready(function () {
     });
 
     $("#idSancion").on("change ", function () { verifica_seleccion(); });
-    $("#NumeroEmpleadoSeleccionado").on("change ", function () {
-        console.log("NumeroEmpleadoSeleccionado");
-        verifica_seleccion();
-    });
+    
+
 
     $("#BuscaFechaInicio").datepicker({ changeYear: true, changeMonth: true });
     $("#BuscaFechaFin").datepicker({ changeYear: true, changeMonth: true });
@@ -29,7 +27,9 @@ $gmx(document).ready(function () {
     $("#checkFechasConsecutivas").on("change", function () { cargaFechasConsecutivas(); });
 
 });
-
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado
+    verifica_seleccion();
+}
 function verifica_seleccion() {
 
     var licencia = $("#idSancion").val()

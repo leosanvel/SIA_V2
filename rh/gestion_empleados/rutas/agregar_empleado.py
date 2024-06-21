@@ -8,6 +8,7 @@ from docx.shared import Cm, Inches, Mm, Emu
 from docxtpl import DocxTemplate, InlineImage
 from docx2pdf import convert
 import pythoncom
+from PyPDF2 import PdfMerger
 import os
 
 from .gestion_empleados import gestion_empleados
@@ -48,13 +49,15 @@ def modificar_empleado():
     CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
     Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
     Escolaridad_datos = db.session.query(kEscolaridad).filter_by(Activo = 1).order_by(kEscolaridad.idEscolaridad).all()
+    Discapacidades = db.session.query(kDiscapacidad).filter_by(Activo = 1).order_by(kDiscapacidad.Discapacidad).all()
+    Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
 
     # Catalogos para el domicilio
     Entidad_datos = db.session.query(kEntidad).filter_by(Activo = 1).order_by(kEntidad.idEntidad).all()
     TipoAsentamiento_datos = db.session.query(kTipoAsentamiento).filter_by(Activo = 1).order_by(kTipoAsentamiento.idTipoAsentamiento).all()
     Vialidad_datos = db.session.query(kVialidad).filter_by(Activo = 1).order_by(kVialidad.idVialidad).all()
 
-    return render_template('/datos_bancarios.html', title = titulo,
+    return render_template('/mas_informacion.html', title = titulo,
                            current_user = current_user,
                            TipoPersona = TipoPersona_datos,
                            EstCiv = EstCiv_datos,
@@ -66,7 +69,9 @@ def modificar_empleado():
                            Entidad = Entidad_datos,
                            TipoAsentamiento = TipoAsentamiento_datos,
                            Vialidad = Vialidad_datos,
-                           empleado = empleado)
+                           empleado = empleado,
+                           Discapacidades = Discapacidades,
+                           Idiomas = Idiomas)
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
@@ -108,7 +113,7 @@ def guardar_empleado():
         #'idEstatus': 'Activo',
     }
 
-    mapeo_nombres_empleado = {
+    mapeo_nombres_empleado = { #NombreEnFormulario : nombreEnBase
         'idTipoEmpleo': 'idTipoEmpleado',
         'idTipoAlta': 'idTipoAlta',
         'idGrupo': 'idGrupo',
@@ -120,11 +125,11 @@ def guardar_empleado():
         'CorreoInstitucional': 'CorreoInstitucional'
     }
 
-    mapeo_nombres_empleado_puesto = {
+    mapeo_nombres_empleado_puesto = { #NombreEnFormulario : nombreEnBase
         'idPlazaHom' : 'idPuesto'
     }
 
-    mapeo_nombres_escolaridad = {
+    mapeo_nombres_escolaridad = { #NombreEnFormulario : nombreEnBase
         'idEscolaridad': 'idEscolaridad',
         'idNivelEscolaridad': 'idNivelEscolaridad',
         'idInstitucionEscolar': 'idInstitucionEscolar',
@@ -194,6 +199,7 @@ def guardar_empleado():
         #for attr, value in persona_data.items():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
         #        setattr(empleado_existente, attr, value)
+        respuesta["NumeroEmpleado"] = None
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
@@ -245,6 +251,7 @@ def guardar_empleado():
         nueva_escolaridad = rPersonaEscolaridad(**escolaridad_data)
         db.session.add(nueva_escolaridad)
         respuesta["guardado"] = True
+        respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
     # Realizar cambios en la base de datos
     db.session.commit()
@@ -366,8 +373,6 @@ def guardar_datos_bancarios():
         datos_bancarios["Activo"] = 1
         datos_bancarios["Verificado"] = 0
 
-        print(datos_bancarios)
-
         datos_bancarios_existente = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Activo = 1).first()
         if(datos_bancarios_existente is None):
             nuevo_datos_bancarios = rBancoPersona(**datos_bancarios)
@@ -394,8 +399,12 @@ def guardar_conceptos():
         nuevo_concepto = None
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
+        
+        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        
         for indice in range(0, len(lista_idconteptos)):
-            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice] ,idConcepto = lista_idconteptos[indice]).first()
+            print("REVISAR:  filtro: idTipoEmpleado = empleado.idTipoEmpleado")
+            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice] ,idConcepto = lista_idconteptos[indice], idTipoEmpleado = empleado.idTipoEmpleado).first()
             if(concepto is not None):
                 datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
                 datos_conceptos["idConcepto"] = concepto.idConcepto
@@ -411,6 +420,162 @@ def guardar_conceptos():
         db.session.commit()
 
         return jsonify({"guardado": True})
+    
+@gestion_empleados.route("/rh/gestion-empleados/agregar-expediente", methods = ["POST"])
+def agregar_documentos():
+    # Obtener Nombre y Apellido del empleado
+    idPersona = session.get("idPersona", None)
+    Persona = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
+    Nombre = Persona.Nombre
+    Apellido = Persona.ApPaterno
+
+    # Obtener archivos
+    ActaNacimiento = request.files.get("ActaNacimiento")
+    Titulo = request.files.get("Titulo")
+    CartillaMilitar = request.files.get("CartillaMilitar")
+    ComprobanteDomicilio = request.files.get("ComprobanteDomicilio")
+    IdentificacionOficial = request.files.get("IdentificacionOficial")
+    ArchivoCURP = request.files.get("ArchivoCURP")
+    ArchivoRFC = request.files.get("ArchivoRFC")
+    
+    # Inicializar resultados
+    resultado = {}
+    expediente_data = {}
+    resultado["NoArchivo"] = True
+    resultado["ExpedienteNombre"] = False
+    expediente_data["idPersona"] = idPersona
+
+    expediente_existente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona).first()
+    if expediente_existente is not None:
+        expediente_data = expediente_existente.__dict__
+        expediente_data = expediente_data.copy()
+        expediente_data.pop("_sa_instance_state")
+    else:
+        expediente_data["ActaNacimiento"] = 0
+        expediente_data["Titulo"] = 0
+        expediente_data["CartillaMilitar"] = 0
+        expediente_data["ComprobanteDomicilio"] = 0
+        expediente_data["IdentificacionOficial"] = 0
+        expediente_data["ArchivoCURP"] = 0
+        expediente_data["ArchivoRFC"] = 0
+
+    # Crear objeto para combinar PDF's
+    merger = PdfMerger()
+
+    if ActaNacimiento:
+        merger.append(ActaNacimiento)
+        expediente_data["ActaNacimiento"] = 1
+        resultado["NoArchivo"] = False
+
+    if Titulo:
+        merger.append(Titulo)
+        expediente_data["Titulo"] = 1
+        resultado["NoArchivo"] = False
+
+    if CartillaMilitar:
+        merger.append(CartillaMilitar)
+        expediente_data["CartillaMilitar"] = 1
+        resultado["NoArchivo"] = False
+
+    if ComprobanteDomicilio:
+        merger.append(ComprobanteDomicilio)
+        expediente_data["ComprobanteDomicilio"] = 1
+        resultado["NoArchivo"] = False
+
+    if IdentificacionOficial:
+        merger.append(IdentificacionOficial)
+        expediente_data["IdentificacionOficial"] = 1
+        resultado["NoArchivo"] = False
+    
+    if ArchivoCURP:
+        merger.append(ArchivoCURP)
+        expediente_data["ArchivoCURP"] = 1
+        resultado["NoArchivo"] = False
+
+    if ArchivoRFC:
+        merger.append(ArchivoRFC)
+        expediente_data["ArchivoRFC"] = 1
+        resultado["NoArchivo"] = False
+
+    # Crear nombre del archivo
+    filename = "expediente" + "_" + str(idPersona) + ".pdf"
+
+    print(resultado["NoArchivo"])
+
+    if not resultado["NoArchivo"]:
+        # Directorio para almacenar los expedientes
+        dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
+
+        # Si no existe el directorio
+        if not os.path.exists(dir):
+            # Se crea
+            os.mkdir(dir)
+            print("Directorio %s creado" % dir)
+        else:
+            print("Directorio %s ya existe" % dir)
+
+        # Si existe un expediente con nombre por idPersona
+        if os.path.exists(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)):
+            # Se agrega para hacer la combinación
+            merger.append(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename))
+            print("Existe con expediente")
+
+        else:
+            # Obtener lista de archivos en el directorio
+            archivos = os.listdir(dir)
+            # Recorrer la lista
+            for archivo in archivos:
+                if archivo.startswith("~$"):
+                    # Eliminar copias temporales
+                    archivos.remove(archivo)
+                # Verificar si hay un archivo con Nombre o Apellido del empleado
+                if Nombre.lower() in archivo.lower() or Apellido.lower() in archivo.lower():
+                    resultado["ExpedienteNombre"] = True
+                    # Si hay un archivo se sale del ciclo
+                    break
+
+            # Si hay un archivo con Nombre
+            if resultado["ExpedienteNombre"]:
+                dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", archivo)
+                # Se agrega a la combinación
+                merger.append(dir)
+
+        dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)
+        merger.write(dir)
+
+    if expediente_existente is not None:
+        expediente_existente.update(**expediente_data)
+    else:
+        nuevo_expediente = rPersonaExpediente(**expediente_data)
+        db.session.add(nuevo_expediente)
+    
+    db.session.commit()
+
+    return jsonify(resultado)
+
+@gestion_empleados.route("/rh/gestion-empleados/agregar-mas-informacion", methods = ["POST"])
+def agregar_mas_informacion():
+    mapeo_nombres_mas_informacion = { #NombreEnFormulario : nombreEnBase
+        'Idioma': 'idIdioma',
+        'Indigena': 'idIdiomaIndigena',
+        'Afroamericano': 'idAfroamericano',
+        'Discapacidad': 'idDiscapacidad'
+    }
+
+    mas_informacion_data = {mapeo_nombres_mas_informacion[key]: request.form.get(key) for key in mapeo_nombres_mas_informacion.keys()}
+    idPersona = session.get("idPersona", None)
+    mas_informacion_data["idPersona"] = idPersona
+
+    mas_informacion_existente = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
+    if mas_informacion_existente is not None:
+        mas_informacion_existente.update(**mas_informacion_data)
+    else:
+        nuevo_mas_informacion = rPersonaMasInformacion(**mas_informacion_data)
+        db.session.add(nuevo_mas_informacion)
+
+    db.session.commit()
+
+    return jsonify({"guardado": True})
 
 
 @gestion_empleados.route('/rh/gestion-empleados/buscar-curp', methods = ['POST'])

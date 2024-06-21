@@ -59,7 +59,7 @@ class tPuesto(db.Model):
     idRamo = db.Column(db.Integer, nullable = True)
     idUA = db.Column(db.Integer, db.ForeignKey(kUA.idUA), nullable = True)
     ConsecutivoPuesto = db.Column(db.Integer, primary_key = True)
-    CodigoPuesto = db.Column(db.String(50), nullable = True)
+    CodigoPuesto = db.Column(db.String(50), primary_key = True)
     Puesto = db.Column(db.String(150), nullable = True)
     idZonaEconomica = db.Column(db.Integer, db.ForeignKey(kZonaEconomica.idZonaEconomica), nullable = True)
     ReferenciaTabular = db.Column(db.String(10), nullable = True)
@@ -88,6 +88,7 @@ class tPuesto(db.Model):
     PuestoJefe = db.Column(db.String(50), nullable = True)
     PresupuestalJefe = db.Column(db.String(15), nullable = True)
     idCentroCosto = db.Column(db.Integer, db.ForeignKey(kCentroCostos.idCentroCosto), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
 
     # Relaciones
     UA = db.relationship('kUA', back_populates = "Puestos", uselist = False, single_parent = True)
@@ -108,7 +109,7 @@ class tPuesto(db.Model):
     def __init__(self, idRamo, idUA, ConsecutivoPuesto, CodigoPuesto, Puesto, idZonaEconomica, ReferenciaTabular, ConsPuesto, idTipoPlazaPuesto,
                  idCaracterOcupacional, idTipoFuncion, NivelSalarial, Tabulador, CodigoPresupuestal, OrdinalCP, idGrupo, idGrado, idNivel, idEstatusPuesto, 
                  idVigencia, FechaInicio, FechaFin, idCentroTrabajo, FolioSival, RegimenLaboral, RemuneracionTotal, TitularAU, DeclaracionPatrimonial,
-                 PlazasSubordinadas, PuestoJefe, PresupuestalJefe, idCentroCosto):
+                 PlazasSubordinadas, PuestoJefe, PresupuestalJefe, idCentroCosto, Activo):
         self.idRamo = idRamo
         self.idUA = idUA
         self.ConsecutivoPuesto = ConsecutivoPuesto
@@ -141,6 +142,7 @@ class tPuesto(db.Model):
         self.PuestoJefe = PuestoJefe
         self.PresupuestalJefe = PresupuestalJefe
         self.idCentroCosto = idCentroCosto
+        self.Activo = Activo
         
 
     def update(self, **kwargs):
@@ -212,13 +214,14 @@ class rEmpleadoPuesto(db.Model):
     Observaciones = db.Column(db.String(300), nullable = False)
     FechaEfecto = db.Column(db.Date, nullable = False)
     idQuincena = db.Column(db.Integer, nullable = False)
+    ConservaVacaciones = db.Column(db.Integer, nullable = True)
     idEstatusEP = db.Column(db.Integer, primary_key = True) # ACTIVO o INACTIVO
 
     # Relacion
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.ClavePresupuestaSIA = ClavePresupuestaSIA
@@ -232,6 +235,7 @@ class rEmpleadoPuesto(db.Model):
         self.Observaciones = Observaciones
         self.FechaEfecto = FechaEfecto
         self.idQuincena = idQuincena
+        self.ConservaVacaciones = ConservaVacaciones
         self.idEstatusEP = idEstatusEP
 
     def update(self, **kwargs):
@@ -314,6 +318,58 @@ class rSerieNomina(db.Model):
         self.SerieFinal = SerieFinal
         self.TotalRegistros = TotalRegistros
         self.FechaProceso = FechaProceso
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rPersonaExpediente(db.Model):
+    __tablename__ = "rpersonaexpediente"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    ActaNacimiento = db.Column(db.Integer, nullable = True)
+    Titulo = db.Column(db.Integer, nullable = True)
+    CartillaMilitar = db.Column(db.Integer, nullable = True)
+    ComprobanteDomicilio = db.Column(db.Integer, nullable = True)
+    IdentificacionOficial = db.Column(db.Integer, nullable = True)
+    ArchivoCURP = db.Column(db.Integer, nullable = True)
+    ArchivoRFC = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idPersona, ActaNacimiento, Titulo, CartillaMilitar, ComprobanteDomicilio, IdentificacionOficial, ArchivoCURP, ArchivoRFC):
+        self.idPersona = idPersona
+        self.ActaNacimiento = ActaNacimiento
+        self.Titulo = Titulo
+        self.CartillaMilitar = CartillaMilitar
+        self.ComprobanteDomicilio = ComprobanteDomicilio
+        self.IdentificacionOficial = IdentificacionOficial
+        self.ArchivoCURP = ArchivoCURP
+        self.ArchivoRFC = ArchivoRFC
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rPersonaMasInformacion(db.Model):
+    __tablename__ = "rpersonamasinformacion"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idIdioma = db.Column(db.Integer, nullable = True)
+    idIdiomaIndigena = db.Column(db.Integer, nullable = True)
+    idAfroamericano = db.Column(db.Integer, nullable = True)
+    idDiscapacidad = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idPersona, idIdioma, idIdiomaIndigena, idAfroamericano, idDiscapacidad):
+        self.idPersona = idPersona
+        self.idIdioma = idIdioma
+        self.idIdiomaIndigena = idIdiomaIndigena
+        self.idAfroamericano = idAfroamericano
+        self.idDiscapacidad = idDiscapacidad
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

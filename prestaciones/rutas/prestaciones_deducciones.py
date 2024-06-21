@@ -75,13 +75,14 @@ def crear_empleado_concepto():
 def buscar_empleado_concepto():
     idPersona = request.form.get('idPersona')
     empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-    empleadoConceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).all()
-    print("El número de conceptos encontrados es: " + str(len(empleadoConceptos)))
 
+
+
+    empleadoConceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).all()
     lista_empleado_conceptos = []
     for emp_con in empleadoConceptos:
-        concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto).first()
-        if emp_con is not None:
+        concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto, Editable = 1).first()
+        if emp_con is not None and concepto is not None:
             emp_con_dict = emp_con.__dict__
             emp_con_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             emp_con_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
@@ -99,8 +100,8 @@ def filtrar_concepto():
     TipoConcepto = datos.pop("TipoConcepto", None)
     idPersona = datos.pop("idPersona", None)
     BuscarRepetidos = datos.pop("BuscarRepetidos", None)
-    conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto).order_by(asc(kConcepto.Concepto)).all()
-
+    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+    conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idTipoEmpleado = empleado.idTipoEmpleado).order_by(asc(kConcepto.Concepto)).all()
     lista_conceptos = []
     for concepto in conceptos:
         empleadoConcepto = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idConcepto = concepto.idConcepto, idTipoConcepto = concepto.idTipoConcepto).first()

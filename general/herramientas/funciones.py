@@ -1,4 +1,4 @@
-from flask import redirect, url_for
+from flask import redirect, url_for, request
 from flask_login import current_user
 from functools import wraps
 import requests
@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from collections import defaultdict
 import requests.exceptions
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, cast, String
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import time, date, datetime
 from app import db
@@ -14,11 +14,16 @@ from app import db
 import smtplib
 from email.message import EmailMessage
 
-from catalogos.modelos.modelos import kQuincena
+from catalogos.modelos.modelos import kQuincena,kConcepto
 from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador
-from rh.gestion_empleados.modelos.empleado import rEmpleado
+from rh.gestion_empleados.modelos.empleado import rEmpleado, rEmpleadoPuesto
 from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina
+
+from prestaciones.modelos.modelos import rEmpleadoConcepto
+from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
+
+
 
 def permisos_de_consulta(view_func):
     @wraps(view_func)
@@ -370,3 +375,134 @@ def crea_solicitud(motivo,empleado_existente):
     # Realizar cambios en la base de datos
     db.session.commit()
     print("Solicitud agregada a la base de datos")
+
+
+def ejecutar_tareas_diarias():
+    revision_baja_empleados()
+    verificar_antiguedad_empleados()
+    
+    actualiza_vacaciones()
+    print("FUNCION AUTOMATICA EJEUTADA AL INICIAR EL DÍA:")
+    hoy = datetime.today().date()
+    print(hoy)
+
+
+def revision_baja_empleados():
+    hoy = datetime.today().date()
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(FechaEfecto=hoy).all()
+    print("Dando de baja a los siguientes puestos:")
+    print(puestos_empleado)
+    if puestos_empleado:
+        for puesto in puestos_empleado:
+            puesto.FechaTermino = hoy
+
+            # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
+            puesto.Puesto.idEstatusPuesto = 2
+
+            # Desactivar el puesto del empleado
+            puesto.idEstatusEP = 0
+
+            #asignar fecha termino
+            puesto.FechaTermino = datetime.today()
+
+            # desactivar empleado
+            puesto.Empleado.Activo = 0
+
+            # vaciar: rconcepto empleado
+            elimina_conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = puesto.idPersona).delete()
+
+            #Eliminar o conservar vacaciones
+            if puesto.ConservaVacaciones != 1:
+                print("vacaciones eliminadas")
+                vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = puesto.idPersona).delete()
+
+        db.session.commit()
+    else:
+        print("Ningún empleado termina Hoy")
+
+def verificar_antiguedad_empleados():
+    
+    # Ejemplo de función para verificar la antigüedad de los empleados
+    hoy = datetime.today().date()
+    empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idEstatusEP == 1).all()
+    aniversario = False
+    for puesto in empleadoPuesto:
+        # Verificar que FecIngGobierno no sea None
+        if puesto.Empleado.FecIngGobierno is not None:
+            FecIngGobierno = puesto.Empleado.FecIngGobierno
+        else:
+            # print("Error: No se encontró la FecIngGobierno")
+            continue
+
+        # Verificar si hoy es el aniversario de ingreso al gobierno
+        if (FecIngGobierno.month, FecIngGobierno.day) == (hoy.month, hoy.day):
+            # Calcular la antigüedad en años completos
+            antiguedad_en_anios = hoy.year - FecIngGobierno.year
+
+            # Determinar el concepto correspondiente basado en los años de antigüedad
+            if 5 <= antiguedad_en_anios < 10:
+                concepto = "A1"
+            elif 10 <= antiguedad_en_anios < 15:
+                concepto = "A2"
+            elif 15 <= antiguedad_en_anios < 20:
+                concepto = "A3"
+            elif 20 <= antiguedad_en_anios < 25:
+                concepto = "A4"
+            elif antiguedad_en_anios >= 25:
+                concepto = "A5"
+            else:
+                concepto = "Ninguno"  # Si la antigüedad es menor a 5 años
+
+            asignar_concepto(puesto.idPersona, concepto)
+            print(f"Empleado ID: {puesto.Empleado.NumeroEmpleado}, Antigüedad en gobierno: {antiguedad_en_anios} años, Concepto asignado: {concepto}")
+            aniversario = True
+    if not aniversario:
+        print("Ningún empleado cumple años hoy")
+
+def asignar_concepto(idPersona, idConcepto):
+    if idConcepto == "Ninguno":
+        return 0
+    # Lista de conceptos de A1 a A5
+    conceptos_a_eliminar = ["A1", "A2", "A3", "A4", "A5"]
+
+    elimina_concepto_anterior = db.session.query(rEmpleadoConcepto).filter(
+        and_(
+            rEmpleadoConcepto.idConcepto.in_(conceptos_a_eliminar),
+            rEmpleadoConcepto.idPersona == idPersona
+        )
+    ).delete()
+    print(elimina_concepto_anterior)
+    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).first()
+    
+
+    
+    nuevo_concepto_data = {}
+    nuevo_concepto_data['idPersona'] = idPersona
+    nuevo_concepto_data['idTipoConcepto'] = "P"
+    nuevo_concepto_data['idConcepto'] = idConcepto
+
+    concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = nuevo_concepto_data['idTipoConcepto'], idConcepto = idConcepto, idTipoEmpleado = empleado.idTipoEmpleado).first()
+    
+    nuevo_concepto_data['Porcentaje'] = concepto.Porcentaje
+    nuevo_concepto_data['Monto'] = concepto.Monto
+    nuevo_concepto_data['NumeroContrato'] = 1
+    nuevo_concepto_data['FechaInicio'] = None
+    nuevo_concepto_data['FechaFin'] = None
+    nuevo_concepto_data['PagoUnico'] = 0
+
+
+    nuevo_concepto = rEmpleadoConcepto(**nuevo_concepto_data)
+    print("Nuevo concepto")
+    db.session.add(nuevo_concepto)
+
+    # Realizar cambios en la base de datos
+    db.session.commit()
+
+
+
+def antiguedad_quinquenios(antiguedad_en_gobierno):
+    pass
+def antiguedad_articulo_37(dias_antiguedad):
+    pass
+def actualiza_vacaciones():
+    pass

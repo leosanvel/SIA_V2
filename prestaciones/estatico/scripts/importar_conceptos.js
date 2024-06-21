@@ -10,16 +10,12 @@ function subir_archivo() {
         const fileInput = document.getElementById('ExtraeArchivo');
         const file = fileInput.files[0];
 
-
-        console.log("$('#idTipoConcepto').val()");
-        console.log($('#idTipoConcepto').val());
         // Crear un FormData object
         const formData = new FormData();
         formData.append('archivo', file);
         formData.append('idTipoConcepto', $('#idTipoConcepto').val());
         formData.append('idConcepto', $('#idConcepto').val());
-        console.log("formData");
-        console.log(formData);
+
         if (file) {
             // Procesar el archivo (por ejemplo, enviarlo a un servidor)
             console.log(`Subiendo archivo ${file.name} con id de botón SubirArchivo`);

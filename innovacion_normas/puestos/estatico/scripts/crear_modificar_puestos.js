@@ -1,5 +1,4 @@
 $gmx(document).ready(function(){
-    $("#btnCargarArchivo").click(cargar_archivo);
     $("#btnModalCrearPuesto").click(modal_crear_puesto);
     $("#btnCrearPuesto").click(crear_puesto);
     $("#btnBuscaPuesto").click(buscar_puesto);
@@ -17,7 +16,7 @@ $gmx(document).ready(function(){
     $("#PuestoExistente").on("input", function(){
         var textoBusqueda = $(this).val();
         $.ajax({
-            url: "/catalogos/actualizar-busqueda-puestos",
+            url: "/innovacion-normas/puestos/actualizar-busqueda-puestos",
             method: "GET",
             data: {
                 texto_busqueda: textoBusqueda
@@ -27,12 +26,6 @@ $gmx(document).ready(function(){
             }
         })
     });
-
-    $("#FechaInicio").datepicker({changeYear: true, changeMonth: true});
-    $("#FechaFin").datepicker({changeYear: true, changeMonth: true});
-
-    configuraDatepickers("FechaInicio", "FechaFin", "");
-
 });
 
 function modal_crear_puesto(){
@@ -136,7 +129,7 @@ function crear_puesto(){
         $.ajax({
             async: false,
             type: "POST",
-            url: "/catalogos/crear-puesto",
+            url: "/innovacion-normas/puestos/crear-puesto",
             data: $("#formularioCrearPuesto, #consecutivo").serialize(),
             success: function(data){
                 if(data){
@@ -152,7 +145,7 @@ function buscar_puesto(){
     $.ajax({
         async: false,
         type: "POST",
-        url: "/catalogos/buscar-puesto",
+        url: "/innovacion-normas/puestos/buscar-puesto",
         data: $("#formularioBuscarPuesto").serialize(),
         success: function(respuesta){
             if(respuesta.NoEncontrado){
@@ -290,79 +283,4 @@ function editar_puesto(consecutivo){
     $("#PresupuestalJefe").val($("#PresupuestalJefe" + consecutivo).val());
     $("#CentroCosto").val($("#CentroCosto" + consecutivo).val());
 
-}
-
-function cargar_archivo(){
-    const archivo = new FormData();
-    archivo.append('archivo', $("#Archivo")[0].files[0]);
-
-    $.ajax({
-        async: false,
-        type: "POST",
-        url: "/catalogos/cargar-archivo-puestos",
-        data: archivo,
-        enctype: "multipart/form-data",
-        contentType: false,
-        processData: false,
-        success: function(data){
-            if(data.guardado){
-                abrirModal("Datos cargados", "Los datos se han cargado correctamente.", "recargar");
-            }else{
-                abrirModal("Datos no cargados", "No se seleccionó un archivo.", "");
-            }
-        }
-    });
-}
-
-function configuraDatepickers(idInicio, idFin, data) {
-    $(`#${idInicio}${data}, #${idFin}${data}`).datepicker({
-        // $(`#fechaInicioFormateada${data}, #fechaFinFormateada${data}`).datepicker({
-        changeYear: true,
-        changeMonth: true,
-        beforeShow: function (input, inst) {
-            var fechaLimite = this.id === `${idInicio}${data}` ? $(`#${idFin}${data}`).datepicker("getDate") : $(`#${idInicio}${data}`).datepicker("getDate");
-            if (this.id === `${idInicio}${data}`) {
-                if (fechaLimite) {
-                    $(this).datepicker("option", "maxDate", fechaLimite);
-                } else {
-                    //$(this).datepicker("option", "maxDate", null);
-                }
-            } else {
-                if (fechaLimite) {
-                    $(this).datepicker("option", "minDate", fechaLimite);
-                }
-                else {
-                    //$(this).datepicker("option", "minDate", null);
-                }
-            }
-        },
-        onSelect: function (dateText) {
-            var fechaInicial = $(`#${idInicio}${data}`).datepicker("getDate");
-            var fechaFinal = $(`#${idFin}${data}`).datepicker("getDate");
-
-            if (fechaFinal && fechaInicial) {
-                if (fechaInicial > fechaFinal) {
-                    abrirModal("Error", "La fecha de inicio no puede ser mayor que la fecha de fin.", "");
-                    $(this).val("");
-
-                } else {
-                    // var fechaInicioISO = $.datepicker.formatDate('yy-mm-dd', fechaInicial);
-                    // var fechaFinISO = $.datepicker.formatDate('yy-mm-dd', fechaFinal);
-
-                    // $.ajax({
-                    //     async: false,
-                    //     type: "POST",
-                    //     url: "/RH/obtener_quincenas_entre_fechas",
-                    //     data: {
-                    //         "FechaInicio": fechaInicioISO,
-                    //         "FechaFin": fechaFinISO
-                    //     },
-                    //     success: function (data) {
-                    //         $("#NumeroQuincena").val(data)
-                    //      }
-                    // });
-                }
-            }
-        }
-    });
 }
