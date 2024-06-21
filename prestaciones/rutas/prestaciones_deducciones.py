@@ -79,10 +79,6 @@ def buscar_empleado_concepto():
 
 
     empleadoConceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).all()
-    
-    
-    print("El número de conceptos encontrados es: " + str(len(empleadoConceptos)))
-
     lista_empleado_conceptos = []
     for emp_con in empleadoConceptos:
         concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto, Editable = 1).first()

@@ -14,7 +14,7 @@ from app import db
 import smtplib
 from email.message import EmailMessage
 
-from catalogos.modelos.modelos import kQuincena
+from catalogos.modelos.modelos import kQuincena,kConcepto
 from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador
 from rh.gestion_empleados.modelos.empleado import rEmpleado, rEmpleadoPuesto
 from informatica.modelos.modelos import rSolicitudEstado
@@ -425,63 +425,73 @@ def verificar_antiguedad_empleados():
     # Ejemplo de función para verificar la antigüedad de los empleados
     hoy = datetime.today().date()
     empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idEstatusEP == 1).all()
+    aniversario = False
     for puesto in empleadoPuesto:
         # Verificar que FecIngGobierno no sea None
         if puesto.Empleado.FecIngGobierno is not None:
             FecIngGobierno = puesto.Empleado.FecIngGobierno
         else:
-            print("Error: No se encontró la FecIngGobierno")
+            # print("Error: No se encontró la FecIngGobierno")
             continue
 
-        # Calcular la antigüedad en años completos
-        antiguedad_en_anios = hoy.year - FecIngGobierno.year - ((hoy.month, hoy.day) < (FecIngGobierno.month, FecIngGobierno.day))
+        # Verificar si hoy es el aniversario de ingreso al gobierno
+        if (FecIngGobierno.month, FecIngGobierno.day) == (hoy.month, hoy.day):
+            # Calcular la antigüedad en años completos
+            antiguedad_en_anios = hoy.year - FecIngGobierno.year
 
-        # Determinar el concepto correspondiente basado en los años de antigüedad
-        if 5 <= antiguedad_en_anios < 10:
-            concepto = "A1"
-        elif 10 <= antiguedad_en_anios < 15:
-            concepto = "A2"
-        elif 15 <= antiguedad_en_anios < 20:
-            concepto = "A3"
-        elif 20 <= antiguedad_en_anios < 25:
-            concepto = "A4"
-        elif antiguedad_en_anios >= 25:
-            concepto = "A5"
-        else:
-            concepto = "Ninguno"  # Si la antigüedad es menor a 5 años
+            # Determinar el concepto correspondiente basado en los años de antigüedad
+            if 5 <= antiguedad_en_anios < 10:
+                concepto = "A1"
+            elif 10 <= antiguedad_en_anios < 15:
+                concepto = "A2"
+            elif 15 <= antiguedad_en_anios < 20:
+                concepto = "A3"
+            elif 20 <= antiguedad_en_anios < 25:
+                concepto = "A4"
+            elif antiguedad_en_anios >= 25:
+                concepto = "A5"
+            else:
+                concepto = "Ninguno"  # Si la antigüedad es menor a 5 años
 
-        # asignar_concepto(puesto.idPersona, concepto)
-        print(f"Empleado ID: {puesto.Empleado.NumeroEmpleado}, Antigüedad en gobierno: {antiguedad_en_anios} años, Concepto asignado: {concepto}")
+            asignar_concepto(puesto.idPersona, concepto)
+            print(f"Empleado ID: {puesto.Empleado.NumeroEmpleado}, Antigüedad en gobierno: {antiguedad_en_anios} años, Concepto asignado: {concepto}")
+            aniversario = True
+    if not aniversario:
+        print("Ningún empleado cumple años hoy")
 
 def asignar_concepto(idPersona, idConcepto):
-    pass
-    mapeo_nombres = { #NombreEnFormulario : nombreEnBase
-        'idPersona' : 'idPersona',
-        'TipoConcepto' : 'idTipoConcepto',
-        'Concepto' : 'idConcepto',
-        'Porcentaje' : 'Porcentaje',
-        'Monto' : 'Monto',
-        'NumeroContrato': 'NumeroContrato',
-        'FechaInicioContrato': 'FechaInicio',
-        'FechaFinContrato': 'FechaFin',
-        'PagoUnico': 'PagoUnico'
-    }
-    concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    if concepto_data['NumeroContrato'] is None:
-        concepto_data['NumeroContrato'] = 1
-    else:
-        # Convertir la fecha a un objeto datetime
-        fecha_inicio_dt = datetime.strptime(concepto_data['FechaInicio'], '%d/%m/%Y')
-        fecha_fin_dt = datetime.strptime(concepto_data['FechaFin'], '%d/%m/%Y')
+    if idConcepto == "Ninguno":
+        return 0
+    # Lista de conceptos de A1 a A5
+    conceptos_a_eliminar = ["A1", "A2", "A3", "A4", "A5"]
 
-        # Formatear la fecha en el formato 'YYYY-MM-DD'
-        concepto_data['FechaInicio'] = fecha_inicio_dt.strftime('%Y-%m-%d')
-        concepto_data['FechaFin'] = fecha_fin_dt.strftime('%Y-%m-%d')
-    concepto_data['PagoUnico'] = 0
+    elimina_concepto_anterior = db.session.query(rEmpleadoConcepto).filter(
+        and_(
+            rEmpleadoConcepto.idConcepto.in_(conceptos_a_eliminar),
+            rEmpleadoConcepto.idPersona == idPersona
+        )
+    ).delete()
+    print(elimina_concepto_anterior)
+    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).first()
+    
 
-    concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto, NumeroContrato = NumeroContrato).one()
+    
+    nuevo_concepto_data = {}
+    nuevo_concepto_data['idPersona'] = idPersona
+    nuevo_concepto_data['idTipoConcepto'] = "P"
+    nuevo_concepto_data['idConcepto'] = idConcepto
 
-    nuevo_concepto = rEmpleadoConcepto(**concepto_data)
+    concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = nuevo_concepto_data['idTipoConcepto'], idConcepto = idConcepto, idTipoEmpleado = empleado.idTipoEmpleado).first()
+    
+    nuevo_concepto_data['Porcentaje'] = concepto.Porcentaje
+    nuevo_concepto_data['Monto'] = concepto.Monto
+    nuevo_concepto_data['NumeroContrato'] = 1
+    nuevo_concepto_data['FechaInicio'] = None
+    nuevo_concepto_data['FechaFin'] = None
+    nuevo_concepto_data['PagoUnico'] = 0
+
+
+    nuevo_concepto = rEmpleadoConcepto(**nuevo_concepto_data)
     print("Nuevo concepto")
     db.session.add(nuevo_concepto)
 
