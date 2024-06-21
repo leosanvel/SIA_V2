@@ -171,6 +171,11 @@ def guardar_empleado():
         escolaridad_existente.update(**escolaridad_data)
         if(not empleado_puesto_existente.idEstatusEP):
             empleado_puesto_data["idPersona"] = idPersona
+            empleado_puesto_data['ClavePresupuestaSIA'] = None
+            empleado_puesto_data['CodigoPlazaSIA'] = None
+            empleado_puesto_data['CodigoPuestoSIA'] = None
+            empleado_puesto_data['RHNETSIA'] = None
+            empleado_puesto_data['idNivel'] = None
             empleado_puesto_data['FechaInicio'] = datetime.now().date()
             empleado_puesto_data['FechaTermino'] = None
             empleado_puesto_data['idEstatusEP'] = 1
@@ -178,6 +183,8 @@ def guardar_empleado():
             empleado_puesto_data['Observaciones'] = None
             empleado_puesto_data['FechaEfecto'] = None
             empleado_puesto_data['idQuincena'] = None
+
+
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
             db.session.commit()
