@@ -454,6 +454,7 @@ def agregar_documentos():
     if ActaNacimiento:
         merger.append(ActaNacimiento)
         expediente_data["ActaNacimiento"] = 1
+        resultado["NoArchivo"] = False
 
     if Titulo:
         merger.append(Titulo)
@@ -487,6 +488,8 @@ def agregar_documentos():
 
     # Crear nombre del archivo
     filename = "expediente" + "_" + str(idPersona) + ".pdf"
+
+    print(resultado["NoArchivo"])
 
     if not resultado["NoArchivo"]:
         # Directorio para almacenar los expedientes

@@ -141,12 +141,13 @@ class kCentroCostos(db.Model):
     Materia = db.Column(db.String(25), nullable = True)
     Abreviatura = db.Column(db.String(25), nullable = True)
     idNivelRegistroContable = db.Column(db.String(2), nullable = True)
+    CodigoPuesto = db.Column(db.String(50), nullable = True)
     idCiudad = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "CentroCostos", cascade = "all, delete-orphan")
 
-    def __init__(self, idCentroCosto, Clave, CentroCosto, idEntidad, Materia, Abreviatura, idNivelRegistroContable, idCiudad):
+    def __init__(self, idCentroCosto, Clave, CentroCosto, idEntidad, Materia, Abreviatura, idNivelRegistroContable, CodigoPuesto, idCiudad):
         self.idCentroCosto = idCentroCosto
         self.Clave = Clave
         self.CentroCosto = CentroCosto
@@ -154,6 +155,7 @@ class kCentroCostos(db.Model):
         self.Materia = Materia
         self.Abreviatura = Abreviatura
         self.idNivelRegistroContable = idNivelRegistroContable
+        self.CodigoPuesto = CodigoPuesto
         self.idCiudad = idCiudad
 
     # Actualizar registro

@@ -321,7 +321,7 @@ $gmx(document).ready(function () {
             }
         }
 
-        
+        guardarExpediente($("#formularioExpediente"));
 
         if(!formularioVacio($("#formularioMasInformacion"))){
 
