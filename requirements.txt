@@ -10,5 +10,6 @@ numpy
 python-docx
 docxtpl
 docx2pdf
-pandas
+Pandas
 APScheduler
+PyPDF2

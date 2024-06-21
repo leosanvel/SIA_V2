@@ -130,6 +130,39 @@ function obtenerDatosBanco(){
     });
 }
 
+function obtenerExpediente(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-expediente",
+        success: function(data){
+            if(data){
+                for(const prop in data){
+                    if(data[prop]){
+                        $("#check" + prop).prop("checked", true);
+                    }
+                }
+            }
+        }
+    });
+}
+
+function obtenerMasInformacion(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-mas-informacion",
+        success: function(data){
+            if(data){
+                $("#Idioma").val(data.idIdioma);
+                $("#Indigena").val(data.idIdiomaIndigena);
+                $("#Afroamericano").val(data.idAfroamericano);
+                $("#Discapacidad").val(data.idDiscapacidad);
+            }
+        }
+    })
+}
+
 function cargarMesesSerGob() {
     // Obtiene la cadena de fecha en formato "DD/MM/AAAA"
     var fechaString = $("#FecIngresoGob").val();
@@ -460,6 +493,8 @@ $gmx(document).ready(function () {
         obtenerDomicilio(1);
         obtenerDomicilio(2);
         obtenerDatosBanco();
+        obtenerExpediente();
+        obtenerMasInformacion();
         $("#busquedaCurp").hide();
         $("#tablaEmpleadoSeleccionado").show();
     }

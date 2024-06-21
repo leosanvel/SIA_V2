@@ -42,9 +42,9 @@
             </div>
             <div class="pull-right">
                 <button class="btn btn-primary" data-toggle="modal" data-target="#foo" type="button"
-                    id="btnEnviarNomina">
+                    id="btnGenerarReporteIncidencia">
                     <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
-                    Enviar
+                    Generar
                 </button>
             </div>
         </div>
@@ -97,6 +97,16 @@
         </div>
     </div>
     <br>
+    <div class="row">
+        <div class="col-md-12">
+            <div id="ImgModal" name="ImgModal" style="display: none;" class="text-center">
+                <img src="/nomina/estatico/image/Procesando.gif" />
+                <p>Generando archivo . . .
+                </p>
+            </div>
+        </div>
+    </div>
+    
     <div class="row">
         <div class="pull-left">
             <button class="btn btn-primary" type="button" id="btnDescargaDocumento" style="display: none;">
