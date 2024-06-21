@@ -387,8 +387,12 @@ def guardar_conceptos():
         nuevo_concepto = None
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
+        
+        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        
         for indice in range(0, len(lista_idconteptos)):
-            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice] ,idConcepto = lista_idconteptos[indice]).first()
+            print("REVISAR:  filtro: idTipoEmpleado = empleado.idTipoEmpleado")
+            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice] ,idConcepto = lista_idconteptos[indice], idTipoEmpleado = empleado.idTipoEmpleado).first()
             if(concepto is not None):
                 datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
                 datos_conceptos["idConcepto"] = concepto.idConcepto

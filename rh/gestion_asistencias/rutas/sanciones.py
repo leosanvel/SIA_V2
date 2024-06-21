@@ -177,76 +177,51 @@ def cancela_sancion():
 def calculo_dias_articulo_37():
     idPersona = request.form.get("idPersona")
 
+    fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva(idPersona)
     
-    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
-    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+    if fecha_inicio_consecutiva_mas_antigua is not None:
+    
+        hoy = date.today()
 
-    if empleado is not None:
-        # Obtener y ordenar los puestos del empleado
-        puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=idPersona).order_by(rEmpleadoPuesto.FechaTermino).all()
+        # Calcular la diferencia en días
+        diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
 
-        # Encontrar el puesto activo
-        puesto_activo = next((puesto for puesto in puestos_empleado if puesto.idEstatusEP == 1), None)
-        if puesto_activo:
-            # Verificar que la FechaTermino del puesto activo sea None o mayor al día actual
-            if puesto_activo.FechaTermino is None or puesto_activo.FechaTermino > datetime.today().date():
-                fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
-               # Verificar la continuidad de los puestos
-                for puesto in puestos_empleado:
-                    if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
-                        fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
+        # # Convertir la diferencia en semanas
+        # diferencia_semanas = diferencia_dias / 7
 
-                hoy = date.today()
+        resultado = {}
+        # if diferencia_semanas > (52*10):  #52 semanas * 10 años
+        if diferencia_dias > (365*10):  #365 dias * 10 años
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 60
+            resultado["DiasPagados2"] = 60
+        elif diferencia_dias > (365*5):  # 5 años
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 45
+            resultado["DiasPagados2"] = 45
+        elif diferencia_dias > (365):  # 1 año
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 30
+            resultado["DiasPagados2"] = 30
+        else:   #menos de 1 año
+            resultado["PorcentajePagado1"] = 100
+            resultado["PorcentajePagado2"] = 50
+            resultado["DiasPagados1"] = 15
+            resultado["DiasPagados2"] = 15
 
-                # Calcular la diferencia en días
-                diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
-
-                # # Convertir la diferencia en semanas
-                # diferencia_semanas = diferencia_dias / 7
-
-                resultado = {}
-                # if diferencia_semanas > (52*10):  #52 semanas * 10 años
-                if diferencia_dias > (365*10):  #365 dias * 10 años
-                    resultado["PorcentajePagado1"] = 100
-                    resultado["PorcentajePagado2"] = 50
-                    resultado["DiasPagados1"] = 60
-                    resultado["DiasPagados2"] = 60
-                elif diferencia_dias > (365*5):  # 5 años
-                    resultado["PorcentajePagado1"] = 100
-                    resultado["PorcentajePagado2"] = 50
-                    resultado["DiasPagados1"] = 45
-                    resultado["DiasPagados2"] = 45
-                elif diferencia_dias > (365):  # 1 año
-                    resultado["PorcentajePagado1"] = 100
-                    resultado["PorcentajePagado2"] = 50
-                    resultado["DiasPagados1"] = 30
-                    resultado["DiasPagados2"] = 30
-                else:   #menos de 1 año
-                    resultado["PorcentajePagado1"] = 100
-                    resultado["PorcentajePagado2"] = 50
-                    resultado["DiasPagados1"] = 15
-                    resultado["DiasPagados2"] = 15
-
-                resultado["FechaInicioPuesto"] = fecha_inicio_consecutiva_mas_antigua
+        resultado["FechaInicioPuesto"] = fecha_inicio_consecutiva_mas_antigua
 
 
-                print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
-                print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
-                print("Después sin pago")
-                return jsonify(resultado)
-                       
-                print(f"La fecha con el puesto consecutivo más antiguo es: {fecha_inicio_consecutiva_mas_antigua}")
-            else:
-                resultado["Error"] = True
-                print("El puesto activo no tiene FechaTermino válida.")
-        else:
-            resultado["Error"] = True
-            print("No hay puesto activo para este empleado.")
-# --------------------------------------
+        print(str(resultado["DiasPagados1"])+" días al " + str(resultado["PorcentajePagado1"]) + "%")
+        print(str(resultado["DiasPagados2"])+" días al " + str(resultado["PorcentajePagado2"]) + "%")
+        print("Después sin pago")
+    else:
+        resultado["Error"] = True
+    return jsonify(resultado)
 
-        
-            
-    return jsonify({"Error":True})
 
 
 def condicionales_articulo_37(licencia, descuentos):
@@ -326,3 +301,36 @@ def reparte_dias_totales(fechas, licencia, descuentos):
             licencia["FechaFin"] =  fechas["fin_periodo"]
             licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
             guardar_o_modificar_sancion(licencia)
+
+
+
+
+
+
+def calcula_fecha_consecutiva(idPersona):
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
+    empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+
+    if empleado is not None:
+        # Obtener y ordenar los puestos del empleado
+        puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=idPersona).order_by(rEmpleadoPuesto.FechaTermino).all()
+
+        # Encontrar el puesto activo
+        puesto_activo = next((puesto for puesto in puestos_empleado if puesto.idEstatusEP == 1), None)
+        if puesto_activo:
+            # Verificar que la FechaTermino del puesto activo sea None o mayor al día actual
+            if puesto_activo.FechaTermino is None or puesto_activo.FechaTermino > datetime.today().date():
+                fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
+               # Verificar la continuidad de los puestos
+                for puesto in puestos_empleado:
+                    if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
+                        fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
+            else:
+                fecha_inicio_consecutiva_mas_antigua = None
+                print("Error: La fecha término del puesto ya ha transcurrido.")
+
+            return fecha_inicio_consecutiva_mas_antigua
+        else:
+            print("No se encontró un puesto Activo")
+    else:
+        print("Empleado no encontrado")

@@ -1,4 +1,4 @@
-from flask import redirect, url_for
+from flask import redirect, url_for, request
 from flask_login import current_user
 from functools import wraps
 import requests
@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from collections import defaultdict
 import requests.exceptions
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, cast, String
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import time, date, datetime
 from app import db
@@ -22,6 +22,7 @@ from nomina.modelos.modelos import tNomina
 
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
+
 
 
 def permisos_de_consulta(view_func):
@@ -378,9 +379,8 @@ def crea_solicitud(motivo,empleado_existente):
 
 def ejecutar_tareas_diarias():
     revision_baja_empleados()
-    dias_antiguedad = verificar_antiguedad_empleados()
-    antiguedad_quinquenios(dias_antiguedad)
-    antiguedad_articulo_37(dias_antiguedad)
+    verificar_antiguedad_empleados()
+    
     actualiza_vacaciones()
     print("FUNCION AUTOMATICA EJEUTADA AL INICIAR EL DÍA:")
     hoy = datetime.today().date()
@@ -421,13 +421,76 @@ def revision_baja_empleados():
         print("Ningún empleado termina Hoy")
 
 def verificar_antiguedad_empleados():
+    
     # Ejemplo de función para verificar la antigüedad de los empleados
     hoy = datetime.today().date()
-    # Aquí iría la lógica para verificar la antigüedad de los empleados
-    print(f"Verificación de antigüedad realizada el {hoy}")
+    empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idEstatusEP == 1).all()
+    for puesto in empleadoPuesto:
+        # Verificar que FecIngGobierno no sea None
+        if puesto.Empleado.FecIngGobierno is not None:
+            FecIngGobierno = puesto.Empleado.FecIngGobierno
+        else:
+            print("Error: No se encontró la FecIngGobierno")
+            continue
+
+        # Calcular la antigüedad en años completos
+        antiguedad_en_anios = hoy.year - FecIngGobierno.year - ((hoy.month, hoy.day) < (FecIngGobierno.month, FecIngGobierno.day))
+
+        # Determinar el concepto correspondiente basado en los años de antigüedad
+        if 5 <= antiguedad_en_anios < 10:
+            concepto = "A1"
+        elif 10 <= antiguedad_en_anios < 15:
+            concepto = "A2"
+        elif 15 <= antiguedad_en_anios < 20:
+            concepto = "A3"
+        elif 20 <= antiguedad_en_anios < 25:
+            concepto = "A4"
+        elif antiguedad_en_anios >= 25:
+            concepto = "A5"
+        else:
+            concepto = "Ninguno"  # Si la antigüedad es menor a 5 años
+
+        # asignar_concepto(puesto.idPersona, concepto)
+        print(f"Empleado ID: {puesto.Empleado.NumeroEmpleado}, Antigüedad en gobierno: {antiguedad_en_anios} años, Concepto asignado: {concepto}")
+
+def asignar_concepto(idPersona, idConcepto):
+    pass
+    mapeo_nombres = { #NombreEnFormulario : nombreEnBase
+        'idPersona' : 'idPersona',
+        'TipoConcepto' : 'idTipoConcepto',
+        'Concepto' : 'idConcepto',
+        'Porcentaje' : 'Porcentaje',
+        'Monto' : 'Monto',
+        'NumeroContrato': 'NumeroContrato',
+        'FechaInicioContrato': 'FechaInicio',
+        'FechaFinContrato': 'FechaFin',
+        'PagoUnico': 'PagoUnico'
+    }
+    concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
+    if concepto_data['NumeroContrato'] is None:
+        concepto_data['NumeroContrato'] = 1
+    else:
+        # Convertir la fecha a un objeto datetime
+        fecha_inicio_dt = datetime.strptime(concepto_data['FechaInicio'], '%d/%m/%Y')
+        fecha_fin_dt = datetime.strptime(concepto_data['FechaFin'], '%d/%m/%Y')
+
+        # Formatear la fecha en el formato 'YYYY-MM-DD'
+        concepto_data['FechaInicio'] = fecha_inicio_dt.strftime('%Y-%m-%d')
+        concepto_data['FechaFin'] = fecha_fin_dt.strftime('%Y-%m-%d')
+    concepto_data['PagoUnico'] = 0
+
+    concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto, NumeroContrato = NumeroContrato).one()
+
+    nuevo_concepto = rEmpleadoConcepto(**concepto_data)
+    print("Nuevo concepto")
+    db.session.add(nuevo_concepto)
+
+    # Realizar cambios en la base de datos
+    db.session.commit()
 
 
-def antiguedad_quinquenios(dias_antiguedad):
+
+def antiguedad_quinquenios(antiguedad_en_gobierno):
     pass
 def antiguedad_articulo_37(dias_antiguedad):
     pass
