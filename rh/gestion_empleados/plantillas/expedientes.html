@@ -1,13 +1,13 @@
 {% extends "datos_bancarios.html" %}
 
 {% block titulo_pestanas_3 %}
-<li class="nav-item"><a class="nav-link" id="tab-Expendientes" data-toggle="tab" href="#Expendientes">Expendientes</a></li>
+<li class="nav-item"><a class="nav-link" id="tab-Expendiente" data-toggle="tab" href="#Expendiente">Expendiente</a></li>
 {% block titulo_pestanas_4 %}{% endblock %}
 {% endblock %}
 
 {% block contenido_expedientes %}
 
-<div class="tab-pane" id="Expendientes">
+<div class="tab-pane" id="Expendiente">
     <form id="formularioExpediente" enctype="multipart/form-data">
         <div class="row">
             <div class="table-responsive" style="width: 100%;">
@@ -62,6 +62,12 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div class="row pull-left">
+            <button class="btn btn-primary" type="button" id="btnDescargarExpediente" style="display: none;">
+                Descargar expediente
+                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+            </button>
         </div>
     </form>
 </div>

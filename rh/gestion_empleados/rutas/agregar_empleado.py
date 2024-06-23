@@ -414,9 +414,11 @@ def guardar_conceptos():
 def agregar_documentos():
     # Obtener Nombre y Apellido del empleado
     idPersona = session.get("idPersona", None)
-    Persona = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
-    Nombre = Persona.Nombre
-    Apellido = Persona.ApPaterno
+    Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+    NumEmpleado = Empleado.NumeroEmpleado
+    Nombre = Empleado.Persona.Nombre
+    ApPaterno = Empleado.Persona.ApPaterno
+    ApMaterno = Empleado.Persona.ApMaterno
 
     # Obtener archivos
     ActaNacimiento = request.files.get("ActaNacimiento")
@@ -487,7 +489,8 @@ def agregar_documentos():
         resultado["NoArchivo"] = False
 
     # Crear nombre del archivo
-    filename = "expediente" + "_" + str(idPersona) + ".pdf"
+    NombreCompleto = Nombre + " " + ApPaterno + " " + ApMaterno
+    filename = str(NumEmpleado) + "_" + NombreCompleto + ".pdf"
 
     print(resultado["NoArchivo"])
 
@@ -518,7 +521,7 @@ def agregar_documentos():
                     # Eliminar copias temporales
                     archivos.remove(archivo)
                 # Verificar si hay un archivo con Nombre o Apellido del empleado
-                if Nombre.lower() in archivo.lower() or Apellido.lower() in archivo.lower():
+                if NombreCompleto.lower() in archivo.lower():
                     resultado["ExpedienteNombre"] = True
                     # Si hay un archivo se sale del ciclo
                     break
