@@ -3,12 +3,20 @@ $gmx(document).ready(function () {
 
     $("#FechaEfecto").datepicker({ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true });
 
-    $("#btnDarDeBaja").click(function (event) {dar_baja()});
+    $("#btnDarDeBaja").click(function (event) {abrirAdModal()});
 
-    $("#btnBuscaBajaEmpleado").click(function (event) {busca_baja_empleado()
-    });
+    $("#btnDarBajaModal").click(function(event) {dar_baja()});
+
+    $("#btnBuscaBajaEmpleado").click(function (event) {busca_baja_empleado()});
 
 });
+
+function abrirAdModal(){
+    if (validarFormulario($("#frmResultadoPuesto")).valido){
+        $("#MensajeAdModal").html("Se va a dar de baja al empleado " + $("#NombreEmpleado").text() + " " + $("#ApellidosEmpleado").text() + "." + " ¿Seguro quiere dar de baja?");
+        $("#BajaEmpleadoModal").modal("show");
+    }
+}
 
 function busca_baja_empleado(){
     var idPersona = $("#idPersona").val()
