@@ -1289,3 +1289,28 @@ class kIdiomas(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class kNivelEscolar(db.Model):
+    __tablename__ = "knivelescolar"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idNivel = db.Column(db.Integer, primary_key = True)
+    CodigoRusp = db.Column(db.Integer, nullable = True)
+    NivelEscolar = db.Column(db.String(70), nullable = True)
+    EstatusNivel = db.Column(db.String(50), nullable = True)
+    CodigoRHNet = db.Column(db.String(25), nullable = True)
+    Activo = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, idNivel, CodigoRusp, NivelEscolar, EstatusNivel, CodigoRHNet, Activo):
+        self.idNivel = idNivel
+        self.CodigoRusp = CodigoRusp
+        self.NivelEscolar = NivelEscolar
+        self.EstatusNivel = EstatusNivel
+        self.CodigoRHNet = CodigoRHNet
+        self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

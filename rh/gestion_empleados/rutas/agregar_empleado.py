@@ -49,6 +49,9 @@ def modificar_empleado():
     CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
     Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
     Escolaridad_datos = db.session.query(kEscolaridad).filter_by(Activo = 1).order_by(kEscolaridad.idEscolaridad).all()
+    InstitucionEscolar = db.session.query(kInstitucionEscolar).filter_by(Activo = 1).order_by(kInstitucionEscolar.InstitucionEscolar).all()
+    NivelEscolar = db.session.query(kNivelEscolar).filter_by(Activo = 1).order_by(kNivelEscolar.idNivel).all()
+    FormacionEducativa = db.session.query(kFormacionEducativa).filter_by(Activo = 1).order_by(kFormacionEducativa.FormacionEducativa).all()
     Discapacidades = db.session.query(kDiscapacidad).filter_by(Activo = 1).order_by(kDiscapacidad.Discapacidad).all()
     Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
 
@@ -66,6 +69,9 @@ def modificar_empleado():
                            CentroCostos = CentroCostos_datos,
                            Quincena = Quincena_datos,
                            Escolaridad = Escolaridad_datos,
+                           NivelEscolar = NivelEscolar,
+                           InstitucionEscolar = InstitucionEscolar,
+                           FormacionEducativa = FormacionEducativa,
                            Entidad = Entidad_datos,
                            TipoAsentamiento = TipoAsentamiento_datos,
                            Vialidad = Vialidad_datos,

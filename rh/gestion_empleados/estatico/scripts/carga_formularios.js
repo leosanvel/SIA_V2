@@ -470,10 +470,10 @@ $gmx(document).ready(function () {
     $("#idNacionalidad").change(cargaCalidadMigratoria);
 
     $("#idCC").change(cargarPlaza);
-    $("#idEscolaridad").change(cargarEstNivEsc);
-    $("#idEscolaridad").change(cargarEscuela);
-    $("#idEscolaridad").change(cargarFormacionEducativa);
-    $("#idInstitucionEscolar").change(cargarFormacionEducativa);
+    //$("#idEscolaridad").change(cargarEstNivEsc);
+    //$("#idEscolaridad").change(cargarEscuela);
+    //$("#idEscolaridad").change(cargarFormacionEducativa);
+    //$("#idInstitucionEscolar").change(cargarFormacionEducativa);
 
     $("#FecIngresoGob").change(cargarMesesSerGob);
 
