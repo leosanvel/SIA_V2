@@ -7,7 +7,7 @@ $gmx(document).ready(function(){
                 <div class="col-md-8">
                     <div class="form-group">
                         <select id="Idioma${cont}" name="Idioma${cont}" class="opcional form-control idioma">
-                            <option value="0">-- Seleccione --</option>
+                            
                         </select>
                         <small id="EIdioma${cont}" class="etiquetaError form-text form-text-error"></small>
                     </div>
@@ -20,6 +20,8 @@ $gmx(document).ready(function(){
             </div>
         `;
         $(`#ColIdiomas`).append(text);
+
+        $("#Idioma option").clone().appendTo(`#Idioma${cont}`);
     });
 
     $(document).on("click", ".remover", function(){

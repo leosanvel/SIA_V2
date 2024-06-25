@@ -14,9 +14,9 @@ from datetime import date, datetime, timedelta
 @gestion_asistencias.route('/rh/gestion-asistencias/sanciones', methods = ['POST', 'GET'])
 def gestiona_sanciones():
     TipoSancion = db.session.query(kTipoSancion).filter_by(Activo = 1).all()
-    Porcentajes = db.session.query(kPorcentajes).filter_by(Activo = 1).all()
+    Porcentajes = db.session.query(kPorcentajes).filter_by(Activo = 1).order_by(kPorcentajes.idPorcentaje.asc()).all()
     return render_template('/Sanciones.html', title='Licencias',
-                           current_user=current_user,
+                           current_user = current_user,
                            TipoSancion = TipoSancion,
                            Porcentajes = Porcentajes)
 
