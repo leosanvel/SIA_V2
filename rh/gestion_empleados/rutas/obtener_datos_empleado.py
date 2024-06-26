@@ -75,7 +75,6 @@ def obtener_datos_bancarios():
         datos_bancarios.pop("_sa_instance_state", None)
         datos_bancarios["Banco"] = Banco
 
-
     return jsonify(datos_bancarios)
 
 @gestion_empleados.route("/rh/gestion-empleados/obtener-expediente", methods = ["POST"])

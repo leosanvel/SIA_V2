@@ -368,15 +368,25 @@ def guardar_datos_bancarios():
         nuevo_datos_bancarios = None
 
         Edo_Cuenta = request.files.get('EdoCuenta')
-        datos_bancarios["idPersona"] = idPersona
-        datos_bancarios["Activo"] = 1
-        datos_bancarios["Verificado"] = 0
+        
 
         datos_bancarios_existente = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Activo = 1).first()
         if(datos_bancarios_existente is None):
+            datos_bancarios["idPersona"] = idPersona
+            datos_bancarios["NumeroCuenta"] = datos_bancarios["Clabe"][6:17]
+            datos_bancarios["Activo"] = 1
+            datos_bancarios["Verificado"] = 0
             nuevo_datos_bancarios = rBancoPersona(**datos_bancarios)
             db.session.add(nuevo_datos_bancarios)
-            db.session.commit()
+            #db.session.commit()
+        
+        else:
+            if not datos_bancarios_existente.Verificado:
+                datos_bancarios_existente.idBanco = datos_bancarios["idBanco"]
+                datos_bancarios_existente.Clabe = datos_bancarios["Clabe"]
+                datos_bancarios_existente.NumeroCuenta = datos_bancarios["Clabe"][6:17]
+        
+        db.session.commit()
 
         EXTENCIONES_PERMITIDAS = {'pdf'}
         if(Edo_Cuenta and archivo_permitido(Edo_Cuenta.filename, EXTENCIONES_PERMITIDAS)):
