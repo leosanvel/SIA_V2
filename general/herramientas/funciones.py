@@ -379,7 +379,7 @@ def ejecutar_tareas_diarias():
     revision_baja_empleados()
     verificar_antiguedad_prima_quinquenal()
     verificar_antiguedad_articulo_37_todos()
-    actualiza_vacaciones()
+    elimina_vacaciones_vencidas()
     print("FUNCION AUTOMATICA EJEUTADA AL INICIAR EL DÍA:")
     hoy = datetime.today().date()
     print(hoy)
@@ -497,21 +497,23 @@ def asignar_concepto_quinquenio(idPersona, idConcepto):
     # Realizar cambios en la base de datos
     db.session.commit()
 
-def actualiza_vacaciones():
+def elimina_vacaciones_vencidas():
+    hoy = datetime.today().date()
+    if hoy == datetime(hoy.year, 7, 1).date(): # hoy == 1 julio:
+        dias_personas = db.session.query(rDiasPersona).all()
+        for dias_persona in dias_personas:
+            dias_persona.DiasGanados = 0
+        print("Dias ganados puestos a 0")
+        db.session.commit()
     
-    pass
 
 
-
-# Funcion para ejecucion diaria
 def verificar_antiguedad_articulo_37_todos():
 
     empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idEstatusEP == 1).all()
     aniversario = False
     for puesto in empleadoPuesto:
         hoy = datetime.today().date()
-
-        
 
         # revisar licencias que estén transcurriendo
         licencia = db.session.query(rSancionPersona).filter(

@@ -39,7 +39,7 @@ def extraer_concepto_archivo():
     idTipoConcepto = request.form.get('idTipoConcepto', None)
     idConcepto = request.form.get('idConcepto', None)
     
-# Verificar que se haya recibido un archivo y que sea un archivo de texto
+    # Verificar que se haya recibido un archivo y que sea un archivo de texto
     if archivo and archivo.filename.endswith('.csv'):
         try:
             # Intentar leer el archivo con la codificación predeterminada utf-8
@@ -49,9 +49,12 @@ def extraer_concepto_archivo():
                 # Si falla, intentar leer el archivo con la codificación latin1
                 archivo.seek(0)  # Volver al inicio del archivo
                 df = pd.read_csv(archivo, encoding='latin1')
+
+
+            # ELIMINAR CONCEPTOS ANTERIORES
+            elimina = db.session.query(rEmpleadoConcepto).filter_by(idTipoConcepto=idTipoConcepto, idConcepto=idConcepto).delete()
+            print("Conceptos eliminados: " + str(elimina))
             
-            
-            # -----------------------------------
             # Crear una lista para almacenar los resultados
             resultados = []
 
@@ -60,11 +63,19 @@ def extraer_concepto_archivo():
                 RFC = row['RFC']
                 try:
                     # Realizar la consulta para obtener la persona correspondiente al RFC
-                    persona = db.session.query(tPersona).filter_by(RFC=RFC).one()
+                    try:
+                        persona = db.session.query(tPersona).filter_by(RFC=RFC).one()
+                    except NoResultFound:
+                        # Buscar utilizando el número de empleado si no se encuentra por RFC
+                        NumEmpleado = row['CLAVE_EMPLEADO']
+                        empleado = db.session.query(rEmpleado).filter_by(NumeroEmpleado=NumEmpleado).one()
+                        persona = db.session.query(tPersona).filter_by(idPersona=empleado.idPersona).one()
+
+                    
                     # Crear el diccionario con los datos necesarios
                     NumeroContrato = row['No_CREDITO']
                     idPersona = persona.idPersona
-                
+
                     concepto_data = {
                         "idPersona": idPersona,
                         "idTipoConcepto": idTipoConcepto,
@@ -76,34 +87,42 @@ def extraer_concepto_archivo():
                         "FechaFin": None,
                         "PagoUnico": 0,
                     }
-
                     nuevo_concepto = None
                     try:
-                        concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto, NumeroContrato = NumeroContrato).one()
+                        concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(
+                            idPersona=idPersona, idTipoConcepto=idTipoConcepto, idConcepto=idConcepto, NumeroContrato=NumeroContrato
+                        ).one()
                         concepto_a_modificar.update(**concepto_data)
-                        print("concepto modificado")
-
+                        
                     except NoResultFound:
                         nuevo_concepto = rEmpleadoConcepto(**concepto_data)
-                        print("Nuevo concepto")
                         db.session.add(nuevo_concepto)
 
                     # Realizar cambios en la base de datos
                     db.session.commit()
        
-                    
                     concepto_data["Nombre"] = persona.Nombre
+                    concepto_data["Apellidos"] = persona.ApPaterno + " " + persona.ApMaterno
+                    concepto_data["RFC"] = persona.RFC
                     # Añadir el diccionario a la lista de resultados
                     resultados.append(concepto_data)
                     
                 except NoResultFound:
                     # Manejar el caso donde no se encuentra la persona con el RFC dado
                     print(f"No se encontró la persona con el RFC: {RFC}")
+                    # Añadir el diccionario de error a la lista de resultados
+                    resultados.append({"errorRFC": RFC})
                 except MultipleResultsFound:
                     # Manejar el caso donde se encuentran múltiples personas con el RFC dado
                     print(f"Se encontraron múltiples personas con el RFC: {RFC}")
-            # -----------------------------------
-            
+                    # Añadir el diccionario de error a la lista de resultados
+                    resultados.append({"errorRFC": RFC, "mensaje": "Se encontraron múltiples personas con el RFC"})
+                except Exception as e:
+                    # Manejar otros posibles errores
+                    print(f"Error procesando la fila {index}: {e}")
+                    # Añadir el diccionario de error a la lista de resultados
+                    resultados.append({"errorRFC": RFC, "mensaje": str(e)})
+
             return jsonify({"Obtenido": True, "resultados": resultados})
         
         except Exception as e:

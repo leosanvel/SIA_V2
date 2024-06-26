@@ -1,5 +1,29 @@
 $gmx(document).ready(function () {
     $("#btnSubirArchivo").on("click", function () { subir_archivo(); });
+
+
+    // Cerrar Mymodal
+    $('#btnCierreModalImportar').on('click', function (e) {
+        var comportamiento = $('#ModalImportar').attr('data-comportamiento');
+        if (comportamiento === 'recargar') {
+            // Recargar la página
+            window.scrollTo(0, 0);
+            window.location.reload();
+        }
+        if (comportamiento === 'modificarEmpleado') {
+            // Recargar la página
+            window.location.href = "/rh/gestion-empleados/modificar-empleado";
+        }
+        if (comportamiento === 'inicio') {
+            // Recargar la página
+            window.location.href = "/principal/sia";
+        }
+        if (comportamiento === 'cerrar_modales') {
+            // cerrar todas las ventanas modales
+            $('.modal').modal('hide');
+        }
+
+    });
 });
 
 
@@ -28,29 +52,60 @@ function subir_archivo() {
                 success: function (resp) {
 
                     if (resp.Obtenido) {
+                        var lista = false
+                        var lista_guardados = false
+                        var listaHTML = 'Los siguientes RFC no fueron encontrados. Favor de verificarlos manualmente:';
+                        listaHTML += '<ul>';
+
+                        resp.resultados.forEach(function (concepto) {
+                            if (concepto.errorRFC) {
+                                listaHTML += '<li>' + concepto.errorRFC + '</li>'
+                                lista = true
+                            }else{
+                                lista_guardados = true
+                            }
+                        });
+                        listaHTML += '</ul>'
+
+                        listaHTML += '</tbody></table>';
 
                         var tablaHTML = '<table class="table table-striped">';
                         tablaHTML += '<thead><tr>' +
                             '<th>Nombre</th>' +
-                            '<th>Tipo Concepto</th>' +
-                            '<th>idConcepto</th>' +
-                            '<th>Concepto</th>' +
-                            '<th>Porcentaje</th>' +
-                            '<th>Monto</th>' 
+                            '<th>Apellidos</th>' +
+                            '<th>RFC</th>' +
+                            '<th>No. Contrato</th>' +
+                            '<th>Monto</th>' +
                             '</tr></thead><tbody>';
 
                         resp.resultados.forEach(function (concepto) {
-                            tablaHTML += '<tr>' +
-                            '<td>' + concepto.Nombre + '</td>' +
-                            '<td>' + concepto.idTipoConcepto + '</td>' +
-                            '<td>' + concepto.idConcepto + '</td>' +
-                            '<td>' + concepto.Concepto + '</td>' +
-                            '<td>' + concepto.Porcentaje + '</td>' +
-                            '<td>' + concepto.Monto + '</td>' 
-                            '</tr>';
+                            if (!concepto.errorRFC) {
+                                tablaHTML += '<tr>' +
+                                    '<td>' + concepto.Nombre + '</td>' +
+                                    '<td>' + concepto.Apellidos + '</td>' +
+                                    '<td>' + concepto.RFC + '</td>' +
+                                    '<td>' + concepto.NumeroContrato + '</td>' +
+                                    '<td>' + concepto.Monto + '</td>' +
+                                    '</tr>';
+                            }
                         });
                         tablaHTML += '</tbody></table>';
-                        abrirModal("Información cargada", tablaHTML, "");
+                        var mensaje = '';
+                        if (lista == true) {
+                            mensaje += listaHTML;
+                        }
+                        if (lista_guardados == true) {
+                            mensaje += tablaHTML;
+                        }else{
+                            mensaje += "No se cargaron conceptos. ";
+                        }
+                        // Modificar el contenido del modal
+                        document.getElementById('tituloModalImportar').textContent = "Información cargada";
+                        document.getElementById('contenidoModalImportar').innerHTML = mensaje;
+                        $('#ModalImportar').attr('data-comportamiento', "recargar");
+
+                        // Abrir el modal
+                        $('#ModalImportar').modal('show');
 
                     }
 
@@ -74,3 +129,4 @@ function subir_archivo() {
         }
     }
 }
+

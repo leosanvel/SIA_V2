@@ -173,7 +173,7 @@ function validarClabe(elemento, error) {
             error.text("El formato de la Clabe es inválido.");
             return false;
         }
-    }else{
+    } else {
         return true;
     }
 }
@@ -248,7 +248,7 @@ function convertirFechaParaVisualizacion(fecha) {
     return dia + '/' + mes + '/' + anio;
 }
 
-function cargarMenu(){
+function cargarMenu() {
     $.ajax({
         type: "POST",
         url: "/general/cargar-menu",
@@ -328,3 +328,17 @@ $gmx(document).ready(function () {
     $.datepicker.setDefaults($.datepicker.regional.es);
 
 });
+
+function cerrarTabla() {
+    
+    $("#idPersona").val("");
+    $("#NumeroEmpleado").text("");
+    $("#NumeroEmpleadoSeleccionado").val("");
+    $("#NumeroBuscarEmpleado").val("");
+
+    $("#CurpEmpleado").text("");
+    $("#NombreEmpleado").text("");
+    $("#ApellidosEmpleado").text("");
+    
+    $("#tablaEmpleadoSeleccionado").hide();
+}
