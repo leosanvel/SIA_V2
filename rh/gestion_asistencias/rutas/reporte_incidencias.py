@@ -23,7 +23,7 @@ locale.setlocale(locale.LC_TIME, 'es_ES')
 @gestion_asistencias.route('/rh/gestion-asistencias/reporte-incidencias', methods = ['POST', 'GET'])
 def enviar_nomina():
     Quincenas = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
-    Tipos_Empleados = db.session.query(kTipoEmpleado).order_by(kTipoEmpleado.TipoEmpleado).all()
+    Tipos_Empleados = db.session.query(kTipoEmpleado).filter_by(idTipoEmpleado = 2).order_by(kTipoEmpleado.TipoEmpleado).all()
 
     return render_template('/reporte_incidencias.html', title='Reporte de incidencias',
                            Quincenas = Quincenas,

@@ -137,10 +137,16 @@ function obtenerExpediente(){
         url: "/rh/gestion-empleados/obtener-expediente",
         success: function(data){
             if(data){
-                for(const prop in data){
-                    if(data[prop]){
-                        $("#check" + prop).prop("checked", true);
+                if(data.expediente){
+                    for(const prop in data.expediente){
+                        if(data.expediente[prop]){
+                            $("#check" + prop).prop("checked", true);
+                        }
                     }
+                }
+                if(data.url){
+                    $("#btnDescargarExpediente").show();
+                    $("#btnDescargarExpediente").wrap('<a href="' + data.url + '" download></a>');
                 }
             }
         }
@@ -464,10 +470,10 @@ $gmx(document).ready(function () {
     $("#idNacionalidad").change(cargaCalidadMigratoria);
 
     $("#idCC").change(cargarPlaza);
-    $("#idEscolaridad").change(cargarEstNivEsc);
-    $("#idEscolaridad").change(cargarEscuela);
-    $("#idEscolaridad").change(cargarFormacionEducativa);
-    $("#idInstitucionEscolar").change(cargarFormacionEducativa);
+    //$("#idEscolaridad").change(cargarEstNivEsc);
+    //$("#idEscolaridad").change(cargarEscuela);
+    //$("#idEscolaridad").change(cargarFormacionEducativa);
+    //$("#idInstitucionEscolar").change(cargarFormacionEducativa);
 
     $("#FecIngresoGob").change(cargarMesesSerGob);
 

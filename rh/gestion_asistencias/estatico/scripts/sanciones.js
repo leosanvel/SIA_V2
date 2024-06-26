@@ -83,6 +83,36 @@ function verifica_seleccion() {
 
         $("#contenedorPorcentaje").show();
     }
+    
+    if(licencia == 1){
+        $("#idPorcentaje option[value='0']").hide();
+        $("#idPorcentaje option[value='1']").hide();
+        $("#idPorcentaje option[value='25']").hide();
+        $("#idPorcentaje option[value='50']").hide();
+        $("#idPorcentaje option[value='75']").hide();
+        $("#idPorcentaje option[value='100']").show();
+        $("#idPorcentaje").val("100");
+    }
+
+    if(licencia == 3){
+        $("#idPorcentaje option[value='0']").hide();
+        $("#idPorcentaje option[value='1']").show();
+        $("#idPorcentaje option[value='25']").hide();
+        $("#idPorcentaje option[value='50']").hide();
+        $("#idPorcentaje option[value='75']").hide();
+        $("#idPorcentaje option[value='100']").hide();
+        $("#idPorcentaje").val("1");
+    }
+
+    if(licencia == 0){
+        $("#idPorcentaje option[value='0']").show();
+        $("#idPorcentaje option[value='1']").show();
+        $("#idPorcentaje option[value='25']").show();
+        $("#idPorcentaje option[value='50']").show();
+        $("#idPorcentaje option[value='75']").show();
+        $("#idPorcentaje option[value='100']").show();
+        $("#idPorcentaje").val("0");
+    }
 
 }
 

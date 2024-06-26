@@ -49,6 +49,9 @@ def modificar_empleado():
     CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
     Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
     Escolaridad_datos = db.session.query(kEscolaridad).filter_by(Activo = 1).order_by(kEscolaridad.idEscolaridad).all()
+    InstitucionEscolar = db.session.query(kInstitucionEscolar).filter_by(Activo = 1).order_by(kInstitucionEscolar.InstitucionEscolar).all()
+    NivelEscolar = db.session.query(kNivelEscolar).filter_by(Activo = 1).order_by(kNivelEscolar.idNivel).all()
+    FormacionEducativa = db.session.query(kFormacionEducativa).filter_by(Activo = 1).order_by(kFormacionEducativa.FormacionEducativa).all()
     Discapacidades = db.session.query(kDiscapacidad).filter_by(Activo = 1).order_by(kDiscapacidad.Discapacidad).all()
     Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
 
@@ -66,6 +69,9 @@ def modificar_empleado():
                            CentroCostos = CentroCostos_datos,
                            Quincena = Quincena_datos,
                            Escolaridad = Escolaridad_datos,
+                           NivelEscolar = NivelEscolar,
+                           InstitucionEscolar = InstitucionEscolar,
+                           FormacionEducativa = FormacionEducativa,
                            Entidad = Entidad_datos,
                            TipoAsentamiento = TipoAsentamiento_datos,
                            Vialidad = Vialidad_datos,
@@ -394,8 +400,27 @@ def guardar_conceptos():
     if(idPersona is None):
         return jsonify({"guardado": False})
     else:
+        Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        FechaIngGob = Empleado.FecIngGobierno
+        FechaActual = datetime.today()
+
+        diferencia = FechaActual - FechaIngGob
+        anios = diferencia.years
+
         lista_idconteptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
-        lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+        lista_idtipo = ['P', 'P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+
+        if anios >= 5 and anios < 10:
+            lista_idconteptos.insert(1, 'A1')
+        if anios >=10 and anios < 15:
+            lista_idconteptos.insert(1, 'A2')
+        if anios >=15 and anios < 20:
+            lista_idconteptos.insert(1, 'A3')
+        if anios >=20 and anios < 25:
+            lista_idconteptos.insert(1, 'A4')
+        if anios >=25:
+            lista_idconteptos.insert(1, 'A5')
+
         nuevo_concepto = None
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
@@ -403,9 +428,8 @@ def guardar_conceptos():
         empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         
         for indice in range(0, len(lista_idconteptos)):
-            print("REVISAR:  filtro: idTipoEmpleado = empleado.idTipoEmpleado")
-            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice] ,idConcepto = lista_idconteptos[indice], idTipoEmpleado = empleado.idTipoEmpleado).first()
-            if(concepto is not None):
+            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconteptos[indice]).first()
+            if(concepto is None):
                 datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
                 datos_conceptos["idConcepto"] = concepto.idConcepto
                 datos_conceptos["Porcentaje"] = concepto.Porcentaje
@@ -425,9 +449,11 @@ def guardar_conceptos():
 def agregar_documentos():
     # Obtener Nombre y Apellido del empleado
     idPersona = session.get("idPersona", None)
-    Persona = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
-    Nombre = Persona.Nombre
-    Apellido = Persona.ApPaterno
+    Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+    NumEmpleado = Empleado.NumeroEmpleado
+    Nombre = Empleado.Persona.Nombre
+    ApPaterno = Empleado.Persona.ApPaterno
+    ApMaterno = Empleado.Persona.ApMaterno
 
     # Obtener archivos
     ActaNacimiento = request.files.get("ActaNacimiento")
@@ -498,9 +524,8 @@ def agregar_documentos():
         resultado["NoArchivo"] = False
 
     # Crear nombre del archivo
-    filename = "expediente" + "_" + str(idPersona) + ".pdf"
-
-    print(resultado["NoArchivo"])
+    NombreCompleto = Nombre + " " + ApPaterno + " " + ApMaterno
+    filename = str(NumEmpleado) + "_" + NombreCompleto + ".pdf"
 
     if not resultado["NoArchivo"]:
         # Directorio para almacenar los expedientes
@@ -529,7 +554,7 @@ def agregar_documentos():
                     # Eliminar copias temporales
                     archivos.remove(archivo)
                 # Verificar si hay un archivo con Nombre o Apellido del empleado
-                if Nombre.lower() in archivo.lower() or Apellido.lower() in archivo.lower():
+                if NombreCompleto.lower() in archivo.lower():
                     resultado["ExpedienteNombre"] = True
                     # Si hay un archivo se sale del ciclo
                     break
