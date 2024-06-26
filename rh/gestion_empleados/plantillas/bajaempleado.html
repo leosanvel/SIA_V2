@@ -8,7 +8,7 @@
             <div class="form-group  datepicker-group" id="NumEmpGrupo">
                 <label for="lblNumEmp">No. Empleado</label>
                 <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                    class="form-control botonModalBuscaEmpleado" type="text">
+                    class="form-control botonModalBuscaEmpleado" type="text" readonly>
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
             </div>
@@ -24,7 +24,12 @@
 <div class="row">
     <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
         <tr>
-            <th colspan="4">EMPLEADO SELECCIONADO</th>
+            <th colspan="3">EMPLEADO SELECCIONADO</th>
+            <th>
+                <button type="button" class="close" aria-label="Close" onclick="cerrarTabla()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </th>
         </tr>
         <tr>
             <th>No. Empleado:</th>

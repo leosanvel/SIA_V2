@@ -282,7 +282,7 @@ class rBancoPersona(db.Model):
     idBanco = db.Column(db.String(50), db.ForeignKey(kBancos.idBanco), nullable = True)
     Clabe = db.Column(db.String(18), primary_key = True)
     NumeroCuenta = db.Column(db.Integer, nullable = True)
-    FechaAlta = db.Column(db.Date, nullable = True)
+    FechaAlta = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     Activo = db.Column(db.Integer, nullable = True)
     Verificado = db.Column(db.Integer, nullable = True)
 

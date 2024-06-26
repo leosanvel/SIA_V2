@@ -125,6 +125,9 @@ function obtenerDatosBanco(){
             if(data != null){
                 $("#Clabe").val(data.Clabe);
                 $("#Banco").val(data.Banco);
+                if(data.Verificado){
+                    $("#Clabe").prop("readonly", true);
+                }
             }
         }
     });

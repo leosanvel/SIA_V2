@@ -43,6 +43,8 @@ def obtener_info_empleado():
         puesto_data_dict.pop("_sa_instance_state", None)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto, 'Puesto': Puesto}
         empleado_datos["idQuincena"] = idQuincena
+    print("empleado_datos")
+    print(empleado_datos)    
     return jsonify(empleado_datos)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])
@@ -74,7 +76,6 @@ def obtener_datos_bancarios():
         datos_bancarios = datos_bancarios.__dict__
         datos_bancarios.pop("_sa_instance_state", None)
         datos_bancarios["Banco"] = Banco
-
 
     return jsonify(datos_bancarios)
 
