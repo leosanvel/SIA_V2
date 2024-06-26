@@ -1,22 +1,19 @@
-from .puestos import puestos
+from .rutas import prestaciones
 from flask import render_template, request, jsonify
 from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import or_, func
 from datetime import datetime
-
 from app import db
-from rh.gestion_empleados.modelos.empleado import tPuesto
-from catalogos.modelos.modelos import kRamo, kUA, kZonaEconomica, kTipoPlazaPuesto, kCaracterOcupacional, kTipoFuncion, kGrupo, kGrado, kNivel, kEstatusPuesto, kVigencia, kCentroTrabajo, kCentroCostos
 
 import openpyxl
 
-@puestos.route('/innovacion-normas/puestos/reporte-general', methods = ['POST', 'GET'])
+@prestaciones.route('/prestaciones/reporte-movimientos', methods = ['POST', 'GET'])
 def reporte_general():
-    return render_template('/reporte_general.html', title='Reporte General',
+    return render_template('/reporte_movimientos.html', title='Reporte de movimientos',
                            )
 
-@puestos.route('/innovacion-normas/puestos/generar_reporte', methods = ['POST', 'GET'])
+@prestaciones.route('/prestaciones/generar_reporte_movimientos', methods = ['POST', 'GET'])
 def generar_reporte_general():
     respuesta = 0
     wb = openpyxl.Workbook()

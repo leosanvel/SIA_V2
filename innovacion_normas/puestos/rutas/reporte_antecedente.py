@@ -11,13 +11,13 @@ from catalogos.modelos.modelos import kRamo, kUA, kZonaEconomica, kTipoPlazaPues
 
 import openpyxl
 
-@puestos.route('/innovacion-normas/puestos/reporte-general', methods = ['POST', 'GET'])
-def reporte_general():
-    return render_template('/reporte_general.html', title='Reporte General',
+@puestos.route('/innovacion-normas/puestos/reporte-antecedente', methods = ['POST', 'GET'])
+def reporte_antecedente():
+    return render_template('/reporte_antecedente.html', title='Reporte de antecedente',
                            )
 
-@puestos.route('/innovacion-normas/puestos/generar_reporte', methods = ['POST', 'GET'])
-def generar_reporte_general():
+@puestos.route('/innovacion-normas/puestos/reporte-antecedente', methods = ['POST', 'GET'])
+def generar_reporte_antecedente():
     respuesta = 0
     wb = openpyxl.Workbook()
     hoja = wb.active

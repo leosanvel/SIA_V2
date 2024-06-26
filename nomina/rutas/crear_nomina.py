@@ -60,8 +60,8 @@ def guardar_crear_nomina():
         nomina_data["FechaFinal"] = datetime.strptime(nomina_data['FechaFinal'], '%d/%m/%Y')
         nomina_data["PeriodoQuincena"] = nomina_data["FechaPago"].year
         nomina_data["Estatus"] = 1
-        nomina_data["Observaciones"] = None
-        nomina_data["Quincena"] = None
+        nomina_data["Observaciones"] = ""
+        nomina_data["Quincena"] = nomina_data["idQuincena"]
         Usuario = db.session.query(rUsuario.idPersona).filter_by(Usuario = NombreUsuario).scalar()
         nomina_data["idPersonaEmisor"] = Usuario
 

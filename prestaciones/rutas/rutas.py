@@ -4,3 +4,5 @@ prestaciones = Blueprint('prestaciones', __name__, template_folder='../plantilla
 
 from . import prestaciones_deducciones
 from . import importar_conceptos
+from . import cedula_fonacot
+from . import reporte_movimientos
