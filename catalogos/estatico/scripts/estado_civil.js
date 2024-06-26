@@ -42,7 +42,7 @@ function guardar_modificar_estadocivil(dato){
         $.ajax({
             async: false,
             type: "POST",
-            url: "/Catalogos/guardar_estadocivil",
+            url: "/catalogos/guardar_estadocivil",
             data: {
                 "idEstadoCivil": dato,
                 "EstadoCivil": $("#EstCiv" + index).val(),

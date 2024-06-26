@@ -1,0 +1,89 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#AgregarPorcentajes">Agregar nuevo
+                dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarPorcentajes">Modificar datos</a></li>
+    </ul>
+    <div class="row">
+        <div class="tab-content">
+            <div class="tab-pane active" id="AgregarPorcentajes">
+                <form id="formularioPorcentajes">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblEstCiv">Nuevo porcentaje (%)<span id="APorcentaje"
+                                        class="form-text"></span>:</label>
+                                <input type="number" id="porcentaje" name="porcentaje" class="obligatorio form-control">
+                                <small id="Eporcentaje" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblActivo">Activo<span id="AActivo" class="form-text"></span>:</label>
+                                <select id="Activo" name="Activo" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    <option value="1">Inactivo</option>
+                                    <option value="2">Activo</option>
+                                </select>
+                                <small id="EActivo" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="pull-right">
+                                <button class="btn btn-primary oculta-empleado" type="button" id="guardarEstCiv"
+                                    onclick="guardar_modificar_porcentaje()">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tab-pane" id="ModificarPorcentajes">
+                <form id="formularioModificaPorcentajes">
+                    <table class="table" id="TabPorcentajes">
+                        <thead>
+                            <tr>
+                                <th>Porcentaje (%)</th>
+                                <th>Activo</th>
+                            </tr>
+                        </thead>
+                        {% for porcentaje in Porcentajes %}
+                        <tbody>
+                            <tr>
+                                <td><input type="number" class="obligatorio form-control"
+                                        id="porcentaje{{porcentaje.idPorcentaje}}" value="{{porcentaje.Porcentaje}}"
+                                        readonly>
+                                </td>
+                                <td>
+                                    <select id="Activo{{porcentaje.idPorcentaje}}"
+                                        name="Activo{{porcentaje.idPorcentaje}}" class="obligatorio form-control"
+                                        value="{{porcentaje.Activo}}" disabled>
+                                        <option value="0">Inactivo</option>
+                                        <option value="1">Activo</option>
+                                    </select>
+                                    <script>
+                                        document.ready = document.getElementById("Activo{{porcentaje.idPorcentaje}}").value = "{{porcentaje.Activo}}"
+                                    </script>
+                                </td>
+                                <td><button type="button" class="btn btn-primary oculta-empleado"
+                                        id="Editar_Aceptar{{porcentaje.idPorcentaje}}"
+                                        onclick="editar_aceptar('{{porcentaje.idPorcentaje}}')">Editar</button></td>
+                                <td><button type="button" class="btn btn-primary oculta-empleado"
+                                        id="Cancelar{{porcentaje.idPorcentaje}}"
+                                        onclick="cancelar('{{porcentaje.idPorcentaje}}', '{{porcentaje.Porcentaje}}', '{{porcentaje.Activo}}')"
+                                        style="display: none;">Cancelar</button></td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                </form>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block scripts %}
+        {{ super() }}
+        <script src="{{ url_for('catalogos.static', filename='scripts/porcentajes.js')}}"></script>
+        {% endblock %}

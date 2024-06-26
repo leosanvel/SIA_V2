@@ -1,0 +1,40 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <table class="table" id="TabTipoIncidencia">
+            <thead>
+                <tr>
+                    <th>ID Tipo Incidencia</th>
+                    <th>Tipo Incidencia</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+            {% for Data in TipoIncidencia %}
+            <tbody>
+                <tr>
+                    <td><input type="text" class="form-control" id="idTipoIncidencia{{Data.idTipoIncidencia}}" value="{{Data.idTipoIncidencia}}" readonly></td>
+                    <td><input type="text" class="form-control" id="TipoIncidencia{{Data.idTipoIncidencia}}" value="{{Data.TipoIncidencia}}" readonly></td>
+                    <td>
+                        <select id="ActTipoIncidencia{{Data.idTipoIncidencia}}" name="ActTipoIncidencia{{Data.idTipoIncidencia}}" class="obligatorio form-control" value="{{Data.Activo}}" disabled>
+                            <option value="0">Inactivo</option>
+                            <option value="1">Activo</option>
+                        </select>
+                        <script>
+                            document.ready = document.getElementById("ActTipoIncidencia{{Data.idTipoIncidencia}}").value = "{{Data.Activo}}"
+                        </script>
+                    </td>
+                    <td><button type="button" class="btn btn-primary oculta-empleado" id="Editar_Aceptar{{Data.idTipoIncidencia}}" onclick="editar_aceptar('{{Data.idTipoIncidencia}}')">Editar</button></td>
+                    <td><button type="button" class="btn btn-primary oculta-empleado" id="Cancelar{{Data.idTipoIncidencia}}" onclick="cancelar('{{Data.idTipoIncidencia}}', '{{Data.TipoIncidencia}}', '{{Data.Activo}}')" style="display: none;">Cancelar</button></td>
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/tipo_incidencia.js')}}"></script>
+{% endblock %}

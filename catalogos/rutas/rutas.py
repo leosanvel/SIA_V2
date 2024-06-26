@@ -10,7 +10,15 @@ catalogos = Blueprint('catalogos', __name__, template_folder='../plantillas', st
 
 from . import conceptos
 from . import centro_costos
+from . import grupo
+from . import nacionalidad
+from . import quincenas
+from . import tipo_alta
 from . import dias_festivos
 from . import escuela
-from . import puestos
+from . import tipos_justificante
+from . import tipo_incidencia
 from . import estado_civil
+from . import porcentajes
+from . import tipo_sancion
+from . import puestos

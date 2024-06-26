@@ -1,0 +1,90 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#AgregarSancion">Agregar nuevo
+                dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarSancion">Modificar datos</a></li>
+    </ul>
+    <div class="row">
+        <div class="tab-content">
+            <div class="tab-pane active" id="AgregarSancion">
+                <form id="formularioAgregarSancion">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblSancion">Nueva sanción<span id="ASancion"
+                                        class="form-text"></span>:</label>
+                                <input type="text" id="Sancion" name="Sancion" class="obligatorio form-control">
+                                <small id="ESancion" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="lblActivo">Activo<span id="AActivo" class="form-text"></span>:</label>
+                                <select id="Activo" name="Activo" class="obligatorio form-control">
+                                    <option value="0">-- Seleccione --</option>
+                                    <option value="1">Inactivo</option>
+                                    <option value="2">Activo</option>
+                                </select>
+                                <small id="EActivo" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="pull-right">
+                                <button class="btn btn-primary oculta-empleado" type="button" id="guardarEstCiv"
+                                    onclick="guardar_modificar_tiposancion()">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="tab-pane" id="ModificarSancion">
+                <form id="formularioModificaSancion">
+                    <table class="table" id="TabSancion">
+                        <thead>
+                            <tr>
+                                <th>Sanción</th>
+                                <th>Activo</th>
+                            </tr>
+                        </thead>
+                        {% for sancion in Sanciones %}
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="obligatorio form-control"
+                                        id="sancion{{sancion.idSancion}}" value="{{sancion.TipoSancion}}"
+                                        readonly>
+                                </td>
+                                <td>
+                                    <select id="Activo{{sancion.idSancion}}"
+                                        name="Activo{{sancion.idSancion}}" class="obligatorio form-control"
+                                        value="{{sancion.Activo}}" disabled>
+                                        <option value="0">Inactivo</option>
+                                        <option value="1">Activo</option>
+                                    </select>
+                                    <script>
+                                        document.ready = document.getElementById("Activo{{sancion.idSancion}}").value = "{{sancion.Activo}}"
+                                    </script>
+                                </td>
+                                <td><button type="button" class="btn btn-primary oculta-empleado"
+                                        id="Editar_Aceptar{{sancion.idSancion}}"
+                                        onclick="editar_aceptar('{{sancion.idSancion}}')">Editar</button></td>
+                                <td><button type="button" class="btn btn-primary oculta-empleado"
+                                        id="Cancelar{{sancion.idSancion}}"
+                                        onclick="cancelar('{{sancion.idSancion}}', '{{sancion.TipoSancion}}', '{{sancion.Activo}}')"
+                                        style="display: none;">Cancelar</button></td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                </form>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block scripts %}
+        {{ super() }}
+        <script src="{{ url_for('catalogos.static', filename='scripts/tipo_sancion.js')}}"></script>
+        {% endblock %}

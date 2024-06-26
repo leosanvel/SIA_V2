@@ -1,0 +1,32 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <table class="table" id="TabQuincenas">
+            <thead>
+                <tr>
+                    <th>Quincena</th>
+                    <th>Fechas</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Final</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="row pull-right">
+        <button class="btn btn-primary" type="button" id="ActualizarFechas">
+            <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+            Actualizar
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/quincenas.js')}}"></script>
+{% endblock %}
