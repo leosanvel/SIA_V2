@@ -13,13 +13,11 @@ function subir_archivo() {
         // Crear un FormData object
         const formData = new FormData();
         formData.append('archivo', file);
-        formData.append('idTipoConcepto', $('#idTipoConcepto').val());
-        formData.append('idConcepto', $('#idConcepto').val());
+        formData.append('idTipoConcepto', $('#Concepto option:selected').data('tipo'));
+        formData.append('idConcepto', $('#Concepto').val());
+
 
         if (file) {
-            // Procesar el archivo (por ejemplo, enviarlo a un servidor)
-            console.log(`Subiendo archivo ${file.name} con id de botón SubirArchivo`);
-
             $.ajax({
                 async: false,
                 type: "POST",
@@ -33,36 +31,22 @@ function subir_archivo() {
 
                         var tablaHTML = '<table class="table table-striped">';
                         tablaHTML += '<thead><tr>' +
-                            '<th>Ramo</th>' +
-                            '<th>PAGSUBPAG</th>' +
-                            '<th>Numero ISSSTE</th>' +
-                            '<th>RFC</th>' +
                             '<th>Nombre</th>' +
-                            '<th>Clave Cobro</th>' +
-                            '<th>TPOD</th>' +
-                            '<th>Pzo Qna</th>' +
-                            '<th>Periodo 1</th>' +
-                            '<th>Periodo 2</th>' +
+                            '<th>Tipo Concepto</th>' +
+                            '<th>idConcepto</th>' +
                             '<th>Concepto</th>' +
-                            '<th>Importe</th>' +
-                            '<th>Numero Prestamo</th>' +
+                            '<th>Porcentaje</th>' +
+                            '<th>Monto</th>' 
                             '</tr></thead><tbody>';
 
-                        resp.lista_empleados.forEach(function (empleado) {
+                        resp.resultados.forEach(function (concepto) {
                             tablaHTML += '<tr>' +
-                            '<td>' + empleado.Ramo + '</td>' +
-                            '<td>' + empleado.PAGSUBPAG + '</td>' +
-                            '<td>' + empleado.NumeroISSSTE + '</td>' +
-                            '<td>' + empleado.RFC + '</td>' +
-                            '<td>' + empleado.Nombre + '</td>' +
-                            '<td>' + empleado.ClaveCobro + '</td>' +
-                            '<td>' + empleado.TPOD + '</td>' +
-                            '<td>' + empleado.PzoQna + '</td>' +
-                            '<td>' + empleado.Periodo1 + '</td>' +
-                            '<td>' + empleado.Periodo2 + '</td>' +
-                            '<td>' + empleado.Concepto + '</td>' +
-                            '<td>' + empleado.Importe + '</td>' +
-                            '<td>' + empleado.NumeroPrestamo + '</td>' +
+                            '<td>' + concepto.Nombre + '</td>' +
+                            '<td>' + concepto.idTipoConcepto + '</td>' +
+                            '<td>' + concepto.idConcepto + '</td>' +
+                            '<td>' + concepto.Concepto + '</td>' +
+                            '<td>' + concepto.Porcentaje + '</td>' +
+                            '<td>' + concepto.Monto + '</td>' 
                             '</tr>';
                         });
                         tablaHTML += '</tbody></table>';

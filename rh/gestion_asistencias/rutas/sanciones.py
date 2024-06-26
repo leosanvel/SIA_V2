@@ -10,7 +10,6 @@ from sqlalchemy import and_
 from datetime import date, datetime, timedelta
 
 
-
 @gestion_asistencias.route('/rh/gestion-asistencias/sanciones', methods = ['POST', 'GET'])
 def gestiona_sanciones():
     TipoSancion = db.session.query(kTipoSancion).filter_by(Activo = 1).all()
@@ -47,7 +46,7 @@ def guarda_Sancion():
         sancion_data['FechaInicio'] = datetime.strptime(sancion_data['FechaInicio'], '%d/%m/%Y')
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
         if sancion_data['idSancion'] == '2': #Artículo 37
-            condicionales_articulo_37(sancion_data, descuentos_data)
+            calcula_periodo_art37(sancion_data, descuentos_data)
         else:
             guardar_o_modificar_sancion(sancion_data)
     else:
@@ -59,7 +58,7 @@ def guarda_Sancion():
             sancion_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
             
             if sancion_data['idSancion'] == '2': #Artículo 37
-                condicionales_articulo_37(sancion_data, descuentos_data)
+                calcula_periodo_art37(sancion_data, descuentos_data)
             else:
                 guardar_o_modificar_sancion(sancion_data)
     return jsonify(sancion_data)
@@ -177,7 +176,7 @@ def cancela_sancion():
 def calculo_dias_articulo_37():
     idPersona = request.form.get("idPersona")
 
-    fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva(idPersona)
+    fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva_puestos(idPersona)
     
     if fecha_inicio_consecutiva_mas_antigua is not None:
     
@@ -224,17 +223,26 @@ def calculo_dias_articulo_37():
 
 
 
-def condicionales_articulo_37(licencia, descuentos):
+
+def calcula_periodo_art37(licencia, descuentos):
     idPersona = licencia['idPersona']
     idSancion = licencia['idSancion']
+    print("licencia['idPersona']")
+    print(licencia['idPersona'])
+    print("licencia['idSancion']")
+    print(licencia['idSancion'])
     
-    licencias_previas = db.session.query(rSancionPersona).filter_by(idPersona=idPersona, idSancion=idSancion).order_by(rSancionPersona.FechaFin.desc()).all()
+    licencias_previas = db.session.query(rSancionPersona).filter_by(idPersona=idPersona).order_by(rSancionPersona.FechaFin.desc()).all()
+    print(licencias_previas)
     fechas = {}
+
 
     fechas["inicio_licencia_actual"] = licencia['FechaInicio'].date()
     fechas["inicio_periodo"] = licencia['FechaInicio'].date()
-    fechas["fin_periodo"] = licencia['FechaFin'].date()
+
     fechas["fin_licencia_actual"] = licencia['FechaFin'].date()
+    fechas["fin_periodo"] = licencia['FechaFin'].date()
+   
     
     for licencia_previa in licencias_previas:
         # Verificar que la fecha de licencia['FechaInicio'] no esté dentro del rango de fechas anteriores
@@ -303,11 +311,7 @@ def reparte_dias_totales(fechas, licencia, descuentos):
             guardar_o_modificar_sancion(licencia)
 
 
-
-
-
-
-def calcula_fecha_consecutiva(idPersona):
+def calcula_fecha_consecutiva_puestos(idPersona):
     puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
     empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
 
@@ -332,5 +336,7 @@ def calcula_fecha_consecutiva(idPersona):
             return fecha_inicio_consecutiva_mas_antigua
         else:
             print("No se encontró un puesto Activo")
+            return None
     else:
         print("Empleado no encontrado")
+        return None

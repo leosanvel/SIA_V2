@@ -34,13 +34,21 @@ def crear_empleado_concepto():
     if concepto_data['NumeroContrato'] is None:
         concepto_data['NumeroContrato'] = 1
     else:
-        # Convertir la fecha a un objeto datetime
-        fecha_inicio_dt = datetime.strptime(concepto_data['FechaInicio'], '%d/%m/%Y')
-        fecha_fin_dt = datetime.strptime(concepto_data['FechaFin'], '%d/%m/%Y')
+        if concepto_data['FechaInicio'] != "":
+            # Convertir la fecha a un objeto datetime
+            fecha_inicio_dt = datetime.strptime(concepto_data['FechaInicio'], '%d/%m/%Y')
+            # Formatear la fecha en el formato 'YYYY-MM-DD'
+            concepto_data['FechaInicio'] = fecha_inicio_dt.strftime('%Y-%m-%d')
+        else:
+            concepto_data['FechaInicio'] = None
+            
 
-        # Formatear la fecha en el formato 'YYYY-MM-DD'
-        concepto_data['FechaInicio'] = fecha_inicio_dt.strftime('%Y-%m-%d')
-        concepto_data['FechaFin'] = fecha_fin_dt.strftime('%Y-%m-%d')
+        if concepto_data['FechaFin'] != "":
+            fecha_fin_dt = datetime.strptime(concepto_data['FechaFin'], '%d/%m/%Y')
+            concepto_data['FechaFin'] = fecha_fin_dt.strftime('%Y-%m-%d')
+        else:
+            concepto_data['FechaFin'] = None
+        
     concepto_data['PagoUnico'] = 0
 
     editar = request.form.get('editar')
@@ -81,15 +89,18 @@ def buscar_empleado_concepto():
     empleadoConceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).all()
     lista_empleado_conceptos = []
     for emp_con in empleadoConceptos:
-        concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto, Editable = 1).first()
+        concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto).first()
         if emp_con is not None and concepto is not None:
             emp_con_dict = emp_con.__dict__
             emp_con_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             emp_con_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
             emp_con_dict["Concepto"] = concepto.Concepto
+            emp_con_dict["Editable"] = concepto.Editable
             lista_empleado_conceptos.append(emp_con_dict)
+
     if not lista_empleado_conceptos:
         return jsonify({"NoEncontrado":True}) 
+    
     return jsonify(lista_empleado_conceptos)
 
 
@@ -100,8 +111,13 @@ def filtrar_concepto():
     TipoConcepto = datos.pop("TipoConcepto", None)
     idPersona = datos.pop("idPersona", None)
     BuscarRepetidos = datos.pop("BuscarRepetidos", None)
+    BuscarEditables = datos.pop("BuscarEditables", None)
     empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-    conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idTipoEmpleado = empleado.idTipoEmpleado).order_by(asc(kConcepto.Concepto)).all()
+    if BuscarEditables:
+        conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idTipoEmpleado = empleado.idTipoEmpleado).order_by(asc(kConcepto.Concepto)).all()
+    else:
+        conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idTipoEmpleado = empleado.idTipoEmpleado, Editable = 1).order_by(asc(kConcepto.Concepto)).all()
+
     lista_conceptos = []
     for concepto in conceptos:
         empleadoConcepto = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idConcepto = concepto.idConcepto, idTipoConcepto = concepto.idTipoConcepto).first()

@@ -41,7 +41,7 @@ def ejecutar_tareas_con_contexto():
         ejecutar_tareas_diarias()
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=ejecutar_tareas_con_contexto, trigger='cron', hour=12, minute=52, second=1)
+scheduler.add_job(func=ejecutar_tareas_con_contexto, trigger='cron', hour=0, minute=0, second=1)
 scheduler.start()
 
 @app.teardown_appcontext
