@@ -172,10 +172,7 @@ def guardar_empleado():
                 envia_correo("informatica","Reactivar",empleado_existente)
                 crea_solicitud("Reactivar",empleado_existente)
                 correo_enviado = True
-            if(int(empleado_data["Activo"]) == 0):
-                envia_correo("informatica","Baja",empleado_existente)
-                crea_solicitud("Baja",empleado_existente)
-                correo_enviado = True
+            
         print("Actualiza")
         persona_data["idPersona"] = idPersona
         persona_existente.update(**persona_data)
@@ -261,6 +258,7 @@ def guardar_empleado():
         respuesta["guardado"] = True
         respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
+        crea_solicitud("Alta", nuevo_empleado)
     # Realizar cambios en la base de datos
     db.session.commit()
 
