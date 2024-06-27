@@ -364,7 +364,7 @@ def crea_solicitud(motivo,empleado_existente):
     solicitud_data = {
         "idSolicitud" : None,
         "Solicitud" : motivo,
-        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + ".",
+        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.ApPaterno + " " + empleado_existente.Persona.ApMaterno + ".",
         "idEstadoSolicitud" : 1,
     }
     
@@ -413,7 +413,9 @@ def revision_baja_empleados():
             if puesto.ConservaVacaciones != 1:
                 print("vacaciones eliminadas")
                 vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = puesto.idPersona).delete()
-
+            
+            empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = puesto.idPersona).first()
+            crea_solicitud("Baja", empleado_existente)
         db.session.commit()
     else:
         print("Ningún empleado termina Hoy")
