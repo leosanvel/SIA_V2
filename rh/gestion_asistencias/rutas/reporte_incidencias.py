@@ -81,9 +81,10 @@ def genera_reporte_incidencias():
 
         # return jsonify({"respuesta":"existente"})
     except NoResultFound:
-        nueva_nomina = tNomina(**nomina_actual)
-        db.session.add(nueva_nomina)
-        db.session.commit()
+        pass
+        #nueva_nomina = tNomina(**nomina_actual)
+        #db.session.add(nueva_nomina)
+        #db.session.commit()
     numeros_empleados = db.session.query(rEmpleado.idPersona).filter_by(idTipoEmpleado = nomina_data["TipoEmpleado"],Activo = 1).all()
             # Extrae los números de empleado de la lista de tuplas
     numeros_empleados = [numero[0] for numero in numeros_empleados]
@@ -103,7 +104,7 @@ def genera_reporte_incidencias():
 
         #GENERAR TNOMINA2
         nomina_persona={
-            "idNomina" : nueva_nomina.idNomina,
+            "idNomina" : nomina_data['NumeroQuincena'],
             "idPersona" : id_empleado,
             "DiasLaborados": diasLaborados,
         }

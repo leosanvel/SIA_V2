@@ -41,6 +41,6 @@ def generar_contrato():
 
 @gestion_empleados.route('/RH/descargar_contrato/<nombre_archivo>')
 def descargar_contrato(nombre_archivo):
-    directorio_archivos = os.path.join(current_app.root_path, "rh", "empleado", "docs")
+    directorio_archivos = os.path.join(current_app.root_path, "app", "rh", "empleado", "docs")
 
     return send_from_directory(directorio_archivos, nombre_archivo, as_attachment=True)

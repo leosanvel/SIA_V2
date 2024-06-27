@@ -10,6 +10,7 @@ from docx2pdf import convert
 import pythoncom
 from PyPDF2 import PdfMerger
 import os
+from dateutil.relativedelta import relativedelta
 
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
@@ -187,14 +188,14 @@ def guardar_empleado():
             empleado_puesto_data['CodigoPuestoSIA'] = None
             empleado_puesto_data['RHNETSIA'] = None
             empleado_puesto_data['idNivel'] = None
-            empleado_puesto_data['FechaInicio'] = datetime.now().date()
+            empleado_puesto_data['FechaInicio'] = datetime.now()
             empleado_puesto_data['FechaTermino'] = None
             empleado_puesto_data['idEstatusEP'] = 1
             empleado_puesto_data['idCausaBaja'] = None
             empleado_puesto_data['Observaciones'] = None
             empleado_puesto_data['FechaEfecto'] = None
             empleado_puesto_data['idQuincena'] = None
-
+            empleado_puesto_data['ConservaVacaciones'] = 1
 
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
@@ -237,14 +238,15 @@ def guardar_empleado():
         empleado_puesto_data['CodigoPuestoSIA'] = None
         empleado_puesto_data['RHNETSIA'] = None
         empleado_puesto_data['idNivel'] = None
-        empleado_puesto_data['FechaInicio'] = datetime.now().date()
+        empleado_puesto_data['FechaInicio'] = datetime.now()
         empleado_puesto_data['FechaTermino'] = None
         empleado_puesto_data['idEstatusEP'] = 1
         empleado_puesto_data['idCausaBaja'] = None
         empleado_puesto_data['Observaciones'] = None
         empleado_puesto_data['FechaEfecto'] = None
         empleado_puesto_data['idQuincena'] = None
-
+        empleado_puesto_data['ConservaVacaciones'] = 1
+        
         escolaridad_data['idPersona'] = nuevo_id_persona
         escolaridad_data['Consecutivo'] = 1
 
@@ -412,30 +414,35 @@ def guardar_conceptos():
     else:
         Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         FechaIngGob = Empleado.FecIngGobierno
+        FechaIngGob = datetime.combine(FechaIngGob,time())
         FechaActual = datetime.today()
-
-        diferencia = FechaActual - FechaIngGob
-        anios = diferencia.years
+        
+        anios = relativedelta(FechaActual,FechaIngGob).years
 
         lista_idconteptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
-        lista_idtipo = ['P', 'P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
-
+        lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+        print("Hola mundo")
         if anios >= 5 and anios < 10:
             lista_idconteptos.insert(1, 'A1')
+            lista_idtipo.insert(1, 'P')
         if anios >=10 and anios < 15:
             lista_idconteptos.insert(1, 'A2')
+            lista_idtipo.insert(1, 'P')
         if anios >=15 and anios < 20:
             lista_idconteptos.insert(1, 'A3')
+            lista_idtipo.insert(1, 'P')
         if anios >=20 and anios < 25:
             lista_idconteptos.insert(1, 'A4')
+            lista_idtipo.insert(1, 'P')
         if anios >=25:
             lista_idconteptos.insert(1, 'A5')
+            lista_idtipo.insert(1, 'P')
 
         nuevo_concepto = None
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
         
-        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        #empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         
         for indice in range(0, len(lista_idconteptos)):
             concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconteptos[indice]).first()

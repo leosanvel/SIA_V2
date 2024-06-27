@@ -3,7 +3,7 @@ $gmx(document).ready(function(){
 });
 
 function generar_checador(event){
-    event.preventDefault();
+    //event.preventDefault();
     window.document.getElementById("NumQuincena").disabled = "";
     window.document.getElementById("btnGenerarChecador").disabled = "";
     if(validarFormulario($("#formularioGenerarChecador")).valido){

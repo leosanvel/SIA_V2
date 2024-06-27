@@ -334,9 +334,8 @@ $gmx(document).ready(function () {
         }
 
         var path = window.location.pathname;
-        if (path === "/rh/gestion-empleados/agregar-empleado") {
-            agregarConceptos();
-        }
+        
+        agregarConceptos();
         //Recorremos formularios para validar y mostrar el primer error
         var formularios = [
             $("#formularioDomicilioFiscal"),

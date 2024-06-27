@@ -20,7 +20,8 @@ def checador():
     if((hoy.day//16) == 0):
         quincena = quincena - 1
 
-    quincenas = db.session.query(kQuincena).filter(kQuincena.idQuincena.in_([quincena, quincena + 1, quincena + 2])).all()
+    #quincenas = db.session.query(kQuincena).filter(kQuincena.idQuincena.in_([quincena, quincena + 1, quincena + 2])).all()
+    quincenas = db.session.query(kQuincena).all()
     return render_template('/checador.html', title='Generar Checador',
                            current_user=current_user,
                            quincenas = quincenas)
@@ -60,7 +61,6 @@ def generar_checador():
                 Checador["idQuincenaReportada"] = None
                 Checador["idIncidencia"] = None
                 Checador["idJustificante"] = None
-                
                 try:
                     checador_existente = db.session.query(tChecador).filter_by(idPersona = Checador['idPersona'], Fecha = Checador['Fecha'], idQuincena = Checador['idQuincena']).one()
                     checador_ya_generado = 0
