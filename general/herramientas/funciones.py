@@ -385,9 +385,9 @@ def ejecutar_tareas_diarias():
     print(hoy)
 
 
-def revision_baja_empleados():
+def revision_baja_empleados(idPersona = None):
     hoy = datetime.today().date()
-    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(FechaEfecto=hoy).all()
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona,FechaEfecto=hoy, idEstatusEP = 1).all()
     print("Dando de baja a los siguientes puestos:")
     print(puestos_empleado)
     if puestos_empleado:
