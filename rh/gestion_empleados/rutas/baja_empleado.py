@@ -117,7 +117,7 @@ def dar_baja_empleado():
 
         if empleadoPuesto.FechaEfecto == hoy:
             print("ES HOY!")
-            revision_baja_empleados()
+            revision_baja_empleados(idPersona)
             respuesta["DadoBaja"] = True
         
     except NoResultFound:
