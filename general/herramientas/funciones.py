@@ -522,7 +522,9 @@ def verificar_antiguedad_articulo_37_todos():
             and_(
                 rSancionPersona.FechaInicio <= hoy,
                 rSancionPersona.FechaFin >= hoy,
-                rSancionPersona.idPersona == puesto.idPersona
+                rSancionPersona.idPersona == puesto.idPersona,
+                rSancionPersona.idSancion == 2,
+
             )
         ).first()
         
