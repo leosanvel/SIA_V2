@@ -10,6 +10,7 @@ from docx2pdf import convert
 import pythoncom
 from PyPDF2 import PdfMerger
 import os
+from dateutil.relativedelta import relativedelta
 
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
@@ -405,31 +406,33 @@ def guardar_conceptos():
     else:
         Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         FechaIngGob = Empleado.FecIngGobierno
+        FechaIngGob = datetime.combine(FechaIngGob, time())
         FechaActual = datetime.today()
 
-        diferencia = FechaActual - FechaIngGob
-        anios = diferencia.years
+        print(FechaIngGob, FechaActual)
 
-        lista_idconteptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
-        lista_idtipo = ['P', 'P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+        anios = relativedelta(FechaActual, FechaIngGob).years
+
+        lista_idconceptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
+        lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
 
         if anios >= 5 and anios < 10:
-            lista_idconteptos.insert(1, 'A1')
+            lista_idconceptos.insert(1, 'A1')
         if anios >=10 and anios < 15:
-            lista_idconteptos.insert(1, 'A2')
+            lista_idconceptos.insert(1, 'A2')
         if anios >=15 and anios < 20:
-            lista_idconteptos.insert(1, 'A3')
+            lista_idconceptos.insert(1, 'A3')
         if anios >=20 and anios < 25:
-            lista_idconteptos.insert(1, 'A4')
+            lista_idconceptos.insert(1, 'A4')
         if anios >=25:
-            lista_idconteptos.insert(1, 'A5')
+            lista_idconceptos.insert(1, 'A5')
 
         nuevo_concepto = None
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
-        for indice in range(0, len(lista_idconteptos)):
-            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconteptos[indice]).first()
-            if(concepto is None):
+        for indice in range(0, len(lista_idconceptos)):
+            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconceptos[indice]).first()
+            if(concepto is not None):
                 datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
                 datos_conceptos["idConcepto"] = concepto.idConcepto
                 datos_conceptos["Porcentaje"] = concepto.Porcentaje

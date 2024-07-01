@@ -174,6 +174,7 @@ class rEmpleado(db.Model):
     Persona = db.relationship("tPersona", back_populates = "Empleado", single_parent = True, cascade = "all, delete-orphan")
     EmpleadoPuestos = db.relationship("rEmpleadoPuesto", back_populates = "Empleado", cascade = "all, delete-orphan")
     DiasPersona = db.relationship("rDiasPersona", back_populates = "Empleado", cascade = "all, delete-orphan")
+    Banco = db.relationship("rBancoPersona", back_populates = "Empleado", cascade = "all, delete-orphan")
 
     def __init__(self, idPersona, NumeroEmpleado, idTipoEmpleado, idTipoAlta, idGrupo, HoraEntrada, HoraSalida, FecIngGobierno, FecIngFonaes, idQuincena, NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
         self.idPersona = idPersona
@@ -276,7 +277,7 @@ class rBancoPersona(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci", "schema": "db2"}
 
-    idPersona = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, db.ForeignKey(rEmpleado.idPersona), primary_key = True)
     idBanco = db.Column(db.String(50), db.ForeignKey(kBancos.idBanco), nullable = True)
     Clabe = db.Column(db.String(18), primary_key = True)
     NumeroCuenta = db.Column(db.Integer, nullable = True)
@@ -286,6 +287,7 @@ class rBancoPersona(db.Model):
 
     # Relacion
     Banco = db.relationship("kBancos", back_populates = "BancoPersonas", uselist = False, single_parent = True)
+    Empleado = db.relationship("rEmpleado", back_populates = "Banco", uselist = False, single_parent = True)
 
     def __init__(self, idPersona, Clabe, idBanco, Activo, Verificado):
         self.idPersona = idPersona

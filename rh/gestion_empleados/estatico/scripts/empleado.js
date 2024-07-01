@@ -277,7 +277,7 @@ $gmx(document).ready(function () {
                         mensajeGuardado += "-Datos de empleado.<br>";
                         mensajeGuardado += "-Datos de escolaridad.<br>";
                         if(data.NumeroEmpleado){
-                           mensajeGuardado += "-El número de Empleado asignado es" + data.NumeroEmpleado;
+                           mensajeGuardado += "-El número de Empleado asignado es " + data.NumeroEmpleado + "<br>";
                         }
                         if (data.correo_enviado) {
                             mensajeGuardado += "<br>";
@@ -333,10 +333,8 @@ $gmx(document).ready(function () {
             }
         }
 
-        var path = window.location.pathname;
-        if (path === "/rh/gestion-empleados/agregar-empleado") {
-            agregarConceptos();
-        }
+        agregarConceptos();
+
         //Recorremos formularios para validar y mostrar el primer error
         var formularios = [
             $("#formularioDomicilioFiscal"),
