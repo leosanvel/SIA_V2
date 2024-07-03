@@ -11,10 +11,8 @@ $gmx(document).ready(function () {
     });
 
     $("#idSancion").on("change ", function () { verifica_seleccion(); });
-    $("#NumeroEmpleadoSeleccionado").on("change ", function () {
-        console.log("NumeroEmpleadoSeleccionado");
-        verifica_seleccion();
-    });
+    
+
 
     $("#BuscaFechaInicio").datepicker({ changeYear: true, changeMonth: true });
     $("#BuscaFechaFin").datepicker({ changeYear: true, changeMonth: true });
@@ -29,7 +27,9 @@ $gmx(document).ready(function () {
     $("#checkFechasConsecutivas").on("change", function () { cargaFechasConsecutivas(); });
 
 });
-
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado
+    verifica_seleccion();
+}
 function verifica_seleccion() {
 
     var licencia = $("#idSancion").val()
@@ -54,10 +54,14 @@ function verifica_seleccion() {
                 success: function (respuesta) {
                     if (respuesta.Error) {
                         $("#FechaInicioPuesto").val('');
+
                         $("#DiasPagados1").val('');
                         $("#PorcentajePagado1").val('');
+                        $("#DiasDisponibles1").val('');
+                        
                         $("#DiasPagados2").val('');
                         $("#PorcentajePagado2").val('');
+                        $("#DiasDisponibles2").val('');
                         abrirModal("Error", "No se pudieron calcular los descuentos del empleado.", "");
                     } else {
 
@@ -65,8 +69,10 @@ function verifica_seleccion() {
                         $("#FechaInicioPuesto").val(fecha);
                         $("#DiasPagados1").val(respuesta.DiasPagados1);
                         $("#PorcentajePagado1").val(respuesta.PorcentajePagado1);
+                        $("#DiasDisponibles1").val(respuesta.DiasDisponibles1);
                         $("#DiasPagados2").val(respuesta.DiasPagados2);
                         $("#PorcentajePagado2").val(respuesta.PorcentajePagado2);
+                        $("#DiasDisponibles2").val(respuesta.DiasDisponibles2);
                     }
                 }
             });
@@ -82,6 +88,36 @@ function verifica_seleccion() {
         $("#PorcentajePagado2").removeClass("obligatorio");
 
         $("#contenedorPorcentaje").show();
+    }
+    
+    if(licencia == 1){
+        $("#idPorcentaje option[value='0']").hide();
+        $("#idPorcentaje option[value='1']").hide();
+        $("#idPorcentaje option[value='25']").hide();
+        $("#idPorcentaje option[value='50']").hide();
+        $("#idPorcentaje option[value='75']").hide();
+        $("#idPorcentaje option[value='100']").show();
+        $("#idPorcentaje").val("100");
+    }
+
+    if(licencia == 3){
+        $("#idPorcentaje option[value='0']").hide();
+        $("#idPorcentaje option[value='1']").show();
+        $("#idPorcentaje option[value='25']").hide();
+        $("#idPorcentaje option[value='50']").hide();
+        $("#idPorcentaje option[value='75']").hide();
+        $("#idPorcentaje option[value='100']").hide();
+        $("#idPorcentaje").val("1");
+    }
+
+    if(licencia == 0){
+        $("#idPorcentaje option[value='0']").show();
+        $("#idPorcentaje option[value='1']").show();
+        $("#idPorcentaje option[value='25']").show();
+        $("#idPorcentaje option[value='50']").show();
+        $("#idPorcentaje option[value='75']").show();
+        $("#idPorcentaje option[value='100']").show();
+        $("#idPorcentaje").val("0");
     }
 
 }
@@ -119,7 +155,7 @@ function guardar_sancion() {
             data: $("#formularioCreaSancion, #idPersona").serialize(),
             success: function (data) {
                 if (data.idPersona) {
-                    abrirModal("Información guardada", "La sanción se creó con éxito", "");
+                    abrirModal("Información guardada", "La sanción se creó con éxito", "recargar");
                 }
             }
         });

@@ -323,13 +323,14 @@
                             <label for="lblNivEsc">Nivel escolar<span id="ANivEsc" class="form-text">*</span>:</label>
                             <select id="idEscolaridad" name="idEscolaridad" class="obligatorio form-control">
                                 <option value="0">-- Seleccione --</option>
-                                {% for row in Escolaridad %}
-                                <option value="{{row.idEscolaridad}}">{{row.Escolaridad}}</option>
+                                {% for row in NivelEscolar %}
+                                <option value="{{row.idNivel}}">{{row.NivelEscolar}} - {{row.EstatusNivel}}</option>
                                 {% endfor %}
                             </select>
                             <small id="ENivEsc" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>
+                    <!--
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblEstNivEsc">Estatus Nivel escolar<span id="AEstNivEsc"
@@ -340,14 +341,16 @@
                             <small id="EEstNivEsc" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
+                    -->
+                
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblUniversidad">Escuela<span id="AUniversidad" class="form-text">*</span>:</label>
                             <select id="idInstitucionEscolar" name="idInstitucionEscolar" class="obligatorio form-control" value="{{empleado.Escuela}}">
                                 <option value="0">-- Seleccione --</option>
+                                {% for row in InstitucionEscolar %}
+                                    <option value="{{row.idInstitucionEscolar}}">{{row.InstitucionEscolar}}</option>
+                                {% endfor %}
                             </select>
                             <small id="EUniversidad" class="etiquetaError form-text form-text-error"  > </small>
                         </div>
@@ -357,6 +360,9 @@
                             <label for="lblEstudios">Estudios<span id="AEstudios" class="form-text">*</span>:</label>
                             <select id="idFormacionEducativa" name="idFormacionEducativa" class="obligatorio form-control">
                                 <option value="0">-- Seleccione --</option>
+                                {% for row in FormacionEducativa %}
+                                    <option value="{{row.idFormacionEducativa}}">{{row.FormacionEducativa}}</option>
+                                {% endfor %}
                             </select>
                             <small id="EEstudios" class="etiquetaError form-text form-text-error"> </small>
                         </div>

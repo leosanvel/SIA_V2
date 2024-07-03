@@ -43,14 +43,13 @@
                     </tr>
                     <tr>
                         <th>Tipo de concepto</th>
+                        <th>Tipo de Empleado</th>
                         <th>idConcepto</th>
                         <th>Concepto</th>
-                        <th>Abreviatura</th>
-                        <th>Porcentaje</th>
-                        <th>Monto</th>
-                        <th>Clave SAT</th>
-                        <th>Tipo de pago</th>
+                        <th>Partida</th>
                         <th>Activo</th>
+                           
+
                         <th></th>
                     </tr>
                 </thead>
@@ -84,20 +83,39 @@
 
                     <form name="frmCrearConcepto" id="frmCrearConcepto">
                         <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
+                                            class="form-text">*</span>:</label>
+                                    <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
+                                        <option value="0">-- Seleccione --</option>
+                                        {% if TipoConcepto %}
+                                        {% for row in TipoConcepto %}
+                                        <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                    <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
 
                             <div class="col-md-6">
-                                <label for="lblTipoConcepto">Tipo de Concepto<span id="ATipoConcepto"
-                                        class="form-text">*</span>:</label>
-                                <select id="TipoConcepto" name="TipoConcepto" class="obligatorio form-control">
-                                    <option value="0">-- Seleccione --</option>
-                                    {% if TipoConcepto %}
-                                    {% for row in TipoConcepto %}
-                                    <option value="{{row.idTipoConcepto}}">{{row.TipoConcepto}}</option>
-                                    {% endfor %}
-                                    {% endif %}
-                                </select>
-                                <small id="ETipoConcepto" class="etiquetaError form-text form-text-error"></small>
+                                <div class="form-group">
+                                    <label for="lblTipoEmpleado">Tipo de Empleado<span id="lblTipoEmpleado"
+                                            class="form-text">*</span>:</label>
+                                    <select id="TipoEmpleado" name="TipoEmpleado" class="obligatorio form-control">
+                                        <option value="0">-- Seleccione --</option>
+                                        {% if TiposEmpleado %}
+                                        {% for row in TiposEmpleado %}
+                                        <option value="{{row.idTipoEmpleado}}">{{row.TipoEmpleado}}</option>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                    <small id="ETipoEmpleado" class="etiquetaError form-text form-text-error"></small>
+                                </div>
                             </div>
+                        </div>
+                        <div class="row">
 
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -107,6 +125,16 @@
                                         class="obligatorio form-control"
                                         oninput="this.value = this.value.toUpperCase()">
                                     <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura"
+                                            class="form-text">*</span>:</label>
+                                    <input type="text" name="Abreviatura" id="Abreviatura" placeholder="" maxlength="25"
+                                        class="obligatorio form-control"
+                                        oninput="this.value = this.value.toUpperCase()">
+                                    <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
                                 </div>
                             </div>
                         </div>
@@ -127,18 +155,10 @@
                                     <small id="EConcepto" class="etiquetaError form-text form-text-error"></small>
                                 </div>
                             </div>
+
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="lblAbreviatura">Abreviatura<span id="AAbreviatura"
-                                            class="form-text">*</span>:</label>
-                                    <input type="text" name="Abreviatura" id="Abreviatura" placeholder="" maxlength="25"
-                                        class="obligatorio form-control"
-                                        oninput="this.value = this.value.toUpperCase()">
-                                    <small id="EAbreviatura" class="etiquetaError form-text form-text-error"></small>
-                                </div>
-                            </div>
+
 
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -150,6 +170,17 @@
                                     <small id="EClaveSAT" class="etiquetaError form-text form-text-error"></small>
                                 </div>
                             </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="lblPartida">Partida<span id="APartida"
+                                            class="form-text">*</span>:</label>
+                                    <input type="number" name="Partida" id="Partida" placeholder="" maxlength="8"
+                                        class="obligatorio form-control">
+                                    <small id="EPartida" class="etiquetaError form-text form-text-error"></small>
+                                </div>
+                            </div>
+
                             <div class="col-md-4">
                                 <label for="lblTipoPago">Tipo de Pago<span id="ATipoPago"
                                         class="form-text">*</span>:</label>
@@ -170,7 +201,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" id="contenedorCheckbox">
                                     <input type="checkbox" id="checkboxporcentaje">
-                                    <label for="checkboxporcentaje" class="file">Porcentaje</label>
+                                    <label for="checkboxporcentaje">Porcentaje</label>
                                 </div>
                             </div>
                         </div>
@@ -194,32 +225,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <label for="lblContrato">Contrato<span id="AContrato"
-                                        class="form-text">*</span>:</label>
-                                <select id="Contrato" name="Contrato" class="obligatorio form-control">
-                                    <option value="0">-- Seleccione --</option>
-                                    <option value="1">No</option>
-                                    <option value="2">Sí</option>
-                                </select>
-                                <small id="EContrato" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-
-                        </div>
-                        <div class="row">
-                            <br>
-                            <div class="col-md-4">
-                                <label for="lblExtraeArchivo">Importación de información<span id="AExtraeArchivo"
-                                        class="form-text">*</span>:</label>
-                                <select id="ExtraeArchivo" name="ExtraeArchivo" class="obligatorio form-control">
-                                    <option value="0">-- Seleccione --</option>
-                                    <option value="1">No</option>
-                                    <option value="2">Sí</option>
-                                </select>
-                                <small id="EExtraeArchivo" class="etiquetaError form-text form-text-error"></small>
-                            </div>
-
-                            <div class="col-md-6" id="ContenedorEstatus">
+                            <div class="col-md-4 pull-right" id="ContenedorEstatus">
                                 <label for="lblEstatus">Estatus<span id="AEstatus" class="form-text">*</span>:</label>
                                 <select id="Estatus" name="Estatus" class="obligatorio form-control">
                                     <option value="0">-- Seleccione --</option>
@@ -229,15 +235,37 @@
                                 </select>
                                 <small id="EEstatus" class="etiquetaError form-text form-text-error"></small>
                             </div>
+
+
+                        </div>
+                        <br>
+
+                        <div class="row">
+                            <div class="form-group" id="contenedorCheckboxContrato">
+                                <input type="checkbox" id="checkboxContrato" name="checkboxContrato">
+                                <label for="checkboxContrato">Contrato</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group" id="contenedorCheckboxImportacion">
+                                <input type="checkbox" id="checkboxImportacion" name="checkboxImportacion">
+                                <label for="checkboxImportacion">Importación de archivo</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group" id="contenedorCheckboxEditable">
+                                <input type="checkbox" id="checkboxEditable" name="checkboxEditable">
+                                <label for="checkboxEditable">Editable</label>
+                            </div>
                         </div>
                         <br>
                         <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert">
                             <strong>Error:</strong>
                             verificar los campos capturados.
                         </div>
+                        <input type="hidden" id="consecutivo" name="consecutivo" value="">
                     </form>
 
-                    <input type="hidden" id="consecutivo" name="consecutivo" value="">
 
 
 

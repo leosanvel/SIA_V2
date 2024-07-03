@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, jsonify, redirect, current_app, send_from_directory
+from flask import request, session, jsonify, url_for, current_app, send_from_directory
 from flask_login import current_user
 from sqlalchemy import or_, inspect, func, and_
 from sqlalchemy.orm.exc import NoResultFound
@@ -43,6 +43,8 @@ def obtener_info_empleado():
         puesto_data_dict.pop("_sa_instance_state", None)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto, 'Puesto': Puesto}
         empleado_datos["idQuincena"] = idQuincena
+    print("empleado_datos")
+    print(empleado_datos)    
     return jsonify(empleado_datos)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])
@@ -75,5 +77,48 @@ def obtener_datos_bancarios():
         datos_bancarios.pop("_sa_instance_state", None)
         datos_bancarios["Banco"] = Banco
 
-
     return jsonify(datos_bancarios)
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-expediente", methods = ["POST"])
+def obtener_expediente():
+    idPersona = session.get('idPersona', None)
+    Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+    NumEmpleado = Empleado.NumeroEmpleado
+    Nombre = Empleado.Persona.Nombre
+    ApPaterno = Empleado.Persona.ApPaterno
+    ApMaterno = Empleado.Persona.ApMaterno
+
+    expediente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona).first()
+    if expediente is not None:
+        expediente = expediente.__dict__
+        expediente.pop("_sa_instance_state", None)
+
+        filename = str(NumEmpleado) + "_" + Nombre + " " + ApPaterno + " " + ApMaterno + ".pdf"
+
+        if os.path.exists(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)):
+            print("Existe expediente")
+            url = url_for("gestion_empleados.descargar_expediente", nombre_archivo = filename)
+        else:
+            print("No existe expediente")
+            url = None
+
+    return jsonify({"expediente":expediente, "url":url})
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-mas-informacion", methods = ["POST"])
+def obtener_mas_informacion():
+    idPersona = session.get("idPersona", None)
+    
+
+    mas_informacion = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
+    if mas_informacion is not None:
+        mas_informacion = mas_informacion.__dict__
+        mas_informacion.pop("_sa_instance_state", None)
+
+        
+
+    return jsonify(mas_informacion)
+
+@gestion_empleados.route("/rh/gestion-empleados/descargar-expediente/<nombre_archivo>")
+def descargar_expediente(nombre_archivo):
+    dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
+    return send_from_directory(directory=dir, path=nombre_archivo, as_attachment=True)

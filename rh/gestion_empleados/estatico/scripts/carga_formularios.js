@@ -125,9 +125,51 @@ function obtenerDatosBanco(){
             if(data != null){
                 $("#Clabe").val(data.Clabe);
                 $("#Banco").val(data.Banco);
+                if(data.Verificado){
+                    $("#Clabe").prop("readonly", true);
+                }
             }
         }
     });
+}
+
+function obtenerExpediente(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-expediente",
+        success: function(data){
+            if(data){
+                if(data.expediente){
+                    for(const prop in data.expediente){
+                        if(data.expediente[prop]){
+                            $("#check" + prop).prop("checked", true);
+                        }
+                    }
+                }
+                if(data.url){
+                    $("#btnDescargarExpediente").show();
+                    $("#btnDescargarExpediente").wrap('<a href="' + data.url + '" download></a>');
+                }
+            }
+        }
+    });
+}
+
+function obtenerMasInformacion(){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-mas-informacion",
+        success: function(data){
+            if(data){
+                $("#Idioma").val(data.idIdioma);
+                $("#Indigena").val(data.idIdiomaIndigena);
+                $("#Afroamericano").val(data.idAfroamericano);
+                $("#Discapacidad").val(data.idDiscapacidad);
+            }
+        }
+    })
 }
 
 function cargarMesesSerGob() {
@@ -431,10 +473,10 @@ $gmx(document).ready(function () {
     $("#idNacionalidad").change(cargaCalidadMigratoria);
 
     $("#idCC").change(cargarPlaza);
-    $("#idEscolaridad").change(cargarEstNivEsc);
-    $("#idEscolaridad").change(cargarEscuela);
-    $("#idEscolaridad").change(cargarFormacionEducativa);
-    $("#idInstitucionEscolar").change(cargarFormacionEducativa);
+    //$("#idEscolaridad").change(cargarEstNivEsc);
+    //$("#idEscolaridad").change(cargarEscuela);
+    //$("#idEscolaridad").change(cargarFormacionEducativa);
+    //$("#idInstitucionEscolar").change(cargarFormacionEducativa);
 
     $("#FecIngresoGob").change(cargarMesesSerGob);
 
@@ -460,6 +502,8 @@ $gmx(document).ready(function () {
         obtenerDomicilio(1);
         obtenerDomicilio(2);
         obtenerDatosBanco();
+        obtenerExpediente();
+        obtenerMasInformacion();
         $("#busquedaCurp").hide();
         $("#tablaEmpleadoSeleccionado").show();
     }

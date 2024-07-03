@@ -3,7 +3,7 @@ from flask import render_template, request, jsonify
 from flask_login import current_user
 
 from app import db
-from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago
+from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago, kTipoEmpleado
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import and_, or_
@@ -11,10 +11,12 @@ from sqlalchemy import and_, or_
 @catalogos.route('/catalogos/conceptos')
 def catalogos_conceptos():
     TiposConcepto = db.session.query(kTipoConcepto).all()
+    TiposEmpleado = db.session.query(kTipoEmpleado).all()
     TiposPago = db.session.query(kTipoPago).all()
     return render_template('/conceptos.html', title ='Conceptos',
                             current_user=current_user,
                             TipoConcepto = TiposConcepto,
+                            TiposEmpleado = TiposEmpleado,
                             TipoPago = TiposPago)
 
 
@@ -22,27 +24,58 @@ def catalogos_conceptos():
 def crear_concepto():
     TipoConcepto = request.form.get('TipoConcepto')
     idConcepto = request.form.get('idConcepto')
+    idTipoEmpleado = request.form.get('TipoEmpleado')
+
+    Gravable = request.form.get('Gravable')
+    Contrato = request.form.get('checkboxContrato')
+    ExtraeArchivo = request.form.get('checkboxImportacion')
+    Editable = request.form.get('checkboxEditable')
 
     mapeo_nombres = { #NombreEnFormulario : nombreEnBase
         'TipoConcepto' : 'idTipoConcepto',
         'idConcepto' : 'idConcepto',
+        'TipoEmpleado' : 'idTipoEmpleado',
         'Concepto' : 'Concepto',
         'Abreviatura' : 'Abreviatura',
         'ClaveSAT' : 'ClaveSAT',
         'TipoPago' : 'idTipoPago',
         'Porcentaje' : 'Porcentaje',
         'Monto' : 'Monto',
-        'Contrato' : 'Contrato',
-        'ExtraeArchivo' : 'ExtraeArchivo',
-        'Estatus' : 'Activo'
+        'Partida' : 'Partida',
+        'checkboxContrato' : 'Contrato',
+        'checkboxImportacion' : 'ExtraeArchivo',
+        'checkboxEditable' : 'Editable',
+        'Estatus' : 'Activo',
+
+        'Gravable':'Gravable',
+        'PartidaAntp':'PartidaAntp',
+        'Fecha':'Fecha',
     }
     concepto_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     concepto_data["Activo"] = int(concepto_data["Activo"]) - 1
-    concepto_data["Contrato"] = int(concepto_data["Contrato"]) - 1
-    concepto_data["ExtraeArchivo"] = int(concepto_data["ExtraeArchivo"]) - 1
+    
+    concepto_data["Gravable"] = 0 if Gravable is None else 1
+    concepto_data["Contrato"] = 0 if Contrato is None else 1
+    concepto_data["ExtraeArchivo"] = 0 if ExtraeArchivo is None else 1
+    concepto_data["Editable"] = 0 if Editable is None else 1
+
+
+    if Gravable is None:
+        concepto_data["Gravable"] = 0
+    else:
+        concepto_data["Gravable"] = 1
+
+    print("Concepto data:--------")
+    print(concepto_data)
+    print("----------------REQUEST COMPLETO-------------")
+    print(request.form)
+    
+
+    # concepto_data["Contrato"] = int(concepto_data["Contrato"]) - 1
+    # concepto_data["ExtraeArchivo"] = int(concepto_data["ExtraeArchivo"]) - 1
     nuevo_concepto = None
     try:
-        concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto).one()
+        concepto_a_modificar = db.session.query(kConcepto).filter_by(idTipoConcepto = TipoConcepto, idConcepto = idConcepto, idTipoEmpleado = idTipoEmpleado).one()
         concepto_a_modificar.update(**concepto_data)
 
         # Modificar relaciones existentes de ese concepto:

@@ -1,0 +1,97 @@
+{% extends "expedientes.html" %}
+
+{% block titulo_pestanas_4 %}
+<li class="nav-item"><a class="nav-link" id="tab-mas-informacion" data-toggle="tab" href="#MasInformacion">Mas información</a></li>
+
+{% endblock %}
+
+{% block contenido_mas_informacion %}
+<div class="tab-pane" id="MasInformacion">
+    <form id="formularioMasInformacion">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblDiscapacidad">Discapacidad<span id="ADiscapacidad" class="form-text">*</span>:</label>
+                    <select id="Discapacidad" name="Discapacidad" class="optional form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Discapacidades %}
+                        <option value="{{row.idDiscapacidad}}">{{row.Discapacidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EDiscapacidad" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblAfroamericano">Afroamericano<span id="AAfroamericano" class="form-text">*</span>:</label>
+                    <select id="Afroamericano" name="Afroamericano" class="opcional form-control">
+                        <option value="0">-- Seleccione --</option>
+                        <option value="1">Si</option>
+                        <option value="2">No</option>
+                    </select>
+                    <small id="EAfroamericano" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary btn-sm" id="btnCrearIdioma">
+                    Crear idioma
+                </button>
+            </div>
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary btn-sm" id="btnCrearIdiomaIndigena">
+                    Crear idioma indigena
+                </button>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblIdioma">Idioma<span id="AIdioma" class="form-text">*</span>:</label>
+                    <select id="Idioma" name="Idioma" class="opcional form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Idiomas %}
+                        <option value="{{row.idIdioma}}">{{row.Idioma}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EIdioma" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblIndigena">Idioma indigena<span id="AIndigena" class="form-text">*</span>:</label>
+                    <select id="Indigena" name="Indigena" class="opcional form-control">
+                        <option value="0">-- Seleccione --</option>
+                        <option value="1">Si</option>
+                        <option value="2">No</option>
+                    </select>
+                    <small id="EIndigena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" id="ColIdiomas">
+                <!-- Aquí se ingresan los nuevos selects para los idiomas -->
+            </div>
+            <div class="col-md-6" id="ColIdiomasIndigenas">
+                <!-- Aquí se ingresan los nuevos selects para los idiomas indigenas -->
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/mas_informacion.js') }}"></script>
+{% endblock %}

@@ -28,6 +28,8 @@ function cargar_info_crear_quincena(){
                     $("#Descripcion").val(descripcion);
                     $("#ConceptoPago").val(concepto);
                     $("#Periodo").val(periodo);
+                    $("#FechaInicio").val(FechaInicio);
+                    $("#FechaFin").val(FechaFin);
                 }
             }
         });
@@ -37,11 +39,16 @@ function cargar_info_crear_quincena(){
 function guardar_crear_nomina(event){
     event.preventDefault();
     if(validarFormulario($("#formularioCrearNomina")).valido){
+        const formNomina = new FormData($("#formularioCrearNomina")[0]);
+        formNomina.append("Usuario", $("#Usuario").text());
         $.ajax({
             async: false,
             type: "POST",
             url: "/nomina/guardar-crear-nomina",
-            data: $("#formularioCrearNomina").serialize(),
+            data: formNomina,
+            enctype: 'multipart/form-data',
+            contentType: false,
+            processData: false,
             success: function(data){
                 if(data.guardado){
                     abrirModal("Nomina creada", "Los datos de la nómina han sido creados de manera correcta.", "recargar");

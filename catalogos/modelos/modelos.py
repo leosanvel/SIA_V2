@@ -141,12 +141,13 @@ class kCentroCostos(db.Model):
     Materia = db.Column(db.String(25), nullable = True)
     Abreviatura = db.Column(db.String(25), nullable = True)
     idNivelRegistroContable = db.Column(db.String(2), nullable = True)
+    CodigoPuesto = db.Column(db.String(50), nullable = True)
     idCiudad = db.Column(db.Integer, nullable = True)
 
     # Relación
     Puestos = db.relationship('tPuesto', back_populates = "CentroCostos", cascade = "all, delete-orphan")
 
-    def __init__(self, idCentroCosto, Clave, CentroCosto, idEntidad, Materia, Abreviatura, idNivelRegistroContable, idCiudad):
+    def __init__(self, idCentroCosto, Clave, CentroCosto, idEntidad, Materia, Abreviatura, idNivelRegistroContable, CodigoPuesto, idCiudad):
         self.idCentroCosto = idCentroCosto
         self.Clave = Clave
         self.CentroCosto = CentroCosto
@@ -154,6 +155,7 @@ class kCentroCostos(db.Model):
         self.Materia = Materia
         self.Abreviatura = Abreviatura
         self.idNivelRegistroContable = idNivelRegistroContable
+        self.CodigoPuesto = CodigoPuesto
         self.idCiudad = idCiudad
 
     # Actualizar registro
@@ -232,14 +234,17 @@ class kConcepto(db.Model):
     Partida = db.Column(db.Integer, nullable = True)
     Fecha = db.Column(db.Date, nullable = True)
     ExtraeArchivo = db.Column(db.Integer, nullable = False)
+    Editable = db.Column(db.Integer, nullable = False)
     Activo = db.Column(db.Integer, nullable = False)
 
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, ExtraeArchivo, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, ExtraeArchivo, Editable, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
         self.Abreviatura = Abreviatura
+        self.Gravable = Gravable
+        self.idTipoEmpleado = idTipoEmpleado
         self.Porcentaje = Porcentaje
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
@@ -249,7 +254,10 @@ class kConcepto(db.Model):
         self.Partida = Partida
         self.Fecha = Fecha
         self.ExtraeArchivo = ExtraeArchivo
+        self.Editable = Editable
         self.Activo = Activo
+
+                
     
     # Actualizar registro
     def update(self, **kwargs):
@@ -1242,6 +1250,69 @@ class kTipoFuncion(db.Model):
         self.idTipoFuncion = idTipoFuncion
         self.TipoFuncion = TipoFuncion
         self. Descripcion = Descripcion
+        self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kDiscapacidad(db.Model):
+    __tablename__ = "kdiscapacidad"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idDiscapacidad = db.Column(db.Integer, primary_key = True)
+    Discapacidad = db.Column(db.String(150), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+    
+    def __init__(self, idDiscapacidad, Discapacidad, Activo):
+        self.idDiscapacidad = idDiscapacidad
+        self.Discapacidad = Discapacidad
+        self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kIdiomas(db.Model):
+    __tablename__ = "kidiomas"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idIdioma = db.Column(db.Integer, primary_key = True)
+    Idioma = db.Column(db.String(50), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idIdioma, Idioma, Activo):
+        self.idIdioma = idIdioma
+        self.Idioma = Idioma
+        self.Activo = Activo
+    
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kNivelEscolar(db.Model):
+    __tablename__ = "knivelescolar"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idNivel = db.Column(db.Integer, primary_key = True)
+    CodigoRusp = db.Column(db.Integer, nullable = True)
+    NivelEscolar = db.Column(db.String(70), nullable = True)
+    EstatusNivel = db.Column(db.String(50), nullable = True)
+    CodigoRHNet = db.Column(db.String(25), nullable = True)
+    Activo = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, idNivel, CodigoRusp, NivelEscolar, EstatusNivel, CodigoRHNet, Activo):
+        self.idNivel = idNivel
+        self.CodigoRusp = CodigoRusp
+        self.NivelEscolar = NivelEscolar
+        self.EstatusNivel = EstatusNivel
+        self.CodigoRHNet = CodigoRHNet
         self.Activo = Activo
 
     # Actualizar registro

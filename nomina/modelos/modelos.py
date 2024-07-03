@@ -22,7 +22,7 @@ class tNomina(db.Model):
     SMM = db.Column(db.Numeric(11, 2), nullable = False)
     SueldoMensual = db.Column(db.Numeric(11, 2), nullable = False)
 
-    def __init__(self, idNomina, idTipoNomina, idQuincena, Nomina, Descripcion, Observaciones, Estatus, FechaPago, Fecha, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena, SMM, SueldoMensual):
+    def __init__(self, idNomina, idTipoNomina, idQuincena, Nomina, Descripcion, Observaciones, Estatus, FechaPago, FechaInicial, FechaFinal, Quincena, idPersonaEmisor, PeriodoQuincena, SMM, SueldoMensual):
         self.idNomina = idNomina
         self.idTipoNomina = idTipoNomina
         self.idQuincena = idQuincena
@@ -30,7 +30,6 @@ class tNomina(db.Model):
         self.Descripcion = Descripcion
         self.Observaciones = Observaciones
         self.Estatus = Estatus
-        self.Fecha = Fecha
         self.FechaPago = FechaPago
         self.FechaInicial = FechaInicial
         self.FechaFinal = FechaFinal

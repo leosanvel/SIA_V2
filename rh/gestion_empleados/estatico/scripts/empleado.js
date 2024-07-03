@@ -21,7 +21,7 @@ function seleccionaEmpleado(idPersona) {
 
                     $("#CurpEmpleado").text(data.CURP);
                     $("#NombreEmpleado").text(data.Nombre);
-                    $("#ApellidosEmpleado").text(data.ApPaterno + ' '+ data.ApMaterno);
+                    $("#ApellidosEmpleado").text(data.ApPaterno + ' ' + data.ApMaterno);
                     $('#ModalBuscaEmpleado').modal('hide');
 
                     $("#tablaResultadosJustificantes tbody").empty();
@@ -136,6 +136,40 @@ function agregarConceptos(){
         type: "POST",
         url: "/rh/gestion-empleados/agregar-conceptos",
         success: function(data){ }
+    });
+}
+
+function guardarExpediente(formulario){
+    var formData = new FormData(formulario[0]);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/agregar-expediente",
+        data: formData,
+        enctype: 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function(data){
+            if(data.NoArchivo){
+                console.log("Archivo guardado");
+            }
+        }
+    });
+}
+
+function guardarMasInformacion(formulario){
+    var formData = new FormData(formulario[0]);
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/agregar-mas-informacion",
+        data: formData,
+        enctype: 'multipart/form-data',
+        contentType: false,
+        processData: false,
+        success: function(data){
+
+        }
     })
 }
 
@@ -195,6 +229,7 @@ $gmx(document).ready(function () {
         }
 
         validarFormulario($("#formularioDatosBancarios"));
+        validarFormulario($("#formularioMasInformacion"));
 
         if (validacionExitosa) {
 
@@ -241,7 +276,9 @@ $gmx(document).ready(function () {
                         mensajeGuardado += "-Datos personales.<br>";
                         mensajeGuardado += "-Datos de empleado.<br>";
                         mensajeGuardado += "-Datos de escolaridad.<br>";
-                        mensajeGuardado += "-Estatus.<br>"; 
+                        if(data.NumeroEmpleado){
+                           mensajeGuardado += "-El número de Empleado asignado es" + data.NumeroEmpleado;
+                        }
                         if (data.correo_enviado) {
                             mensajeGuardado += "<br>";
                             mensajeGuardado += "Una notificación ha sido enviada vía correo electrónico.<br>";
@@ -249,7 +286,7 @@ $gmx(document).ready(function () {
 
                     }
                     if(data.existe_clabe){
-                        mensajeGuardado += "-No se guardó la Clabe interbancaria porque ya hay una activa."
+                        mensajeGuardado += "-No se guardó la Clabe interbancaria porque ya hay una activa.";
                     }
                 }
             });
@@ -257,9 +294,9 @@ $gmx(document).ready(function () {
         if (!formularioVacio($("#formularioDomicilioParticular"))) {
             if (validarFormulario($("#formularioDomicilioParticular")).valido) {
                 guardarDomicilio(1, $("#formularioDomicilioParticular"));
-                mensajeGuardado += "-Domicilio particular. <br>"
+                mensajeGuardado += "-Domicilio particular. <br>";
             } else {
-                mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DomicilioParticular\')">-Domicilio particular</a>. <br>';
+                mensajeError += '<a href="javascript:void(0);"  onclick="abrirPestana(\'tab-DomicilioParticular\')">-Domicilio particular</a>. <br>';
             }
         }
 
@@ -271,7 +308,7 @@ $gmx(document).ready(function () {
         if (!formularioVacio($(formulario))) {
             if (validarFormulario($(formulario)).valido) {
                 guardarDomicilio(2, $(formulario));
-                mensajeGuardado += "-Domicilio Fiscal. <br>"
+                mensajeGuardado += "-Domicilio Fiscal. <br>";
             } else {
                 mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DomicilioFiscal\')">-Domicilio fiscal</a>. <br>';
             }
@@ -280,9 +317,22 @@ $gmx(document).ready(function () {
         if(!formularioVacio($("#formularioDatosBancarios"))){
             
             if(validarFormulario($("#formularioDatosBancarios")).valido){
-                guardarDatosBancarios($("#formularioDatosBancarios"))
+                guardarDatosBancarios($("#formularioDatosBancarios"));
             }
         }
+
+        guardarExpediente($("#formularioExpediente"));
+
+        if(!formularioVacio($("#formularioMasInformacion"))){
+
+            if(validarFormulario($("#formularioMasInformacion")).valido){
+                guardarMasInformacion($("#formularioMasInformacion"));
+                mensajeGuardado += "-Mas información. <br>";
+            }else{
+                mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-MasInformacion\')">-Mas información</a>. <br>';
+            }
+        }
+
         var path = window.location.pathname;
         if (path === "/rh/gestion-empleados/agregar-empleado") {
             agregarConceptos();
@@ -294,6 +344,8 @@ $gmx(document).ready(function () {
             $("#formularioEscolaridad"),
             $("#formularioDatosEmpleado"),
             $("#formularioDatosPersonales"),
+            $("#formularioMasInformacion"),
+            $("#formularioDatosBancarios"),
         ];
         let hayCamposOpcionales = false;
         formularios.forEach(function (formulario) {
