@@ -375,3 +375,37 @@ class rPersonaMasInformacion(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class rPersonaIdioma(db.Model):
+    __tablename__ = "rpersonaidioma"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idIdioma = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idPersona, idIdioma):
+        self.idPersona = idPersona
+        self.idIdioma = idIdioma
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rPersonaIndigena(db.Model):
+    __tablename__ = "rpersonaindigena"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idIndigena = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idPersona, idIndigena):
+        self.idPersona = idPersona
+        self.idIndigena = idIndigena
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

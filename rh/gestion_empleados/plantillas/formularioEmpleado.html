@@ -93,7 +93,7 @@
                         <div class="form-group">
                             <label for="lblTipoPersona">Tipo de persona<span id="ATipoPersona" class="form-text">*</span>:</label>
                             <select id="idTipoPersona" name="idTipoPersona" class="obligatorio form-control">
-                                <option value="0">-- Seleccione --</option>
+                                
                                 {% for row in TipoPersona %}
                                 <option value="{{row.idTipoPersona}}">{{row.TipoPersona}}</option>
                                 {% endfor %}
@@ -254,14 +254,14 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblHorEnt">Hora de entrada<span id="AHorEnt" class="form-text">*</span>:</label>
-                            <input type="time" id="HoraEntrada" name="HoraEntrada" class="obligatorio form-control">
+                            <input type="time" id="HoraEntrada" name="HoraEntrada" class="obligatorio form-control" value="09:00">
                             <small id="EHorEnt" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblHorSal">Hora de salida<span id="AHorSal" class="form-text">*</span>:</label>
-                            <input type="time" id="HoraSalida" name="HoraSalida" class="obligatorio form-control">
+                            <input type="time" id="HoraSalida" name="HoraSalida" class="obligatorio form-control" value="18:00">
                             <small id="EHorSal" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>

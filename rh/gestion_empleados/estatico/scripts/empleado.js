@@ -159,6 +159,11 @@ function guardarExpediente(formulario){
 
 function guardarMasInformacion(formulario){
     var formData = new FormData(formulario[0]);
+    num_idiomas = $(".idioma").length;
+    num_indigenas = $(".indigena").length;
+    
+    formData.append("NumIdiomas", num_idiomas);
+    formData.append("NumIndigenas", num_indigenas);
     $.ajax({
         async: false,
         type: "POST",

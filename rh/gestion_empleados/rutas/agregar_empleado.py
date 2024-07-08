@@ -418,14 +418,19 @@ def guardar_conceptos():
 
         if anios >= 5 and anios < 10:
             lista_idconceptos.insert(1, 'A1')
+            lista_idtipo.insert(1, 'P')
         if anios >=10 and anios < 15:
             lista_idconceptos.insert(1, 'A2')
+            lista_idtipo.insert(1, 'P')
         if anios >=15 and anios < 20:
             lista_idconceptos.insert(1, 'A3')
+            lista_idtipo.insert(1, 'P')
         if anios >=20 and anios < 25:
             lista_idconceptos.insert(1, 'A4')
+            lista_idtipo.insert(1, 'P')
         if anios >=25:
             lista_idconceptos.insert(1, 'A5')
+            lista_idtipo.insert(1, 'P')
 
         nuevo_concepto = None
         datos_conceptos = {}
@@ -433,16 +438,17 @@ def guardar_conceptos():
         for indice in range(0, len(lista_idconceptos)):
             concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconceptos[indice]).first()
             if(concepto is not None):
-                datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
-                datos_conceptos["idConcepto"] = concepto.idConcepto
-                datos_conceptos["Porcentaje"] = concepto.Porcentaje
-                datos_conceptos["Monto"] = concepto.Monto
-                datos_conceptos["NumeroContrato"] = 1
-                datos_conceptos["FechaInicio"] = None
-                datos_conceptos["FechaFin"] = None
-                datos_conceptos["PagoUnico"] = 0
-                nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
-                db.session.add(nuevo_concepto)
+                if db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = concepto.idTipoConcepto, idConcepto = concepto.idConcepto).first() is None:
+                    datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
+                    datos_conceptos["idConcepto"] = concepto.idConcepto
+                    datos_conceptos["Porcentaje"] = concepto.Porcentaje
+                    datos_conceptos["Monto"] = concepto.Monto
+                    datos_conceptos["NumeroContrato"] = 1
+                    datos_conceptos["FechaInicio"] = None
+                    datos_conceptos["FechaFin"] = None
+                    datos_conceptos["PagoUnico"] = 0
+                    nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
+                    db.session.add(nuevo_concepto)
         
         db.session.commit()
 
@@ -584,7 +590,7 @@ def agregar_documentos():
 @gestion_empleados.route("/rh/gestion-empleados/agregar-mas-informacion", methods = ["POST"])
 def agregar_mas_informacion():
     mapeo_nombres_mas_informacion = { #NombreEnFormulario : nombreEnBase
-        'Idioma': 'idIdioma',
+        'Idioma1': 'idIdioma',
         'Indigena': 'idIdiomaIndigena',
         'Afroamericano': 'idAfroamericano',
         'Discapacidad': 'idDiscapacidad'
@@ -593,10 +599,28 @@ def agregar_mas_informacion():
     mas_informacion_data = {mapeo_nombres_mas_informacion[key]: request.form.get(key) for key in mapeo_nombres_mas_informacion.keys()}
     idPersona = session.get("idPersona", None)
     mas_informacion_data["idPersona"] = idPersona
+    NumIdiomas = int(request.form.get("NumIdiomas"))
+    NumIndigenas = int(request.form.get("NumIndigenas"))
+    print(NumIdiomas, NumIndigenas)
 
     mas_informacion_existente = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
     if mas_informacion_existente is not None:
         mas_informacion_existente.update(**mas_informacion_data)
+
+        if NumIdiomas > 0:
+            for i in range(1, NumIdiomas + 1):
+                idIdioma = request.form.get("Idioma" + str(i))
+                if db.session.query(rPersonaIdioma).filter_by(idPersona = idPersona, idIdioma = idIdioma).first() is None:
+                    nuevo_idioma = rPersonaIdioma(idPersona = idPersona, idIdioma = idIdioma)
+                    print(nuevo_idioma)
+                    db.session.add(nuevo_idioma)
+
+        if mas_informacion_data["idIdiomaIndigena"] == 1 and NumIndigenas > 0:
+            for i in range(1, NumIndigenas + 1):
+                idIndigena = request.form.get("Indigena" + str(i))
+                if db.session.query(rPersonaIndigena).filter_by(idPersona = idPersona, idIndigena = idIndigena).first is None:
+                    nuevo_indigena = rPersonaIndigena(idPersona=idPersona, idIndigena=idIndigena)
+                    db.session.add(nuevo_indigena)
     else:
         nuevo_mas_informacion = rPersonaMasInformacion(**mas_informacion_data)
         db.session.add(nuevo_mas_informacion)

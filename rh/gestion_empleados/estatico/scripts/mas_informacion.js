@@ -21,7 +21,7 @@ $gmx(document).ready(function(){
         `;
         $(`#ColIdiomas`).append(text);
 
-        $("#Idioma option").clone().appendTo(`#Idioma${cont}`);
+        $("#Idioma1 option").clone().appendTo(`#Idioma${cont}`);
     });
 
     $(document).on("click", ".remover", function(){
@@ -50,5 +50,5 @@ $gmx(document).ready(function(){
             `;
             $("#ColIdiomasIndigenas").append(text);
         }
-    })
+    });
 });
