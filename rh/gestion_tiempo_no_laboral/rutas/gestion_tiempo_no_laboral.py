@@ -5,5 +5,4 @@ gestion_tiempo_no_laboral = Blueprint('gestion_tiempo_no_laboral', __name__, tem
 from . import dias_festivos
 from . import dias_persona
 from . import periodo_vacacional
-from . import vacaciones_ganadas
 from . import descontar_dias

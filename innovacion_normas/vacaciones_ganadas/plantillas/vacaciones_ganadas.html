@@ -40,35 +40,8 @@
                         <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label id="lblDiasGanados" for="lblDiasGanados">Días ganados:</label>
-                        <input type="text" id="DiasGanados" class="form-control obligatorio">
-                        <small id="EDiasGan" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-                </div>
             </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group datepicker-group" style="z-index: 1;">
-                        <label id ="lblFecha" for="lblFecha">Fecha<span id="AFecha" class="form-text"></span>:</label>
-                        <input type="text" id="Fecha" name="Fecha" class="form-control obligatorio fecha">
-                        <span class="glyphicon glyphicon-calendar" aria-hidden="true" style="display: none;"></span>
-                        <small id="EFecha" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label id ="lblActVacacionesGanadas" for="lblVacacionesGanadas">Activo<span id="AActVacacionesGanadas" class="form-text"></span>:</label>
-                        <select id="ActVacacionesGanadas" name="ActVacacionesGanadas" class="obligatorio form-control">
-                            <option value="0">-- Seleccione --</option>
-                            <option value="1">Inactivo</option>
-                            <option value="2">Activo</option>
-                        </select>
-                        <small id="EActVacacionesGanadas" class="etiquetaError form-text form-text-error"></small>
-                    </div>
-                </div>
-            </div>
+            
             <div class="row pull-right">
                 <button class="btn btn-primary" type="button" id="btnGuardaDiasGan">
                     <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
@@ -84,5 +57,5 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
-<script src="{{ url_for('gestion_tiempo_no_laboral.static', filename='scripts/vacaciones_ganadas.js') }}"></script>
+<script src="{{ url_for('vacaciones.static', filename='scripts/vacaciones_ganadas.js') }}"></script>
 {% endblock %}

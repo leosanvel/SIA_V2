@@ -1,43 +1,22 @@
 $gmx(document).ready(function(){
-    $("#btnGuardaDiasGan").click(guardar_vacacionesganadas);
+    $("#btnGuardaDiasGan").click(guardar_vacaciones_ganadas);
     $("#btnBuscaPeriodos").click(obtener_periodos);
 
     $(document).on('click', "input:checkbox", un_solo_checkbox);
-
-    // $(document).on('click', "input:checkbox", function(){
-    //     console.log("si entra");
-    //     var $box = $(this);
-    //     console.log($box);
-    //     if($box.is(":checked")){
-    //         console.log($box.checked);
-    //         var group = "input:checkbox[name='" + $box.attr("name") + "']";
-    //         console.log($box.attr("name"));
-    //         $(group).prop("checked", false);
-    //         $box.prop("checked", true);
-    //     }else{
-    //         $box.prop("checked", false);
-    //     }
-    // });
-
-    $("#Fecha").datepicker({
-        dateFormat: 'dd/mm/yy',
-        changeYear: true,
-        changeMonth: true
-    });
 });
 
-function guardar_vacacionesganadas(event){
+function guardar_vacaciones_ganadas(event){
     event.preventDefault();
     var validaEmpleado = true;
     var existeNumeroEmpleado = $("#idPersona").length > 0;
-    //console.log($("#idPersona").val());
+
     if(!existeNumeroEmpleado || ($("#idPersona").val()) === ""){
         var validaEmpleado = false;
         $("#NumeroEmpleadoSeleccionado").addClass("form-control-error");
         $("ENumEmp").text("Seleccione un empleado");
     }
     if(validarFormulario($("#formularioVacacionesGanadas")).valido && validaEmpleado){
-        var FechaFormateada = convertirFechaParaEnvio($("#Fecha").val());
+
         $.ajax({
             async: false,
             type: "POST",
@@ -45,9 +24,7 @@ function guardar_vacacionesganadas(event){
             data: {
                 "idPeriodo": 3,
                 "idPersona": $("#idPersona").val(),
-                "DiasGanados": $("#DiasGanados").val(),
-                "Fecha": $("#Fecha").val(),
-                "Activo": $("#ActVacacionesGanadas").val() - 1
+                "DiasGanados": 10,
             },
             success: function(data){
                 if(data.guardado){

@@ -87,9 +87,14 @@ from consultas.rutas.rutas import consultas
 app.register_blueprint(consultas)
 
 #----------------------------------------------------------------------------------------------------------------------
-# MÓDULO CONSULTAS
+# MÓDULO PUESTOS
 from innovacion_normas.puestos.rutas.puestos import puestos
 app.register_blueprint(puestos)
+
+#----------------------------------------------------------------------------------------------------------------------
+# VACACIONES GANADAS
+from innovacion_normas.vacaciones_ganadas.rutas.vacaciones import vacaciones
+app.register_blueprint(vacaciones)
 
 #with app.app_context():
 #    db.create_all()
