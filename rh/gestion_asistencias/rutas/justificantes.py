@@ -2,7 +2,7 @@ from .gestion_asistencias import gestion_asistencias
 from flask import render_template, request, session, jsonify
 from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from datetime import datetime, time
 import numpy as np
 
@@ -11,6 +11,7 @@ from rh.gestion_asistencias.modelos.modelos import tJustificante, tChecador
 from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
 from rh.gestion_empleados.modelos.empleado import rEmpleado
 from catalogos.modelos.modelos import kQuincena, kTipoProceso, kTipoJustificante, kPeriodoVacacional, rTipoProcesoJustificante
+from general.modelos.modelos import tBitacora
 
 @gestion_asistencias.route('/rh/gestion-asistencias/justificantes', methods = ['POST', 'GET'])
 def gestiona_justificantes():
@@ -102,9 +103,8 @@ def guardar_o_modificar_justificante(justificante_data):
             
         # Actualizar los atributos de 'justificante_existente' con los valores de 'justificante_data'
         justificante_a_modificar.update(**justificante_data)
-        # for attr, value in justificante_data.items():
-        #     if not attr.startswith('_') and hasattr(justificante_a_modificar, attr):
-        #         setattr(justificante_a_modificar, attr, value)
+        
+        guardar_modificar_justificante = 11
                 
     except NoResultFound:
         if request.form.get('TipoProceso') == '2':
@@ -123,6 +123,20 @@ def guardar_o_modificar_justificante(justificante_data):
             # if (int(justificante_data["idTipo"]) == 7):
                 # restar_diaspersona(int(justificante_data["idPersona"]), fecha_inicio, fecha_fin)
             db.session.add(nuevo_justificante)
+
+        guardar_modificar_justificante = 10
+
+    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+    if ultimo_idBitacora is None:
+        idBitacora = 1
+    else:
+        idBitacora = ultimo_idBitacora + 1
+
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=guardar_modificar_justificante,
+                               idUsuario=current_user.idPersona)
+    
+    db.session.add(nueva_bitacora)
 
     # Realizar cambios en la base de datos
     db.session.commit()
@@ -210,6 +224,18 @@ def eliminar_Justificante():
         Justificante = db.session.query(tJustificante).get(idJustificante)
 
         db.session.delete(Justificante)
+
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=12,
+                               idUsuario=current_user.idPersona)
+    
+        db.session.add(nueva_bitacora)
 
         db.session.commit()
 

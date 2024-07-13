@@ -27,3 +27,24 @@ class rPPUsuario(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class tBitacora(db.Model):
+    __tablename__ = "tbitacora"
+    __bind_key__ = 'db2'
+    __table_arg__ = {'mysql_engine':'InnoDB', 'mysql_charset': 'utf8mb4'}
+
+    idBitacora = db.Column(db.Integer, primary_key = True)
+    idTipoMovimiento = db.Column(db.Integer, nullable = True)
+    idUsuario = db.Column(db.Integer, nullable = True)
+    Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+
+    def __init__(self, idBitacora, idTipoMovimiento, idUsuario):
+        self.idBitacora = idBitacora
+        self.idTipoMovimiento = idTipoMovimiento
+        self.idUsuario = idUsuario
+    
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

@@ -9,6 +9,7 @@ from app import db
 from catalogos.modelos.modelos import kQuincena, kTipoIncidencia, kPeriodoVacacional
 from rh.gestion_asistencias.modelos.modelos import rPoliticaPersona, tIncidencia, tChecador
 from rh.gestion_empleados.modelos.empleado import rEmpleado
+from general.modelos.modelos import tBitacora
 
 @gestion_asistencias.route('/rh/gestion-asistencias/incidencias', methods = ['POST', 'GET'])
 def gestiona_incidencias():
@@ -107,6 +108,8 @@ def guardar_o_modificar_incidencia(incidencia_data):
         for attr, value in incidencia_data.items():
             if not attr.startswith('_') and hasattr(incidencia_a_modificar, attr):
                 setattr(incidencia_a_modificar, attr, value)
+
+        crear_modificar_incidencia = 8
                 
     except NoResultFound:
 
@@ -137,6 +140,20 @@ def guardar_o_modificar_incidencia(incidencia_data):
                     checador.HoraSalida = None
         nuevo_incidencia = tIncidencia(**incidencia_data)
         db.session.add(nuevo_incidencia)
+
+        crear_modificar_incidencia = 7
+
+    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+    if ultimo_idBitacora is None:
+        idBitacora = 1
+    else:
+        idBitacora = ultimo_idBitacora + 1
+
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=crear_modificar_incidencia,
+                               idUsuario=current_user.idPersona)
+    
+    db.session.add(nueva_bitacora)
 
     # Realizar cambios en la base de datos
     db.session.commit()
@@ -202,6 +219,18 @@ def eliminar_incidencia():
             checador.HoraSalida = time(18, 0, 0)
             
         db.session.delete(Incidencia)
+
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=9,
+                               idUsuario=current_user.idPersona)
+        db.session.add(nueva_bitacora)
+
         db.session.commit()
 
     except NoResultFound:

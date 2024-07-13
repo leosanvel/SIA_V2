@@ -6,6 +6,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rEmpleado
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
+from general.modelos.modelos import tBitacora
 from sqlalchemy import and_
 from datetime import date, datetime, timedelta
 
@@ -73,10 +74,26 @@ def guardar_o_modificar_sancion(sancion_data):
         #for attr, value in sancion_data.items():
         #    if not attr.startswith('_') and hasattr(sancion_a_modificar, attr):
         #        setattr(sancion_a_modificar, attr, value)
+
+        guardar_modificar_licencia = 5
                 
     except NoResultFound:
         nueva_sancion = rSancionPersona(**sancion_data)
         db.session.add(nueva_sancion)
+
+        guardar_modificar_licencia = 4
+
+    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+    if ultimo_idBitacora is None:
+        idBitacora = 1
+    else:
+        idBitacora = ultimo_idBitacora + 1
+
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=guardar_modificar_licencia,
+                               idUsuario=current_user.idPersona)
+    
+    db.session.add(nueva_bitacora)
         
     # Realizar cambios en la base de datos
     db.session.commit()
@@ -154,6 +171,18 @@ def eliminar_Sanciones():
         Sancion = db.session.query(rSancionPersona).get(idSancionPersona)
 
         db.session.delete(Sancion)
+
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=6,
+                               idUsuario=current_user.idPersona)
+        
+        db.session.add(nueva_bitacora)
 
         db.session.commit()
 

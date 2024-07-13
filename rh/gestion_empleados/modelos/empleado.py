@@ -409,3 +409,29 @@ class rPersonaIndigena(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class rMovimientoEmpleado(db.Model):
+    __tablename__ = "rmovimientoempleado"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idMovimientoEmpleado = db.Column(db.Integer, primary_key = True)
+    idTipoMovimiento = db.Column(db.Integer, nullable = True)
+    idPersonaMod = db.Column(db.Integer, nullable = True)
+    idTipoEmpleado = db.Column(db.Integer, nullable = True)
+    idUsuario = db.Column(db.Integer, nullable = True)
+    Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    Periodo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idMovimientoEmpleado, idTipoMovimiento, idPersonaMod, idTipoEmpleado, idUsuario, Periodo):
+        self.idMovimientoEmpleado = idMovimientoEmpleado
+        self.idTipoMovimiento = idTipoMovimiento
+        self.idPersonaMod = idPersonaMod
+        self.idTipoEmpleado = idTipoEmpleado
+        self.idUsuario = idUsuario
+        self.Periodo = Periodo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

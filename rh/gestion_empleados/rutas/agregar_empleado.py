@@ -16,6 +16,7 @@ from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_empleados.modelos.domicilio import *
 from prestaciones.modelos.modelos import rEmpleadoConcepto
+from general.modelos.modelos import tBitacora
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -159,6 +160,21 @@ def guardar_empleado():
     empleado_data['Activo'] = 1
     empleado_puesto_data['idEstatusEP'] = 1
 
+    ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).scalar()
+    if ultimo_id_movimiento is None:
+        idMovimientoEmpleado = 1
+    else:
+        idMovimientoEmpleado = ultimo_id_movimiento + 1
+
+    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+    if ultimo_idBitacora is None:
+        idBitacora = 1
+    else:
+        idBitacora = ultimo_idBitacora + 1
+
+    TipoEmpleado = empleado_data["idTipoEmpleado"]
+    Periodo = datetime.now().year
+
     try:
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
         empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
@@ -200,6 +216,9 @@ def guardar_empleado():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
         #        setattr(empleado_existente, attr, value)
         respuesta["NumeroEmpleado"] = None
+
+        TipoMovimiento = 2
+    
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
@@ -253,6 +272,22 @@ def guardar_empleado():
         respuesta["guardado"] = True
         respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
+        TipoMovimiento = 1
+
+    nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
+                                           idTipoMovimiento=TipoMovimiento,
+                                           idPersonaMod=idPersona,
+                                           idTipoEmpleado=TipoEmpleado,
+                                           idUsuario=current_user.idPersona,
+                                           Periodo=Periodo)
+    
+    db.session.add(nuevo_movimiento)
+
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=TipoMovimiento,
+                               idUsuario=current_user.idPersona)
+    
+    db.session.add(nueva_bitacora)
     # Realizar cambios en la base de datos
     db.session.commit()
 

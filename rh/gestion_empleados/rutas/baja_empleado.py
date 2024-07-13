@@ -14,6 +14,7 @@ from prestaciones.modelos.modelos import rEmpleadoConcepto
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_tiempo_no_laboral.modelos.modelos import *
+from general.modelos.modelos import tBitacora
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -120,6 +121,36 @@ def dar_baja_empleado():
         #Eliminar vacaciones
         if checkboxConservarVacaciones is None:
             vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = idPersona).delete()
+
+        ultimo_id_movimiento = db.session.query(rMovimientoEmpleado.idMovimientoEmpleado).order_by(rMovimientoEmpleado.idMovimientoEmpleado.desc()).scalar()
+        if ultimo_id_movimiento is None:
+            idMovimientoEmpleado = 1
+        else:
+            idMovimientoEmpleado = ultimo_id_movimiento + 1
+
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+        TipoEmpleado = empleadoPuesto.Empleado.idTipoEmpleado
+        Periodo = datetime.now().year
+
+        nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
+                                               idTipoMovimiento=3,
+                                               idPersonaMod=idPersona,
+                                               idTipoEmpleado=TipoEmpleado,
+                                               idUsuario=current_user.idPersona,
+                                               Periodo=Periodo)
+    
+        db.session.add(nuevo_movimiento)
+
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=3,
+                               idUsuario=current_user.idPersona)
+        
+        db.session.add(nueva_bitacora)
      
         db.session.commit()
 
