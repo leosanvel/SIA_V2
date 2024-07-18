@@ -7,7 +7,7 @@ from datetime import datetime, time
 import numpy as np
 
 from app import db
-from rh.gestion_asistencias.modelos.modelos import tJustificante, tChecador
+from rh.gestion_asistencias.modelos.modelos import tJustificante, tChecador, tIncidencia
 from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
 from rh.gestion_empleados.modelos.empleado import rEmpleado
 from catalogos.modelos.modelos import kQuincena, kTipoProceso, kTipoJustificante, kPeriodoVacacional, rTipoProcesoJustificante
@@ -46,6 +46,7 @@ def guarda_Justificante():
     }
     justificante_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
     fechasConsecutivas = request.form.get("checkFechasConsecutivas") # (True or None)
+    mensaje = ""
 
     if fechasConsecutivas:
         justificante_data['FechaInicio'] = datetime.strptime(justificante_data['FechaInicio'], '%d/%m/%Y')
@@ -53,7 +54,7 @@ def guarda_Justificante():
         dias = np.busday_count(justificante_data["FechaInicio"].date(), justificante_data["FechaFin"].date(), weekmask='1111100')
         if(justificante_data["FechaFin"].weekday() < 5):
             dias = dias + 1
-        guardar_o_modificar_justificante(justificante_data)
+        mensaje += guardar_o_modificar_justificante(justificante_data)
     else:
         FechasFlatpickr = request.form.get("FechasFlatpickr")
         fechas = FechasFlatpickr.split(',')  # Separa las fechas por comas
@@ -62,7 +63,7 @@ def guarda_Justificante():
             fecha = fecha.strip()
             justificante_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
             justificante_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
-            guardar_o_modificar_justificante(justificante_data)
+            mensaje += guardar_o_modificar_justificante(justificante_data)
 
     if(int(justificante_data["idTipo"]) == 7): #Vacaciones
         listadias = request.form.get("listaDias").split(',')
@@ -71,13 +72,14 @@ def guarda_Justificante():
         restar_diaspersona(justificante_data["idPersona"], listadias, listaperiodo, listafecha, dias)
 
     if(int(justificante_data["idTipo"]) == 3): #Incapacidad
-        print("Es incapacidad")
+        print("Es incapacidad") 
 
-
-    return jsonify(justificante_data)
+    return jsonify(mensaje)
 
 def guardar_o_modificar_justificante(justificante_data):
     nuevo_justificante = None
+    mensaje = ""
+    guardado = True
 
     try:
         justificante_a_modificar = db.session.query(tJustificante).filter(tJustificante.idJustificante == justificante_data["idJustificante"]).one()
@@ -115,31 +117,50 @@ def guardar_o_modificar_justificante(justificante_data):
                 justificante_data['idPersona'] = int(id_empleado)
                 nuevo_justificante = tJustificante(**justificante_data)
                 # if (justificante_data["idTipo"] == 7):
-                    # restar_diaspersona(int(id_empleado), fecha_inicio, fecha_fin)
+                # restar_diaspersona(int(id_empleado), fecha_inicio, fecha_fin)
                 db.session.add(nuevo_justificante)
+                guardado = True
 
         elif(request.form.get('TipoProceso') == '1'): # Proceso individual
-            nuevo_justificante = tJustificante(**justificante_data)
-            # if (int(justificante_data["idTipo"]) == 7):
-                # restar_diaspersona(int(justificante_data["idPersona"]), fecha_inicio, fecha_fin)
-            db.session.add(nuevo_justificante)
+
+            incidencia_existente = db.session.query(tIncidencia).filter_by(idPersona = justificante_data["idPersona"], FechaInicio = justificante_data["FechaInicio"], FechaFin = justificante_data["FechaFin"]).first()
+            if incidencia_existente is not None:
+                print("Existe Incidencia")
+                if incidencia_existente.idTipo == int(justificante_data["idTipo"]):
+                    print("Existe tipo de incidencia")
+                    nuevo_justificante = tJustificante(**justificante_data)
+                    # if (int(justificante_data["idTipo"]) == 7):
+                    # restar_diaspersona(int(justificante_data["idPersona"]), fecha_inicio, fecha_fin)
+                    db.session.add(nuevo_justificante)
+                    guardado = True
+                else:
+                    print("Existe la incidencia, pero no coincide el tipo")
+                    mensaje += "La incidencia existe pero no coincide el tipo de justificante para el empleado.\n"
+                    guardado = False
+            else:
+                print("No existe incidencia")
+                mensaje += "No existe incidencia en estas fechas para este empleado.\n"
+                guardado = False
 
         guardar_modificar_justificante = 10
 
-    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
-    if ultimo_idBitacora is None:
-        idBitacora = 1
-    else:
-        idBitacora = ultimo_idBitacora + 1
+    if guardado:
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
 
-    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
                                idTipoMovimiento=guardar_modificar_justificante,
                                idUsuario=current_user.idPersona)
     
-    db.session.add(nueva_bitacora)
+        db.session.add(nueva_bitacora)
 
     # Realizar cambios en la base de datos
     db.session.commit()
+
+    return mensaje
 
 def restar_diaspersona(idPersona, listadias, listaperiodo, listafecha, dias):
     for indice, tupla in enumerate(zip(listadias, listaperiodo, listafecha)):
@@ -206,7 +227,7 @@ def busca_Justificante():
         if justificante is not None:
             try:
                 empleado = db.session.query(rEmpleado).filter(rEmpleado.idPersona == justificante.idPersona, rEmpleado.Activo == 1).one()
-
+ 
             except NoResultFound:
                 print("Empleado no encontrado")
 

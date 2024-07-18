@@ -56,6 +56,7 @@ def modificar_empleado():
     FormacionEducativa = db.session.query(kFormacionEducativa).filter_by(Activo = 1).order_by(kFormacionEducativa.FormacionEducativa).all()
     Discapacidades = db.session.query(kDiscapacidad).filter_by(Activo = 1).order_by(kDiscapacidad.Discapacidad).all()
     Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
+    LenguasIndigenas = db.session.query(kLenguasIndigenas).filter_by(Activo = 1).order_by(kLenguasIndigenas.LenguaIndigena).all()
 
     # Catalogos para el domicilio
     Entidad_datos = db.session.query(kEntidad).filter_by(Activo = 1).order_by(kEntidad.idEntidad).all()
@@ -79,7 +80,8 @@ def modificar_empleado():
                            Vialidad = Vialidad_datos,
                            empleado = empleado,
                            Discapacidades = Discapacidades,
-                           Idiomas = Idiomas)
+                           Idiomas = Idiomas,
+                           LenguasIndigenas = LenguasIndigenas)
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
@@ -428,6 +430,13 @@ def guardar_datos_bancarios():
         if(Edo_Cuenta and archivo_permitido(Edo_Cuenta.filename, EXTENCIONES_PERMITIDAS)):
             if(datos_bancarios["Clabe"] != ""):
                 filename = secure_filename(datos_bancarios["Clabe"] + '_' + str(idPersona) + '.pdf')
+                dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta")
+                if not os.path.exists(dir):
+                    os.mkdir(dir)
+                    print("Directorio %s creado" % dir)
+                else:
+                    print("Directorio %s ya existe" % dir)
+
                 dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta", filename)
                 Edo_Cuenta.save(dir)
 

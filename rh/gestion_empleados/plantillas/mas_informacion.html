@@ -68,13 +68,23 @@
             </div>
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="lblIndigena">Idioma indigena<span id="AIndigena" class="form-text">*</span>:</label>
+                    <label for="lblIndigena">Lengua indígena<span id="AIndigena" class="form-text">*</span>:</label>
                     <select id="Indigena" name="Indigena" class="opcional form-control">
                         <option value="0">-- Seleccione --</option>
                         <option value="1">Si</option>
                         <option value="2">No</option>
                     </select>
                     <small id="EIndigena" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <select id="LenguaIndigena" name="LenguaIndigena" class="opcional form-control" style="display: none;">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in LenguasIndigenas %}
+                            <option value="{{row.idLenguaIndigena}}">{{row.LenguaIndigena}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
         </div>

@@ -65,10 +65,7 @@
                         <div class="form-group">
                             <label id="lblPorcentaje" for="lblPorcentaje">Porcentaje<span id="APorcentaje" class="form-text"></span>:</label>
                             <select id="Porcentaje" name="Porcentaje" class="obligatorio form-control">
-                                <option value = "0">-- Seleccione --</option>
-                                {% for porcentaje in Porcentajes %}
-                                <option value="{{porcentaje.idPorcentaje}}">{{porcentaje.Porcentaje}}</option>
-                                {% endfor %}
+                                <option value="{{Porcentaje.idPorcentaje}}">{{Porcentaje.Porcentaje}}%</option>
                             </select>
                             <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
                         </div>
