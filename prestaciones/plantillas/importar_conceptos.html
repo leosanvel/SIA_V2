@@ -8,7 +8,7 @@
             <option value="0">-- Seleccione --</option>
             {% if conceptos %}
             {% for row in conceptos %}
-            <option value="{{row.idConcepto}}">{{row.idTipoConcepto}} - {{row.idConcepto}} - {{row.Concepto}}</option>
+            <option value="{{row.idConcepto}}" data-tipo="{{row.idTipoConcepto}}">{{row.idTipoConcepto}} - {{row.idConcepto}} - {{row.Concepto}}</option>
             {% endfor %}
             {% endif %}
         </select>
@@ -44,7 +44,23 @@
 </div>
 
 
-
+<!-- Ventana Modal -->
+<div class="modal fade" id="ModalImportar" tabindex="-1" aria-labelledby="tituloModalImportar" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="display: table; margin: auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalImportar">Título del Modal</h5>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoModalImportar">Contenido del modal aquí...</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCierreModalImportar" class="btn btn-primary" data-dismiss="modal"
+                    data-comportamiento="nada">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 

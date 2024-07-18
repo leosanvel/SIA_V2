@@ -234,14 +234,17 @@ class kConcepto(db.Model):
     Partida = db.Column(db.Integer, nullable = True)
     Fecha = db.Column(db.Date, nullable = True)
     ExtraeArchivo = db.Column(db.Integer, nullable = False)
+    Editable = db.Column(db.Integer, nullable = False)
     Activo = db.Column(db.Integer, nullable = False)
 
 
-    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, ExtraeArchivo, Activo):
+    def __init__(self,idTipoConcepto, idConcepto, Concepto, Abreviatura, Gravable, idTipoEmpleado, Porcentaje, Monto, ClaveSAT, idTipoPago, Contrato, PartidaAntp, Partida, Fecha, ExtraeArchivo, Editable, Activo):
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
         self.Concepto = Concepto
         self.Abreviatura = Abreviatura
+        self.Gravable = Gravable
+        self.idTipoEmpleado = idTipoEmpleado
         self.Porcentaje = Porcentaje
         self.Monto = Monto
         self.ClaveSAT = ClaveSAT
@@ -251,7 +254,10 @@ class kConcepto(db.Model):
         self.Partida = Partida
         self.Fecha = Fecha
         self.ExtraeArchivo = ExtraeArchivo
+        self.Editable = Editable
         self.Activo = Activo
+
+                
     
     # Actualizar registro
     def update(self, **kwargs):

@@ -18,7 +18,7 @@ function abrirAdModal(){
     }
 }
 
-function busca_baja_empleado(){
+function busca_baja_empleado() {
     var idPersona = $("#idPersona").val()
     if (idPersona) {
         $.ajax({
@@ -41,40 +41,49 @@ function busca_baja_empleado(){
 
                     $("#ResultadoPuesto").show();
 
-                    if (datos.empleadoPuesto.FechaInicio != null) {
-                        var FechaInicio = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaInicio);
-                    } else {
-                        var FechaInicio = "-"
-                    }
-                    if (datos.empleadoPuesto.FechaTermino != null) {
-                        var FechaFin = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaTermino);
-                    } else {
-                        var FechaFin = "-"
-                    }
 
                     $("#Puesto").val(datos.Puesto);
                     $("#idPuesto").val(datos.idPuesto);
-                    $("#fechaInicio").val(FechaInicio);
-                    $("#FecTerm").val(FechaFin);
+
                     $("#TipoEmpleado").val(datos.TipoEmpleado);
                     var optionsHTML = `<option value='0'> -- Seleccione -- </option>`;
                     datos.CausasBaja.forEach(function (causa) {
-                        optionsHTML += `<option value='${causa.idCausaBaja}'> ${causa.CausaBaja} </option>`;
+                        if (causa.idCausaBaja == datos.empleadoPuesto.idCausaBaja) {
+                            optionsHTML += `<option selected value='${causa.idCausaBaja}'> ${causa.CausaBaja} </option>`;
+                        } else {
+                            optionsHTML += `<option value='${causa.idCausaBaja}'> ${causa.CausaBaja} </option>`;
+                        }
                     });
+
                     $("#CausaBaja").html(optionsHTML);
                     $("#TipoAlta").val(datos.TipoAlta);
 
-                    if (datos.TipoEmpleado == "Plaza federal"){
+                    if (datos.TipoEmpleado == "Plaza federal") {
                         $("#contenedorCheckbox").show();
                     }
 
+
+                    if (datos.empleadoPuesto.ConservaVacaciones == 1) {
+                        $("#checkboxConservarVacaciones").prop("checked", true);
+                    } else {
+                        $("#checkboxConservarVacaciones").prop("checked", false);
+                    }
+
+                    if (datos.empleadoPuesto.FechaEfecto != null) {
+                        var FechaEfecto = convertirFechaParaVisualizacion(datos.empleadoPuesto.FechaEfecto);
+                    } else {
+                        var FechaEfecto = ""
+                    }
+
+                    $("#Observaciones").val(datos.empleadoPuesto.Observaciones);
+                    $("#FechaEfecto").val(FechaEfecto);
                 }
             }
         });
     }
 }
 
-function dar_baja(){
+function dar_baja() {
     if (validarFormulario($("#frmResultadoPuesto")).valido) {
         $.ajax({
             async: false,
@@ -84,13 +93,16 @@ function dar_baja(){
             success: function (datos) {
                 if (datos.NoEncontrado) {
                     abrirModal("Error", "Ha ocurrido un problema", "");
-                }else{
+                }
+                if (datos.DadoBaja) {
                     abrirModal("Éxito", "El empleado ha sido dado de baja correctamente", "recargar");
+                } else if (datos.Guardado) {
+                    abrirModal("Éxito", "La información se guardó correctamente", "recargar");
                 }
             }
         });
     }
-    
+
 }
 
 function funcionSeleccionar() {

@@ -33,40 +33,48 @@ $gmx(document).ready(function () {
 
     $("#btnBuscaPolitica").click(function (event) {
         event.preventDefault();
-        if (validarFormulario($("#formularioBuscaPolitica")).valido) {
-            $.ajax({
-                async: false,
-                type: "POST",
-                url: "/rh/gestion-asistencias/buscar-politica",
-                data: $("#formularioBuscaPolitica, #idPersona").serialize(),
-                success: function (data) {
-                    $("#EResultado").text("");
-                    // Limpiar la tabla existente
-                    $("#tablaResultadosPolitica tbody").empty();
-
-                    $("#tablaResultadosPolitica").show();
-
-                    $("#btnGuardaPoliticaPersona").show();
-
-                    // Iterar sobre los elementos
-                    data.politicas.forEach(function (politica) {
-                        $("#tablaResultadosPolitica tbody").append(`
-                        <tr>  
-                            <td>${politica.idPolitica}</td>  
-                            <td>${politica.Politica}</td>  
-                            <td><input type="checkbox" id="check${politica.idPolitica}" class="desactiva-empleado"></td>  
-                        </tr>
-                        `);
-                    });
-
-                    // Iterar sobre los elementos
-                    data.politicas_persona.forEach(function (politica_persona) {
-                        $(`#check${politica_persona.idPolitica}`).prop("checked", true);
-                    });
-
-                }
-            });
-        }
+        BuscaPolitica();
     });
 
 });
+
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado en el modal
+    BuscaPolitica();
+}
+
+function BuscaPolitica(){
+    if (validarFormulario($("#formularioBuscaPolitica")).valido) {
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-asistencias/buscar-politica",
+            data: $("#formularioBuscaPolitica, #idPersona").serialize(),
+            success: function (data) {
+                $("#EResultado").text("");
+                // Limpiar la tabla existente
+                $("#tablaResultadosPolitica tbody").empty();
+
+                $("#tablaResultadosPolitica").show();
+
+                $("#btnGuardaPoliticaPersona").show();
+
+                // Iterar sobre los elementos
+                data.politicas.forEach(function (politica) {
+                    $("#tablaResultadosPolitica tbody").append(`
+                    <tr>  
+                        <td>${politica.idPolitica}</td>  
+                        <td>${politica.Politica}</td>  
+                        <td><input type="checkbox" id="check${politica.idPolitica}" class="desactiva-empleado"></td>  
+                    </tr>
+                    `);
+                });
+
+                // Iterar sobre los elementos
+                data.politicas_persona.forEach(function (politica_persona) {
+                    $(`#check${politica_persona.idPolitica}`).prop("checked", true);
+                });
+
+            }
+        });
+    }
+}
