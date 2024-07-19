@@ -112,7 +112,7 @@ def dar_baja_empleado():
             empleadoPuesto.ConservaVacaciones = 0
 
 
-        ultimo_id_movimiento = db.session.query(rMovimientoEmpleado.idMovimientoEmpleado).order_by(rMovimientoEmpleado.idMovimientoEmpleado.desc()).scalar()
+        ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento=3).scalar()
         if ultimo_id_movimiento is None:
             idMovimientoEmpleado = 1
         else:

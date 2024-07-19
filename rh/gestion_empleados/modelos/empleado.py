@@ -291,9 +291,10 @@ class rBancoPersona(db.Model):
     Banco = db.relationship("kBancos", back_populates = "BancoPersonas", uselist = False, single_parent = True)
     Empleado = db.relationship("rEmpleado", back_populates = "Banco", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, Clabe, idBanco, Activo, Verificado):
+    def __init__(self, idPersona, Clabe, NumeroCuenta, idBanco, Activo, Verificado):
         self.idPersona = idPersona
         self.Clabe = Clabe
+        self.NumeroCuenta = NumeroCuenta
         self.idBanco = idBanco
         self.Activo = Activo
         self.Verificado = Verificado
@@ -418,7 +419,7 @@ class rMovimientoEmpleado(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idMovimientoEmpleado = db.Column(db.Integer, primary_key = True)
-    idTipoMovimiento = db.Column(db.Integer, nullable = True)
+    idTipoMovimiento = db.Column(db.Integer, primary_key = True)
     idPersonaMod = db.Column(db.Integer, nullable = True)
     idTipoEmpleado = db.Column(db.Integer, nullable = True)
     idUsuario = db.Column(db.Integer, nullable = True)

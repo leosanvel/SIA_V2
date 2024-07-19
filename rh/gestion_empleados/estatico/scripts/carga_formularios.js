@@ -85,18 +85,18 @@ function obtenerInfoEmpleado() {
                 $("#TelCelular").val(data.TelCelular);
                 $("#CorreoPersonal").val(data.CorreoPersonal);
                 $("#CorreoInstitucional").val(data.CorreoInstitucional);
-                $("#idTipoEmpleo").val(data.idTipoEmpleado);
-                cargarTipAlt();
-                $("#idTipoAlta").val(data.idTipoAlta);
-                cargarGrupo();
-                $("#idGrupo").val(data.idGrupo);
-                $("#idCC").val(data.idCentroCosto);
-                cargarPlaza();
                 if(data.idEstatusEP){
+                    $("#idTipoEmpleo").val(data.idTipoEmpleado);
+                    cargarTipAlt();
+                    $("#idTipoAlta").val(data.idTipoAlta);
+                    cargarGrupo();
+                    $("#idGrupo").val(data.idGrupo);
+                    $("#idCC").val(data.idCentroCosto);
+                    cargarPlaza();
                     $("#idPlazaHom").append(`<option value = ${data.idPuesto}>${data.Puesto}</option>`);
+                    $("#idPlazaHom").val(data.idPuesto);
+                    $("#idUbicacion").val(data.idCentroCosto);
                 }
-                $("#idPlazaHom").val(data.idPuesto);
-                $("#idUbicacion").val(data.idCentroCosto);
                 $("#HoraEntrada").val(data.HoraEntrada);
                 $("#HoraSalida").val(data.HoraSalida);
                 $("#FecIngresoGob").val(FecIngresoGobFormateada);
@@ -110,6 +110,9 @@ function obtenerInfoEmpleado() {
                 if(data.Activo){
                     $("#idCC").prop("disabled", true);
                     $("#idPlazaHom").prop("disabled", true);
+                    $("#idTipoEmpleo").prop("disabled", true);
+                    $("#idTipoAlta").prop("disabled", true);
+                    $("#idGrupo").prop("disabled", true);
                 }
 
             }

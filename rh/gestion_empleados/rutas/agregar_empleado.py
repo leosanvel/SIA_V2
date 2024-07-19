@@ -162,12 +162,6 @@ def guardar_empleado():
     empleado_data['Activo'] = 1
     empleado_puesto_data['idEstatusEP'] = 1
 
-    ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).scalar()
-    if ultimo_id_movimiento is None:
-        idMovimientoEmpleado = 1
-    else:
-        idMovimientoEmpleado = ultimo_id_movimiento + 1
-
     ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
     if ultimo_idBitacora is None:
         idBitacora = 1
@@ -205,6 +199,12 @@ def guardar_empleado():
             empleado_puesto_data['Observaciones'] = None
             empleado_puesto_data['FechaEfecto'] = None
             empleado_puesto_data['idQuincena'] = None
+            empleado_puesto_data['ClavePresupuestaSIA'] = None
+            empleado_puesto_data['CodigoPlazaSIA'] = None
+            empleado_puesto_data['CodigoPuestoSIA'] = None
+            empleado_puesto_data['RHNETSIA'] = None
+            empleado_puesto_data['idNivel'] = None
+            empleado_puesto_data['ConservaVacaciones'] = 1
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
             db.session.commit()
@@ -256,6 +256,12 @@ def guardar_empleado():
         empleado_puesto_data['Observaciones'] = None
         empleado_puesto_data['FechaEfecto'] = None
         empleado_puesto_data['idQuincena'] = None
+        empleado_puesto_data['ClavePresupuestaSIA'] = None
+        empleado_puesto_data['CodigoPlazaSIA'] = None
+        empleado_puesto_data['CodigoPuestoSIA'] = None
+        empleado_puesto_data['RHNETSIA'] = None
+        empleado_puesto_data['idNivel'] = None
+        empleado_puesto_data['ConservaVacaciones'] = 1
 
         escolaridad_data['idPersona'] = nuevo_id_persona
         escolaridad_data['Consecutivo'] = 1
@@ -273,6 +279,12 @@ def guardar_empleado():
 
         crea_solicitud("Alta", nuevo_empleado)
         TipoMovimiento = 1
+
+    ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento = TipoMovimiento).scalar()
+    if ultimo_id_movimiento is None:
+        idMovimientoEmpleado = 1
+    else:
+        idMovimientoEmpleado = ultimo_id_movimiento + 1
 
     nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
                                            idTipoMovimiento=TipoMovimiento,
