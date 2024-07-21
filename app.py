@@ -87,6 +87,12 @@ app.register_blueprint(gestion_asistencias)
 # MÓDULO GESTIÓN DE TIEMPO NO LABORAL
 from rh.gestion_tiempo_no_laboral.rutas.gestion_tiempo_no_laboral import gestion_tiempo_no_laboral
 app.register_blueprint(gestion_tiempo_no_laboral)
+
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO REPORTES
+from rh.reportes.rutas.reportes import reportes
+app.register_blueprint(reportes)
+
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO NOMINA
 from nomina.rutas.rutas import nomina
