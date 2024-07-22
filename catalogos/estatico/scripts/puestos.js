@@ -296,8 +296,6 @@ function cargar_archivo(){
     const archivo = new FormData();
     archivo.append('archivo', $("#Archivo")[0].files[0]);
 
-    console.log(archivo);
-
     $.ajax({
         async: false,
         type: "POST",

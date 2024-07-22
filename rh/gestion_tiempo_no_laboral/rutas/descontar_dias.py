@@ -12,12 +12,12 @@ from general.herramientas.funciones import calcular_quincena
 def descontar_dias():
     quincena = calcular_quincena()
     Quincenas = db.session.query(kQuincena).filter(kQuincena.idQuincena.in_([quincena, quincena + 1, quincena + 2])).order_by(kQuincena.idQuincena).all()
-    Porcentajes = db.session.query(kPorcentajes).all()
+    Porcentaje = db.session.query(kPorcentajes).get(100)
 
     return render_template('/descontar_dias.html', title = 'Descontar días',
                            current_user = current_user,
                            Quincenas = Quincenas,
-                           Porcentajes = Porcentajes)
+                           Porcentaje = Porcentaje)
 
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/guardar-descontar-dias', methods = ['POST'])
 def guardar_descontar_dias():

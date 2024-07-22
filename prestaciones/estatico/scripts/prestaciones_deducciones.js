@@ -14,7 +14,7 @@ $gmx(document).ready(function () {
 
     $("#btnAbrirModalAgregarEmpleadoConcepto").click(modal_agregar_concepto);
 
-    $("#TipoConcepto").on("change", function () { filtrar_tipo_concepto("true"); });
+    $("#TipoConcepto").on("change", function () { filtrar_tipo_concepto(); });
     $("#btnEliminarEmpleadoConcepto").on("click", function () { eliminar_empleado_concepto(); });
 
     $("#Concepto").on("change", function () { pago_fijo_variable(); });
@@ -46,7 +46,7 @@ $gmx(document).ready(function () {
 
 });
 
-function funcionSeleccionar() { //se ejecuta al seleccionar el empleado
+function funcionSeleccionar() { //se ejecuta al seleccionar el empleado en el modal
     buscar_empleado_concepto();
 }
 
@@ -56,6 +56,7 @@ function filtrar_tipo_concepto(BuscarRepetidos) {
     datos["TipoConcepto"] = $("#TipoConcepto").val();
     datos["idPersona"] = $("#idPersona").val();
     datos["BuscarRepetidos"] = BuscarRepetidos;
+    datos["BuscarEditables"] = false;
     datos = JSON.stringify(datos);
     $.ajax({
         async: false,
@@ -68,6 +69,13 @@ function filtrar_tipo_concepto(BuscarRepetidos) {
             if (resultados.NoEncontrado) {
                 console.log("ERROR empleado concepto");
             } else {
+                $('#Concepto').empty();
+
+                var nuevaOpcion = $('<option>', {
+                    'value': "0",
+                    'text': "-- Seleccione --"
+                });
+                $('#Concepto').append(nuevaOpcion);
 
                 resultados.forEach(function (resultado) {
                     // Crea una nueva opción HTML
@@ -99,11 +107,11 @@ function crear_empleado_concepto() {
             data: $("#frmCrearConceptoEmpleado, #idPersona").serialize(),
             success: function (data) {
                 if (data.ContratoExistente) {
-                    abrirModal("El contrato ya existe", "Verifique el numero de contrato", "");
+                    abrirModal("El concepto ya existe", "Verifique el numero de contrato", "");
                 }
 
                 else if (data.Existente) {
-                    abrirModal("El concepto ya existe", "Si desea repetir el concepto, puede agregar un contrato", "");
+                    abrirModal("El concepto ya existe", "Ya existe un concepto con esas características", "");
                 }
                 else {
                     abrirModal("Información guardada", "Operación realizada con éxito", "");
@@ -130,59 +138,74 @@ function buscar_empleado_concepto() {
             } else {
                 $("#btnAbrirModalAgregarEmpleadoConcepto").show();
                 $("#tablaResultadosEmpleadoConceptos").show();
+                $("#tablaResultadosEmpleadoConceptosNoEditables").show();
                 $("#tablaResultadosEmpleadoConceptos tbody").empty();
+                $("#tablaResultadosEmpleadoConceptosNoEditables tbody").empty();
                 var cont = 1;
+
                 data.forEach(function (empleado_concepto) {
-                    text = `
-                    <tr>
-                    <td>
-                    <div>
-                        <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="modal_editar_elemento(${cont})"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> </button>
-                    </div>
-                    </td>
-                
-                `;
-                    text = text + `
-                    
-                        <td>
-                            <input type="text" class="form-control" id="idTipoConcepto${cont}" value="${empleado_concepto.idTipoConcepto}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="idConcepto${cont}" value="${empleado_concepto.idConcepto}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly style="width: 370px"></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Porcentaje${cont}" value="${empleado_concepto.Porcentaje}" readonly></input>
-                        </td>
-                        <td>
-                            <input type="text" class="form-control" id="Monto${cont}" value="${empleado_concepto.Monto}" readonly style="width: 120px"></input>
-                        </td>
-                        `;
-
-                    if (empleado_concepto.NumeroContrato != "1") {
-                        fechaInicial = convertirFechaParaVisualizacion(empleado_concepto.FechaInicio);
-                        fechaFinal = convertirFechaParaVisualizacion(empleado_concepto.FechaInicio);
-
-                        text = text + `
-                            <td>
-                            <input type="text" class="form-control" id="NumeroContrato${cont}" value="${empleado_concepto.NumeroContrato}" readonly style="width: 100px"></input>
-                            </td>
-                            <td>
-                            <input type="text" class="form-control" id="FechaInicio${cont}" value="${fechaInicial}" readonly style="width: 140px"></input>
-                            </td>
-                            <td>
-                            <input type="text" class="form-control" id="FechaFin${cont}" value="${fechaFinal}" readonly style="width: 140px"></input>
-                            </td>
-                            `;
+                    var text = ""; // Inicializa la variable text dentro del bucle
+                    if (empleado_concepto.Editable == 1) {
+                        console.log("Entro")
+                        text += `
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <button type="button" class="btn btn-primary btn-sm" id="Editar_Aceptar${cont}" onclick="modal_editar_elemento(${cont})">
+                                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                `;
+                    } else {
+                        text =  `<tr>
+                                        <td>
+                                        </td>
+                                `;
                     }
 
+                    text += `
+                                <td>
+                                    <input type="text" class="form-control" id="idTipoConcepto${cont}" value="${empleado_concepto.idTipoConcepto}" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="idConcepto${cont}" value="${empleado_concepto.idConcepto}" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="Concepto${cont}" value="${empleado_concepto.Concepto}" readonly style="width: 370px">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="Porcentaje${cont}" value="${empleado_concepto.Porcentaje}" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="Monto${cont}" value="${empleado_concepto.Monto}" readonly style="width: 120px">
+                                </td>
+                            `;
 
+                    // Agregar más campos si es necesario
+                    if (empleado_concepto.NumeroContrato != "1") {
+                        var fechaInicial = empleado_concepto.FechaInicio ? convertirFechaParaVisualizacion(empleado_concepto.FechaInicio) : "";
+                        var fechaFinal = empleado_concepto.FechaFin ? convertirFechaParaVisualizacion(empleado_concepto.FechaFin) : "";
+
+                        text += `
+            <td>
+                <input type="hidden" class="form-control" id="NumeroContrato${cont}" value="${empleado_concepto.NumeroContrato}" readonly style="width: 100px">
+                <input type="hidden" class="form-control" id="FechaInicio${cont}" value="${fechaInicial}" readonly style="width: 140px">
+                <input type="hidden" class="form-control" id="FechaFin${cont}" value="${fechaFinal}" readonly style="width: 140px">
+            </td>
+        `;
+                    }
+
+                    text += `</tr>`; // Cierra la fila de la tabla
+
+                    // Decide en qué tabla agregar la fila
+                    if (empleado_concepto.Editable == 1) {
+                        $("#tablaResultadosEmpleadoConceptos tbody").append(text);
+                    } else {
+                        $("#tablaResultadosEmpleadoConceptosNoEditables tbody").append(text);
+                    }
 
                     cont++;
-                    $("#tablaResultadosEmpleadoConceptos tbody").append(text);
-                    $("#tablaResultadosEmpleadoConceptos tbody").append("</tr>");
                 });
             }
         }
@@ -320,19 +343,16 @@ function modal_editar_elemento(consecutivo) {
     $("#TipoConcepto").prop('disabled', true);
     $("#Concepto").prop('disabled', true);
 
-    console.log("NUMERO CONTRATO");
-    console.log($("#NumeroContrato" + consecutivo).val());
     if ($("#NumeroContrato" + consecutivo).val() !== undefined) {
-        console.log("hay numero de contrato");
+
         if ($("#NumeroContrato" + consecutivo).val() == "1") {
 
             $("#ContenedorContrato").hide();
-        }else {
+        } else {
             $("#ContenedorContrato").show();
         }
-        
+
     } else {
-        console.log("UNDEFINED");
         $("#ContenedorContrato").hide();
     }
 }

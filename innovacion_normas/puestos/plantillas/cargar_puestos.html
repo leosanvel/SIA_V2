@@ -1,0 +1,36 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 pull-left">
+            <div class="form-group hidden-xs" bis_skin_checked="1">
+                <label for="lblArchivo">Cargar documento<span id="AArchivo" class="form-text">*</span>:</label>
+                <input type="file" id="Archivo" name="Archivo" class="opcional" accept=".xlsx, .xls, .csv">
+                <small id="EArchivo" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+
+        <div class="col-md-4 pull-right">
+            <button type="button" class="btn btn-primary" id="btnCargarArchivo">Cargar archivo</button>
+        </div>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div id="ImgModal" name="ImgModal" style="display: none;" class="text-center">
+                <img src="/nomina/estatico/image/Procesando.gif" />
+                <p>Procesando archivo . . .
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('puestos.static', filename='scripts/cargar_puestos.js') }}"></script>
+{% endblock %}

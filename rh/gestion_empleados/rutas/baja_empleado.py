@@ -14,6 +14,7 @@ from prestaciones.modelos.modelos import rEmpleadoConcepto
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_tiempo_no_laboral.modelos.modelos import *
+from general.modelos.modelos import tBitacora
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -71,7 +72,6 @@ def obtener_puestos_empleado():
 
 @gestion_empleados.route('/rh/gestion-empleados/dar-baja-empleado', methods = ['POST', 'GET'])
 def dar_baja_empleado():
-    
     idPersona = request.form.get('idPersona')
     idPuesto = request.form.get('idPuesto')
 
@@ -97,33 +97,60 @@ def dar_baja_empleado():
     try:
         empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idPuesto == idPuesto, or_(cast(rEmpleadoPuesto.FechaTermino, String).like("0000-00-00"), rEmpleadoPuesto.FechaTermino == None), rEmpleadoPuesto.idEstatusEP == 1).one()
         print(empleadoPuesto)
-        # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
-        empleadoPuesto.Puesto.idEstatusPuesto = 2
 
-
-        # Desactivar el puesto del empleado
-        empleadoPuesto.idEstatusEP = 0
-
+        
         # estatus baja, observaciones, fecha que se hizo y fecha de efecto
         empleadoPuesto.idCausaBaja = idCausaBaja
         empleadoPuesto.Observaciones = Observaciones
         empleadoPuesto.FechaEfecto = FechaEfectoFormateado
-        empleadoPuesto.FechaTermino = datetime.today()
+
         empleadoPuesto.idQuincena = NumQuincena
 
-        # desactivar empleado
-        empleadoPuesto.Empleado.Activo = 0
+        if checkboxConservarVacaciones is not None:
+            empleadoPuesto.ConservaVacaciones = 1
+        else:
+            empleadoPuesto.ConservaVacaciones = 0
 
-        # vaciar: rconcepto empleado
-        conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).delete()
 
-        #Eliminar vacaciones
-        if checkboxConservarVacaciones is None:
-            vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = idPersona).delete()
+        ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento=3).scalar()
+        if ultimo_id_movimiento is None:
+            idMovimientoEmpleado = 1
+        else:
+            idMovimientoEmpleado = ultimo_id_movimiento + 1
+
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+        TipoEmpleado = empleadoPuesto.Empleado.idTipoEmpleado
+        Periodo = datetime.now().year
+
+        nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
+                                               idTipoMovimiento=3,
+                                               idPersonaMod=idPersona,
+                                               idTipoEmpleado=TipoEmpleado,
+                                               idUsuario=current_user.idPersona,
+                                               Periodo=Periodo)
+    
+        db.session.add(nuevo_movimiento)
+
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=3,
+                               idUsuario=current_user.idPersona)
+        
+        db.session.add(nueva_bitacora)
      
         db.session.commit()
+        respuesta["Guardado"] = True
+        hoy = hoy = datetime.today().date()
 
-        respuesta["Exito"] = True
+        if empleadoPuesto.FechaEfecto == hoy:
+            print("ES HOY!")
+            revision_baja_empleados(idPersona)
+            respuesta["DadoBaja"] = True
+        
     except NoResultFound:
         respuesta["Error"] = True
 

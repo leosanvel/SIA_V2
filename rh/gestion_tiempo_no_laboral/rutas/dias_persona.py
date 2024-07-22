@@ -28,49 +28,37 @@ def guarda_diasPersona():
     }
     idPeriodoVacacional = request.form.get("idPeriodoVacacional")
     diasPersona_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
-    if diasPersona_data["Fecha"]:
-        diasPersona_data["Fecha"] = datetime.strptime(diasPersona_data["Fecha"], '%d/%m/%Y')
-    try:
-        diasPersona_existente = db.session.query(rDiasPersona).filter_by(idPersona = diasPersona_data["idPersona"], 
-                                                                        idPeriodo=diasPersona_data["idPeriodo"],
-                                                                        DiasGanados = diasPersona_data["DiasGanados"],
-                                                                        Fecha = diasPersona_data["Fecha"],
-                                                                        ).one()
-        diasPersona_existente.update(**diasPersona_data)
+    diasPersona_data['Fecha'] = datetime.now().date()
+    diasPersona_data["Activo"] = 1
         
-    except NoResultFound:
-        diasPersona_data["Activo"] = 1
-        if(diasPersona_data["idPeriodo"] != "3"):
-            PeriodoVacacional = db.session.query(kPeriodoVacacional).filter_by(idPeriodoVacacional = idPeriodoVacacional).first()
-            diasPersona_data['Fecha'] = datetime.now().date()
-            diasPersona_data['idPeriodo'] = PeriodoVacacional.idPeriodo
-            Personas = db.session.query(rEmpleado).filter_by(idTipoEmpleado = 2).all()
-            nuevo_diaPersona = None
-            for persona in Personas:
-                diasPersona_data["idPersona"] = persona.idPersona
-                try:
-                    diasPersona_existente = db.session.query(rDiasPersona).filter_by(idPersona = diasPersona_data["idPersona"],
-                                                                                    idPeriodo=diasPersona_data["idPeriodo"],
-                                                                                    DiasGanados = diasPersona_data["DiasGanados"],
-                                                                                    Fecha = diasPersona_data["Fecha"],
-                                                                                    ).one()
-                    for attr, value in diasPersona_data.items():
-                        if not attr.startswith('_') and hasattr(diasPersona_existente, attr):
-                            setattr(diasPersona_existente, attr, value)
-                except NoResultFound:
-                    nuevo_diaPersona = rDiasPersona(**diasPersona_data)
-                    db.session.add(nuevo_diaPersona)
-
-        else:
+    if(diasPersona_data["idPeriodo"] != "3"):
+        PeriodoVacacional = db.session.query(kPeriodoVacacional).filter_by(idPeriodoVacacional = idPeriodoVacacional).first()
+        diasPersona_data['idPeriodo'] = PeriodoVacacional.idPeriodo
+        Personas = db.session.query(rEmpleado).filter_by(idTipoEmpleado = 2, Activo = 1).all()
+        nuevo_diaPersona = None
+        for persona in Personas:
+            diasPersona_data["idPersona"] = persona.idPersona
             try:
                 diasPersona_existente = db.session.query(rDiasPersona).filter_by(idPersona = diasPersona_data["idPersona"],
                                                                                 idPeriodo=diasPersona_data["idPeriodo"],
                                                                                 DiasGanados = diasPersona_data["DiasGanados"],
                                                                                 Fecha = diasPersona_data["Fecha"],
                                                                                 ).one()
+                diasPersona_existente.update(**diasPersona_data)
             except NoResultFound:
                 nuevo_diaPersona = rDiasPersona(**diasPersona_data)
+                
                 db.session.add(nuevo_diaPersona)
+    else:
+        try:
+            diasPersona_existente = db.session.query(rDiasPersona).filter_by(idPersona = diasPersona_data["idPersona"],
+                                                                            idPeriodo=diasPersona_data["idPeriodo"],
+                                                                            DiasGanados = diasPersona_data["DiasGanados"],
+                                                                            Fecha = diasPersona_data["Fecha"],
+                                                                            ).one()
+        except NoResultFound:
+            nuevo_diaPersona = rDiasPersona(**diasPersona_data)
+            db.session.add(nuevo_diaPersona)
 
     db.session.commit()
     return({"guardado": True})

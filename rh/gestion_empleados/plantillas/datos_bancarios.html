@@ -2,7 +2,7 @@
 
 {% block titulo_pestanas_2 %}
 <li class="nav-item"><a class="nav-link" id="tab-DatosBancarios" data-toggle="tab" href="#DatosBancarios">Datos Bancarios</a></li>
-
+{% block titulo_pestanas_3 %}{% endblock %}
 {% endblock %}
 
 {% block contenido_pestanas_2 %}
@@ -34,4 +34,5 @@
         </div>
     </form>
 </div>
+{% block contenido_expedientes %}{% endblock %}
 {% endblock %}

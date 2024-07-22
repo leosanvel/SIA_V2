@@ -1,4 +1,4 @@
-from .gestion_tiempo_no_laboral import gestion_tiempo_no_laboral
+from innovacion_normas.vacaciones_ganadas.rutas.vacaciones import vacaciones
 from flask import render_template, request, session, jsonify
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -6,11 +6,11 @@ from app import db
 
 from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
 
-@gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/vacaciones-ganadas', methods = ['POST', 'GET'])
+@vacaciones.route('/innovacion-normas/vacaciones-ganadas/vacaciones-ganadas', methods = ['POST', 'GET'])
 def vacaciones_ganadas():
     return render_template('/vacaciones_ganadas.html', title = 'Vacaciones ganadas')
 
-@gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/obtener-dias-persona', methods = ['POST'])
+@vacaciones.route('/rh/gestion-tiempo-no-laboral/obtener-dias-persona', methods = ['POST'])
 def obtener_dias_persona():
     idPersona = request.form.get("idPersona")
 

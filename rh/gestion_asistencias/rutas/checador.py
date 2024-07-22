@@ -8,6 +8,7 @@ from datetime import datetime, date, timedelta
 from app import db
 from rh.gestion_empleados.modelos.empleado import rEmpleado
 from rh.gestion_asistencias.modelos.modelos import tChecador, tIncidencia
+from general.modelos.modelos import tBitacora
 from datetime import time
 from catalogos.modelos.modelos import *
 
@@ -71,6 +72,17 @@ def generar_checador():
                     checador_ya_generado = 1
 
     # checar_incidencias(Checador['NumeroQuincena'])
+
+    if checador_ya_generado:
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=13,
+                               idUsuario=current_user.idPersona)
 
 
     return jsonify({"guardado": checador_ya_generado})

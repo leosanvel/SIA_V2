@@ -1,0 +1,76 @@
+{% extends "datos_bancarios.html" %}
+
+{% block titulo_pestanas_3 %}
+<li class="nav-item"><a class="nav-link" id="tab-Expendiente" data-toggle="tab" href="#Expendiente">Expendiente</a></li>
+{% block titulo_pestanas_4 %}{% endblock %}
+{% endblock %}
+
+{% block contenido_expedientes %}
+
+<div class="tab-pane" id="Expendiente">
+    <form id="formularioExpediente" enctype="multipart/form-data">
+        <div class="row">
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-striped" id="tablaExpedientes">
+                    <thead>
+                        <tr>
+                            <th colspan="6">Lista de documentos:</th>
+                        </tr>
+                        <tr>
+                            <th>Documento</th>
+                            <th>Guardado</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Acta de nacimiento</td>
+                            <td><input type="checkbox" id="checkActaNacimiento" disabled></td>
+                            <td><input type="file" id="ActaNacimiento" name="ActaNacimiento" class="opcional" accept=".pdf, .PDF"></td>
+                        </tr>
+                        <tr>
+                            <td>Título</td>
+                            <td><input type="checkbox" id="checkTitulo" disabled></td>
+                            <td><input type="file" id="Titulo" name="Titulo" class="opcional" accept=".pdf"></td>
+                        </tr>
+                        <tr>
+                            <td>Cartilla militar</td>
+                            <td><input type="checkbox" id="checkCartillaMilitar" disabled></td>
+                            <td><input type="file" id="CartillaMilitar" name="CartillaMilitar" class="opcional" accept=".pdf, .PDF"></td>
+                        </tr>
+                        <tr>
+                            <td>Comprobante de domicilio</td>
+                            <td><input type="checkbox" id="checkComprobanteDomicilio" disabled></td>
+                            <td><input type="file" id="ComprobanteDomicilio" name="ComprobanteDomicilio" class="opcional" accept=".pdf, .PDF"></td>
+                        </tr>
+                        <tr>
+                            <td>Identificación oficial</td>
+                            <td><input type="checkbox" id="checkIdentificacionOficial" disabled></td>
+                            <td><input type="file" id="IdentificacionOficial" name="IdentificacionOficial" class="opcional" accept=".pdf, .PDF"></td>
+                        </tr>
+                        <tr>
+                            <td>CURP</td>
+                            <td><input type="checkbox" id="checkArchivoCURP" disabled></td>
+                            <td><input type="file" id="ArchivoCURP" name="ArchivoCURP" class="opcional" accept=".pdf, .PDF"></td>
+                        </tr>
+                        <tr>
+                            <td>Cédula de identificación Fiscal</td>
+                            <td><input type="checkbox" id="checkArchivoRFC" disabled></td>
+                            <td><input type="file" id="ArchivoRFC" name="ArchivoRFC" class="opcional" accept=".pdf, .PDF"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row pull-left">
+            <button class="btn btn-primary" type="button" id="btnDescargarExpediente" style="display: none;">
+                Descargar expediente
+                <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+            </button>
+        </div>
+    </form>
+</div>
+{% block contenido_mas_informacion %}{% endblock %}
+
+{% endblock %}
