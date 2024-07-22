@@ -88,6 +88,8 @@ class tPuesto(db.Model):
     PuestoJefe = db.Column(db.String(50), nullable = True)
     PresupuestalJefe = db.Column(db.String(15), nullable = True)
     idCentroCosto = db.Column(db.Integer, db.ForeignKey(kCentroCostos.idCentroCosto), nullable = True)
+    SueldoBase = db.Column(db.Numeric(11,2), nullable = True)
+    Compensacion = db.Column(db.Numeric(11,2), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
 
     # Relaciones
@@ -109,7 +111,7 @@ class tPuesto(db.Model):
     def __init__(self, idRamo, idUA, ConsecutivoPuesto, CodigoPuesto, Puesto, idZonaEconomica, ReferenciaTabular, ConsPuesto, idTipoPlazaPuesto,
                  idCaracterOcupacional, idTipoFuncion, NivelSalarial, Tabulador, CodigoPresupuestal, OrdinalCP, idGrupo, idGrado, idNivel, idEstatusPuesto, 
                  idVigencia, FechaInicio, FechaFin, idCentroTrabajo, FolioSival, RegimenLaboral, RemuneracionTotal, TitularAU, DeclaracionPatrimonial,
-                 PlazasSubordinadas, PuestoJefe, PresupuestalJefe, idCentroCosto, Activo):
+                 PlazasSubordinadas, PuestoJefe, PresupuestalJefe, idCentroCosto, SueldoBase, Compensacion, Activo):
         self.idRamo = idRamo
         self.idUA = idUA
         self.ConsecutivoPuesto = ConsecutivoPuesto
@@ -142,6 +144,8 @@ class tPuesto(db.Model):
         self.PuestoJefe = PuestoJefe
         self.PresupuestalJefe = PresupuestalJefe
         self.idCentroCosto = idCentroCosto
+        self.SueldoBase = SueldoBase
+        self.Compensacion = Compensacion
         self.Activo = Activo
         
 
@@ -298,6 +302,7 @@ class rBancoPersona(db.Model):
         self.idBanco = idBanco
         self.Activo = Activo
         self.Verificado = Verificado
+        self.NumeroCuenta = NumeroCuenta
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

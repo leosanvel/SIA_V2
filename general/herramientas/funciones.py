@@ -364,10 +364,9 @@ def crea_solicitud(motivo,empleado_existente):
     solicitud_data = {
         "idSolicitud" : None,
         "Solicitud" : motivo,
-        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.ApPaterno + " " + empleado_existente.Persona.ApMaterno + ".",
+        "Descripcion" : motivo + " al empleado " + empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.ApPaterno + " " + empleado_existente.Persona.ApMaterno + ".",
         "idEstadoSolicitud" : 1,
-    }
-    
+    }  
     
     nueva_solicitud = rSolicitudEstado(**solicitud_data)
     db.session.add(nueva_solicitud)

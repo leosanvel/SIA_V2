@@ -65,6 +65,7 @@ function subir_archivo() {
                                 lista_guardados = true
                             }
                         });
+
                         listaHTML += '</ul>'
 
                         listaHTML += '</tbody></table>';
@@ -91,6 +92,7 @@ function subir_archivo() {
                         });
                         tablaHTML += '</tbody></table>';
                         var mensaje = '';
+                        
                         if (lista == true) {
                             mensaje += listaHTML;
                         }

@@ -1,0 +1,108 @@
+{% extends "Plantilla_Base.html" %}
+{% block content %}
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#NuevoGrupo">Ingresar nuevo dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarGrupo">Modificar datos</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="NuevoGrupo">
+            <form id="formularioGrupo">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblTipEmp">Tipo de empleado<span id="ATipEmp" class="form-text">*</span>:</label>
+                            <select id="TipEmp" name="TipEmp" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                {% for row in Tipoempleado %}
+                                <option value = "{{row.idTipoEmpleado}}">{{row.tipoempleado}}</option>
+                                {% endfor %}
+                            </select>
+                            <small id="ETipEmp" class="etiquetaError form-text form-text-error"  > </small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblTipAlt">Tipo de alta<span id="ATipAlt" class="form-text">*</span>:</label>
+                            <select id="idTipAlt" name="idTipAlt" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                            </select>
+                            <small id="ETipAlt" class="etiquetaError form-text form-text-error"  > </small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblidEsqHon">Esquema honorarios<span id="AidEsqHon" class="form-text">*</span>:</label>
+                            <input type="text" id="idEsqHon" name="idEsqHon" class="obligatorio form-control">
+                            <small id="EEsqHon" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblGrupo">Nuevo grupo<span id="AGrupo" class="form-text">*</span>:</label>
+                            <input type="text" id="Grupo" name="Grupo" class="obligatorio form-control">
+                            <small id="EGrupo" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblActGrupo">Activo<span id="AActGrupo" class="form-text"></span>:</label>
+                            <select id="ActGrupo" name="ActGrupo" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                <option value="1">Inactivo</option>
+                                <option value="2">Activo</option>
+                            </select>
+                            <small id="EActGrupo" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="pull-right">
+                            <button class="btn btn-primary oculta-empleado" type="button" id="guardaGrupo" onclick="guardar_modificar_grupo()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane" id="ModificarGrupo">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="lblModTipEmp">Tipo de empleado<span id="AModTipEmp" class="form-text">*</span>:</label>
+                        <select id="ModTipEmp" name="ModTipEmp" class="obligatorio form-control">
+                            <option value="0">-- Seleccione --</option>
+                            {% for row in Tipoempleado %}
+                            <option value = "{{row.idTipoEmpleado}}">{{row.tipoempleado}}</option>
+                            {% endfor %}
+                        </select>
+                        <small id="EModTipEmp" class="etiquetaError form-text form-text-error"  > </small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="lblModTipAlt">Tipo de alta<span id="AModTipAlt" class="form-text">*</span>:</label>
+                        <select id="ModTipAlt" name="ModTipAlt" class="obligatorio form-control">
+                            <option value="0">-- Seleccione --</option>
+                        </select>
+                        <small id="EModTipAlt" class="etiquetaError form-text form-text-error"  > </small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <table class="table" id="TabModGrupo">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/grupo.js')}}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

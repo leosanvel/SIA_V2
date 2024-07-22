@@ -405,11 +405,11 @@ def calcula_fecha_consecutiva_puestos(idPersona):
         if puesto_activo:
             # Verificar que la FechaTermino del puesto activo sea None o mayor al día actual
             if puesto_activo.FechaTermino is None or puesto_activo.FechaTermino > datetime.today().date():
-                fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
+                fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio.date()
                # Verificar la continuidad de los puestos
                 for puesto in puestos_empleado:
                     if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
-                        fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
+                        fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio.date()
             else:
                 fecha_inicio_consecutiva_mas_antigua = None
                 print("Error: La fecha término del puesto ya ha transcurrido.")

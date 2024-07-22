@@ -3,22 +3,20 @@ from flask_login import current_user
 from sqlalchemy import inspect
 from sqlalchemy.orm.exc import NoResultFound
 
-from catalogos.modelos.modelos import kEstadoCivil
+from .rutas import catalogos
 from app import db
-#from general.utils.funciones import permisos_de_consulta, permisos_de_edicion
+from catalogos.modelos.modelos import kEstadoCivil
 
-estadocivil = Blueprint('estadocivil', __name__, template_folder = 'templates', static_folder='static', static_url_path='/catalogos/estadocivil/static') #por ej. 
-
-@estadocivil.route('/Catalogos/estadocivil', methods = ['POST', 'GET'])
+@catalogos.route('/catalogos/estado-civil', methods = ['POST', 'GET'])
 def catalogo_estadocivil():
     columns = inspect(kEstadoCivil).all_orm_descriptors.keys()
     estadocivil_t = db.session.query(kEstadoCivil).all()
-    return render_template('/estadocivil.html', title='Estado Civil',
+    return render_template('/estado_civil.html', title='Estado Civil',
                            current_user=current_user,
                            columns = columns,
                            estadocivil_t = estadocivil_t)
 
-@estadocivil.route('/Catalogos/guardar_estadocivil', methods = ['POST'])
+@catalogos.route('/catalogos/guardar_estadocivil', methods = ['POST'])
 def guardar_estadocivil():
     columnas = inspect(kEstadoCivil).all_orm_descriptors.keys()
     #print(columnas)

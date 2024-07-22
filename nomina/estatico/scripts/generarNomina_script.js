@@ -36,8 +36,13 @@ function generarNomina() {
             if (data.respuesta == "1") {
                 abrirModal("Archivo Generado", "La nómina se procesó correctamente.", "");            
             }
-            else{                
-                abrirModal("Error", "La nómina no fue procesada.", "");                
+            else{ 
+                if (data.respuesta == "3") {
+                    abrirModal("Error", "Faltan cuentas bancarias por verificar.", "");            
+                }
+                else{                
+                abrirModal("Error", "La nómina no fue procesada.", "");   
+                }             
             }
             window.document.getElementById("idNomina").value = 0;
             window.document.getElementById("Observaciones").value = "";

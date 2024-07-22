@@ -47,11 +47,11 @@ function obtenerEscolaridad(){
         success: function(data){
             if(data != null){
                 $("#idEscolaridad").val(data.idEscolaridad);
-                cargarEstNivEsc();
-                cargarEscuela();
+                //cargarEstNivEsc();
+                //cargarEscuela();
                 $("#idNivelEscolaridad").val(data.idNivelEscolaridad);
                 $("#idInstitucionEscolar").val(data.idInstitucionEscolar);
-                cargarFormacionEducativa();
+                //cargarFormacionEducativa();
                 $("#idFormacionEducativa").val(data.idFormacionEducativa);
                 $("#Especialidad").val(data.Especialidad);
             }

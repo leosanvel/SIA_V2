@@ -136,3 +136,54 @@ class rDiasLaborados(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)                
+
+class rZonaEconomica(db.Model):
+    __tablename__ = "rzonaeconomica"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idAnioFiscal = db.Column(db.Integer, primary_key = True)
+    idZonaEconomica = db.Column(db.Integer, primary_key = True)
+    idNivel =  db.Column(db.Integer, primary_key = True)
+    SueldoBase = db.Column(db.Numeric(11, 2), nullable = False)
+    CompensacionGarantizada = db.Column(db.Numeric(11, 2), nullable = False)
+
+    def __init__(self, idAnioFiscal, idZonaEconomica, idNivel, SueldoBase, CompensacionGarantizada):
+        self.idAnioFiscal = idAnioFiscal
+        self.idZonaEconomica = idZonaEconomica
+        self.idNivel = idNivel
+        self.SueldoBase = SueldoBase
+        self.CompensacionGarantizada = CompensacionGarantizada
+        
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rTabuladorSalarial(db.Model):
+    __tablename__ = "rtabuladorsalarial"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idAnioFiscal = db.Column(db.Integer, primary_key = True)
+    idGrupo = db.Column(db.String(1), primary_key = True)
+    idGrado = db.Column(db.Integer, primary_key = True)
+    idNivel =  db.Column(db.Integer, primary_key = True)
+    PuntoInicial = db.Column(db.Numeric(11, 2), nullable = False)
+    PuntoFinal = db.Column(db.Numeric(11, 2), nullable = False)
+    SueldoBase = db.Column(db.Numeric(11, 2), nullable = False)
+    CompensacionGarantizada = db.Column(db.Numeric(11, 2), nullable = False)
+
+    def __init__(self, idAnioFiscal, idGrupo, idGrado, idNivel, PuntoInicial, PuntoFinal, SueldoBase, CompensacionGarantizada):
+        self.idAnioFiscal = idAnioFiscal
+        self.idGrupo = idGrupo
+        self.idGrado = idGrado
+        self.idNivel = idNivel
+        self.PuntoInicial = PuntoInicial
+        self.PuntoFinal = PuntoFinal
+        self.SueldoBase = SueldoBase
+        self.CompensacionGarantizada = CompensacionGarantizada
+        
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

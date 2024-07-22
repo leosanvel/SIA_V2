@@ -1,0 +1,102 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#NuevoTipoAlta">Ingresar nuevo dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarTipoAlta">Modificar datos</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="NuevoTipoAlta">
+            <form id="formularioTipoAlta">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblTipoEmpleado">Tipo empleado<span id="ATipoEmpleado" class="form-text">*</span>:</label>
+                            <select id="TipoEmpleado" name="TipoEmpleado" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                {% for row in Tipoempleado %}
+                                <option value = "{{row.idTipoEmpleado}}">{{row.tipoempleado}}</option>
+                                {% endfor %}
+                            </select>
+                            <small id="ETipoEmpleado" class="etiquetaError form-text form-text-error"  > </small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblTipoAlta">Nuevo tipo alta<span id="ATipoAlta" class="form-text">*</span>:</label>
+                            <input type="text" id="TipoAlta" name="TipoAlta" class="obligatorio form-control">
+                            <small id="ETipoAlta" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblActTipoAlta">Activo<span id="AActTipoAlta" class="form-text"></span>:</label>
+                            <select id="ActTipoAlta" name="ActTipoAlta" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                <option value="1">Inactivo</option>
+                                <option value="2">Activo</option>
+                            </select>
+                            <small id="ETipoAlta" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <button class="btn btn-primary oculta-empleado" type="button" id="guardarTipoAlta" onclick="guardar_modificar_tipoalta()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="ModificarTipoAlta">
+            <table class="table">
+                <thead>
+                    <tr>
+                        {% for columna in columns %}
+                            <th>{{columna}}</th>
+                        {% endfor %}
+                        </tr>
+                </thead>
+                {% for data in TipoAlta %}
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="form-control" id="idTipoAlta{{data.idTipoAlta}}" value="{{data.idTipoAlta}}" readonly></td>
+                            <td>
+                                <select id="TipoEmpleado{{data.idTipoAlta}}" name="TipoEmpleado{{data.idTipoAlta}}" class="obligatorio form-control" value="{{data.idtipoempleado}}" disabled>
+                                    <option value="0">-- Seleccione --</option>
+                                    {% for row in Tipoempleado %}
+                                    <option value = "{{row.idTipoEmpleado}}">{{row.tipoempleado}}</option>
+                                    {% endfor %}
+                                </select>
+                                <script>
+                                    document.ready = document.getElementById("TipoEmpleado{{data.idTipoAlta}}").value = "{{data.idtipoempleado}}"
+                                </script>
+                            </td>
+                            <td><input type="text" class="form-control" id="TipoAlta{{data.idTipoAlta}}" value="{{data.TipoAlta}}" readonly></td>
+                            <td>
+                                <select id="ActTipoAlta{{data.idTipoAlta}}" name="ActTipoAlta{{data.idTipoAlta}}" class="obligatorio form-control" value="{{data.activo}}" disabled>
+                                    <option value="0">Inactivo</option>
+                                    <option value="1">Activo</option>
+                                </select>
+                                <script>
+                                    document.ready = document.getElementById("ActTipoAlta{{data.idTipoAlta}}").value = "{{data.activo}}"
+                                </script>
+                            </td>
+                            <td><button type="button" class="btn btn-primary oculta-empleado" id="Editar_Aceptar{{data.idTipoAlta}}" onclick="editar_aceptar('{{data.idTipoAlta}}')">Editar</button></td>
+                            <td><button type="button" class="btn btn-secondary oculta-empleado" id="Cancelar{{data.idTipoAlta}}" onclick="cancelar('{{data.idTipoAlta}}', '{{data.idtipoempleado}}', '{{data.TipoAlta}}', '{{data.activo}}')" style="display: none">Cancelar</button></td>
+                        </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/tipo_alta.js')}}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

@@ -4,3 +4,5 @@ puestos = Blueprint('puestos', __name__, template_folder="../plantillas", static
 
 from . import cargar_puestos
 from . import crear_modificar_puestos
+from . import reporte_general
+from . import reporte_antecedente

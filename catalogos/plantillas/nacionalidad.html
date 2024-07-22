@@ -1,0 +1,97 @@
+{% extends "Plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item active"><a class="nav-link" data-toggle="tab" href="#NuevaNacionalidad">Ingresar nuevo dato</a></li>
+        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#ModificarNacionalidad">Modificar datos</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="NuevaNacionalidad">
+            <form id="formularioNacionalidad">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblNacionalidad">Nueva nacionalidad<span id="ANacionalidad" class="form-text">*</span>:</label>
+                            <input type="text" id="Nacionalidad" name="Nacionalidad" class="obligatorio form-control">
+                            <small id="ENacionalidad" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblidNacionalidadFP">Nueva nacionalidad FP<span id="AidNacionalidadFP" class="form-text">*</span>:</label>
+                            <input type="text" id="idNacionalidadFP" name="idNacionalidadFP" class="obligatorio form-control">
+                            <small id="EidNacionalidadFP" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblidPaisFP">Nuevo País FP<span id="AidPaisFP" class="form-text">*</span>:</label>
+                            <input type="text" id="idPaisFP" name="idPaisFP" class="obligatorio form-control">
+                            <small id="EidPaiFP" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="lblActNacionalidad">Activo<span id="AActNacionalidad" class="form-text"></span>:</label>
+                            <select id="ActNacionalidad" name="ActNacionalidad" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                <option value="1">Inactivo</option>
+                                <option value="2">Activo</option>
+                            </select>
+                            <small id="EActNacionalidad" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="pull-right">
+                            <button class="btn btn-primary oculta-empleado" type="button" id="guardaNacionalidad" onclick="guardar_modificar_nacionalidad()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab-pane" id="ModificarNacionalidad">
+            <table class="table">
+                <thead>
+                    <tr>
+                    {% for columna in columns %}
+                        <th>{{columna}}</th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                {% for data in Nacionalidad %}
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="form-control" id="idNacionalidad{{data.idNacionalidad}}" value="{{data.idNacionalidad}}" readonly></td>
+                            <td><input type="text" class="form-control" id="Nacionalidad{{data.idNacionalidad}}" value="{{data.Nacionalidad}}" readonly></td>
+                            <td><input type="text" class="form-control" id="idNacionalidadFP{{data.idNacionalidad}}" value="{{data.idNacionalidadFP}}" readonly></td>
+                            <td><input type="text" class="form-control" id="idPaisFP{{data.idNacionalidad}}" value="{{data.idPaisFP}}" readonly></td>
+                            <td>
+                                <select id="ActNacionalidad{{data.idNacionalidad}}" name="ActNacionalidad{{data.idNacionalidad}}" class="obligatorio form-control" value="{{data.Activo}}" disabled>
+                                    <option value="0">Inactivo</option>
+                                    <option value="1">Activo</option>
+                                </select>
+                                <script>
+                                    document.ready = document.getElementById("ActNacionalidad{{data.idNacionalidad}}").value = "{{data.Activo}}"
+                                </script>
+                            </td>
+                            <td><button type="button" class="btn btn-primary oculta-empleado" id="Editar_Aceptar{{data.idNacionalidad}}" onclick="activar_editar('{{data.idNacionalidad}}')">Editar</button></td>
+                            <td><button type="button" class="btn btn-secondary oculta-empleado" id="Cancelar{{data.idNacionalidad}}" onclick="cancelar('{{data.idNacionalidad}}', '{{data.Nacionalidad}}', '{{data.idNacionalidadFP}}', '{{data.idPaisFP}}', '{{data.Activo}}')" style="display: none">Cancelar</button></td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/nacionalidad.js')}}"></script>
+<!-- Agrega más scripts específicos de public si es necesario -->
+{% endblock %}

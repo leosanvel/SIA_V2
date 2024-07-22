@@ -13,3 +13,5 @@ from . import calendario_pagos
 from . import resumen_nomina
 from . import generar_Dispersion
 from . import generar_archivo_nomina
+from . import sector_central
+from . import mando_enlace

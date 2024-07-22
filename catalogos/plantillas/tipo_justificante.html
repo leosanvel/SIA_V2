@@ -1,0 +1,40 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <table class="table" id="TabTipoJustificante">
+            <thead>
+                <tr>
+                    <th>ID Tipo Justificante</th>
+                    <th>Tipo Justificante</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+            {% for Data in TipoJustificante %}
+            <tbody>
+                <tr>
+                    <td><input type="text" class="form-control" id="idTipoJustificante{{Data.idTipoJustificante}}" value="{{Data.idTipoJustificante}}" readonly></td>
+                    <td><input type="text" class="form-control" id="TipoJustificante{{Data.idTipoJustificante}}" value="{{Data.TipoJustificante}}" readonly></td>
+                    <td>
+                        <select id="ActTipoJustificante{{Data.idTipoJustificante}}" name="ActTipoJustificante{{Data.idTipoJustificante}}" class="obligatorio form-control" value="{{Data.Activo}}" disabled>
+                            <option value="0">Inactivo</option>
+                            <option value="1">Activo</option>
+                        </select>
+                        <script>
+                            document.ready = document.getElementById("ActTipoJustificante{{Data.idTipoJustificante}}").value = "{{Data.Activo}}"
+                        </script>
+                    </td>
+                    <td><button type="button" class="btn btn-primary oculta-empleado" id="Editar_Aceptar{{Data.idTipoJustificante}}" onclick="editar_aceptar('{{Data.idTipoJustificante}}')">Editar</button></td>
+                    <td><button type="button" class="btn btn-primary oculta-empleado" id="Cancelar{{Data.idTipoJustificante}}" onclick="cancelar('{{Data.idTipoJustificante}}', '{{Data.TipoJustificante}}', '{{Data.Activo}}')" style="display: none;">Cancelar</button></td>
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/tipo_justificante.js')}}"></script>
+{% endblock %}

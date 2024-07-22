@@ -85,6 +85,7 @@ def modificar_empleado():
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
+    
     mapeo_nombres_persona = { #NombreEnFormulario : nombreEnBase
         'CURP': 'CURP',
         'Nombre': 'Nombre',
@@ -182,7 +183,7 @@ def guardar_empleado():
         if not(empleado_existente.Activo == int(empleado_data["Activo"])):
             if(int(empleado_data["Activo"]) == 1):
                 envia_correo("informatica","Reactivar",empleado_existente)
-                crea_solicitud("Reactivar",empleado_existente)
+                #crea_solicitud("Reactivar",empleado_existente)
                 correo_enviado = True
             
         print("Actualiza")
@@ -192,7 +193,12 @@ def guardar_empleado():
         escolaridad_existente.update(**escolaridad_data)
         if(not empleado_puesto_existente.idEstatusEP):
             empleado_puesto_data["idPersona"] = idPersona
-            empleado_puesto_data['FechaInicio'] = datetime.now().date()
+            empleado_puesto_data['ClavePresupuestaSIA'] = None
+            empleado_puesto_data['CodigoPlazaSIA'] = None
+            empleado_puesto_data['CodigoPuestoSIA'] = None
+            empleado_puesto_data['RHNETSIA'] = None
+            empleado_puesto_data['idNivel'] = None
+            empleado_puesto_data['FechaInicio'] = datetime.now()
             empleado_puesto_data['FechaTermino'] = None
             empleado_puesto_data['idEstatusEP'] = 1
             empleado_puesto_data['idCausaBaja'] = None
@@ -221,6 +227,7 @@ def guardar_empleado():
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
+        print("nuevo empleado ...")
         ultimo_id = db.session.query(func.max(tPersona.idPersona)).scalar()
         existe = 0
         if ultimo_id is None:
@@ -249,7 +256,7 @@ def guardar_empleado():
         empleado_puesto_data['CodigoPuestoSIA'] = None
         empleado_puesto_data['RHNETSIA'] = None
         empleado_puesto_data['idNivel'] = None
-        empleado_puesto_data['FechaInicio'] = datetime.now().date()
+        empleado_puesto_data['FechaInicio'] = datetime.now()
         empleado_puesto_data['FechaTermino'] = None
         empleado_puesto_data['idEstatusEP'] = 1
         empleado_puesto_data['idCausaBaja'] = None
@@ -505,6 +512,19 @@ def guardar_conceptos():
                     db.session.add(nuevo_concepto)
         
         db.session.commit()
+
+        rep = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
+        if rep:
+            sueldopuesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = rep.idPuesto).first()
+            if sueldopuesto:
+                sbase = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = "P", idConcepto="7").first()
+                if sbase:
+                    sbase.Monto = sueldopuesto.SueldoBase
+                    db.session.commit()
+                scompensacion = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = "P", idConcepto="CG").first()
+                if scompensacion:
+                    scompensacion.Monto = sueldopuesto.Compensacion
+                    db.session.commit()
 
         return jsonify({"guardado": True})
     
