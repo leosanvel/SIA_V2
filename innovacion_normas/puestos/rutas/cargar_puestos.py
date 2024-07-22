@@ -57,7 +57,8 @@ def cargar_archivo_puestos():
                     datos_dict["idCentroCosto"] = None
 
             datos_lista.append(datos_dict)
-
+            #datos_dict["SueldoBase"] = 0
+            #datos_dict["Compensacion"] = 0
             try:
                 puesto_existente = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = datos_dict["ConsecutivoPuesto"]).one()
                 #puesto_existente.update(**datos_dict)

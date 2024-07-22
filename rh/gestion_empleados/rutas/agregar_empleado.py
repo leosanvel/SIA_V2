@@ -82,6 +82,7 @@ def modificar_empleado():
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
+    
     mapeo_nombres_persona = { #NombreEnFormulario : nombreEnBase
         'CURP': 'CURP',
         'Nombre': 'Nombre',
@@ -170,7 +171,7 @@ def guardar_empleado():
         if not(empleado_existente.Activo == int(empleado_data["Activo"])):
             if(int(empleado_data["Activo"]) == 1):
                 envia_correo("informatica","Reactivar",empleado_existente)
-                crea_solicitud("Reactivar",empleado_existente)
+                #crea_solicitud("Reactivar",empleado_existente)
                 correo_enviado = True
             
         print("Actualiza")
@@ -207,6 +208,7 @@ def guardar_empleado():
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
+        print("nuevo empleado ...")
         ultimo_id = db.session.query(func.max(tPersona.idPersona)).scalar()
         existe = 0
         if ultimo_id is None:
@@ -258,7 +260,7 @@ def guardar_empleado():
         respuesta["guardado"] = True
         respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
-        crea_solicitud("Alta", nuevo_empleado)
+        #crea_solicitud("Alta", nuevo_empleado)
     # Realizar cambios en la base de datos
     db.session.commit()
 
@@ -419,7 +421,7 @@ def guardar_conceptos():
 
         lista_idconteptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
         lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
-        print("Hola mundo")
+        
         if anios >= 5 and anios < 10:
             lista_idconteptos.insert(1, 'A1')
             lista_idtipo.insert(1, 'P')
@@ -440,7 +442,7 @@ def guardar_conceptos():
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
         
-        #empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         
         for indice in range(0, len(lista_idconteptos)):
             concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconteptos[indice]).first()
@@ -457,6 +459,19 @@ def guardar_conceptos():
                 db.session.add(nuevo_concepto)
         
         db.session.commit()
+
+        rep = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, idEstatusEP = 1).first()
+        if rep:
+            sueldopuesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = rep.idPuesto).first()
+            if sueldopuesto:
+                sbase = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = "P", idConcepto="7").first()
+                if sbase:
+                    sbase.Monto = sueldopuesto.SueldoBase
+                    db.session.commit()
+                scompensacion = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = "P", idConcepto="CG").first()
+                if scompensacion:
+                    scompensacion.Monto = sueldopuesto.Compensacion
+                    db.session.commit()
 
         return jsonify({"guardado": True})
     

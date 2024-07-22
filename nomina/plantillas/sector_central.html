@@ -1,0 +1,79 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<div class="container">
+    
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#tab-Agregar" onclick="Limpiar('A');">Agregar</a></li>
+        <li><a data-toggle="tab" href="#tab-Modificar" onclick="Limpiar('M');">Modificar</a></li>
+    </ul>
+    <div class="tab-content">            
+        <div class="tab-pane active" id="tab-Agregar">
+            <form id="formulario_cargar_archivo">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <label for="lblArchivoZE">Archivo por zonas económicas:<span id="AArchivoiZE" class="form-text">*</span>:</label>
+                            <input type="file" id="ArchivoZE" name="ArchivoZE" class="obligatorio">
+                            <small id="EArchivoZE" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary pull-right" id="btnSubirArchivo">Importar tabulador</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane" id="tab-Modificar">
+            <form id="formulario_modificar_tabulador">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="lblAnioFiscal">Año fiscal:<span id="AAnioFiscal" class="form-text">*</span>:</label>
+                            <select id="AnioFiscal" name="AnioFiscal" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                {% if AnioFiscal %}
+                                    {% for Anio in AnioFiscal %}
+                                        <option value="{{Anio.idAnioFiscal}}">{{Anio.AnioFiscal}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <small id="EAnioFiscal" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <br />
+                        <button class="btn btn-primary btn-sm" id="btnBuscar" type="button">Buscar</button>
+                    </div>
+                </div>    
+                <div class="row">
+                    <table class="table table-striped" name="tblSector" id="tblSector" style="display: none;" >
+                        <thead>
+                        <tr>
+                            <th>Año fiscal</td>
+                            <th>Zona economica</td>
+                            <th>Nivel</td>
+                            <th>Sueldo base</td>
+                            <th>Compensacion garantizada</td>
+                        </tr>
+                        </thead>
+                        <tbody> 
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>            
+    <br />
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('nomina.static', filename='scripts/sector_central.js') }}"></script>
+{% endblock %}
