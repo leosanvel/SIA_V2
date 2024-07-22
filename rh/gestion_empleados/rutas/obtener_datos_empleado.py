@@ -114,9 +114,25 @@ def obtener_mas_informacion():
         mas_informacion = mas_informacion.__dict__
         mas_informacion.pop("_sa_instance_state", None)
 
-        
+    Idiomas = db.session.query(rPersonaIdioma).filter_by(idPersona = idPersona).all()
+    lista_Idiomas = []
 
-    return jsonify(mas_informacion)
+    for idioma in Idiomas:
+        if idioma is not None:
+            idioma = idioma.__dict__
+            idioma.pop("_sa_instance_state", None)
+            lista_Idiomas.append(idioma)
+
+    Indigenas = db.session.query(rPersonaIndigena).filter_by(idPersona = idPersona).all()
+    lista_Indigenas = []
+
+    for indigena in Indigenas:
+        if indigena is not None:
+            indigena = indigena.__dict__
+            indigena.pop("_sa_instance_state", None)
+            lista_Indigenas.append(indigena)
+
+    return jsonify({"mas_informacion": mas_informacion, "Idiomas": lista_Idiomas, "Indigenas": lista_Indigenas})
 
 @gestion_empleados.route("/rh/gestion-empleados/descargar-expediente/<nombre_archivo>")
 def descargar_expediente(nombre_archivo):

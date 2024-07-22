@@ -119,8 +119,11 @@ $gmx(document).ready(function () {
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    if (data.idPersona) {
+                    console.log(data)
+                    if (data.length == 0) {
                         abrirModal("Información guardada", "El justificante se creó con éxito", "recargar");
+                    }else{
+                        abrirModal("No se pudo guardar la información", data, "");
                     }
                 }
             });
@@ -230,6 +233,7 @@ $gmx(document).ready(function () {
     $("#checkFechasConsecutivas").on("change", function () { cargaFechasConsecutivas(); });
 
 });
+
 function cargaFechasConsecutivas() {
     if ($("#checkFechasConsecutivas").prop("checked")) {
         $("#fechaConsecutivas").show();

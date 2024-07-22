@@ -18,7 +18,7 @@ import os
 from flask import send_from_directory
 
 # Establecer la configuración regional a español (para la fecha)
-locale.setlocale(locale.LC_TIME, 'es_ES')
+#locale.setlocale(locale.LC_TIME, 'es_ES')
 
 @gestion_asistencias.route('/rh/gestion-asistencias/reporte-incidencias', methods = ['POST', 'GET'])
 def enviar_nomina():

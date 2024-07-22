@@ -1320,3 +1320,41 @@ class kNivelEscolar(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class kTipoMovimiento(db.Model):
+    __tablename__ = "ktipomovimiento"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idTipoMovimiento = db.Column(db.Integer, primary_key = True)
+    TipoMovimiento = db.Column(db.String(150), nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idTipoMovimiento, TipoMovimiento, Activo):
+        self.idTipoMovimiento = idTipoMovimiento
+        self.TipoMovimiento = TipoMovimiento
+        self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kLenguasIndigenas(db.Model):
+    __tablename__ = "klenguasindigenas"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idLenguaIndigena = db.Column(db.Integer, primary_key = True)
+    LenguaIndigena = db.Column(db.String(150), nullable = True)
+    Activo = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, idLenguaIndigena, LenguaIndigena, Activo):
+        self.idLenguaIndigena = idLenguaIndigena
+        self.LenguaIndigena = LenguaIndigena
+        self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

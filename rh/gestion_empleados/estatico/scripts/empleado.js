@@ -159,6 +159,11 @@ function guardarExpediente(formulario){
 
 function guardarMasInformacion(formulario){
     var formData = new FormData(formulario[0]);
+    num_idiomas = $(".idioma").length;
+    num_indigenas = $(".indigena").length;
+    
+    formData.append("NumIdiomas", num_idiomas);
+    formData.append("NumIndigenas", num_indigenas);
     $.ajax({
         async: false,
         type: "POST",
@@ -277,7 +282,7 @@ $gmx(document).ready(function () {
                         mensajeGuardado += "-Datos de empleado.<br>";
                         mensajeGuardado += "-Datos de escolaridad.<br>";
                         if(data.NumeroEmpleado){
-                           mensajeGuardado += "-El número de Empleado asignado es" + data.NumeroEmpleado;
+                           mensajeGuardado += "-El número de Empleado asignado es " + data.NumeroEmpleado + "<br>";
                         }
                         if (data.correo_enviado) {
                             mensajeGuardado += "<br>";
@@ -333,10 +338,8 @@ $gmx(document).ready(function () {
             }
         }
 
-        var path = window.location.pathname;
-        if (path === "/rh/gestion-empleados/agregar-empleado") {
-            agregarConceptos();
-        }
+        agregarConceptos();
+
         //Recorremos formularios para validar y mostrar el primer error
         var formularios = [
             $("#formularioDomicilioFiscal"),

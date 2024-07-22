@@ -85,18 +85,18 @@ function obtenerInfoEmpleado() {
                 $("#TelCelular").val(data.TelCelular);
                 $("#CorreoPersonal").val(data.CorreoPersonal);
                 $("#CorreoInstitucional").val(data.CorreoInstitucional);
-                $("#idTipoEmpleo").val(data.idTipoEmpleado);
-                cargarTipAlt();
-                $("#idTipoAlta").val(data.idTipoAlta);
-                cargarGrupo();
-                $("#idGrupo").val(data.idGrupo);
-                $("#idCC").val(data.idCentroCosto);
-                cargarPlaza();
                 if(data.idEstatusEP){
+                    $("#idTipoEmpleo").val(data.idTipoEmpleado);
+                    cargarTipAlt();
+                    $("#idTipoAlta").val(data.idTipoAlta);
+                    cargarGrupo();
+                    $("#idGrupo").val(data.idGrupo);
+                    $("#idCC").val(data.idCentroCosto);
+                    cargarPlaza();
                     $("#idPlazaHom").append(`<option value = ${data.idPuesto}>${data.Puesto}</option>`);
+                    $("#idPlazaHom").val(data.idPuesto);
+                    $("#idUbicacion").val(data.idCentroCosto);
                 }
-                $("#idPlazaHom").val(data.idPuesto);
-                $("#idUbicacion").val(data.idCentroCosto);
                 $("#HoraEntrada").val(data.HoraEntrada);
                 $("#HoraSalida").val(data.HoraSalida);
                 $("#FecIngresoGob").val(FecIngresoGobFormateada);
@@ -110,6 +110,9 @@ function obtenerInfoEmpleado() {
                 if(data.Activo){
                     $("#idCC").prop("disabled", true);
                     $("#idPlazaHom").prop("disabled", true);
+                    $("#idTipoEmpleo").prop("disabled", true);
+                    $("#idTipoAlta").prop("disabled", true);
+                    $("#idGrupo").prop("disabled", true);
                 }
 
             }
@@ -162,14 +165,71 @@ function obtenerMasInformacion(){
         type: "POST",
         url: "/rh/gestion-empleados/obtener-mas-informacion",
         success: function(data){
+            console.log(data);
             if(data){
-                $("#Idioma").val(data.idIdioma);
-                $("#Indigena").val(data.idIdiomaIndigena);
-                $("#Afroamericano").val(data.idAfroamericano);
-                $("#Discapacidad").val(data.idDiscapacidad);
+                $("#Indigena").val(data.mas_informacion.idIdiomaIndigena);
+                $("#Afroamericano").val(data.mas_informacion.idAfroamericano);
+                $("#Discapacidad").val(data.mas_informacion.idDiscapacidad);
+
+                if(data.Idiomas){
+                    var cont = 2;
+                    data.Idiomas.forEach(function(Idioma, index){
+                        if(index == 0){
+                            $("#Idioma1").val(Idioma.idIdioma);
+                        }else{
+                            text = `
+                                <div class="row fila-idioma">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <select id="Idioma${cont}" name="Idioma${cont}" class="opcional form-control idioma">
+
+                                            </select>
+                                            <small id="EIdioma${cont}" class="etiquetaError form-text form-text-error"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-primary btn-sm remover" id="RemoverIdioma${cont}">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            $(`#ColIdiomas`).append(text);
+                            $("#Idioma1 option").clone().appendTo(`#Idioma${cont}`);
+                            $("#Idioma" + cont).val(Idioma.idIdioma);
+                            cont++;
+                        }
+                    });
+                }
+
+                if(data.Indigena){
+                    var cont = 1;
+                    data.Indigenas.forEach(function(Indigena){
+                        text = `
+                            <div class="row fila-idioma">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <select id="IdiomaIndigena${cont}" name="IdiomaIndigena${cont}" class="opcional form-control indigena">
+                                            <option value="0">-- Seleccione --</option>
+                                        </select>
+                                        <small id="EIdiomaIndigena${cont}" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary btn-sm remover" id="RemoverIdiomaIndigena${cont}">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        $("#ColIdiomasIndigenas").append(text);
+                        $("#IdiomaIndigena" + cont).val(Indigena.idIndigena);
+                        cont++;
+                    });
+                }
             }
         }
-    })
+    });
 }
 
 function cargarMesesSerGob() {

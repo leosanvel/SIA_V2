@@ -21,7 +21,7 @@ def generar_contratoshonorarios():
 @gestion_empleados.route("/RH/generarContrato", methods = ['POST'])
 def generar_contrato():
     #Abrir documento .docx
-    template = DocxTemplate("app/rh/empleado/docs/prueba.docx")
+    template = DocxTemplate("rh/gestion_empleados/archivos/prueba.docx")
     #Diccionario con la información
     data_contrato = {
         'Nombre': 'Gerardo Alejandro Ruiz Avendaño',
@@ -31,16 +31,16 @@ def generar_contrato():
     # Escribir información en el archivo .docx
     template.render(data_contrato)
     # Guardar documento generado
-    template.save(f"app/rh/empleado/docs/Test_1.docx")
+    template.save(f"rh/gestion_empleados/archivos/contratos/Test_1.docx")
 
     # Convertir archivo .docx a archivo .pdf
     pythoncom.CoInitialize()
-    convert("app/rh/empleado/docs/Test_1.docx", "app/rh/empleado/docs/Test_1.pdf")
+    convert("rh/gestion_empleados/archivos/contratos/Test_1.docx", "rh/gestion_empleados/archivos/contratos/Test_1.pdf")
 
     return jsonify({"url_descarga": url_for('gestion_empleados.descargar_contrato', nombre_archivo="Test_1.pdf"), "generado": True})
 
 @gestion_empleados.route('/RH/descargar_contrato/<nombre_archivo>')
 def descargar_contrato(nombre_archivo):
-    directorio_archivos = os.path.join(current_app.root_path, "rh", "empleado", "docs")
+    directorio_archivos = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "contratos")
 
     return send_from_directory(directorio_archivos, nombre_archivo, as_attachment=True)

@@ -10,11 +10,13 @@ from docx2pdf import convert
 import pythoncom
 from PyPDF2 import PdfMerger
 import os
+from dateutil.relativedelta import relativedelta
 
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 from rh.gestion_empleados.modelos.domicilio import *
 from prestaciones.modelos.modelos import rEmpleadoConcepto
+from general.modelos.modelos import tBitacora
 #from catalogos.modelos.modelos import *
 from app import db
 from general.herramientas.funciones import *
@@ -54,6 +56,7 @@ def modificar_empleado():
     FormacionEducativa = db.session.query(kFormacionEducativa).filter_by(Activo = 1).order_by(kFormacionEducativa.FormacionEducativa).all()
     Discapacidades = db.session.query(kDiscapacidad).filter_by(Activo = 1).order_by(kDiscapacidad.Discapacidad).all()
     Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
+    LenguasIndigenas = db.session.query(kLenguasIndigenas).filter_by(Activo = 1).order_by(kLenguasIndigenas.LenguaIndigena).all()
 
     # Catalogos para el domicilio
     Entidad_datos = db.session.query(kEntidad).filter_by(Activo = 1).order_by(kEntidad.idEntidad).all()
@@ -77,7 +80,8 @@ def modificar_empleado():
                            Vialidad = Vialidad_datos,
                            empleado = empleado,
                            Discapacidades = Discapacidades,
-                           Idiomas = Idiomas)
+                           Idiomas = Idiomas,
+                           LenguasIndigenas = LenguasIndigenas)
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
@@ -158,6 +162,15 @@ def guardar_empleado():
     empleado_data['Activo'] = 1
     empleado_puesto_data['idEstatusEP'] = 1
 
+    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+    if ultimo_idBitacora is None:
+        idBitacora = 1
+    else:
+        idBitacora = ultimo_idBitacora + 1
+
+    TipoEmpleado = empleado_data["idTipoEmpleado"]
+    Periodo = datetime.now().year
+
     try:
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
         empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
@@ -186,6 +199,12 @@ def guardar_empleado():
             empleado_puesto_data['Observaciones'] = None
             empleado_puesto_data['FechaEfecto'] = None
             empleado_puesto_data['idQuincena'] = None
+            empleado_puesto_data['ClavePresupuestaSIA'] = None
+            empleado_puesto_data['CodigoPlazaSIA'] = None
+            empleado_puesto_data['CodigoPuestoSIA'] = None
+            empleado_puesto_data['RHNETSIA'] = None
+            empleado_puesto_data['idNivel'] = None
+            empleado_puesto_data['ConservaVacaciones'] = 1
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
             db.session.commit()
@@ -196,6 +215,9 @@ def guardar_empleado():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
         #        setattr(empleado_existente, attr, value)
         respuesta["NumeroEmpleado"] = None
+
+        TipoMovimiento = 2
+    
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
@@ -234,6 +256,12 @@ def guardar_empleado():
         empleado_puesto_data['Observaciones'] = None
         empleado_puesto_data['FechaEfecto'] = None
         empleado_puesto_data['idQuincena'] = None
+        empleado_puesto_data['ClavePresupuestaSIA'] = None
+        empleado_puesto_data['CodigoPlazaSIA'] = None
+        empleado_puesto_data['CodigoPuestoSIA'] = None
+        empleado_puesto_data['RHNETSIA'] = None
+        empleado_puesto_data['idNivel'] = None
+        empleado_puesto_data['ConservaVacaciones'] = 1
 
         escolaridad_data['idPersona'] = nuevo_id_persona
         escolaridad_data['Consecutivo'] = 1
@@ -250,6 +278,28 @@ def guardar_empleado():
         respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
         crea_solicitud("Alta", nuevo_empleado)
+        TipoMovimiento = 1
+
+    ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento = TipoMovimiento).scalar()
+    if ultimo_id_movimiento is None:
+        idMovimientoEmpleado = 1
+    else:
+        idMovimientoEmpleado = ultimo_id_movimiento + 1
+
+    nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
+                                           idTipoMovimiento=TipoMovimiento,
+                                           idPersonaMod=idPersona,
+                                           idTipoEmpleado=TipoEmpleado,
+                                           idUsuario=current_user.idPersona,
+                                           Periodo=Periodo)
+    
+    db.session.add(nuevo_movimiento)
+
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=TipoMovimiento,
+                               idUsuario=current_user.idPersona)
+    
+    db.session.add(nueva_bitacora)
     # Realizar cambios en la base de datos
     db.session.commit()
 
@@ -390,6 +440,13 @@ def guardar_datos_bancarios():
         if(Edo_Cuenta and archivo_permitido(Edo_Cuenta.filename, EXTENCIONES_PERMITIDAS)):
             if(datos_bancarios["Clabe"] != ""):
                 filename = secure_filename(datos_bancarios["Clabe"] + '_' + str(idPersona) + '.pdf')
+                dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta")
+                if not os.path.exists(dir):
+                    os.mkdir(dir)
+                    print("Directorio %s creado" % dir)
+                else:
+                    print("Directorio %s ya existe" % dir)
+
                 dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta", filename)
                 Edo_Cuenta.save(dir)
 
@@ -403,44 +460,49 @@ def guardar_conceptos():
     else:
         Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         FechaIngGob = Empleado.FecIngGobierno
+        FechaIngGob = datetime.combine(FechaIngGob, time())
         FechaActual = datetime.today()
 
-        diferencia = FechaActual - FechaIngGob
-        anios = diferencia.years
+        print(FechaIngGob, FechaActual)
 
-        lista_idconteptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
-        lista_idtipo = ['P', 'P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+        anios = relativedelta(FechaActual, FechaIngGob).years
+
+        lista_idconceptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
+        lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
 
         if anios >= 5 and anios < 10:
-            lista_idconteptos.insert(1, 'A1')
+            lista_idconceptos.insert(1, 'A1')
+            lista_idtipo.insert(1, 'P')
         if anios >=10 and anios < 15:
-            lista_idconteptos.insert(1, 'A2')
+            lista_idconceptos.insert(1, 'A2')
+            lista_idtipo.insert(1, 'P')
         if anios >=15 and anios < 20:
-            lista_idconteptos.insert(1, 'A3')
+            lista_idconceptos.insert(1, 'A3')
+            lista_idtipo.insert(1, 'P')
         if anios >=20 and anios < 25:
-            lista_idconteptos.insert(1, 'A4')
+            lista_idconceptos.insert(1, 'A4')
+            lista_idtipo.insert(1, 'P')
         if anios >=25:
-            lista_idconteptos.insert(1, 'A5')
+            lista_idconceptos.insert(1, 'A5')
+            lista_idtipo.insert(1, 'P')
 
         nuevo_concepto = None
         datos_conceptos = {}
         datos_conceptos["idPersona"] = idPersona
-        
-        empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-        
-        for indice in range(0, len(lista_idconteptos)):
-            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconteptos[indice]).first()
-            if(concepto is None):
-                datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
-                datos_conceptos["idConcepto"] = concepto.idConcepto
-                datos_conceptos["Porcentaje"] = concepto.Porcentaje
-                datos_conceptos["Monto"] = concepto.Monto
-                datos_conceptos["NumeroContrato"] = 1
-                datos_conceptos["FechaInicio"] = None
-                datos_conceptos["FechaFin"] = None
-                datos_conceptos["PagoUnico"] = 0
-                nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
-                db.session.add(nuevo_concepto)
+        for indice in range(0, len(lista_idconceptos)):
+            concepto = db.session.query(kConcepto).filter_by(idTipoConcepto = lista_idtipo[indice], idConcepto = lista_idconceptos[indice]).first()
+            if(concepto is not None):
+                if db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = concepto.idTipoConcepto, idConcepto = concepto.idConcepto).first() is None:
+                    datos_conceptos["idTipoConcepto"] = concepto.idTipoConcepto
+                    datos_conceptos["idConcepto"] = concepto.idConcepto
+                    datos_conceptos["Porcentaje"] = concepto.Porcentaje
+                    datos_conceptos["Monto"] = concepto.Monto
+                    datos_conceptos["NumeroContrato"] = 1
+                    datos_conceptos["FechaInicio"] = None
+                    datos_conceptos["FechaFin"] = None
+                    datos_conceptos["PagoUnico"] = 0
+                    nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
+                    db.session.add(nuevo_concepto)
         
         db.session.commit()
 
@@ -582,7 +644,7 @@ def agregar_documentos():
 @gestion_empleados.route("/rh/gestion-empleados/agregar-mas-informacion", methods = ["POST"])
 def agregar_mas_informacion():
     mapeo_nombres_mas_informacion = { #NombreEnFormulario : nombreEnBase
-        'Idioma': 'idIdioma',
+        'Idioma1': 'idIdioma',
         'Indigena': 'idIdiomaIndigena',
         'Afroamericano': 'idAfroamericano',
         'Discapacidad': 'idDiscapacidad'
@@ -591,10 +653,28 @@ def agregar_mas_informacion():
     mas_informacion_data = {mapeo_nombres_mas_informacion[key]: request.form.get(key) for key in mapeo_nombres_mas_informacion.keys()}
     idPersona = session.get("idPersona", None)
     mas_informacion_data["idPersona"] = idPersona
+    NumIdiomas = int(request.form.get("NumIdiomas"))
+    NumIndigenas = int(request.form.get("NumIndigenas"))
+    print(NumIdiomas, NumIndigenas)
 
     mas_informacion_existente = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
     if mas_informacion_existente is not None:
         mas_informacion_existente.update(**mas_informacion_data)
+
+        if NumIdiomas > 0:
+            for i in range(1, NumIdiomas + 1):
+                idIdioma = request.form.get("Idioma" + str(i))
+                if db.session.query(rPersonaIdioma).filter_by(idPersona = idPersona, idIdioma = idIdioma).first() is None:
+                    nuevo_idioma = rPersonaIdioma(idPersona = idPersona, idIdioma = idIdioma)
+                    print(nuevo_idioma)
+                    db.session.add(nuevo_idioma)
+
+        if mas_informacion_data["idIdiomaIndigena"] == 1 and NumIndigenas > 0:
+            for i in range(1, NumIndigenas + 1):
+                idIndigena = request.form.get("Indigena" + str(i))
+                if db.session.query(rPersonaIndigena).filter_by(idPersona = idPersona, idIndigena = idIndigena).first is None:
+                    nuevo_indigena = rPersonaIndigena(idPersona=idPersona, idIndigena=idIndigena)
+                    db.session.add(nuevo_indigena)
     else:
         nuevo_mas_informacion = rPersonaMasInformacion(**mas_informacion_data)
         db.session.add(nuevo_mas_informacion)

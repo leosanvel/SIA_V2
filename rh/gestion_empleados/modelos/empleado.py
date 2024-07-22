@@ -174,6 +174,7 @@ class rEmpleado(db.Model):
     Persona = db.relationship("tPersona", back_populates = "Empleado", single_parent = True, cascade = "all, delete-orphan")
     EmpleadoPuestos = db.relationship("rEmpleadoPuesto", back_populates = "Empleado", cascade = "all, delete-orphan")
     DiasPersona = db.relationship("rDiasPersona", back_populates = "Empleado", cascade = "all, delete-orphan")
+    Banco = db.relationship("rBancoPersona", back_populates = "Empleado", cascade = "all, delete-orphan")
 
     def __init__(self, idPersona, NumeroEmpleado, idTipoEmpleado, idTipoAlta, idGrupo, HoraEntrada, HoraSalida, FecIngGobierno, FecIngFonaes, idQuincena, NoISSSTE, FecAltaISSSTE, CorreoInstitucional, Activo):
         self.idPersona = idPersona
@@ -278,7 +279,7 @@ class rBancoPersona(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci", "schema": "db2"}
 
-    idPersona = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, db.ForeignKey(rEmpleado.idPersona), primary_key = True)
     idBanco = db.Column(db.String(50), db.ForeignKey(kBancos.idBanco), nullable = True)
     Clabe = db.Column(db.String(18), primary_key = True)
     NumeroCuenta = db.Column(db.Integer, nullable = True)
@@ -288,10 +289,12 @@ class rBancoPersona(db.Model):
 
     # Relacion
     Banco = db.relationship("kBancos", back_populates = "BancoPersonas", uselist = False, single_parent = True)
+    Empleado = db.relationship("rEmpleado", back_populates = "Banco", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, Clabe, idBanco, Activo, Verificado):
+    def __init__(self, idPersona, Clabe, NumeroCuenta, idBanco, Activo, Verificado):
         self.idPersona = idPersona
         self.Clabe = Clabe
+        self.NumeroCuenta = NumeroCuenta
         self.idBanco = idBanco
         self.Activo = Activo
         self.Verificado = Verificado
@@ -370,6 +373,66 @@ class rPersonaMasInformacion(db.Model):
         self.idIdiomaIndigena = idIdiomaIndigena
         self.idAfroamericano = idAfroamericano
         self.idDiscapacidad = idDiscapacidad
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rPersonaIdioma(db.Model):
+    __tablename__ = "rpersonaidioma"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idIdioma = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idPersona, idIdioma):
+        self.idPersona = idPersona
+        self.idIdioma = idIdioma
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rPersonaIndigena(db.Model):
+    __tablename__ = "rpersonaindigena"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    idIndigena = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idPersona, idIndigena):
+        self.idPersona = idPersona
+        self.idIndigena = idIndigena
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class rMovimientoEmpleado(db.Model):
+    __tablename__ = "rmovimientoempleado"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idMovimientoEmpleado = db.Column(db.Integer, primary_key = True)
+    idTipoMovimiento = db.Column(db.Integer, primary_key = True)
+    idPersonaMod = db.Column(db.Integer, nullable = True)
+    idTipoEmpleado = db.Column(db.Integer, nullable = True)
+    idUsuario = db.Column(db.Integer, nullable = True)
+    Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    Periodo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idMovimientoEmpleado, idTipoMovimiento, idPersonaMod, idTipoEmpleado, idUsuario, Periodo):
+        self.idMovimientoEmpleado = idMovimientoEmpleado
+        self.idTipoMovimiento = idTipoMovimiento
+        self.idPersonaMod = idPersonaMod
+        self.idTipoEmpleado = idTipoEmpleado
+        self.idUsuario = idUsuario
+        self.Periodo = Periodo
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

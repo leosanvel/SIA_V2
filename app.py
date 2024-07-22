@@ -87,6 +87,12 @@ app.register_blueprint(gestion_asistencias)
 # MÓDULO GESTIÓN DE TIEMPO NO LABORAL
 from rh.gestion_tiempo_no_laboral.rutas.gestion_tiempo_no_laboral import gestion_tiempo_no_laboral
 app.register_blueprint(gestion_tiempo_no_laboral)
+
+#----------------------------------------------------------------------------------------------------------------------
+# MÓDULO REPORTES
+from rh.reportes.rutas.reportes import reportes
+app.register_blueprint(reportes)
+
 #----------------------------------------------------------------------------------------------------------------------
 # MÓDULO NOMINA
 from nomina.rutas.rutas import nomina
@@ -108,9 +114,14 @@ from consultas.rutas.rutas import consultas
 app.register_blueprint(consultas)
 
 #----------------------------------------------------------------------------------------------------------------------
-# MÓDULO CONSULTAS
+# MÓDULO PUESTOS
 from innovacion_normas.puestos.rutas.puestos import puestos
 app.register_blueprint(puestos)
+
+#----------------------------------------------------------------------------------------------------------------------
+# VACACIONES GANADAS
+from innovacion_normas.vacaciones_ganadas.rutas.vacaciones import vacaciones
+app.register_blueprint(vacaciones)
 
 #with app.app_context():
 #    db.create_all()

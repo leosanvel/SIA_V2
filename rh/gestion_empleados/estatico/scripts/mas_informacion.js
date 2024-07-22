@@ -21,7 +21,7 @@ $gmx(document).ready(function(){
         `;
         $(`#ColIdiomas`).append(text);
 
-        $("#Idioma option").clone().appendTo(`#Idioma${cont}`);
+        $("#Idioma1 option").clone().appendTo(`#Idioma${cont}`);
     });
 
     $(document).on("click", ".remover", function(){
@@ -36,7 +36,7 @@ $gmx(document).ready(function(){
                     <div class="col-md-8">
                         <div class="form-group">
                             <select id="IdiomaIndigena${cont}" name="IdiomaIndigena${cont}" class="opcional form-control indigena">
-                                <option value="0">-- Seleccione --</option>
+                                
                             </select>
                             <small id="EIdiomaIndigena${cont}" class="etiquetaError form-text form-text-error"></small>
                         </div>
@@ -49,6 +49,8 @@ $gmx(document).ready(function(){
                 </div>
             `;
             $("#ColIdiomasIndigenas").append(text);
+
+            $("#LenguaIndigena option").clone().appendTo(`#IdiomaIndigena${cont}`);
         }
-    })
+    });
 });
