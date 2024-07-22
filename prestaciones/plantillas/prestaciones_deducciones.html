@@ -8,7 +8,7 @@
             <div class="form-group  datepicker-group" id="NumEmpGrupo">
                 <label for="lblNumEmp">No. Empleado</label>
                 <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                    class="form-control botonModalBuscaEmpleado obligatorio" type="text">
+                    class="form-control botonModalBuscaEmpleado obligatorio" type="text" readonly>
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
             </div>
@@ -24,7 +24,12 @@
 <div class="row">
     <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
         <tr>
-            <th colspan="4">EMPLEADO SELECCIONADO</th>
+            <th colspan="3">EMPLEADO SELECCIONADO</th> 
+            <th>
+                <button type="button" class="close" aria-label="Close" onclick="cerrarTabla()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </th>
         </tr>
         <tr>
             <th>No. Empleado:</th>
@@ -57,32 +62,58 @@
                 <br>
             </div>
         </div>
-        <div class="table-responsive" style="width: 100%;">
-            <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
-                <thead>
-                    <br>
-                    <tr>
-                        <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
-                    </tr>
-                    <tr>
-                        <input type="hidden" id="TipoPago" name="TipoPago" value="">
-                        <th></th>
-                        <th>Tipo de Concepto</th>
-                        <th>id Concepto</th>
-                        <th>Concepto</th>
-                        <th>Porcentaje</th>
-                        <th>Monto</th>
-                        <th>Numero de Contrato</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Fin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se agregarán las filas de resultados de empleados -->
-                </tbody>
-            </table>
-        </div>
+        <div class="row">
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-striped" id="tablaResultadosEmpleadoConceptos" style="display: none;">
+                    <thead>
+                        <br>
+                        <tr>
+                            <th colspan="5">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <input type="hidden" id="TipoPago" name="TipoPago" value="">
+                            <th></th>
+                            <th>Tipo de Concepto</th>
+                            <th>id Concepto</th>
+                            <th>Concepto</th>
+                            <th>Porcentaje</th>
+                            <th>Monto</th>
+                            <th></th>
 
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-striped" id="tablaResultadosEmpleadoConceptosNoEditables" style="display: none;">
+                    <thead>
+                        <br>
+                        <tr>
+                            <th colspan="5">Conceptos no editables:</th>
+                        </tr>
+                        <tr>
+                            <input type="hidden" id="TipoPago" name="TipoPago" value="">
+                            <th></th>
+                            <th>Tipo de Concepto</th>
+                            <th>id Concepto</th>
+                            <th>Concepto</th>
+                            <th>Porcentaje</th>
+                            <th>Monto</th>
+                            <th></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </form>
 </div>
 
@@ -173,8 +204,8 @@
 
                         </div>
                         <br>
-                       
-                        <div id="ContenedorContrato" class="form-group" >
+
+                        <div id="ContenedorContrato" class="form-group">
 
                             <div class="row">
                                 <br>
@@ -201,7 +232,7 @@
                                         <label for="lblFechaInicio">Fecha Inicio<span id="AFechaInicio"
                                                 class="form-text"></span>:</label>
                                         <input type="text" id="FechaInicioContrato" name="FechaInicioContrato"
-                                            class="form-control obligatorio">
+                                            class="form-control fecha">
                                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                         <small id="EFechaInicio"
                                             class="etiquetaError form-text form-text-error"></small>
@@ -213,7 +244,7 @@
                                         <label for="lblFechaFin">Fecha Fin<span id="AFechaFin"
                                                 class="form-text"></span>:</label>
                                         <input type="text" id="FechaFinContrato" name="FechaFinContrato"
-                                            class="form-control obligatorio">
+                                            class="form-control fecha">
                                         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                         <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
                                     </div>

@@ -8,21 +8,20 @@ from collections import defaultdict
 import requests.exceptions
 from sqlalchemy import and_, or_, cast, String
 from sqlalchemy.orm.exc import NoResultFound
-from datetime import time, date, datetime
+from datetime import time, date, datetime, timedelta
 from app import db
 
 import smtplib
 from email.message import EmailMessage
 
 from catalogos.modelos.modelos import kQuincena,kConcepto
-from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador
+from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador, rSancionPersona
 from rh.gestion_empleados.modelos.empleado import rEmpleado, rEmpleadoPuesto
 from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina
 
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPersona
-
 
 
 def permisos_de_consulta(view_func):
@@ -365,7 +364,7 @@ def crea_solicitud(motivo,empleado_existente):
     solicitud_data = {
         "idSolicitud" : None,
         "Solicitud" : motivo,
-        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.Nombre + ".",
+        "Descripcion" : motivo + " al empleado #" + str(empleado_existente.NumeroEmpleado) + " "+ empleado_existente.Persona.Nombre + " " + empleado_existente.Persona.ApPaterno + " " + empleado_existente.Persona.ApMaterno + ".",
         "idEstadoSolicitud" : 1,
     }
     
@@ -376,20 +375,19 @@ def crea_solicitud(motivo,empleado_existente):
     db.session.commit()
     print("Solicitud agregada a la base de datos")
 
-
 def ejecutar_tareas_diarias():
     revision_baja_empleados()
-    verificar_antiguedad_empleados()
-    
-    actualiza_vacaciones()
+    verificar_antiguedad_prima_quinquenal()
+    verificar_antiguedad_articulo_37_todos()
+    elimina_vacaciones_vencidas()
     print("FUNCION AUTOMATICA EJEUTADA AL INICIAR EL DÍA:")
     hoy = datetime.today().date()
     print(hoy)
 
 
-def revision_baja_empleados():
+def revision_baja_empleados(idPersona = None):
     hoy = datetime.today().date()
-    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(FechaEfecto=hoy).all()
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona,FechaEfecto=hoy, idEstatusEP = 1).all()
     print("Dando de baja a los siguientes puestos:")
     print(puestos_empleado)
     if puestos_empleado:
@@ -415,12 +413,14 @@ def revision_baja_empleados():
             if puesto.ConservaVacaciones != 1:
                 print("vacaciones eliminadas")
                 vacaciones_eliminadas = db.session.query(rDiasPersona).filter_by(idPersona = puesto.idPersona).delete()
-
+            
+            empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = puesto.idPersona).first()
+            crea_solicitud("Baja", empleado_existente)
         db.session.commit()
     else:
         print("Ningún empleado termina Hoy")
 
-def verificar_antiguedad_empleados():
+def verificar_antiguedad_prima_quinquenal():
     
     # Ejemplo de función para verificar la antigüedad de los empleados
     hoy = datetime.today().date()
@@ -431,6 +431,7 @@ def verificar_antiguedad_empleados():
         if puesto.Empleado.FecIngGobierno is not None:
             FecIngGobierno = puesto.Empleado.FecIngGobierno
         else:
+            FecIngGobierno = puesto.Empleado.FecIngFonaes
             # print("Error: No se encontró la FecIngGobierno")
             continue
 
@@ -453,13 +454,13 @@ def verificar_antiguedad_empleados():
             else:
                 concepto = "Ninguno"  # Si la antigüedad es menor a 5 años
 
-            asignar_concepto(puesto.idPersona, concepto)
+            asignar_concepto_quinquenio(puesto.idPersona, concepto)
             print(f"Empleado ID: {puesto.Empleado.NumeroEmpleado}, Antigüedad en gobierno: {antiguedad_en_anios} años, Concepto asignado: {concepto}")
             aniversario = True
     if not aniversario:
         print("Ningún empleado cumple años hoy")
 
-def asignar_concepto(idPersona, idConcepto):
+def asignar_concepto_quinquenio(idPersona, idConcepto):
     if idConcepto == "Ninguno":
         return 0
     # Lista de conceptos de A1 a A5
@@ -492,17 +493,201 @@ def asignar_concepto(idPersona, idConcepto):
 
 
     nuevo_concepto = rEmpleadoConcepto(**nuevo_concepto_data)
-    print("Nuevo concepto")
+    print("Nuevo concepto prima quinquenal")
     db.session.add(nuevo_concepto)
 
     # Realizar cambios en la base de datos
     db.session.commit()
 
+def elimina_vacaciones_vencidas():
+    hoy = datetime.today().date()
+    if hoy == datetime(hoy.year, 7, 1).date(): # hoy == 1 julio:
+        dias_personas = db.session.query(rDiasPersona).all()
+        for dias_persona in dias_personas:
+            dias_persona.DiasGanados = 0
+        print("Dias ganados puestos a 0")
+        db.session.commit()
+    
 
 
-def antiguedad_quinquenios(antiguedad_en_gobierno):
-    pass
-def antiguedad_articulo_37(dias_antiguedad):
-    pass
-def actualiza_vacaciones():
-    pass
+def verificar_antiguedad_articulo_37_todos():
+
+    empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idEstatusEP == 1).all()
+    aniversario = False
+    for puesto in empleadoPuesto:
+        hoy = datetime.today().date()
+
+        # revisar licencias que estén transcurriendo
+        licencia = db.session.query(rSancionPersona).filter(
+            and_(
+                rSancionPersona.FechaInicio <= hoy,
+                rSancionPersona.FechaFin >= hoy,
+                rSancionPersona.idPersona == puesto.idPersona
+            )
+        ).first()
+        
+        if licencia is not None:
+            print("Licencia en transición")
+            
+            empleado = db.session.query(rEmpleado).filter_by(idPersona = puesto.idPersona).first()
+
+            if empleado is not None:
+                # Obtener y ordenar los puestos del empleado
+                puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=puesto.idPersona).order_by(rEmpleadoPuesto.FechaTermino).all()
+
+                # Encontrar el puesto activo
+                puesto_activo = next((puesto for puesto in puestos_empleado if puesto.idEstatusEP == 1), None)
+                if puesto_activo:
+                    # Verificar que la FechaTermino del puesto activo sea None o mayor al día actual
+                    if puesto_activo.FechaTermino is None or puesto_activo.FechaTermino > datetime.today().date():
+                        fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
+                    # Verificar la continuidad de los puestos
+                        for puesto in puestos_empleado:
+                            if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
+                                fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
+                    else:
+                        fecha_inicio_consecutiva_mas_antigua = None
+                        print("Error: La fecha término del puesto ya ha transcurrido.")
+
+                    fecha_inicio = fecha_inicio_consecutiva_mas_antigua
+                else:
+                    print("No se encontró un puesto Activo")
+                    
+            else:
+                print("Empleado no encontrado")
+                
+            # Si es el aniversario del empleado
+            if (fecha_inicio.month, fecha_inicio.day) == (hoy.month, hoy.day):
+                print("Es aniversario del empleado con idPersona:" + str(puesto.idPersona))
+                # Calcular la antigüedad en años completos
+                antiguedad_en_anios = hoy.year - fecha_inicio.year
+            
+                descuentos = {}
+                # Determinar el concepto correspondiente basado en los años de antigüedad
+                if antiguedad_en_anios < 1:
+                    descuentos["PorcentajePagado1"] = 100
+                    descuentos["PorcentajePagado2"] = 50
+                    descuentos["DiasPagados1"] = 15
+                    descuentos["DiasPagados2"] = 15
+                elif (1 <= antiguedad_en_anios < 5):
+                    descuentos["PorcentajePagado1"] = 100
+                    descuentos["PorcentajePagado2"] = 50
+                    descuentos["DiasPagados1"] = 30
+                    descuentos["DiasPagados2"] = 30
+                elif (5 <= antiguedad_en_anios < 10):
+
+                    descuentos["PorcentajePagado1"] = 100
+                    descuentos["PorcentajePagado2"] = 50
+                    descuentos["DiasPagados1"] = 45
+                    descuentos["DiasPagados2"] = 45
+                elif (10 <= antiguedad_en_anios):
+
+                    descuentos["PorcentajePagado1"] = 100
+                    descuentos["PorcentajePagado2"] = 50
+                    descuentos["DiasPagados1"] = 60
+                    descuentos["DiasPagados2"] = 60
+
+                print("Descuentos e intervalos de tiempo calculados")
+                
+                licencia_ori = licencia.__dict__
+                licencia_dict = licencia_ori.copy()
+                licencia_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+                licencia_dict["idSancionPersona"] =  None
+                print("licencia a diccionario")
+                print(licencia_dict)
+                
+                idPersona = licencia_dict['idPersona']
+
+                fechas = {}
+
+                if isinstance(licencia_dict['FechaInicio'], date):
+                    fechas["inicio_licencia_actual"] = licencia_dict['FechaInicio']
+                    fechas["inicio_periodo"] = licencia_dict['FechaInicio']
+                else:
+                    fechas["inicio_licencia_actual"] = licencia_dict['FechaInicio'].date()
+                    fechas["inicio_periodo"] = licencia_dict['FechaInicio'].date()
+
+                if isinstance(licencia_dict['FechaInicio'], date):
+                    fechas["fin_licencia_actual"] = licencia_dict['FechaFin']
+                    fechas["fin_periodo"] = licencia_dict['FechaFin']
+                else:
+                    fechas["fin_licencia_actual"] = licencia_dict['FechaFin'].date()
+                    fechas["fin_periodo"] = licencia_dict['FechaFin'].date()
+
+                
+                licencias_previas = db.session.query(rSancionPersona).filter_by(idPersona=puesto.idPersona).order_by(rSancionPersona.FechaInicio).all()
+
+                for licencia_previa in licencias_previas:
+                    print("licencia_previa")
+                    print(licencia_previa.FechaInicio, licencia_previa.FechaFin)
+                    
+                    # Verificar que la fecha de inicio_periodo no esté dentro del rango de fechas anteriores o sea consecutiva
+                    if (licencia_previa.FechaInicio <= fechas["inicio_periodo"] <= licencia_previa.FechaFin) or (licencia_previa.FechaFin == fechas["inicio_periodo"] - timedelta(days=1)):
+                        fechas["inicio_periodo"] = licencia_previa.FechaInicio
+                        
+                        if licencia_previa.FechaInicio <= fechas["inicio_licencia_actual"] <= licencia_previa.FechaFin:
+                            fechas["inicio_licencia_actual"] = licencia_previa.FechaFin + timedelta(days=1)
+
+                    # Verificar que la fecha de fin_periodo no esté dentro del rango de fechas anteriores o sea consecutiva
+                    if (licencia_previa.FechaInicio <= fechas["fin_periodo"] <= licencia_previa.FechaFin) or (licencia_previa.FechaInicio == fechas["fin_periodo"] + timedelta(days=1)):
+                        fechas["fin_licencia_actual"] = licencia_previa.FechaInicio - timedelta(days=1)
+                        fechas["fin_periodo"] = licencia_previa.FechaFin
+                print("fechas")
+                print(fechas)
+                elimina = db.session.query(rSancionPersona).filter(
+                    rSancionPersona.idPersona == idPersona,
+                    rSancionPersona.idSancion == 2,
+                    rSancionPersona.FechaInicio <= fechas["fin_periodo"],
+                    rSancionPersona.FechaFin >= fechas["inicio_periodo"]
+                ).delete()
+                print("elimina")
+                print(elimina)
+                    
+                dias_desc1 = int(descuentos["DiasPagados1"])
+                dias_desc2 = int(descuentos["DiasPagados2"])
+
+                dias_periodo = (fechas["fin_periodo"] - fechas["inicio_periodo"]).days + 1
+                dias_permitidos = dias_desc1 + dias_desc2
+
+                licencia_dict["FechaInicio"] = fechas["inicio_periodo"]
+                licencia_dict["idPorcentaje"] = descuentos["PorcentajePagado1"]
+                
+                if dias_periodo <= dias_desc1:
+                    licencia_dict["FechaFin"] = fechas["fin_periodo"]
+                    guardar_art37(licencia_dict)
+                else:
+                    licencia_dict["FechaFin"] = fechas["inicio_periodo"] + timedelta(days=dias_desc1 - 1)
+                    guardar_art37(licencia_dict)
+
+                    licencia_dict["FechaInicio"] = licencia_dict["FechaFin"] +  timedelta(days=1)
+                    if dias_periodo > dias_permitidos:
+                        licencia_dict["FechaFin"] =  licencia_dict["FechaInicio"] + timedelta(days=dias_desc2)
+                        licencia_dict["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                        guardar_art37(licencia_dict)
+
+
+                        licencia_dict["FechaInicio"] = licencia_dict["FechaFin"] +  timedelta(days=1)
+                        licencia_dict["FechaFin"] = fechas["fin_periodo"]
+                        licencia_dict["idPorcentaje"] = 0 # Sin pago
+                        guardar_art37(licencia_dict)
+
+
+                    else:
+                        licencia_dict["FechaFin"] =  fechas["fin_periodo"]
+                        licencia_dict["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                        guardar_art37(licencia_dict)
+
+                print("Se actualizó el artículo 37")
+
+def guardar_art37(sancion_data):
+    print("GUARDANDO SANCION" + str(sancion_data["idPersona"]))
+    nueva_sancion = None
+
+    print("sancion_data")
+    print(sancion_data)
+    sancion_data.pop('FechaCreacion', None)
+    nueva_sancion = rSancionPersona(**sancion_data)
+    db.session.add(nueva_sancion)
+        
+    # Realizar cambios en la base de datos
+    db.session.commit()

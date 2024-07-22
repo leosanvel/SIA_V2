@@ -1,5 +1,29 @@
 $gmx(document).ready(function () {
     $("#btnSubirArchivo").on("click", function () { subir_archivo(); });
+
+
+    // Cerrar Mymodal
+    $('#btnCierreModalImportar').on('click', function (e) {
+        var comportamiento = $('#ModalImportar').attr('data-comportamiento');
+        if (comportamiento === 'recargar') {
+            // Recargar la página
+            window.scrollTo(0, 0);
+            window.location.reload();
+        }
+        if (comportamiento === 'modificarEmpleado') {
+            // Recargar la página
+            window.location.href = "/rh/gestion-empleados/modificar-empleado";
+        }
+        if (comportamiento === 'inicio') {
+            // Recargar la página
+            window.location.href = "/principal/sia";
+        }
+        if (comportamiento === 'cerrar_modales') {
+            // cerrar todas las ventanas modales
+            $('.modal').modal('hide');
+        }
+
+    });
 });
 
 
@@ -13,13 +37,11 @@ function subir_archivo() {
         // Crear un FormData object
         const formData = new FormData();
         formData.append('archivo', file);
-        formData.append('idTipoConcepto', $('#idTipoConcepto').val());
-        formData.append('idConcepto', $('#idConcepto').val());
+        formData.append('idTipoConcepto', $('#Concepto option:selected').data('tipo'));
+        formData.append('idConcepto', $('#Concepto').val());
+
 
         if (file) {
-            // Procesar el archivo (por ejemplo, enviarlo a un servidor)
-            console.log(`Subiendo archivo ${file.name} con id de botón SubirArchivo`);
-
             $.ajax({
                 async: false,
                 type: "POST",
@@ -30,43 +52,60 @@ function subir_archivo() {
                 success: function (resp) {
 
                     if (resp.Obtenido) {
+                        var lista = false
+                        var lista_guardados = false
+                        var listaHTML = 'Los siguientes RFC no fueron encontrados. Favor de verificarlos manualmente:';
+                        listaHTML += '<ul>';
+
+                        resp.resultados.forEach(function (concepto) {
+                            if (concepto.errorRFC) {
+                                listaHTML += '<li>' + concepto.errorRFC + '</li>'
+                                lista = true
+                            }else{
+                                lista_guardados = true
+                            }
+                        });
+                        listaHTML += '</ul>'
+
+                        listaHTML += '</tbody></table>';
 
                         var tablaHTML = '<table class="table table-striped">';
                         tablaHTML += '<thead><tr>' +
-                            '<th>Ramo</th>' +
-                            '<th>PAGSUBPAG</th>' +
-                            '<th>Numero ISSSTE</th>' +
-                            '<th>RFC</th>' +
                             '<th>Nombre</th>' +
-                            '<th>Clave Cobro</th>' +
-                            '<th>TPOD</th>' +
-                            '<th>Pzo Qna</th>' +
-                            '<th>Periodo 1</th>' +
-                            '<th>Periodo 2</th>' +
-                            '<th>Concepto</th>' +
-                            '<th>Importe</th>' +
-                            '<th>Numero Prestamo</th>' +
+                            '<th>Apellidos</th>' +
+                            '<th>RFC</th>' +
+                            '<th>No. Contrato</th>' +
+                            '<th>Monto</th>' +
                             '</tr></thead><tbody>';
 
-                        resp.lista_empleados.forEach(function (empleado) {
-                            tablaHTML += '<tr>' +
-                            '<td>' + empleado.Ramo + '</td>' +
-                            '<td>' + empleado.PAGSUBPAG + '</td>' +
-                            '<td>' + empleado.NumeroISSSTE + '</td>' +
-                            '<td>' + empleado.RFC + '</td>' +
-                            '<td>' + empleado.Nombre + '</td>' +
-                            '<td>' + empleado.ClaveCobro + '</td>' +
-                            '<td>' + empleado.TPOD + '</td>' +
-                            '<td>' + empleado.PzoQna + '</td>' +
-                            '<td>' + empleado.Periodo1 + '</td>' +
-                            '<td>' + empleado.Periodo2 + '</td>' +
-                            '<td>' + empleado.Concepto + '</td>' +
-                            '<td>' + empleado.Importe + '</td>' +
-                            '<td>' + empleado.NumeroPrestamo + '</td>' +
-                            '</tr>';
+                        resp.resultados.forEach(function (concepto) {
+                            if (!concepto.errorRFC) {
+                                tablaHTML += '<tr>' +
+                                    '<td>' + concepto.Nombre + '</td>' +
+                                    '<td>' + concepto.Apellidos + '</td>' +
+                                    '<td>' + concepto.RFC + '</td>' +
+                                    '<td>' + concepto.NumeroContrato + '</td>' +
+                                    '<td>' + concepto.Monto + '</td>' +
+                                    '</tr>';
+                            }
                         });
                         tablaHTML += '</tbody></table>';
-                        abrirModal("Información cargada", tablaHTML, "");
+                        var mensaje = '';
+                        if (lista == true) {
+                            mensaje += listaHTML;
+                        }
+                        if (lista_guardados == true) {
+                            mensaje += tablaHTML;
+                        }else{
+                            mensaje += "No se cargaron conceptos. ";
+                        }
+                        // Modificar el contenido del modal
+                        document.getElementById('tituloModalImportar').textContent = "Información cargada";
+                        document.getElementById('contenidoModalImportar').innerHTML = mensaje;
+                        $('#ModalImportar').attr('data-comportamiento', "recargar");
+
+                        // Abrir el modal
+                        $('#ModalImportar').modal('show');
 
                     }
 
@@ -90,3 +129,4 @@ function subir_archivo() {
         }
     }
 }
+

@@ -107,7 +107,7 @@ function crear_concepto() {
             data: $("#frmCrearConcepto").serialize(),
             success: function (data) {
                 if (data) {
-                    abrirModal("Información guardada", "Operación realizada con éxito", "");
+                    abrirModal("Información guardada", "Operación realizada con éxito", "recarga");
                     $('#ModalCrearConcepto').modal('hide');
                 }
             }
