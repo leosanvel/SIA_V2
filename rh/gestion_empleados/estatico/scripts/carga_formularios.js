@@ -125,11 +125,15 @@ function obtenerDatosBanco(){
         type: "POST",
         url: "/rh/gestion-empleados/obtener-datos-bancarios",
         success: function(data){
-            if(data != null){
-                $("#Clabe").val(data.Clabe);
-                $("#Banco").val(data.Banco);
-                if(data.Verificado){
+            if(data.datos_bancarios != null){
+                $("#Clabe").val(data.datos_bancarios.Clabe);
+                $("#Banco").val(data.datos_bancarios.Banco);
+                if(data.datos_bancarios.Verificado){
                     $("#Clabe").prop("readonly", true);
+                }
+                if(data.url){
+                    $("#btnDescargarEstadoCuenta").show();
+                    $("#btnDescargarEstadoCuenta").wrap('<a href="' + data.url + '" download></a>');
                 }
             }
         }

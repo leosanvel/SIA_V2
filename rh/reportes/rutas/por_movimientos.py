@@ -20,6 +20,7 @@ def por_movimientos():
 def generar_reporte():
     movimiento = request.form.get("Movimiento")
     wb = openpyxl.Workbook()
+    archivo_generado = None
     
     if movimiento == "1":
         altas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento.in_([1, 2])).all()
@@ -236,10 +237,13 @@ def generar_reporte():
     else:
         print("Directorio %s ya existe" % dir)
 
-    wb.save(dir + "/" + nombre_archivo)
-    wb.Ex
+    if respuesta:
+        wb.save(dir + "/" + nombre_archivo)
 
-    archivo_generado = nombre_archivo
+        archivo_generado = nombre_archivo
+    
+    else:
+        archivo_generado = ""
 
     return jsonify({"url_descarga": url_for("reportes.descargar_reporte", nombre_archivo=archivo_generado), "respuesta": respuesta})
 

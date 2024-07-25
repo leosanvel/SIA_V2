@@ -126,7 +126,12 @@ def guardar_o_modificar_justificante(justificante_data):
             incidencia_existente = db.session.query(tIncidencia).filter_by(idPersona = justificante_data["idPersona"], FechaInicio = justificante_data["FechaInicio"], FechaFin = justificante_data["FechaFin"]).first()
             if incidencia_existente is not None:
                 print("Existe Incidencia")
-                if incidencia_existente.idTipo == int(justificante_data["idTipo"]):
+                se_puede_crear = False
+                if incidencia_existente.idTipo == 1:
+                    if int(justificante_data["idTipo"]) == 1 or int(justificante_data["idTipo"]) == 3 or int(justificante_data["idTipo"]) == 5 or int(justificante_data["idTipo"]) == 7 or int(justificante_data["idTipo"]) == 8:
+                        se_puede_crear = True
+
+                if incidencia_existente.idTipo == int(justificante_data["idTipo"]) or se_puede_crear:
                     print("Existe tipo de incidencia")
                     nuevo_justificante = tJustificante(**justificante_data)
                     # if (int(justificante_data["idTipo"]) == 7):

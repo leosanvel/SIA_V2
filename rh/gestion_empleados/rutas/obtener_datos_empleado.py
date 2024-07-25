@@ -77,7 +77,16 @@ def obtener_datos_bancarios():
         datos_bancarios.pop("_sa_instance_state", None)
         datos_bancarios["Banco"] = Banco
 
-    return jsonify(datos_bancarios)
+        filename = datos_bancarios["Clabe"] + "_" + str(idPersona) + ".pdf"
+        dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta", filename)
+        if os.path.exists(dir):
+            datos_bancarios["EstadoCuenta"] = True
+            url = url_for("gestion_empleados.descargar_estado_cuenta", nombre_archivo = filename)
+            print(dir)
+        else:
+            url = None
+
+    return jsonify({"datos_bancarios": datos_bancarios, "url": url})
 
 @gestion_empleados.route("/rh/gestion-empleados/obtener-expediente", methods = ["POST"])
 def obtener_expediente():
@@ -137,4 +146,9 @@ def obtener_mas_informacion():
 @gestion_empleados.route("/rh/gestion-empleados/descargar-expediente/<nombre_archivo>")
 def descargar_expediente(nombre_archivo):
     dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
+    return send_from_directory(directory=dir, path=nombre_archivo, as_attachment=True)
+
+@gestion_empleados.route("/rh/gestion-empleados/descargar-estado-cuenta/<nombre_archivo>")
+def descargar_estado_cuenta(nombre_archivo):
+    dir = os.path.join(current_app.root_path, "rh", "gestion_empleados", "archivos", "estados_cuenta")
     return send_from_directory(directory=dir, path=nombre_archivo, as_attachment=True)

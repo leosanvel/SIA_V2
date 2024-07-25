@@ -21,7 +21,8 @@ def checador():
     if((hoy.day//16) == 0):
         quincena = quincena - 1
 
-    quincenas = db.session.query(kQuincena).filter(kQuincena.idQuincena.in_([quincena, quincena + 1, quincena + 2])).all()
+    #quincenas = db.session.query(kQuincena).filter(kQuincena.idQuincena.in_([quincena, quincena + 1, quincena + 2])).all()
+    quincenas = db.session.query(kQuincena).all()
     return render_template('/checador.html', title='Generar Checador',
                            current_user=current_user,
                            quincenas = quincenas)
@@ -61,14 +62,13 @@ def generar_checador():
                 Checador["idQuincenaReportada"] = None
                 Checador["idIncidencia"] = None
                 Checador["idJustificante"] = None
-                
                 try:
                     checador_existente = db.session.query(tChecador).filter_by(idPersona = Checador['idPersona'], Fecha = Checador['Fecha'], idQuincena = Checador['idQuincena']).one()
                     checador_ya_generado = 0
                 except NoResultFound:
                     Nuevo_checador = tChecador(**Checador)
                     db.session.add(Nuevo_checador)
-                    db.session.commit()
+                    #db.session.commit()
                     checador_ya_generado = 1
 
     # checar_incidencias(Checador['NumeroQuincena'])
@@ -80,10 +80,12 @@ def generar_checador():
         else:
             idBitacora = ultimo_idBitacora + 1
 
-    nueva_bitacora = tBitacora(idBitacora=idBitacora,
-                               idTipoMovimiento=13,
-                               idUsuario=current_user.idPersona)
-
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                                   idTipoMovimiento=13,
+                                   idUsuario=current_user.idPersona)
+            
+        db.session.add(nueva_bitacora)
+    db.session.commit()
 
     return jsonify({"guardado": checador_ya_generado})
 

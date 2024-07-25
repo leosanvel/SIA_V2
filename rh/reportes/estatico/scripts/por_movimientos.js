@@ -11,14 +11,14 @@ function generar_reporte(){
             data: $("#formularioPorMovimientos").serialize(),
             success: function(data){
                 if(data.respuesta){
+                    var urlDescarga = data.url_descarga;
+                    $("#btnDescargarReporte").show();
+                    $("#btnDescargarReporte").wrap('<a href="' + urlDescarga + '" download></a>');
                     abrirModal("Reporte generado", `El reporte ha sido creado correctamente`, "");
                 }
                 else{
                     abrirModal("Reporte no generado", `No existen movimientos`, "");
                 }
-                var urlDescarga = data.url_descarga;
-                $("#btnDescargarReporte").show();
-                $("#btnDescargarReporte").wrap('<a href="' + urlDescarga + '" download></a>');
             }
         });
     }
