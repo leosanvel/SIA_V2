@@ -175,7 +175,7 @@ def guardar_empleado():
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
         empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         escolaridad_existente = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
-        empleado_puesto_existente = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).first()
+        empleado_puesto_existente = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
         existe = 1
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
@@ -186,10 +186,12 @@ def guardar_empleado():
                 correo_enviado = True
             
         print("Actualiza")
+
         persona_data["idPersona"] = idPersona
         persona_existente.update(**persona_data)
         empleado_existente.update(**empleado_data)
         escolaridad_existente.update(**escolaridad_data)
+        db.session.commit()
         if(not empleado_puesto_existente.idEstatusEP):
             empleado_puesto_data["idPersona"] = idPersona
             empleado_puesto_data['FechaInicio'] = datetime.now().date()
@@ -207,6 +209,7 @@ def guardar_empleado():
             empleado_puesto_data['ConservaVacaciones'] = 1
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
+        
             db.session.commit()
             nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
 
@@ -512,132 +515,85 @@ def guardar_conceptos():
 def agregar_documentos():
     # Obtener Nombre y Apellido del empleado
     idPersona = session.get("idPersona", None)
-    Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-    NumEmpleado = Empleado.NumeroEmpleado
-    Nombre = Empleado.Persona.Nombre
-    ApPaterno = Empleado.Persona.ApPaterno
-    ApMaterno = Empleado.Persona.ApMaterno
-
-    # Obtener archivos
-    ActaNacimiento = request.files.get("ActaNacimiento")
-    Titulo = request.files.get("Titulo")
-    CartillaMilitar = request.files.get("CartillaMilitar")
-    ComprobanteDomicilio = request.files.get("ComprobanteDomicilio")
-    IdentificacionOficial = request.files.get("IdentificacionOficial")
-    ArchivoCURP = request.files.get("ArchivoCURP")
-    ArchivoRFC = request.files.get("ArchivoRFC")
-    
-    # Inicializar resultados
     resultado = {}
-    expediente_data = {}
-    resultado["NoArchivo"] = True
-    resultado["ExpedienteNombre"] = False
-    expediente_data["idPersona"] = idPersona
 
-    expediente_existente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona).first()
-    if expediente_existente is not None:
-        expediente_data = expediente_existente.__dict__
-        expediente_data = expediente_data.copy()
-        expediente_data.pop("_sa_instance_state")
+    if idPersona is not None:
+        Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
+        NumEmpleado = Empleado.NumeroEmpleado
+        Nombre = Empleado.Persona.Nombre
+        ApPaterno = Empleado.Persona.ApPaterno
+        ApMaterno = Empleado.Persona.ApMaterno
+
+        # Obtener archivos
+        Expediente = request.files.get("Expediente")
+        # ActaNacimiento = request.files.get("ActaNacimiento")
+        # Titulo = request.files.get("Titulo")
+        # CartillaMilitar = request.files.get("CartillaMilitar")
+        # ComprobanteDomicilio = request.files.get("ComprobanteDomicilio")
+        # IdentificacionOficial = request.files.get("IdentificacionOficial")
+        # ArchivoCURP = request.files.get("ArchivoCURP")
+        # ArchivoRFC = request.files.get("ArchivoRFC")
+
+        # Inicializar resultados
+        
+        expediente_data = {}
+        resultado["NoArchivo"] = True
+        resultado["ExpedienteNombre"] = False
+        expediente_data["idPersona"] = idPersona
+
+        # Crear objeto para combinar PDF's
+        merger = PdfMerger()
+
+        # Crear nombre del archivo
+        NombreCompleto = Nombre + " " + ApPaterno + " " + ApMaterno
+        filename = str(NumEmpleado) + "_" + NombreCompleto + ".pdf"
+
+        print(Expediente)
+
+        if Expediente:
+            # Directorio para almacenar los expedientes
+            dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
+
+            # Si no existe el directorio
+            if not os.path.exists(dir):
+                # Se crea
+                os.mkdir(dir)
+                print("Directorio %s creado" % dir)
+            else:
+                print("Directorio %s ya existe" % dir)
+
+            merger.append(Expediente)
+            # Si existe un expediente con nombre por idPersona
+            if os.path.exists(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)):
+                # Se agrega para hacer la combinación
+                merger.append(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename))
+                print("Existe con expediente")
+
+            else:
+                # Obtener lista de archivos en el directorio
+                archivos = os.listdir(dir)
+                # Recorrer la lista
+                for archivo in archivos:
+                    if archivo.startswith("~$"):
+                        # Eliminar copias temporales
+                        archivos.remove(archivo)
+                    # Verificar si hay un archivo con Nombre o Apellido del empleado
+                    if NombreCompleto.lower() in archivo.lower():
+                        resultado["ExpedienteNombre"] = True
+                        # Si hay un archivo se sale del ciclo
+                        break
+
+                # Si hay un archivo con Nombre
+                if resultado["ExpedienteNombre"]:
+                    dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", archivo)
+                    # Se agrega a la combinación
+                    merger.append(dir)
+
+            dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)
+            merger.write(dir)
+
     else:
-        expediente_data["ActaNacimiento"] = 0
-        expediente_data["Titulo"] = 0
-        expediente_data["CartillaMilitar"] = 0
-        expediente_data["ComprobanteDomicilio"] = 0
-        expediente_data["IdentificacionOficial"] = 0
-        expediente_data["ArchivoCURP"] = 0
-        expediente_data["ArchivoRFC"] = 0
-
-    # Crear objeto para combinar PDF's
-    merger = PdfMerger()
-
-    if ActaNacimiento:
-        merger.append(ActaNacimiento)
-        expediente_data["ActaNacimiento"] = 1
-        resultado["NoArchivo"] = False
-
-    if Titulo:
-        merger.append(Titulo)
-        expediente_data["Titulo"] = 1
-        resultado["NoArchivo"] = False
-
-    if CartillaMilitar:
-        merger.append(CartillaMilitar)
-        expediente_data["CartillaMilitar"] = 1
-        resultado["NoArchivo"] = False
-
-    if ComprobanteDomicilio:
-        merger.append(ComprobanteDomicilio)
-        expediente_data["ComprobanteDomicilio"] = 1
-        resultado["NoArchivo"] = False
-
-    if IdentificacionOficial:
-        merger.append(IdentificacionOficial)
-        expediente_data["IdentificacionOficial"] = 1
-        resultado["NoArchivo"] = False
-    
-    if ArchivoCURP:
-        merger.append(ArchivoCURP)
-        expediente_data["ArchivoCURP"] = 1
-        resultado["NoArchivo"] = False
-
-    if ArchivoRFC:
-        merger.append(ArchivoRFC)
-        expediente_data["ArchivoRFC"] = 1
-        resultado["NoArchivo"] = False
-
-    # Crear nombre del archivo
-    NombreCompleto = Nombre + " " + ApPaterno + " " + ApMaterno
-    filename = str(NumEmpleado) + "_" + NombreCompleto + ".pdf"
-
-    if not resultado["NoArchivo"]:
-        # Directorio para almacenar los expedientes
-        dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
-
-        # Si no existe el directorio
-        if not os.path.exists(dir):
-            # Se crea
-            os.mkdir(dir)
-            print("Directorio %s creado" % dir)
-        else:
-            print("Directorio %s ya existe" % dir)
-
-        # Si existe un expediente con nombre por idPersona
-        if os.path.exists(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)):
-            # Se agrega para hacer la combinación
-            merger.append(os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename))
-            print("Existe con expediente")
-
-        else:
-            # Obtener lista de archivos en el directorio
-            archivos = os.listdir(dir)
-            # Recorrer la lista
-            for archivo in archivos:
-                if archivo.startswith("~$"):
-                    # Eliminar copias temporales
-                    archivos.remove(archivo)
-                # Verificar si hay un archivo con Nombre o Apellido del empleado
-                if NombreCompleto.lower() in archivo.lower():
-                    resultado["ExpedienteNombre"] = True
-                    # Si hay un archivo se sale del ciclo
-                    break
-
-            # Si hay un archivo con Nombre
-            if resultado["ExpedienteNombre"]:
-                dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", archivo)
-                # Se agrega a la combinación
-                merger.append(dir)
-
-        dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)
-        merger.write(dir)
-
-    if expediente_existente is not None:
-        expediente_existente.update(**expediente_data)
-    else:
-        nuevo_expediente = rPersonaExpediente(**expediente_data)
-        db.session.add(nuevo_expediente)
-    
-    db.session.commit()
+        resultado["NoEmpleado"] = True
 
     return jsonify(resultado)
 

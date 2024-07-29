@@ -106,7 +106,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblEstCiv">Estado civil<span id="AEstCiv" class="form-text">*</span>:</label>
-                            <select id="idEstadoCivil" name="idEstadoCivil" class="obligatorio form-control">
+                            <select id="idEstadoCivil" name="idEstadoCivil" class="opcional form-control">
                                 <option value="0">-- Seleccione --</option>
                                 {% for row in EstCiv %}
                                 <option value="{{row.idEstadoCivil}}">{{row.EstadoCivil}}</option>
@@ -121,7 +121,7 @@
                         <div class="form-group">
                             <label for="lblNacionalidad">Nacionalidad<span id="ANacionalidad"
                                     class="form-text">*</span>:</label>
-                            <select id="idNacionalidad" name="idNacionalidad" class="obligatorio form-control">
+                            <select id="idNacionalidad" name="idNacionalidad" class="opcional form-control">
                                 <option value="0">-- Seleccione --</option>
                                 {% for row in Nacionalidad %}
                                 <option value="{{row.idNacionalidad}}">{{row.Nacionalidad}}</option>
@@ -134,7 +134,7 @@
                         <div class="form-group">
                             <label for="lblCalMig">Calidad migratoria<span id="ACalMig"
                                     class="form-text">*</span>:</label>
-                            <input type="text" id="CalidadMigratoria" name="CalidadMigratoria" class="obligatorio form-control">
+                            <input type="text" id="CalidadMigratoria" name="CalidadMigratoria" class="opcional form-control">
                             <small id="ECalMig" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
@@ -152,7 +152,7 @@
                         <div class="form-group">
                             <label for="lblTelCas">Teléfono de casa<span id="ATelCas"
                                     class="form-text">*</span>:</label>
-                            <input type="text" id="TelCasa" name="TelCasa" class="obligatorio telefono form-control"
+                            <input type="text" id="TelCasa" name="TelCasa" class="opcional telefono form-control"
                                 maxlength="10">
                             <small id="ETelCas" class="etiquetaError form-text form-text-error"></small>
                         </div>
@@ -161,7 +161,7 @@
                         <div class="form-group">
                             <label for="lblTelCel">Teléfono celular<span id="ATelCel"
                                     class="form-text">*</span>:</label>
-                            <input type="text" id="TelCelular" name="TelCelular" class="obligatorio telefono form-control"
+                            <input type="text" id="TelCelular" name="TelCelular" class="opcional telefono form-control"
                                 maxlength="10">
                             <small id="ETelCel" class="etiquetaError form-text form-text-error"> </small>
                         </div>
@@ -170,7 +170,7 @@
                         <div class="form-group">
                             <label for="lblCorPer">Correo electrónico personal<span id="ACorPer"
                                     class="form-text">*</span>:</label>
-                            <input type="email" id="CorreoPersonal" name="CorreoPersonal" class="obligatorio email form-control">
+                            <input type="email" id="CorreoPersonal" name="CorreoPersonal" class="opcional email form-control">
                             <small id="ECorPer" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>
@@ -254,14 +254,14 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblHorEnt">Hora de entrada<span id="AHorEnt" class="form-text">*</span>:</label>
-                            <input type="time" id="HoraEntrada" name="HoraEntrada" class="obligatorio form-control" value="09:00">
+                            <input type="time" id="HoraEntrada" name="HoraEntrada" class="opcional form-control" value="09:00">
                             <small id="EHorEnt" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblHorSal">Hora de salida<span id="AHorSal" class="form-text">*</span>:</label>
-                            <input type="time" id="HoraSalida" name="HoraSalida" class="obligatorio form-control" value="18:00">
+                            <input type="time" id="HoraSalida" name="HoraSalida" class="opcional form-control" value="18:00">
                             <small id="EHorSal" class="etiquetaError form-text form-text-error"> </small>
                         </div>
                     </div>
@@ -272,7 +272,7 @@
                         <div class="form-group datepicker-group" style="z-index: 1;">
                             <label for="lblFecIngGob">Fecha de ingreso (Gobierno)<span id="AFecIngGob"
                                     class="form-text">*</span>:</label>
-                            <input type="text" id="FecIngresoGob" name="FecIngresoGob" class="obligatorio form-control fecha">
+                            <input type="text" id="FecIngresoGob" name="FecIngresoGob" class="opcional form-control fecha">
                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                             <small id="EFecIngGob" class="etiquetaError form-text form-text-error"> </small>
                         </div>
@@ -281,7 +281,7 @@
                         <div class="form-group datepicker-group" style="z-index: 1;">
                             <label for="lblFecIngFon">Fecha de ingreso (Fonaes)<span id="AFecIngFon"
                                     class="form-text">*</span>:</label>
-                            <input type="text" id="FecIngreso" name="FecIngreso" class="obligatorio form-control fecha">
+                            <input type="text" id="FecIngreso" name="FecIngreso" class="opcional form-control fecha">
                             <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                             <small id="EFecIngFon" class="etiquetaError form-text form-text-error"> </small>
                         </div>
@@ -290,7 +290,7 @@
                         <div class="form-group">
                             <label for="lblMesSerGob">Meses de servicio en gobierno<span id="AMesSerGob"
                                     class="form-text">*</span>:</label>
-                            <input type="text" id="MesesServicio" name="MesesServicio" class="obligatorio form-control"
+                            <input type="text" id="MesesServicio" name="MesesServicio" class="opcional form-control"
                                 readonly>
                             <small id="EMesSerGob" class="etiquetaError form-text form-text-error"> </small>
                         </div>
@@ -301,7 +301,7 @@
                         <div class="form-group">
                             <label for="lblNumQui">Número de quincena<span id="ANumQui"
                                     class="form-text">*</span>:</label>
-                            <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                            <select id="NumQuincena" name="NumQuincena" class="opcional form-control">
                                 <option value="0">-- Seleccione --</option>
                                 {% for row in Quincena %}
                                 <option value="{{row.idQuincena}}">{{row.Descripcion}}</option>
@@ -321,7 +321,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblNivEsc">Nivel escolar<span id="ANivEsc" class="form-text">*</span>:</label>
-                            <select id="idEscolaridad" name="idEscolaridad" class="obligatorio form-control">
+                            <select id="idEscolaridad" name="idEscolaridad" class="opcional form-control">
                                 <option value="0">-- Seleccione --</option>
                                 {% for row in NivelEscolar %}
                                 <option value="{{row.idNivel}}">{{row.NivelEscolar}} - {{row.EstatusNivel}}</option>
@@ -346,7 +346,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblUniversidad">Escuela<span id="AUniversidad" class="form-text">*</span>:</label>
-                            <select id="idInstitucionEscolar" name="idInstitucionEscolar" class="obligatorio form-control" value="{{empleado.Escuela}}">
+                            <select id="idInstitucionEscolar" name="idInstitucionEscolar" class="opcional form-control" value="{{empleado.Escuela}}">
                                 <option value="0">-- Seleccione --</option>
                                 {% for row in InstitucionEscolar %}
                                     <option value="{{row.idInstitucionEscolar}}">{{row.InstitucionEscolar}}</option>
@@ -358,7 +358,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="lblEstudios">Estudios<span id="AEstudios" class="form-text">*</span>:</label>
-                            <select id="idFormacionEducativa" name="idFormacionEducativa" class="obligatorio form-control">
+                            <select id="idFormacionEducativa" name="idFormacionEducativa" class="opcional form-control">
                                 <option value="0">-- Seleccione --</option>
                                 {% for row in FormacionEducativa %}
                                     <option value="{{row.idFormacionEducativa}}">{{row.FormacionEducativa}}</option>

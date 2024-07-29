@@ -530,8 +530,24 @@ function cargaCalidadMigratoria() {
 
 }
 
+function cargarModoHonorarios(){
+    if($("#idTipoEmpleo").val() == 1){
+        $("#FecIngresoGob").prop("disabled", true);
+        $("#FecIngresoGob").val("");
+        $("#FecIngreso").prop("disabled", true);
+        $("#FecIngreso").val("");
+        $("#MesesServicio").prop("disabled", true);
+        $("#MesesServicio").val("");
+    }else{
+        $("#FecIngresoGob").prop("disabled", false);
+        $("#FecIngreso").prop("disabled", false);
+        $("#MesesServicio").prop("disabled", false);
+    }
+}
+
 $gmx(document).ready(function () {
     $("#idTipoEmpleo").change(cargarTipAlt);
+    $("#idTipoEmpleo").change(cargarModoHonorarios);
     $("#idTipoAlta").change(cargarGrupo);
 
     $("#idNacionalidad").change(cargaCalidadMigratoria);
