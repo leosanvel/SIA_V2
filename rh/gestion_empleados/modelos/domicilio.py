@@ -1,4 +1,5 @@
 from app import db
+from catalogos.modelos.modelos import kMunicipio, kEntidad
 
 class rDomicilio(db.Model):
     __tablename__ = "rdomicilio"
@@ -8,8 +9,8 @@ class rDomicilio(db.Model):
     idPersona = db.Column(db.Integer, db.ForeignKey('tpersona.idPersona'), primary_key = True)
     idTipoDomicilio = db.Column(db.Integer, primary_key = True)
     idCP = db.Column(db.Integer, nullable = True)
-    idEntidad = db.Column(db.Integer, nullable = True)
-    idMunicipio = db.Column(db.Integer, nullable = True)
+    idEntidad = db.Column(db.Integer, db.ForeignKey(kEntidad.idEntidad), nullable = True)
+    idMunicipio = db.Column(db.Integer, db.ForeignKey(kMunicipio.idMunicipio), nullable = True)
     idLocalidad = db.Column(db.Integer, nullable = True)
     idTipoAsentamiento = db.Column(db.Integer, nullable = True)
     idAsentamiento = db.Column(db.Integer, nullable = True)
@@ -30,6 +31,8 @@ class rDomicilio(db.Model):
 
     # Relacion
     Persona = db.relationship('tPersona', back_populates = "Domicilios", uselist = False, single_parent = True)
+    Municipio = db.relationship("kMunicipio", back_populates = "Domicilios", uselist = False, single_parent = True)
+    Entidad = db.relationship("kEntidad", back_populates = "Domicilios", uselist = False, single_parent = True)
 
     def __init__(self, idPersona, idTipoDomicilio, idCP, idEntidad, idMunicipio, idLocalidad, idTipoAsentamiento, idAsentamiento,
                 idTipoVialidad, Vialidad, NumExterior, NumInterior, SinNumero, DomicilioConocido, idTipoVialidad01, Vialidad01,

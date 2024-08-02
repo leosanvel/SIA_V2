@@ -24,8 +24,15 @@ def obtener_info_empleado():
     empleadopuesto_datos = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
     empleado_datos = {}
     if empleadopuesto_datos is not None:
-        idCentroCosto = empleadopuesto_datos.Puesto.idCentroCosto
-        Puesto = empleadopuesto_datos.Puesto.Puesto
+        TipoEmpleado = empleadopuesto_datos.Empleado.idTipoEmpleado
+        if TipoEmpleado == 2:
+            idCentroCosto = empleadopuesto_datos.Puesto.idCentroCosto
+            Puesto = empleadopuesto_datos.Puesto.Puesto
+        elif TipoEmpleado == 1:
+            Puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleadopuesto_datos.idPuesto).first()
+            idCentroCosto = empleadopuesto_datos.idCentroCosto
+            Puesto = Puesto.PuestoHonorarios
+
         idQuincena = empleadopuesto_datos.Empleado.idQuincena
         persona_data = empleadopuesto_datos.Empleado.Persona
         empleado_data = empleadopuesto_datos.Empleado
@@ -39,12 +46,13 @@ def obtener_info_empleado():
         empleado_data_dict = empleado_data.__dict__
         empleado_data_dict.pop("_sa_instance_state", None)
         empleado_data_dict.pop("Persona")
-        puesto_data_dict = puesto_data.__dict__
-        puesto_data_dict.pop("_sa_instance_state", None)
+        if TipoEmpleado == 2:
+            puesto_data_dict = puesto_data.__dict__
+            puesto_data_dict.pop("_sa_instance_state", None)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto, 'Puesto': Puesto}
         empleado_datos["idQuincena"] = idQuincena
-    print("empleado_datos")
-    print(empleado_datos)    
+
+        print(empleado_datos)
     return jsonify(empleado_datos)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-domicilio', methods = ['POST'])
@@ -71,6 +79,7 @@ def obtener_escolaridad():
 def obtener_datos_bancarios():
     idPersona = session.get('idPersona', None)
     datos_bancarios = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Activo = 1).first()
+    url = None
     if(datos_bancarios is not None):
         Banco = datos_bancarios.Banco.Nombre
         datos_bancarios = datos_bancarios.__dict__
@@ -96,6 +105,7 @@ def obtener_expediente():
     Nombre = Empleado.Persona.Nombre
     ApPaterno = Empleado.Persona.ApPaterno
     ApMaterno = Empleado.Persona.ApMaterno
+    url = None
 
     expediente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona).first()
     if expediente is not None:

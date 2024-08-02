@@ -14,12 +14,12 @@ class tPersona(db.Model):
     Sexo = db.Column(db.String(15), nullable = True)
     FechaNacimiento = db.Column(db.Date, nullable = True)
     RFC = db.Column(db.String(13), nullable = False)
-    idNacionalidad = db.Column(db.Integer, nullable = True)
+    idNacionalidad = db.Column(db.Integer, db.ForeignKey(kNacionalidad.idNacionalidad), nullable = True)
     CalidadMigratoria = db.Column(db.String(100), nullable = True)
     TelCasa = db.Column(db.String(10), nullable = True)
     TelCelular = db.Column(db.String(10), nullable = True)
     idTipoPersona = db.Column(db.Integer, db.ForeignKey(kTipoPersona.idTipoPersona), nullable = False)
-    idEstadoCivil = db.Column(db.Integer, nullable = True)
+    idEstadoCivil = db.Column(db.Integer, db.ForeignKey(kEstadoCivil.idEstadoCivil), nullable = True)
     CorreoPersonal = db.Column(db.String(150), nullable = True)
 
     # Relaciones
@@ -27,6 +27,8 @@ class tPersona(db.Model):
     Empleado = db.relationship("rEmpleado", uselist = False, back_populates = "Persona", cascade = "all, delete-orphan", single_parent = True)
     Domicilios = db.relationship("rDomicilio", back_populates = "Persona", cascade = "all, delete-orphan")
     Escolaridades = db.relationship("rPersonaEscolaridad", back_populates = "Persona", cascade = "all, delete-orphan")
+    EstadoCivil = db.relationship("kEstadoCivil", back_populates="Personas", uselist=False, single_parent=True)
+    Nacionalidad = db.relationship("kNacionalidad", back_populates="Personas", uselist=False, single_parent=True)
 
     def __init__(self, idPersona, CURP, Nombre, ApPaterno, ApMaterno, Sexo, FechaNacimiento, RFC, idNacionalidad,
                  CalidadMigratoria, TelCasa, TelCelular, idTipoPersona, idEstadoCivil, CorreoPersonal):
@@ -209,6 +211,7 @@ class rEmpleadoPuesto(db.Model):
     CodigoPuestoSIA = db.Column(db.String(25), nullable = True)
     RHNETSIA = db.Column(db.String(25), nullable = True)
     idNivel = db.Column(db.Integer, nullable = True)
+    idCentroCosto = db.Column(db.Integer, nullable = True)
     FechaInicio = db.Column(db.Date, primary_key = True)
     FechaTermino = db.Column(db.Date, nullable = True)
     idCausaBaja = db.Column(db.Integer, nullable = False)
@@ -222,7 +225,7 @@ class rEmpleadoPuesto(db.Model):
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.ClavePresupuestaSIA = ClavePresupuestaSIA
@@ -230,6 +233,7 @@ class rEmpleadoPuesto(db.Model):
         self.CodigoPuestoSIA = CodigoPuestoSIA
         self.RHNETSIA = RHNETSIA
         self.idNivel = idNivel
+        self.idCentroCosto = idCentroCosto
         self.FechaInicio = FechaInicio
         self.FechaTermino = FechaTermino
         self.idCausaBaja = idCausaBaja
@@ -433,6 +437,35 @@ class rMovimientoEmpleado(db.Model):
         self.idTipoEmpleado = idTipoEmpleado
         self.idUsuario = idUsuario
         self.Periodo = Periodo
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class tPuestoHonorarios(db.Model):
+    __tablename__ = "tpuestohonorarios"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPuestoHonorarios = db.Column(db.Integer, primary_key = True)
+    PuestoHonorarios = db.Column(db.String(150), nullable = True)
+    Nivel = db.Column(db.String(5), nullable = True)
+    SueldoMensual = db.Column(db.Numeric(11, 2), nullable = True)
+    idEsquemaHonorarios = db.Column(db.Integer, nullable = True)
+    idPlazaHomologadaEquivalente = db.Column(db.Integer, nullable = True)
+    idPlazaHomologadaNivel = db.Column(db.Integer, nullable = True)
+    Activo = db.Column(db.Integer, nullable = True)
+
+    def __init__(self, idPuestoHonorarios, PuestoHonorarios, Nivel, SueldoMensual, idEsquemaHonorarios, idPlazaHomologadaEquivalente, idPlazaHomologadaNivel, Activo):
+        self.idPuestoHonorarios = idPuestoHonorarios
+        self.PuestoHonorarios = PuestoHonorarios
+        self.Nivel = Nivel
+        self.SueldoMensual = SueldoMensual
+        self.idEsquemaHonorarios = idEsquemaHonorarios
+        self.idPlazaHomologadaEquivalente = idPlazaHomologadaEquivalente
+        self.idPlazaHomologadaNivel = idPlazaHomologadaNivel
+        self.Activo = Activo
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

@@ -65,6 +65,14 @@ def cargar_Plaza():
         ret += '<option value="{}">{}</option>'.format(entry.ConsecutivoPuesto, entry.Puesto)
     return ret
 
+@gestion_empleados.route("/cargar-puestos-honorarios", methods = ['POST'])
+def cargar_puestos_honorarios():
+    ret = '<option value="0">-- Seleccione --</option>'
+    Puestos_honorarios = db.session.query(tPuestoHonorarios).filter_by(Activo = 1).order_by(tPuestoHonorarios.PuestoHonorarios).all()
+    for entry in Puestos_honorarios:
+        ret += '<option value="{}">{}</option>'.format(entry.idPuestoHonorarios, entry.PuestoHonorarios)
+    return ret
+
 @gestion_empleados.route('/cargar_EstNivEsc', methods = ['POST'])
 def cargar_EstNivEsc():
     NivEsc = request.form.get('idEscolaridad')

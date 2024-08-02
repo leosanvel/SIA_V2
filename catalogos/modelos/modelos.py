@@ -295,6 +295,9 @@ class kEntidad(db.Model):
     Abreviatura = db.Column(db.String(20), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
 
+    # Relaciones
+    Domicilios = db.relationship("rDomicilio", back_populates = "Entidad", cascade = "all, delete-orphan")
+
     def __init__(self, idEntidad, Consecutivo, Entidad, Abreviatura, Activo):
         self.idEntidad = idEntidad
         self.Consecutivo = Consecutivo
@@ -334,6 +337,9 @@ class kEstadoCivil(db.Model):
     idEstadoCivil = db.Column(db.Integer, primary_key = True)
     EstadoCivil = db.Column(db.String(15), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
+
+    # Relaciones
+    Personas = db.relationship("tPersona", back_populates="EstadoCivil", cascade="all, delete-orphan")
 
     def __init__(self, idEstadoCivil, EstadoCivil, Activo):
         self.idEstadoCivil = idEstadoCivil
@@ -544,6 +550,9 @@ class kMunicipio(db.Model):
     Municipio = db.Column(db.String(150), nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
 
+    # Relaciones
+    Domicilios = db.relationship("rDomicilio", back_populates = "Municipio", cascade = "all, delete-orphan")
+
     def __init__(self, idEntidad, idMunicipio, Consecutivo, Municipio, Activo):
         self.idEntidad = idEntidad
         self.idMunicipio = idMunicipio
@@ -566,6 +575,9 @@ class kNacionalidad(db.Model):
     idNacionalidadFP = db.Column(db.String(5), nullable = True)
     idPaisFP = db.Column(db.String, nullable = True)
     Activo = db.Column(db.Integer, nullable = True)
+
+    # Relaciones
+    Personas = db.relationship("tPersona", back_populates = "Nacionalidad", cascade = "all, delete-orphan")
 
     def __init__(self, idNacionalidad, Nacionalidad, idNacionalidadFP, idPaisFP, Activo):
         self.idNacionalidad = idNacionalidad

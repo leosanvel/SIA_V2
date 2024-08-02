@@ -168,8 +168,15 @@ def guardar_empleado():
     else:
         idBitacora = ultimo_idBitacora + 1
 
-    TipoEmpleado = empleado_data["idTipoEmpleado"]
+    if empleado_data["idTipoEmpleado"]:
+        TipoEmpleado = int(empleado_data["idTipoEmpleado"])
     Periodo = datetime.now().year
+
+    if empleado_data['FecIngGobierno'] == "":
+        empleado_data['FecIngGobierno'] = None
+    
+    if empleado_data['FecIngFonaes'] == "":
+        empleado_data['FecIngFonaes'] = None
 
     try:
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
@@ -177,6 +184,7 @@ def guardar_empleado():
         escolaridad_existente = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
         empleado_puesto_existente = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
         existe = 1
+        TipoEmpleado = empleado_existente.idTipoEmpleado
         # Si llegamos aquí, significa que ya existe un empleado
         # Envía correo correspondiente
         if not(empleado_existente.Activo == int(empleado_data["Activo"])):
@@ -186,6 +194,10 @@ def guardar_empleado():
                 correo_enviado = True
             
         print("Actualiza")
+
+        empleado_data["idTipoEmpleado"] = empleado_existente.idTipoEmpleado
+        empleado_data["idTipoAlta"] = empleado_existente.idTipoAlta
+        empleado_data["idGrupo"] = empleado_existente.idGrupo
 
         persona_data["idPersona"] = idPersona
         persona_existente.update(**persona_data)
@@ -201,17 +213,30 @@ def guardar_empleado():
             empleado_puesto_data['Observaciones'] = None
             empleado_puesto_data['FechaEfecto'] = None
             empleado_puesto_data['idQuincena'] = None
-            empleado_puesto_data['ClavePresupuestaSIA'] = None
-            empleado_puesto_data['CodigoPlazaSIA'] = None
-            empleado_puesto_data['CodigoPuestoSIA'] = None
-            empleado_puesto_data['RHNETSIA'] = None
-            empleado_puesto_data['idNivel'] = None
             empleado_puesto_data['ConservaVacaciones'] = 1
+
+            if TipoEmpleado == 1:
+                empleado_puesto_data['ClavePresupuestaSIA'] = None
+                empleado_puesto_data['CodigoPlazaSIA'] = None
+                empleado_puesto_data['CodigoPuestoSIA'] = None
+                empleado_puesto_data['RHNETSIA'] = None
+                empleado_puesto_data['idNivel'] = None
+                empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
+                
+
+            elif TipoEmpleado == 2:
+                empleado_puesto_data['ClavePresupuestaSIA'] = None
+                empleado_puesto_data['CodigoPlazaSIA'] = None
+                empleado_puesto_data['CodigoPuestoSIA'] = None
+                empleado_puesto_data['RHNETSIA'] = None
+                empleado_puesto_data['idNivel'] = None
+                empleado_puesto_data['idCentroCosto'] = None
+
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
         
             db.session.commit()
-            nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
+            #nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
 
         # Actualizar los atributos de 'empleado_existente' con los valores de 'empleado_data'
         #for attr, value in persona_data.items():
@@ -230,7 +255,10 @@ def guardar_empleado():
             nuevo_id_persona = 1
         else:
             nuevo_id_persona = ultimo_id + 1
-            
+
+        idPersona = nuevo_id_persona
+        
+        # Obtener el último número de empleado o 
         ultimo_Numero_Empleado = db.session.query(func.max(rEmpleado.NumeroEmpleado)).scalar()
         if ultimo_Numero_Empleado is None:
             nuevo_Numero_Empleado = 1
@@ -239,35 +267,46 @@ def guardar_empleado():
 
         # Asignar el nuevo valor de idPersona y NumeroEmpleado
         persona_data['idPersona'] = nuevo_id_persona
+
         empleado_data['idPersona'] = nuevo_id_persona
         empleado_data['NumeroEmpleado'] = nuevo_Numero_Empleado
-        empleado_puesto_data['idPersona'] = nuevo_id_persona
-
-        empleado_data['NoISSSTE'] = None
-        empleado_data['FecAltaISSSTE'] = None
         empleado_data['Activo'] = 1
 
-        empleado_puesto_data['ClavePresupuestaSIA'] = None
-        empleado_puesto_data['CodigoPlazaSIA'] = None
-        empleado_puesto_data['CodigoPuestoSIA'] = None
-        empleado_puesto_data['RHNETSIA'] = None
-        empleado_puesto_data['idNivel'] = None
+        empleado_puesto_data['idPersona'] = nuevo_id_persona
         empleado_puesto_data['FechaInicio'] = datetime.now().date()
         empleado_puesto_data['FechaTermino'] = None
-        empleado_puesto_data['idEstatusEP'] = 1
         empleado_puesto_data['idCausaBaja'] = None
         empleado_puesto_data['Observaciones'] = None
         empleado_puesto_data['FechaEfecto'] = None
         empleado_puesto_data['idQuincena'] = None
-        empleado_puesto_data['ClavePresupuestaSIA'] = None
-        empleado_puesto_data['CodigoPlazaSIA'] = None
-        empleado_puesto_data['CodigoPuestoSIA'] = None
-        empleado_puesto_data['RHNETSIA'] = None
-        empleado_puesto_data['idNivel'] = None
         empleado_puesto_data['ConservaVacaciones'] = 1
+        empleado_puesto_data['idEstatusEP'] = 1
 
         escolaridad_data['idPersona'] = nuevo_id_persona
         escolaridad_data['Consecutivo'] = 1
+
+        if TipoEmpleado == 1:
+            empleado_data['NoISSSTE'] = None
+            empleado_data['FecAltaISSSTE'] = None
+
+            empleado_puesto_data['ClavePresupuestaSIA'] = None
+            empleado_puesto_data['CodigoPlazaSIA'] = None
+            empleado_puesto_data['CodigoPuestoSIA'] = None
+            empleado_puesto_data['RHNETSIA'] = None
+            empleado_puesto_data['idNivel'] = None
+            empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
+
+
+        elif TipoEmpleado == 2:
+            empleado_data['NoISSSTE'] = None
+            empleado_data['FecAltaISSSTE'] = None
+        
+            empleado_puesto_data['ClavePresupuestaSIA'] = None
+            empleado_puesto_data['CodigoPlazaSIA'] = None
+            empleado_puesto_data['CodigoPuestoSIA'] = None
+            empleado_puesto_data['RHNETSIA'] = None
+            empleado_puesto_data['idNivel'] = None
+            empleado_puesto_data['idCentroCosto'] = None
 
         nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
@@ -280,8 +319,11 @@ def guardar_empleado():
         respuesta["guardado"] = True
         respuesta["NumeroEmpleado"] = empleado_data['NumeroEmpleado']
 
-        crea_solicitud("Alta", nuevo_empleado)
+        #crea_solicitud("Alta", nuevo_empleado)
         TipoMovimiento = 1
+
+    print(empleado_data)
+    print(empleado_puesto_data)
 
     ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento = TipoMovimiento).scalar()
     if ultimo_id_movimiento is None:
@@ -462,13 +504,16 @@ def guardar_conceptos():
         return jsonify({"guardado": False})
     else:
         Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-        FechaIngGob = Empleado.FecIngGobierno
-        FechaIngGob = datetime.combine(FechaIngGob, time())
-        FechaActual = datetime.today()
+        if Empleado.FecIngGobierno is not None:
+            FechaIngGob = Empleado.FecIngGobierno
+            FechaIngGob = datetime.combine(FechaIngGob, time())
+            FechaActual = datetime.today()
 
-        print(FechaIngGob, FechaActual)
+            print(FechaIngGob, FechaActual)
 
-        anios = relativedelta(FechaActual, FechaIngGob).years
+            anios = relativedelta(FechaActual, FechaIngGob).years
+        else:
+            anios = 0
 
         lista_idconceptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
         lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']

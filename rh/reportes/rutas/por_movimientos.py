@@ -7,8 +7,9 @@ from dateutil.relativedelta import relativedelta
 
 from .reportes import reportes
 from app import db
-from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rMovimientoEmpleado
+from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rMovimientoEmpleado, tPuestoHonorarios
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
+from catalogos.modelos.modelos import kCentroCostos
 from general.herramientas.funciones import calcular_quincena
 
 @reportes.route("/rh/reportes/por-movimientos", methods = ["POST", "GET"])
@@ -21,101 +22,87 @@ def generar_reporte():
     movimiento = request.form.get("Movimiento")
     wb = openpyxl.Workbook()
     archivo_generado = None
+    datos_a_escribir = {}
+
+    dir = os.path.join(current_app.root_path, "rh", "reportes", "archivos", "movimientos")
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+        print("Directorio %s creado" % dir)
+    else:
+        print("Directorio %s ya existe" % dir)
     
     if movimiento == "1":
         altas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento.in_([1, 2])).all()
         for empleado_alta in altas:
+            ws = openpyxl.load_workbook(filename="rh/reportes/archivos/PLANTILLA NOMBRAMIENTO ADMINISTRATIVO.xlsx")
+            plantilla = ws.active
+
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_alta.idPersonaMod).first()
             domicilio = db.session.query(rDomicilio).filter_by(idPersona = empleado_alta.idPersonaMod, idTipoDomicilio = 1).first()
             if empleado:
+                TipoEmpleado = empleado.Empleado.idTipoEmpleado
                 hoja = wb.active
-                hoja["A1"] = "CONSTANCIA DE NOMBRAMIENTO"
-                hoja["A2"] = "FOLIO"
-                hoja["B2"] = empleado_alta.idMovimientoEmpleado
-                hoja["A3"] = "FECHA DE ELABORACIÓN"
-                hoja["B3"] = datetime.now().strftime("%d-%m-%Y")
-                hoja["A4"] = "APELLIDO PATERNO"
-                hoja["B4"] = empleado.Empleado.Persona.ApPaterno
-                hoja["A5"] = "APELLIDO MATERNO"
-                hoja["B5"] = empleado.Empleado.Persona.ApMaterno
-                hoja["A6"] = "NOMBRE(S)"
-                hoja["B6"] = empleado.Empleado.Persona.Nombre
-                hoja["A7"] = "RFC"
-                hoja["B7"] = empleado.Empleado.Persona.RFC
-                hoja["A8"] = "CURP"
-                hoja["B8"] = empleado.Empleado.Persona.CURP
-                hoja["A9"] = "ESTADO CIVIL"
-                hoja["B9"] = empleado.Empleado.Persona.idEstadoCivil # Hacer relación
-                hoja["A10"] = "NACIONALIDAD"
-                hoja["B10"] = empleado.Empleado.Persona.idNacionalidad # Hacer relación
-                hoja["A11"] = "SEXO"
-                hoja["B11"] = empleado.Empleado.Persona.Sexo
-                hoja["A12"] = "EDAD"
+                datos_a_escribir["FOLIO"] = empleado_alta.idMovimientoEmpleado
+                datos_a_escribir["FECHA"] = datetime.now().strftime("%d-%m-%Y")
+                datos_a_escribir["APPATERNO"] = empleado.Empleado.Persona.ApPaterno
+                datos_a_escribir["APMATERNO"] = empleado.Empleado.Persona.ApMaterno
+                datos_a_escribir["NOMBRE"] = empleado.Empleado.Persona.Nombre
+                datos_a_escribir["RFC"] = empleado.Empleado.Persona.RFC if not None else ""
+                datos_a_escribir["CURP"] = empleado.Empleado.Persona.CURP
+                if empleado.Empleado.Persona.EstadoCivil:
+                    datos_a_escribir["ESTADOCIVIL"] = empleado.Empleado.Persona.EstadoCivil.EstadoCivil
+                else:
+                    datos_a_escribir["ESTADOCIVIL"] = ""
+                if empleado.Empleado.Persona.Nacionalidad:
+                    datos_a_escribir["NACIONALIDAD"] = empleado.Empleado.Persona.Nacionalidad.Nacionalidad
+                else:
+                    datos_a_escribir["NACIONALIDAD"] = ""
+                datos_a_escribir["SEXO"] = empleado.Empleado.Persona.Sexo
                 FechaNacimiento = empleado.Empleado.Persona.FechaNacimiento
                 FechaNacimiento = datetime.combine(FechaNacimiento, time())
                 FechaActual = datetime.today()
                 edad = relativedelta(FechaActual, FechaNacimiento).years
-                hoja["B12"] = edad
-                hoja["A13"] = "CALLE Y No"
-                hoja["B13"] = str(domicilio.Vialidad) + str(domicilio.NumExterior)
-                hoja["A14"] = "COLONIA O POBLACIÓN"
-                hoja["B14"] = domicilio.idAsentamiento # Hacer relación
-                hoja["A15"] = "C.P."
-                hoja["B15"] = domicilio.idCP
-                hoja["A16"] = "ALCALDÍA O MUNICIPIO"
-                hoja["B16"] = domicilio.idMunicipio # Hacer relación
-                hoja["A17"] = "ENTIDAD FEDERATIVA"
-                hoja["B17"] = domicilio.idEntidad # Hacer relación
-                hoja["A18"] = "TELEFONO"
-                hoja["B18"] = empleado.Empleado.Persona.TelCasa
-                hoja["A19"] = "INGRESO A PLAZA"
-                hoja["B19"] = ""
-                hoja["A20"] = "TIPO DE NOMBRAMIENTO"
-                hoja["B20"] = ""
-                hoja["A21"] = "UNIDAD DE ADSCRIPCIÓN"
-                hoja["B21"] = ""
-                hoja["A22"] = "No PLAZA"
-                hoja["B22"] = ""
-                hoja["A23"] = "C.C."
-                hoja["B23"] = empleado.Puesto.idCentroCosto # Hacer relación
-                hoja["A24"] = "CLAVE PRESUPUESTAL"
-                hoja["B24"] = empleado.Puesto.CodigoPresupuestal
-                hoja["A25"] = "CÓDIGO PLAZA"
-                hoja["B25"] = ""
-                hoja["A26"] = "DENOMINACIÓN DEL PUESTO"
-                hoja["B26"] = ""
-                hoja["A27"] = "NIVEL"
-                hoja["B27"] = empleado.Puesto.NivelSalarial
-                hoja["A28"] = "RADICACIÓN"
-                hoja["B28"] = ""
-                hoja["A29"] = "FUNCIONES"
-                hoja["B29"] = ""
-                hoja["A30"] = "SUSTITUYE A"
-                hoja["B30"] = ""
-                hoja["A31"] = "RFC"
-                hoja["B31"] = empleado.Empleado.Persona.RFC
-                hoja["A32"] = "MOTIVO"
-                hoja["B32"] = ""
-                hoja["A33"] = "FECHA"
-                hoja["B33"] = empleado.FechaInicio
-                hoja["A34"] = "SUELDO BASE"
-                hoja["B34"] = ""
-                hoja["A35"] = "ESTIMULO AL PERSONAL"
-                hoja["B35"] = ""
-                hoja["A36"] = "COMP. GARANTIZADA"
-                hoja["B36"] = ""
-                hoja["A37"] = "TOTAL BRUTO"
-                hoja["B37"] = ""
-                hoja["A38"] = "JORNADA DE TRABAJO"
-                hoja["B38"] = ""
-                hoja["A39"] = "DEL"
-                hoja["B39"] = ""
-                hoja["A40"] = "HASTA"
-                hoja["B40"] = ""
-                hoja["A41"] = "OBSERVACIONES"
-                hoja["B41"] = ""
+                datos_a_escribir["EDAD"] = edad
 
-                nombre_archivo = "alta_empleado_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx"
+                if domicilio is not None:
+                    datos_a_escribir["CALLE"] = str(domicilio.Vialidad) + str(domicilio.NumExterior)
+                    datos_a_escribir["COLONIA"] = domicilio.idAsentamiento
+                    datos_a_escribir["CP"] = str(domicilio.idCP)
+                    datos_a_escribir["MUNICIPIO"] = domicilio.Municipio.Municipio
+                    datos_a_escribir["ENTIDAD"] = domicilio.Entidad.Entidad
+                else:
+                    datos_a_escribir["CALLE"] = ""
+                    datos_a_escribir["COLONIA"] = ""
+                    datos_a_escribir["CP"] = ""
+                    datos_a_escribir["MUNICIPIO"] = ""
+                    datos_a_escribir["ENTIDAD"] = ""
+
+                
+                datos_a_escribir["TELEFONO"] = empleado.Empleado.Persona.TelCasa
+
+                if TipoEmpleado == 1:
+                    Puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleado.idPuesto).first()
+                    CentroCosto = db.session.query(kCentroCostos).filter_by(idCentroCosto = empleado.idCentroCosto).first()
+                    datos_a_escribir["CC"] = CentroCosto.CentroCosto
+                    datos_a_escribir["CLAVEPRESUPUESTAL"] = ""
+                    datos_a_escribir["NIVEL"] = Puesto.Nivel
+                else:
+                    datos_a_escribir["CC"] = empleado.Puesto.CentroCostos.CentroCosto
+                    datos_a_escribir["CLAVEPRESUPUESTAL"] = empleado.Puesto.CodigoPresupuestal
+                    datos_a_escribir["NIVEL"] = empleado.Puesto.NivelSalarial
+
+                FechaInicio = datetime.combine(empleado.FechaInicio, datetime.min.time())
+                FechaInicio = FechaInicio.strftime("%d-%m-%Y")
+                datos_a_escribir["FECHAINICIO"] = FechaInicio
+
+                for row in plantilla.iter_rows():
+                    for cell in row:
+                        if cell.value and isinstance(cell.value, str):
+                            for key, value in datos_a_escribir.items():
+                                cell.value = cell.value.replace(f"%{key}%", str(value))
+
+                nombre_archivo = "Nombramiento_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx"
+                ws.save("rh/reportes/archivos/movimientos/Nombramiento_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx")
 
         if len(altas) > 0:
             respuesta = True
@@ -127,40 +114,47 @@ def generar_reporte():
         print(bajas)
         for empleado_baja in bajas:
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_baja.idPersonaMod).first()
+            ws = openpyxl.load_workbook(filename="rh/reportes/archivos/PLANTILLA FORMATO AVISO DE BAJA.xlsx")
+            plantilla = ws.active
+
             if empleado:
+                TipoEmpleado = empleado.Empleado.idTipoEmpleado
                 hoja = wb.active
-                hoja["A1"] = "AVISO BAJA Y/O CAMBIO DE SITUACIÓN DE PERSONAL FEDERAL"
-                hoja["A2"] = "FOLIO"
-                hoja["B2"] = empleado_baja.idMovimientoEmpleado
-                hoja["A3"] = "APELLIDO PATERNO"
-                hoja["B3"] = empleado.Empleado.Persona.ApPaterno
-                hoja["A4"] = "APELLIDO MATERNO"
-                hoja["B4"] = empleado.Empleado.Persona.ApMaterno
-                hoja["A5"] = "NOMBRE(S)"
-                hoja["B5"] = empleado.Empleado.Persona.Nombre
-                hoja["A6"] = "RFC"
-                hoja["B6"] = empleado.Empleado.Persona.RFC
-                hoja["A7"] = "CLAVE PRESUPUESTAL"
-                hoja["B7"] = empleado.Puesto.CodigoPresupuestal
-                hoja["A8"] = "NIVEL"
-                hoja["B8"] = empleado.Puesto.NivelSalarial
-                hoja["A9"] = "CAUSA DE LA BAJA"
-                hoja["B9"] = empleado.idCausaBaja
-                hoja["A10"] = "No EMP"
-                hoja["B10"] = empleado.Empleado.NumeroEmpleado
-                hoja["A11"] = "C.C."
-                hoja["B11"] = empleado.Puesto.idCentroCosto
-                hoja["A12"] = "TIPO DE PLAZA"
-                hoja["B12"] = ""
-                hoja["A13"] = "CURP"
-                hoja["B13"] = empleado.Empleado.Persona.CURP
-                hoja["A14"] = "ADSCRIPCIÓN"
-                hoja["B14"] = ""
-                hoja["A15"] = "EFECTOS A PARTIR DE"
-                hoja["B15"] = empleado.FechaEfecto
+
+                datos_a_escribir["FOLIO"] = empleado_baja.idMovimientoEmpleado
+                datos_a_escribir["APPATERNO"] = empleado.Empleado.Persona.ApPaterno
+                datos_a_escribir["APMATERNO"] = empleado.Empleado.Persona.ApMaterno
+                datos_a_escribir["NOMBRE"] = empleado.Empleado.Persona.Nombre
+                datos_a_escribir["RFC"] = empleado.Empleado.Persona.RFC
+                if TipoEmpleado == 1:
+                    Puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleado.idPuesto).first()
+                    CentroCosto = db.session.query(kCentroCostos).filter_by(idCentroCosto = empleado.idCentroCosto).first()
+                    datos_a_escribir["CLAVEPRESUPUESTAL"] = ""
+                    datos_a_escribir["NIVEL"] = Puesto.Nivel
+                    datos_a_escribir["CC"] = CentroCosto.CentroCosto
+                else:
+                    datos_a_escribir["CLAVEPRESUPUESTAL"] = empleado.Puesto.CodigoPresupuestal
+                    datos_a_escribir["NIVEL"] = empleado.Puesto.NivelSalarial
+                    datos_a_escribir["CC"] = empleado.Puesto.idCentroCosto
+
+                datos_a_escribir["CAUSABAJA"] = empleado.idCausaBaja
+                datos_a_escribir["NUMEMPLEADO"] = empleado.Empleado.NumeroEmpleado
+                datos_a_escribir["CURP"] = empleado.Empleado.Persona.CURP
+
+                FechaBaja = datetime.combine(empleado.FechaEfecto, datetime.min.time())
+                FechaBaja = FechaBaja.strftime("%d-%m-%Y")
+                datos_a_escribir["FECHABAJA"] = FechaBaja
                 
 
-                nombre_archivo = "baja_empleado_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx"
+                nombre_archivo = "Baja_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx"
+
+                for row in plantilla.iter_rows():
+                    for cell in row:
+                        if cell.value and isinstance(cell.value, str):
+                            for key, value in datos_a_escribir.items():
+                                cell.value = cell.value.replace(f"%{key}%", str(value))
+
+                ws.save("rh/reportes/archivos/movimientos/Baja_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx")
 
         if len(bajas) > 0:
             respuesta = True
@@ -171,8 +165,6 @@ def generar_reporte():
         todos = db.session.query(rMovimientoEmpleado).all()
         cont = 1
         quincena = calcular_quincena()
-        print(quincena)
-
         hoja = wb.active
         hoja["A1"] = "MOVIMIENTOS DEL PERSONAL DE PLAZA FEDERAL CORRESPONDIENTES A LA QUINCENA"
         hoja["A2"] = "Cons Qnal"
@@ -196,49 +188,58 @@ def generar_reporte():
         hoja["S2"] = "Grupo"
         hoja["T2"] = "Observaciones"
         
+        ws = openpyxl.load_workbook(filename="rh/reportes/archivos/PLANTILLA REPORTE DE MOVIMIENTOS.xlsx")
+        plantilla = ws.active
         for empleado_comb in todos:
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_comb.idPersonaMod).first()
+            TipoEmpleado = empleado.Empleado.idTipoEmpleado
             if empleado:
-                hoja["A" + str(2 + cont)] = cont
-                hoja["B" + str(2 + cont)] = str(datetime.now().year) +  str(quincena)
-                hoja["C" + str(2 + cont)] = empleado.Empleado.NumeroEmpleado
-                hoja["D" + str(2 + cont)] = empleado.Empleado.Persona.RFC
-                hoja["E" + str(2 + cont)] = empleado.Empleado.Persona.CURP
-                hoja["F" + str(2 + cont)] = empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre
-                hoja["G" + str(2 + cont)] = empleado_comb.idMovimientoEmpleado
-                hoja["H" + str(2 + cont)] = empleado_comb.idTipoMovimiento
-                hoja["I" + str(2 + cont)] = ""
-                hoja["J" + str(2 + cont)] = ""
-                hoja["K" + str(2 + cont)] = empleado.Puesto.NivelSalarial
-                hoja["L" + str(2 + cont)] = ""
-                hoja["M" + str(2 + cont)] = ""
-                hoja["N" + str(2 + cont)] = empleado.Puesto.Puesto
-                hoja["O" + str(2 + cont)] = ""
-                hoja["P" + str(2 + cont)] = ""
-                hoja["Q" + str(2 + cont)] = empleado.Puesto.CentroCostos.CentroCosto
-                hoja["R" + str(2 + cont)] = ""
-                hoja["S" + str(2 + cont)] = ""
-                hoja["T" + str(2 + cont)] = empleado.Observaciones
+                plantilla["A" + str(6 + cont)] = cont
+                plantilla["B" + str(6 + cont)] = str(datetime.now().year) +  str(quincena)
+                plantilla["C" + str(6 + cont)] = empleado.Empleado.NumeroEmpleado
+                plantilla["D" + str(6 + cont)] = empleado.Empleado.Persona.RFC
+                plantilla["E" + str(6 + cont)] = empleado.Empleado.Persona.CURP
+                plantilla["F" + str(6 + cont)] = empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre
+                plantilla["G" + str(6 + cont)] = empleado_comb.idMovimientoEmpleado
+                plantilla["H" + str(6 + cont)] = empleado_comb.idTipoMovimiento
+                if TipoEmpleado == 2:
+                    plantilla["I" + str(6 + cont)] = ""
+                    plantilla["J" + str(6 + cont)] = ""
+                    plantilla["K" + str(6 + cont)] = empleado.Puesto.NivelSalarial
+                    plantilla["L" + str(6 + cont)] = ""
+                    plantilla["M" + str(6 + cont)] = ""
+                    plantilla["N" + str(6 + cont)] = empleado.Puesto.Puesto
+                    plantilla["O" + str(6 + cont)] = ""
+                    plantilla["P" + str(6 + cont)] = ""
+                    plantilla["Q" + str(6 + cont)] = empleado.Puesto.CentroCostos.CentroCosto
+                else:
+                    Puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleado.idPuesto).first()
+                    CentroCosto = db.session.query(kCentroCostos).filter_by(idCentroCosto = empleado.idCentroCosto).first()
+                    plantilla["I" + str(6 + cont)] = ""
+                    plantilla["J" + str(6 + cont)] = ""
+                    plantilla["K" + str(6 + cont)] = Puesto.Nivel
+                    plantilla["L" + str(6 + cont)] = ""
+                    plantilla["M" + str(6 + cont)] = ""
+                    plantilla["N" + str(6 + cont)] = Puesto.PuestoHonorarios
+                    plantilla["O" + str(6 + cont)] = ""
+                    plantilla["P" + str(6 + cont)] = ""
+                    plantilla["Q" + str(6 + cont)] = CentroCosto.CentroCosto
+                plantilla["R" + str(6 + cont)] = ""
+                plantilla["S" + str(6 + cont)] = ""
+                plantilla["T" + str(6 + cont)] = empleado.Observaciones
                 cont = cont + 1
 
-        nombre_archivo = "Reportes_Movimientos.xlsx"
+        ws.save("rh/reportes/archivos/movimientos/Movimientos_" + str(datetime.now().year) +  str(quincena) + ".xlsx")
+
+        nombre_archivo = "Movimientos_" + str(datetime.now().year) +  str(quincena) + ".xlsx"
 
         if len(todos) > 0:
             respuesta = True
         else:
             respuesta = False
 
-
-    dir = os.path.join(current_app.root_path, "rh", "reportes", "archivos", "movimientos")
-    print(dir)
-    if not os.path.exists(dir):
-        os.mkdir(dir)
-        print("Directorio %s creado" % dir)
-    else:
-        print("Directorio %s ya existe" % dir)
-
     if respuesta:
-        wb.save(dir + "/" + nombre_archivo)
+        #wb.save(dir + "/" + nombre_archivo)
 
         archivo_generado = nombre_archivo
     

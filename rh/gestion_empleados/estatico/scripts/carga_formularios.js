@@ -65,9 +65,22 @@ function obtenerInfoEmpleado() {
         url: "/rh/gestion-empleados/obtener-info-empleado",
         success: function (data) {
             if (data != null) {
-                var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
-                var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngGobierno);
-                var FecIngresoFormateada = convertirFechaParaVisualizacion(data.FecIngFonaes);
+                console.log(data);
+                if(data.FechaNacimiento){
+                    var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
+                }else
+                    var FechaNacimientoFormateada = "";
+                if(data.fechaIngGob){
+                    var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngGobierno);
+                }else{
+                    var FecIngresoGobFormateada = "";
+                }
+                if(data.FecIngFonaes){
+                    var FecIngresoFormateada = convertirFechaParaVisualizacion(data.FecIngFonaes);
+                }else{
+                    var FecIngresoFormateada = "";
+                }
+                
                 
                 $("#CURP").val(data.CURP);
                 $("#Nombre").val(data.Nombre);
@@ -171,9 +184,11 @@ function obtenerMasInformacion(){
         success: function(data){
             console.log(data);
             if(data){
-                $("#Indigena").val(data.mas_informacion.idIdiomaIndigena);
-                $("#Afroamericano").val(data.mas_informacion.idAfroamericano);
-                $("#Discapacidad").val(data.mas_informacion.idDiscapacidad);
+                if(data.mas_informacion){
+                    $("#Indigena").val(data.mas_informacion.idIdiomaIndigena);
+                    $("#Afroamericano").val(data.mas_informacion.idAfroamericano);
+                    $("#Discapacidad").val(data.mas_informacion.idDiscapacidad);
+                }
 
                 if(data.Idiomas){
                     var cont = 2;
@@ -438,16 +453,29 @@ function cargarCP(tipo) {
 }
 
 function cargarPlaza() {
+    if($("#idTipoEmpleo").val() == 2){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/cargar_Plaza",
+            data: {
+                "idCentroCostos": $("#idCC").val()
+            },
+            success: function (data) {
+                $("#idPlazaHom").html(data);
+                $("#idUbicacion").val($("#idCC").val());
+            }
+        });
+    }
+}
+
+function cargarPuestosHonorarios(){
     $.ajax({
         async: false,
         type: "POST",
-        url: "/cargar_Plaza",
-        data: {
-            "idCentroCostos": $("#idCC").val()
-        },
-        success: function (data) {
+        url: "/cargar-puestos-honorarios",
+        success: function(data){
             $("#idPlazaHom").html(data);
-            $("#idUbicacion").val($("#idCC").val());
         }
     });
 }
@@ -538,10 +566,12 @@ function cargarModoHonorarios(){
         $("#FecIngreso").val("");
         $("#MesesServicio").prop("disabled", true);
         $("#MesesServicio").val("");
+        cargarPuestosHonorarios();
     }else{
         $("#FecIngresoGob").prop("disabled", false);
         $("#FecIngreso").prop("disabled", false);
         $("#MesesServicio").prop("disabled", false);
+        cargarPlaza();
     }
 }
 

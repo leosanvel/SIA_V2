@@ -395,7 +395,8 @@ def revision_baja_empleados(idPersona = None):
             puesto.FechaTermino = hoy
 
             # cambiar en tPuesto idEstatusPuesto # (1 = Ocupada, 2 = Vacante)
-            puesto.Puesto.idEstatusPuesto = 2
+            if puesto.Empleado.idTipoEmpleado == 2:
+                puesto.Puesto.idEstatusPuesto = 2
 
             # Desactivar el puesto del empleado
             puesto.idEstatusEP = 0

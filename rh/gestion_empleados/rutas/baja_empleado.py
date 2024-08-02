@@ -30,41 +30,49 @@ def baja_empleado():
 @gestion_empleados.route('/rh/gestion-empleados/obtener-puestos-empleado', methods = ['POST', 'GET'])
 def obtener_puestos_empleado():
     idPersona = request.form.get('idPersona')
+    respuesta = {}
     try:
         empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona, Activo = 1).one()
         empleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == idPersona, rEmpleadoPuesto.idEstatusEP == 1).first()
-        puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = empleadoPuesto.idPuesto).one()
         
-        respuesta = {}
-        if empleadoPuesto is not None:
-            tipoEmpleado = db.session.query(kTipoEmpleado).filter_by(idTipoEmpleado = empleado.idTipoEmpleado).first()
 
+        if empleadoPuesto is not None:
+            if empleado.idTipoEmpleado == 2:
+                puesto = db.session.query(tPuesto).filter_by(ConsecutivoPuesto = empleadoPuesto.idPuesto).one()
+                respuesta["Puesto"] = puesto.Puesto
+                respuesta["idPuesto"] = puesto.ConsecutivoPuesto
+                respuesta["TipoEmpleado"] = 2
+            else:
+                puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleadoPuesto.idPuesto).first()
+                respuesta["Puesto"] = puesto.PuestoHonorarios
+                respuesta["idPuesto"] = puesto.idPuestoHonorarios
+                respuesta["TipoEmpleado"] = 1
+
+            tipoEmpleado = db.session.query(kTipoEmpleado).filter_by(idTipoEmpleado = empleado.idTipoEmpleado).first()
             respuesta["NumeroEmpleado"] = empleado.NumeroEmpleado
             respuesta["TipoEmpleado"] = tipoEmpleado.TipoEmpleado
-            respuesta["Puesto"] = puesto.Puesto
-            respuesta["idPuesto"] = puesto.ConsecutivoPuesto
 
-        
             tipoAlta = db.session.query(kTipoAlta).filter_by(idTipoEmpleado = empleado.idTipoEmpleado, idTipoAlta = empleado.idTipoAlta).first()
             if tipoAlta:
                 respuesta["TipoAlta"] = tipoAlta.TipoAlta
             else:
                 respuesta["TipoAlta"] = "No especificado"
-
-            
+                
             causas = db.session.query(kCausaBaja).filter(kCausaBaja.idTipoEmpleado == empleado.idTipoEmpleado).all()
             lista_causas_baja = []
             for causa in causas:
                 causa_dict = causa.__dict__
                 causa_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
                 lista_causas_baja.append(causa_dict)
+                
             respuesta["CausasBaja"] = lista_causas_baja
-        
             empleadoPuesto_dict = empleadoPuesto.__dict__
             empleadoPuesto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             respuesta["empleadoPuesto"] = empleadoPuesto_dict
+
         else:
             respuesta["NoEncontrado"] = True
+
     except NoResultFound:    
         respuesta["NoEncontrado"] = True
     return jsonify(respuesta)
