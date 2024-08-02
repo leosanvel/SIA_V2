@@ -4,7 +4,7 @@ from flask_login import current_user
 
 from app import db
 from catalogos.modelos.modelos import kConcepto, kTipoConcepto, kTipoPago
-from prestaciones.modelos.modelos import rEmpleadoConcepto, rEmpleadoSueldo
+from prestaciones.modelos.modelos import rEmpleadoConcepto, rEmpleadoSueldo, rUsuarioConcepto
 from rh.gestion_empleados.modelos.empleado import rEmpleado
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import asc
@@ -85,18 +85,22 @@ def buscar_empleado_concepto():
     empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
 
 
+    usuario_conceptos = db.session.query(rUsuarioConcepto).filter_by(Usuario = current_user.Usuario).all()
+    print(usuario_conceptos)
 
     empleadoConceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).all()
     lista_empleado_conceptos = []
-    for emp_con in empleadoConceptos:
-        concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto).first()
-        if emp_con is not None and concepto is not None:
-            emp_con_dict = emp_con.__dict__
-            emp_con_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-            emp_con_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
-            emp_con_dict["Concepto"] = concepto.Concepto
-            emp_con_dict["Editable"] = concepto.Editable
-            lista_empleado_conceptos.append(emp_con_dict)
+    for idConcepto in usuario_conceptos:
+        for emp_con in empleadoConceptos:
+            if idConcepto.idConcepto == emp_con.idConcepto:
+                concepto = db.session.query(kConcepto).filter_by(idConcepto = emp_con.idConcepto, idTipoConcepto = emp_con.idTipoConcepto).first()
+                if emp_con is not None and concepto is not None:
+                    emp_con_dict = emp_con.__dict__
+                    emp_con_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+                    emp_con_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
+                    emp_con_dict["Concepto"] = concepto.Concepto
+                    emp_con_dict["Editable"] = concepto.Editable
+                    lista_empleado_conceptos.append(emp_con_dict)
 
     if not lista_empleado_conceptos:
         return jsonify({"NoEncontrado":True}) 

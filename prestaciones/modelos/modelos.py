@@ -54,3 +54,21 @@ class rEmpleadoSueldo(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class rUsuarioConcepto(db.Model):
+    __tablename__ = "rusuarioconcepto"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    Usuario = db.Column(db.String(50), primary_key = True)
+    idConcepto = db.Column(db.String(5), primary_key = True)
+
+    def __init__(self, Usuario, idConcepto):
+        self.Usuario = Usuario
+        self.idConcepto = idConcepto
+
+    # Actualizar Registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
