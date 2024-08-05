@@ -1,0 +1,35 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <form id="formularioCifrasControl">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblQuincenas">Quincenas<span id="AQuincenas" class="form-text">*</span>:</label>
+                    <select id="Quincenas" name="Quincenas" class="obligatorio form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for quincena in Quincenas %}
+                            <option value="{{quincena.idQuincena}}">{{quincena.Descripcion}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group pull-left">
+                    <button class="btn btn-primary" type="button" id="btnGenerarReporte">Generar</button>
+                </div>
+                <div class="form-group pull-right">
+                    <button class="btn btn-primary" type="button" id="btnDescargarReporte" style="display: none;">Descargar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('reportes_prestaciones.static', filename='scripts/cifras_control.js') }}"></script>
+{% endblock %}

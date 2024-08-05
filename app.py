@@ -109,6 +109,11 @@ from prestaciones.rutas.rutas import prestaciones
 app.register_blueprint(prestaciones)
 
 #----------------------------------------------------------------------------------------------------------------------
+# MÓDULO REPORTES PRESTACIONES
+from prestaciones.reporte.rutas.reportes import reportes_prestaciones
+app.register_blueprint(reportes_prestaciones)
+
+#----------------------------------------------------------------------------------------------------------------------
 # MÓDULO CONSULTAS
 from consultas.rutas.rutas import consultas
 app.register_blueprint(consultas)
