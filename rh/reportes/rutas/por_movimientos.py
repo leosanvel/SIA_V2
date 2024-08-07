@@ -9,17 +9,20 @@ from .reportes import reportes
 from app import db
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rMovimientoEmpleado, tPuestoHonorarios
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
-from catalogos.modelos.modelos import kCentroCostos
+from catalogos.modelos.modelos import kCentroCostos, kQuincena
 from general.herramientas.funciones import calcular_quincena
 
 @reportes.route("/rh/reportes/por-movimientos", methods = ["POST", "GET"])
 def por_movimientos():
+    Quincenas = db.session.query(kQuincena).all()
 
-    return render_template("/por_movimientos.html", title = "Por movimientos")
+    return render_template("/por_movimientos.html", title = "Por movimientos",
+                           Quincenas = Quincenas)
 
 @reportes.route("/rh/reportes/generar_reporte_por_movimiento", methods = ["POST"])
 def generar_reporte():
     movimiento = request.form.get("Movimiento")
+    quincena = request.form.get("Quincena")
     wb = openpyxl.Workbook()
     archivo_generado = None
     datos_a_escribir = {}
@@ -32,7 +35,7 @@ def generar_reporte():
         print("Directorio %s ya existe" % dir)
     
     if movimiento == "1":
-        altas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento.in_([1, 2])).all()
+        altas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento.in_([1, 2]), rMovimientoEmpleado.idQuincena == quincena).all()
         for empleado_alta in altas:
             ws = openpyxl.load_workbook(filename="rh/reportes/archivos/PLANTILLA NOMBRAMIENTO ADMINISTRATIVO.xlsx")
             plantilla = ws.active
@@ -110,7 +113,7 @@ def generar_reporte():
             respuesta = False
 
     if movimiento == "2":
-        bajas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento == 3).all()
+        bajas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento == 3, rMovimientoEmpleado.idQuincena == quincena).all()
         print(bajas)
         for empleado_baja in bajas:
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_baja.idPersonaMod).first()
@@ -162,9 +165,9 @@ def generar_reporte():
             respuesta = False
 
     if movimiento == "3":
-        todos = db.session.query(rMovimientoEmpleado).all()
+        todos = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idQuincena == quincena).all()
         cont = 1
-        quincena = calcular_quincena()
+        #quincena = calcular_quincena()
         hoja = wb.active
         hoja["A1"] = "MOVIMIENTOS DEL PERSONAL DE PLAZA FEDERAL CORRESPONDIENTES A LA QUINCENA"
         hoja["A2"] = "Cons Qnal"

@@ -427,15 +427,17 @@ class rMovimientoEmpleado(db.Model):
     idPersonaMod = db.Column(db.Integer, nullable = True)
     idTipoEmpleado = db.Column(db.Integer, nullable = True)
     idUsuario = db.Column(db.Integer, nullable = True)
+    idQuincena = db.Column(db.Integer, nullable = True)
     Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     Periodo = db.Column(db.Integer, nullable = True)
 
-    def __init__(self, idMovimientoEmpleado, idTipoMovimiento, idPersonaMod, idTipoEmpleado, idUsuario, Periodo):
+    def __init__(self, idMovimientoEmpleado, idTipoMovimiento, idPersonaMod, idTipoEmpleado, idUsuario, idQuincena, Periodo):
         self.idMovimientoEmpleado = idMovimientoEmpleado
         self.idTipoMovimiento = idTipoMovimiento
         self.idPersonaMod = idPersonaMod
         self.idTipoEmpleado = idTipoEmpleado
         self.idUsuario = idUsuario
+        self.idQuincena = idQuincena
         self.Periodo = Periodo
 
     def update(self, **kwargs):

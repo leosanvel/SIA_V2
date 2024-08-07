@@ -10,6 +10,7 @@ function generar_contrato(){
         async: false,
         type: "POST",
         url: "/RH/generarContrato",
+        data: $("#formularioContrato").serialize(),
         success: function(data){
             window.document.getElementById("ImgModal").style.display = "none";
             if(data.generado){

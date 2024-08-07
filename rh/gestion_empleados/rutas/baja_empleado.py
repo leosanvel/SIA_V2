@@ -87,6 +87,8 @@ def dar_baja_empleado():
     Observaciones = request.form.get('Observaciones')
     FechaEfecto = request.form.get('FechaEfecto')
     FechaEfectoFormateado = datetime.strptime(FechaEfecto, '%d/%m/%Y')
+    quincena = calcular_quincena(FechaEfectoFormateado)
+    print(quincena)
 
     checkboxConservarVacaciones = request.form.get("checkboxConservarVacaciones")
     
@@ -140,6 +142,7 @@ def dar_baja_empleado():
                                                idPersonaMod=idPersona,
                                                idTipoEmpleado=TipoEmpleado,
                                                idUsuario=current_user.idPersona,
+                                               idQuincena=quincena,
                                                Periodo=Periodo)
     
         db.session.add(nuevo_movimiento)

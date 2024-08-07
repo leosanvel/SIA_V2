@@ -86,7 +86,6 @@ def buscar_empleado_concepto():
 
 
     usuario_conceptos = db.session.query(rUsuarioConcepto).filter_by(Usuario = current_user.Usuario).all()
-    print(usuario_conceptos)
 
     empleadoConceptos = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona).all()
     lista_empleado_conceptos = []
@@ -122,16 +121,20 @@ def filtrar_concepto():
     else:
         conceptos = db.session.query(kConcepto).filter_by(idTipoConcepto=TipoConcepto, idTipoEmpleado = empleado.idTipoEmpleado, Editable = 1).order_by(asc(kConcepto.Concepto)).all()
 
+
+    usuario_conceptos = db.session.query(rUsuarioConcepto).filter_by(Usuario = current_user.Usuario).all()
     lista_conceptos = []
-    for concepto in conceptos:
-        empleadoConcepto = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idConcepto = concepto.idConcepto, idTipoConcepto = concepto.idTipoConcepto).first()
+    for idConcepto in usuario_conceptos:
+        for concepto in conceptos:
+            if idConcepto.idConcepto == concepto.idConcepto:
+                empleadoConcepto = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idConcepto = concepto.idConcepto, idTipoConcepto = concepto.idTipoConcepto).first()
 
-        if empleadoConcepto is None or BuscarRepetidos=="true":
+                if empleadoConcepto is None or BuscarRepetidos=="true":
 
-            if concepto is not None:
-                concepto_dict = concepto.__dict__
-                concepto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
-                lista_conceptos.append(concepto_dict)
+                    if concepto is not None:
+                        concepto_dict = concepto.__dict__
+                        concepto_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+                        lista_conceptos.append(concepto_dict)
     if not lista_conceptos:
         return jsonify({"NoEncontrado":True}) 
     return jsonify(lista_conceptos)

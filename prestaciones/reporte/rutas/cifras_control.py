@@ -28,7 +28,7 @@ def generar_reporte_cifras_control():
 
     dir = os.path.join(current_app.root_path, "prestaciones", "reporte", "archivos", "cifras_control")
     if not os.path.exists(dir):
-        os.mkdir(dir)
+        os.makedirs(dir)
         print("Directorio %s creado" % dir)
     else:
         print("Directorio %s ya existe" % dir)
@@ -84,16 +84,28 @@ def generar_reporte_cifras_control():
 
     for empleado in Empleados:
         form_sum_quinquenio = "=SUM(BI" + str(cont + 2) + ":BM" + str(cont + 2) + ")"
+        form_sum_sueldo = "=SUM(AF"  + str(cont + 2) + "+AN" + str(cont + 2) + "+BP" + str(cont + 2) + ")"
+        form_num_trab_sueldo = "=IF(BQ" + str(cont + 2) + "=0,0,1)"
+        form_num_trab_nss = "=IF(BN" + str(cont + 2) + "=0,0,1)"
+        form_prest_ISSSTE = "=IF(N" + str(cont + 2) + "=0,0,1)"
+        form_prest_FOVISSSTE = "=IF(AD" + str(cont + 2) + "=0,0,1)"
+        form_seg_danios = "=IF(AE" + str(cont + 2) + "=0,0,1)"
         Sueldo = db.session.query(rEmpleadoConcepto).filter_by(idPersona = empleado.idPersona, idTipoConcepto = "P", idConcepto = "7").first()
-        sueldos = float(Sueldo.Monto) + sueldos
+        if(Sueldo):
+            sueldos = float(Sueldo.Monto) + sueldos
 
         for indice in range(0, len(num_conceptos)):
             Concepto = db.session.query(rEmpleadoConcepto).filter_by(idPersona = empleado.idPersona, idTipoConcepto = tipo_conceptos[indice], idConcepto = num_conceptos[indice]).first()
-            if Concepto:
+            if Concepto and Sueldo:
+                if Concepto.idTipoConcepto == "P":
+                    pos_neg = 1
+                elif Concepto.idTipoConcepto == "D":
+                    pos_neg = -1
+
                 if float(Concepto.Porcentaje) != 0.00:
-                    Conceptos_valores[num_conceptos[indice]] = float(Sueldo.Monto*(Concepto.Porcentaje/100))
+                    Conceptos_valores[num_conceptos[indice]] = float(Sueldo.Monto*(Concepto.Porcentaje/100))*pos_neg
                 else:
-                    Conceptos_valores[num_conceptos[indice]] = Concepto.Monto
+                    Conceptos_valores[num_conceptos[indice]] = Concepto.Monto*pos_neg
             else:
                 Conceptos_valores[num_conceptos[indice]] = 0.00
 
@@ -108,11 +120,13 @@ def generar_reporte_cifras_control():
 
         concepto_199 = Conceptos_valores["199"] + concepto_199
 
-        ws2.append([47, 999030, 0, empleado.Empleado.Persona.RFC, Sueldo.Monto, empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre,
+        if(empleado.Empleado and empleado.Empleado.Persona and Sueldo):
+
+            ws2.append([47, 999030, 0, empleado.Empleado.Persona.RFC, Sueldo.Monto, empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre,
                     empleado.ClavePresupuestaSIA, empleado.Empleado.idTipoEmpleado, 1, "", quincena_reg.FechaInicio, quincena_reg.FechaFin, 111110000, Conceptos_valores["42A"] + Conceptos_valores["42B"],
                     Conceptos_valores["102"] + Conceptos_valores["140"] + Conceptos_valores["199"], 0, 0, "", ""])
         
-        ws3.append([empleado.Empleado.Persona.RFC, empleado.Empleado.Persona.CURP, empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre, empleado.idNivel,
+            ws3.append([empleado.Empleado.Persona.RFC, empleado.Empleado.Persona.CURP, empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre, empleado.idNivel,
                     "P", Sueldo.Monto, 15, Conceptos_valores["1"], Conceptos_valores["1F"], Conceptos_valores["1S"], Conceptos_valores["2"], Conceptos_valores["21"], Conceptos_valores["26"], Conceptos_valores["3"],
                     Conceptos_valores["32"], Conceptos_valores["34"], Conceptos_valores["38"], Conceptos_valores["4"], Conceptos_valores["40"], Conceptos_valores["42A"], Conceptos_valores["42B"], Conceptos_valores["49"],
                     Conceptos_valores["5"], Conceptos_valores["50"], Conceptos_valores["51"], Conceptos_valores["55"], Conceptos_valores["56L"], Conceptos_valores["57"], Conceptos_valores["62"], Conceptos_valores["64"],
@@ -120,9 +134,33 @@ def generar_reporte_cifras_control():
                     Conceptos_valores["77D"], Conceptos_valores["77"], Conceptos_valores["8"], Conceptos_valores["81"], Conceptos_valores["82"], Conceptos_valores["83"], Conceptos_valores["88"], Conceptos_valores["94"],
                     Conceptos_valores["95"], Conceptos_valores["100"], Conceptos_valores["102"], Conceptos_valores["140"], Conceptos_valores["199"], Conceptos_valores["CG"], Conceptos_valores["DSU"], Conceptos_valores["PP"],
                     Conceptos_valores["PUV"], Conceptos_valores["RET"], Conceptos_valores["FT7"], Conceptos_valores["FTC"], Conceptos_valores["RE7"], Conceptos_valores["REC"], Conceptos_valores["A1"], Conceptos_valores["A2"],
-                    Conceptos_valores["A3"], Conceptos_valores["A4"], Conceptos_valores["A5"], "", empleado.ClavePresupuestaSIA, form_sum_quinquenio])
+                    Conceptos_valores["A3"], Conceptos_valores["A4"], Conceptos_valores["A5"], "", empleado.ClavePresupuestaSIA, form_sum_quinquenio, form_sum_sueldo, 1, form_num_trab_sueldo, form_num_trab_nss, form_prest_ISSSTE,
+                    form_prest_FOVISSSTE, form_seg_danios])
+    
         
-        cont = cont + 1
+            cont = cont + 1
+
+    ws3.append([])
+    ws3.append([])
+    ws3.append([])
+    ws3.append([])
+    ws3.append(["", "", "", "", "", "=SUM(F3:F" + str(cont + 1) +  ")", "", "", "=SUM(I3:I" + str(cont + 1) +  ")", "=SUM(J3:J" + str(cont + 1) +  ")", "=SUM(K3:K" + str(cont + 1) +  ")", "=SUM(L3:L" + str(cont + 1) +  ")",
+                "=SUM(M3:M" + str(cont + 1) +  ")", "=SUM(N3:N" + str(cont + 1) +  ")", "=SUM(O3:O" + str(cont + 1) +  ")", "=SUM(P3:P" + str(cont + 1) +  ")", "=SUM(Q3:Q" + str(cont + 1) +  ")", "=SUM(R3:R" + str(cont + 1) +  ")",
+                "=SUM(S3:S" + str(cont + 1) +  ")", "=SUM(T3:T" + str(cont + 1) +  ")", "=SUM(U3:U" + str(cont + 1) +  ")", "=SUM(V3:V" + str(cont + 1) +  ")", "=SUM(W3:W" + str(cont + 1) +  ")", "=SUM(X3:X" + str(cont + 1) +  ")",
+                "=SUM(Y3:Y" + str(cont + 1) +  ")", "=SUM(Z3:Z" + str(cont + 1) +  ")", "=SUM(AA3:AA" + str(cont + 1) +  ")", "=SUM(AB3:AB" + str(cont + 1) +  ")", "=SUM(AC3:AC" + str(cont + 1) +  ")", "=SUM(AD3:AD" + str(cont + 1) +  ")",
+                "=SUM(AE3:AE" + str(cont + 1) +  ")", "=SUM(AF3:AF" + str(cont + 1) +  ")", "=SUM(AG3:AG" + str(cont + 1) +  ")", "=SUM(AH3:AH" + str(cont + 1) +  ")", "=SUM(AI3:AI" + str(cont + 1) +  ")", "=SUM(AJ3:AJ" + str(cont + 1) +  ")",
+                "=SUM(AK3:AK" + str(cont + 1) +  ")", "=SUM(AL3:AL" + str(cont + 1) +  ")", "=SUM(AM3:AM" + str(cont + 1) +  ")", "=SUM(AN3:AN" + str(cont + 1) +  ")", "=SUM(AO3:AO" + str(cont + 1) +  ")", "=SUM(AP3:AP" + str(cont + 1) +  ")",
+                "=SUM(AQ3:AQ" + str(cont + 1) +  ")", "=SUM(AR3:AR" + str(cont + 1) +  ")", "=SUM(AS3:AS" + str(cont + 1) +  ")", "=SUM(AT3:AT" + str(cont + 1) +  ")", "=SUM(AU3:AU" + str(cont + 1) +  ")", "=SUM(AV3:AV" + str(cont + 1) +  ")",
+                "=SUM(AW3:AW" + str(cont + 1) +  ")", "=SUM(AX3:AX" + str(cont + 1) +  ")", "=SUM(AY3:AY" + str(cont + 1) +  ")", "=SUM(AZ3:AZ" + str(cont + 1) +  ")", "=SUM(BA3:BA" + str(cont + 1) +  ")", "=SUM(BB3:BB" + str(cont + 1) +  ")",
+                "=SUM(BC3:BC" + str(cont + 1) +  ")", "=SUM(BD3:BD" + str(cont + 1) +  ")", "=SUM(BE3:BE" + str(cont + 1) +  ")", "=SUM(BF3:BF" + str(cont + 1) +  ")", "=SUM(BG3:BG" + str(cont + 1) +  ")", "=SUM(BH3:BH" + str(cont + 1) +  ")",
+                "=SUM(BI3:BI" + str(cont + 1) +  ")", "=SUM(BJ3:BJ" + str(cont + 1) +  ")", "=SUM(BK3:BK" + str(cont + 1) +  ")", "=SUM(BL3:BL" + str(cont + 1) +  ")", "=SUM(BM3:BM" + str(cont + 1) +  ")", "=SUM(BN3:BN" + str(cont + 1) +  ")",
+                "=SUM(BO3:BO" + str(cont + 1) +  ")", "=SUM(BP3:BP" + str(cont + 1) +  ")", "=SUM(BQ3:BQ" + str(cont + 1) +  ")", "=SUM(BR3:BR" + str(cont + 1) +  ")", "=SUM(BS3:BS" + str(cont + 1) +  ")", "=SUM(BT3:BT" + str(cont + 1) +  ")",
+                "=SUM(BU3:BU" + str(cont + 1) +  ")", "=SUM(BV3:BV" + str(cont + 1) +  ")", "=SUM(BW3:BW" + str(cont + 1) +  ")"])
+
+    if len(Empleados) > 0:
+        respuesta = True
+    else:
+        respuesta = False
 
     # Asiganar los datos
     data = [
@@ -194,11 +232,18 @@ def generar_reporte_cifras_control():
         cell.font = header_font
         cell.alignment = alignment
 
+    nombre_archivo = "PROCESO DE HOJA DE CIFRAS DE CONTROL_" + quincena + ".xlsx"
     # Save the workbook to a file
-    file_path = "prestaciones/reporte/archivos/cifras_control/PROCESO DE HOJA DE CIFRAS DE CONTROL.xlsx"
+    file_path = "prestaciones/reporte/archivos/cifras_control/" + nombre_archivo
     wb.save(file_path)
 
     print(f'Excel file created at {file_path}')
 
-    return jsonify({"guardado": True})
-        
+    return jsonify({"url_descarga": url_for("reportes_prestaciones.descargar_reporte", nombre_archivo=nombre_archivo), "respuesta": respuesta})
+
+
+@reportes_prestaciones.route("/prestaciones/reportes/descargar-reporte-cifras-control/<nombre_archivo>")
+def descargar_reporte(nombre_archivo):
+    dir = os.path.join(current_app.root_path, "prestaciones", "reporte", "archivos", "cifras_control")
+    print(dir)
+    return send_from_directory(directory=dir, path=nombre_archivo, as_attachment=True)

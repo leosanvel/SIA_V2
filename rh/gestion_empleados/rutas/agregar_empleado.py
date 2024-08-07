@@ -336,6 +336,7 @@ def guardar_empleado():
                                            idPersonaMod=idPersona,
                                            idTipoEmpleado=TipoEmpleado,
                                            idUsuario=current_user.idPersona,
+                                           idQuincena=empleado_data["idQuincena"],
                                            Periodo=Periodo)
     
     db.session.add(nuevo_movimiento)
