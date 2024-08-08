@@ -141,6 +141,7 @@ function agregarConceptos(){
 
 function guardarExpediente(formulario){
     var formData = new FormData(formulario[0]);
+    console.log(formData);
     $.ajax({
         async: false,
         type: "POST",
@@ -151,7 +152,8 @@ function guardarExpediente(formulario){
         processData: false,
         success: function(data){
             if(data.NoArchivo){
-                console.log("Archivo guardado");
+                console.log("Archivo no guardado");
+                return data.NoArchivo;
             }
         }
     });
@@ -175,7 +177,7 @@ function guardarMasInformacion(formulario){
         success: function(data){
 
         }
-    })
+    });
 }
 
 $gmx(document).ready(function () {
@@ -278,11 +280,11 @@ $gmx(document).ready(function () {
                     
                     if (data.guardado) {
                         // abrirModal("Información guardada", "Los datos personales, de empleado y de escolaridad han sido actualizados correctamente en la base de datos.", "");
-                        mensajeGuardado += "-Datos personales.<br>";
-                        mensajeGuardado += "-Datos de empleado.<br>";
-                        mensajeGuardado += "-Datos de escolaridad.<br>";
+                        mensajeGuardado += "- Datos personales.<br>";
+                        mensajeGuardado += "- Datos de empleado.<br>";
+                        mensajeGuardado += "- Datos de escolaridad.<br>";
                         if(data.NumeroEmpleado){
-                           mensajeGuardado += "-El número de Empleado asignado es " + data.NumeroEmpleado + "<br>";
+                           mensajeGuardado += "- El número de Empleado asignado es " + data.NumeroEmpleado + "<br>";
                         }
                         if (data.correo_enviado) {
                             mensajeGuardado += "<br>";
@@ -291,7 +293,7 @@ $gmx(document).ready(function () {
 
                     }
                     if(data.existe_clabe){
-                        mensajeGuardado += "-No se guardó la Clabe interbancaria porque ya hay una activa.";
+                        mensajeGuardado += "- No se guardó la Clabe interbancaria porque ya hay una activa.";
                     }
                 }
             });
@@ -299,7 +301,7 @@ $gmx(document).ready(function () {
         if (!formularioVacio($("#formularioDomicilioParticular"))) {
             if (validarFormulario($("#formularioDomicilioParticular")).valido) {
                 guardarDomicilio(1, $("#formularioDomicilioParticular"));
-                mensajeGuardado += "-Domicilio particular. <br>";
+                mensajeGuardado += "- Domicilio particular. <br>";
             } else {
                 mensajeError += '<a href="javascript:void(0);"  onclick="abrirPestana(\'tab-DomicilioParticular\')">-Domicilio particular</a>. <br>';
             }
@@ -313,7 +315,7 @@ $gmx(document).ready(function () {
         if (!formularioVacio($(formulario))) {
             if (validarFormulario($(formulario)).valido) {
                 guardarDomicilio(2, $(formulario));
-                mensajeGuardado += "-Domicilio Fiscal. <br>";
+                mensajeGuardado += "- Domicilio Fiscal. <br>";
             } else {
                 mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DomicilioFiscal\')">-Domicilio fiscal</a>. <br>';
             }
@@ -323,16 +325,22 @@ $gmx(document).ready(function () {
             
             if(validarFormulario($("#formularioDatosBancarios")).valido){
                 guardarDatosBancarios($("#formularioDatosBancarios"));
+                mensajeGuardado += "- Datos bancarios. <br>";
+            }else{
+                mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-DatosBancarios\')">-Datos bancarios</a>. <br>';
             }
         }
 
-        guardarExpediente($("#formularioExpediente"));
+        No_datos_exp = guardarExpediente($("#formularioExpediente"));
+        if(No_datos_exp){
+            mensajeGuardado += "- Expediente. <br>";
+        }
 
         if(!formularioVacio($("#formularioMasInformacion"))){
 
             if(validarFormulario($("#formularioMasInformacion")).valido){
                 guardarMasInformacion($("#formularioMasInformacion"));
-                mensajeGuardado += "-Mas información. <br>";
+                mensajeGuardado += "- Mas información. <br>";
             }else{
                 mensajeError += '<a href="javascript:void(0);" onclick="abrirPestana(\'tab-MasInformacion\')">-Mas información</a>. <br>';
             }
@@ -359,6 +367,7 @@ $gmx(document).ready(function () {
             }
         });
         // Mostramos liste de errores 
+        console.log(mensajeError);
         if (mensajeError !== '') {
             $("#AlertaError").html(`<strong>Error:</strong> Por favor verifique la siguiente información:<br> ${mensajeError}`);
             $("#AlertaError").show();
@@ -370,9 +379,9 @@ $gmx(document).ready(function () {
                 <strong>AVISO:</strong> Algunos campos están vacíos, sin embargo,
                 la información principal se ha guardado correctamente.
                 Puedes añadir la información faltante más tarde.
-                <br> <br> La siguiente información ha sido guardada correctamente:<br> ${mensajeGuardado}`, "");
+                <br> <br> La siguiente información ha sido guardada correctamente:<br> ${mensajeGuardado}`, "modificarEmpleado");
             } else {
-                abrirModal("Información guardada", `La siguiente información ha sido guardada correctamente:<br> ${mensajeGuardado}`, "");
+                abrirModal("Información guardada", `La siguiente información ha sido guardada correctamente:<br> ${mensajeGuardado}`, "modificarEmpleado");
             }
         }
 

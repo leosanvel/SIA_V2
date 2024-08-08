@@ -351,7 +351,7 @@ def guardar_empleado():
 
     if nuevo_empleado is not None:
         # recuperar ID del nuevo empleado y devolverlo en el json
-        empleado_existente = db.session.query(tPersona).filter_by(CURP = persona_data['CURP']).one()  
+        empleado_existente = db.session.query(tPersona).filter_by(CURP = persona_data['CURP']).one()
         session['idPersona'] = empleado_existente.idPersona
 
     return jsonify(respuesta)
@@ -419,9 +419,10 @@ def guardar_direccion():
                 direccion[column] = 0 if request.form.get(key) == None else 1
             else:
                 direccion[column] = request.form.get(key)
+        
         direccion['idPersona'] = idPersona
         direccion['Descripcion'] = None
-        direccion['idDomicilio'] = idPersona
+        #direccion['idDomicilio'] = idPersona
 
         try:
             direcciones_existentes = db.session.query(rDomicilio).filter_by(idPersona = idPersona).all()
@@ -455,14 +456,14 @@ def guardar_datos_bancarios():
         mapeo_nombres_datos_bancarios = {
             'idPersona': 'idPersona',
             'Clabe': 'Clabe',
-            'idBanco': 'idBanco'}
+            'idBanco': 'idBanco'
+        }
         
         datos_bancarios = {mapeo_nombres_datos_bancarios[key]: request.form.get(key) for key in mapeo_nombres_datos_bancarios.keys()}
         
         nuevo_datos_bancarios = None
 
         Edo_Cuenta = request.files.get('EdoCuenta')
-        
 
         datos_bancarios_existente = db.session.query(rBancoPersona).filter_by(idPersona = idPersona, Activo = 1).first()
         if(datos_bancarios_existente is None):
@@ -571,7 +572,7 @@ def agregar_documentos():
         ApMaterno = Empleado.Persona.ApMaterno
 
         # Obtener archivos
-        Expediente = request.files.get("Expediente")
+        Expediente = request.files["Expediente"]
         # ActaNacimiento = request.files.get("ActaNacimiento")
         # Titulo = request.files.get("Titulo")
         # CartillaMilitar = request.files.get("CartillaMilitar")
@@ -581,7 +582,6 @@ def agregar_documentos():
         # ArchivoRFC = request.files.get("ArchivoRFC")
 
         # Inicializar resultados
-        
         expediente_data = {}
         resultado["NoArchivo"] = True
         resultado["ExpedienteNombre"] = False
@@ -594,9 +594,7 @@ def agregar_documentos():
         NombreCompleto = Nombre + " " + ApPaterno + " " + ApMaterno
         filename = str(NumEmpleado) + "_" + NombreCompleto + ".pdf"
 
-        print(Expediente)
-
-        if Expediente:
+        if Expediente. filename != "":
             # Directorio para almacenar los expedientes
             dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
 
@@ -639,7 +637,7 @@ def agregar_documentos():
             merger.write(dir)
 
     else:
-        resultado["NoEmpleado"] = True
+        resultado["NoArchivo"] = True
 
     return jsonify(resultado)
 
@@ -657,7 +655,8 @@ def agregar_mas_informacion():
     mas_informacion_data["idPersona"] = idPersona
     NumIdiomas = int(request.form.get("NumIdiomas"))
     NumIndigenas = int(request.form.get("NumIndigenas"))
-    print(NumIdiomas, NumIndigenas)
+
+
 
     mas_informacion_existente = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
     if mas_informacion_existente is not None:

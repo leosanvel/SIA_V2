@@ -155,6 +155,8 @@ function validarTelefono(elemento, error) {
             error.text("El formato de teléfono es inválido.");
             return false;
         }
+    }else{
+        return true;
     }
 }
 
