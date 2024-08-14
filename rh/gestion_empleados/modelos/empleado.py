@@ -337,23 +337,11 @@ class rPersonaExpediente(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
-    ActaNacimiento = db.Column(db.Integer, nullable = True)
-    Titulo = db.Column(db.Integer, nullable = True)
-    CartillaMilitar = db.Column(db.Integer, nullable = True)
-    ComprobanteDomicilio = db.Column(db.Integer, nullable = True)
-    IdentificacionOficial = db.Column(db.Integer, nullable = True)
-    ArchivoCURP = db.Column(db.Integer, nullable = True)
-    ArchivoRFC = db.Column(db.Integer, nullable = True)
+    Expediente = db.Column(db.Integer, nullable = True)
 
-    def __init__(self, idPersona, ActaNacimiento, Titulo, CartillaMilitar, ComprobanteDomicilio, IdentificacionOficial, ArchivoCURP, ArchivoRFC):
+    def __init__(self, idPersona, Expediente):
         self.idPersona = idPersona
-        self.ActaNacimiento = ActaNacimiento
-        self.Titulo = Titulo
-        self.CartillaMilitar = CartillaMilitar
-        self.ComprobanteDomicilio = ComprobanteDomicilio
-        self.IdentificacionOficial = IdentificacionOficial
-        self.ArchivoCURP = ArchivoCURP
-        self.ArchivoRFC = ArchivoRFC
+        self.Expediente = Expediente
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

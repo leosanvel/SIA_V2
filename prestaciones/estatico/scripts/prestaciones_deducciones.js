@@ -180,6 +180,9 @@ function buscar_empleado_concepto() {
                                 <td>
                                     <input type="text" class="form-control" id="Monto${cont}" value="${empleado_concepto.Monto}" readonly style="width: 120px">
                                 </td>
+                                <td>
+                                    <input type="text" class="form-control" id="Contrato${cont}" value="${empleado_concepto.NumeroContrato}" readonly style="width: 120px">
+                                </td>
                             `;
 
                     // Agregar más campos si es necesario
@@ -335,7 +338,7 @@ function modal_editar_elemento(consecutivo) {
     $("#Concepto").val($("#idConcepto" + consecutivo).val());
     $("#Monto").val($("#Monto" + consecutivo).val());
     $("#Porcentaje").val($("#Porcentaje" + consecutivo).val());
-
+    $("#hdnNumeroContrato").val($("#NumeroContrato" + consecutivo).val());
     $("#NumeroContrato").val($("#NumeroContrato" + consecutivo).val());
     $("#FechaInicioContrato").val($("#FechaInicio" + consecutivo).val());
     $("#FechaFinContrato").val($("#FechaFin" + consecutivo).val());

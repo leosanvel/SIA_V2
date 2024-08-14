@@ -151,12 +151,13 @@ function guardarExpediente(formulario){
         contentType: false,
         processData: false,
         success: function(data){
-            if(data.NoArchivo){
-                console.log("Archivo no guardado");
-                return data.NoArchivo;
+            if(!data.NoArchivo){
+                console.log(data.NoArchivo);
+                result = !data.NoArchivo;
             }
         }
     });
+    return result;
 }
 
 function guardarMasInformacion(formulario){
@@ -332,6 +333,7 @@ $gmx(document).ready(function () {
         }
 
         No_datos_exp = guardarExpediente($("#formularioExpediente"));
+        console.log(No_datos_exp);
         if(No_datos_exp){
             mensajeGuardado += "- Expediente. <br>";
         }
@@ -408,9 +410,11 @@ $gmx(document).ready(function () {
                     if(data.tiempo_error){
                         $("#spinnerCURP").hide();
                         $("#EBCURP").text("No hay respuesta del servidor RENAPO.");
+                        $("#btnHabilitarCampos").show();
                     }else if(data.conexion_error){
                         $("#spinnerCURP").hide();
                         $("#EBCURP").text("Error en la conexión.");
+                        $("#btnHabilitarCampos").show();
                     }else if (data.Status) { //No está registrado
                         if (data.Status == "EXITOSO") { //Curp encontrada
                             $("#Nombre").val(data.Nombre);
@@ -481,7 +485,66 @@ $gmx(document).ready(function () {
     $("#Clabe").on("input", verBanco);
     $("#idEstatus").change(modalReafirmar);
     $("#btnCancelarModalAltaBaja").on("click", function () { cancelarSelectEstatus(); });
+    $("#btnAgregarNacionalidad").click(mostrarFilaAgregarNacionalidad);
+    $("#btnOcultarFila").click(ocultarFilaAgregarNacionalidad);
+    $("#btnGuardarNacionalidad").click(guardarNacionalidad);
 });
+
+function mostrarFilaAgregarNacionalidad(){
+    $("#FilaAgregarNacionalidad").show();
+    $("#AgregarNacionalidad").prop("disabled", false);
+}
+
+function ocultarFilaAgregarNacionalidad(){
+    $("#FilaAgregarNacionalidad").hide();
+    $("#AgregarNacionalidad").val("");
+    $("#AgregarNacionalidad").prop("disabled", true);
+}
+
+function guardarNacionalidad(){
+    if($("#AgregarNacionalidad").val() != ""){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/guardar-nacionalidad",
+            data: {
+                "NuevaNacionalidad": $("#AgregarNacionalidad").val()
+            },
+            success: function(data){
+                if(data){
+                    if(data.guardado){
+                        abrirModal("Nacionalidad guardada", "La nacionalidad se agregó correctamente", "");
+                        obtenerNacionalidad($("#AgregarNacionalidad").val());
+                    }else{
+                        abrirModal("Nacionalidad no guardada", "La nacionalidad ya existe.", "");
+                    }
+                }
+            }
+        });
+    }else{
+        $("#EAgregarNacionalidad").text("Campo vacío.");
+    }
+}
+
+function obtenerNacionalidad(Nacionalidad){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-nacionalidad",
+        data: {
+            Nacionalidad: Nacionalidad
+        },
+        success: function(data){
+            if(data){
+                $("#idNacionalidad option").remove();
+                $("#idNacionalidad").html(data);
+                $("#FilaAgregarNacionalidad").hide();
+                $("#AgregarNacionalidad").val("");
+                $("#AgregarNacionalidad").prop("disabled", true);
+            }
+        }
+    });
+}
 
 function validarSoloNumeros(event) {
     //$("#Clabe").keydown(function(event){

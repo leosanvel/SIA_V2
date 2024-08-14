@@ -100,17 +100,17 @@ def obtener_datos_bancarios():
 @gestion_empleados.route("/rh/gestion-empleados/obtener-expediente", methods = ["POST"])
 def obtener_expediente():
     idPersona = session.get('idPersona', None)
+    print(idPersona)
     Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
     NumEmpleado = Empleado.NumeroEmpleado
     Nombre = Empleado.Persona.Nombre
     ApPaterno = Empleado.Persona.ApPaterno
     ApMaterno = Empleado.Persona.ApMaterno
     url = None
+    Existe_expediente = None
 
-    expediente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona).first()
+    expediente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona, Expediente = 1).first()
     if expediente is not None:
-        expediente = expediente.__dict__
-        expediente.pop("_sa_instance_state", None)
 
         filename = str(NumEmpleado) + "_" + Nombre + " " + ApPaterno + " " + ApMaterno + ".pdf"
 
@@ -121,7 +121,11 @@ def obtener_expediente():
             print("No existe expediente")
             url = None
 
-    return jsonify({"expediente":expediente, "url":url})
+        Existe_expediente = True
+    else:
+        Existe_expediente = False
+
+    return jsonify({"expediente":Existe_expediente, "url":url})
 
 @gestion_empleados.route("/rh/gestion-empleados/obtener-mas-informacion", methods = ["POST"])
 def obtener_mas_informacion():

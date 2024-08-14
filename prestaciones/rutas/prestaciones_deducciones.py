@@ -58,11 +58,22 @@ def crear_empleado_concepto():
     idTipoConcepto = concepto_data.get('idTipoConcepto', None)
     idConcepto = concepto_data.get('idConcepto', None)
     NumeroContrato = concepto_data.get('NumeroContrato', None)
-
+    hdnNumeroContrato = request.form.get('hdnNumeroContrato')
     nuevo_concepto = None
     try:
-        concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto, NumeroContrato = NumeroContrato).one()
+        if NumeroContrato is None:
+            concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto, NumeroContrato = hdnNumeroContrato).one()
+        else:
+            concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto).one()
+        
         if editar == "true":
+
+            if concepto_data['FechaInicio'] is None:
+                concepto_data['FechaInicio'] = '2024/01/01'
+            if concepto_data['FechaFin'] is None:
+                concepto_data['FechaFin'] = '2024/12/31'
+
+            concepto_data['FechaModificacion'] = datetime.now()
             concepto_a_modificar.update(**concepto_data)
             print("concepto modificado")
         else:
@@ -70,6 +81,15 @@ def crear_empleado_concepto():
             return jsonify({'Existente':True})
 
     except NoResultFound:
+        concepto_data['FechaModificacion'] = datetime.now() 
+        concepto_data['FechaAlta'] = datetime.now()
+
+        if concepto_data['FechaInicio'] is None:
+            concepto_data['FechaInicio'] = '2024/01/01'
+        if concepto_data['FechaFin'] is None:
+            concepto_data['FechaFin'] = '2024/12/31'
+
+
         nuevo_concepto = rEmpleadoConcepto(**concepto_data)
         print("Nuevo concepto")
         db.session.add(nuevo_concepto)
@@ -165,8 +185,11 @@ def eliminar_empleado_concepto():
     idPersona = request.form.get('idPersona')
     idTipoConcepto = request.form.get('TipoConcepto')
     idConcepto = request.form.get('Concepto')
-
-    concepto_a_eliminar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto).delete()
+    hdnNumeroContrato = request.form.get('hdnNumeroContrato')
+    if len(hdnNumeroContrato) >= 1:
+        concepto_a_eliminar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto, NumeroContrato = hdnNumeroContrato).delete()
+    else:
+        concepto_a_eliminar = db.session.query(rEmpleadoConcepto).filter_by(idPersona = idPersona, idTipoConcepto = idTipoConcepto, idConcepto = idConcepto).delete()
     if concepto_a_eliminar > 0:
         print("El registro fue eliminado correctamente.")
     else:

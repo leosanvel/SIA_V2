@@ -4,3 +4,4 @@ prestaciones = Blueprint('prestaciones', __name__, template_folder='../plantilla
 
 from . import prestaciones_deducciones
 from . import importar_conceptos
+from . import general_quincena

@@ -81,6 +81,21 @@ def buscar_dias_persona():
             lista_dias.append(dia_dict)
     return jsonify(lista_dias)
 
+@gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/buscar-dias-persona-por-empleado', methods = ['POST'])
+def buscar_dias_persona_por_empleado():
+    idPersona = request.form.get("idPersona")
+
+    diasPersona = db.session.query(rDiasPersona).filter_by(idPersona = idPersona).all()
+
+    lista_dias = []
+    for dia in diasPersona:
+        if dia is not None:
+            dia_dict = dia.__dict__
+            dia_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+            lista_dias.append(dia_dict)
+
+    return jsonify(lista_dias)
+
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/eliminar-dias', methods = ['POST'])
 def eliminar_dias():
     id = request.form.get('id')

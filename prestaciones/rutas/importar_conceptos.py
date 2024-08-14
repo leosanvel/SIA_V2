@@ -92,9 +92,12 @@ def extraer_concepto_archivo():
                         concepto_a_modificar = db.session.query(rEmpleadoConcepto).filter_by(
                             idPersona=idPersona, idTipoConcepto=idTipoConcepto, idConcepto=idConcepto, NumeroContrato=NumeroContrato
                         ).one()
+                        concepto_data['FechaModificacion'] = datetime.now()
                         concepto_a_modificar.update(**concepto_data)
                         
                     except NoResultFound:
+                        concepto_data['FechaModificacion'] = datetime.now() 
+                        concepto_data['FechaAlta'] = datetime.now()
                         nuevo_concepto = rEmpleadoConcepto(**concepto_data)
                         db.session.add(nuevo_concepto)
 

@@ -54,7 +54,7 @@ def guarda_Justificante():
         dias = np.busday_count(justificante_data["FechaInicio"].date(), justificante_data["FechaFin"].date(), weekmask='1111100')
         if(justificante_data["FechaFin"].weekday() < 5):
             dias = dias + 1
-        mensaje += guardar_o_modificar_justificante(justificante_data)
+        mensaje, guardado = guardar_o_modificar_justificante(justificante_data)
     else:
         FechasFlatpickr = request.form.get("FechasFlatpickr")
         fechas = FechasFlatpickr.split(',')  # Separa las fechas por comas
@@ -63,13 +63,14 @@ def guarda_Justificante():
             fecha = fecha.strip()
             justificante_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
             justificante_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
-            mensaje += guardar_o_modificar_justificante(justificante_data)
+            mensaje, guardado = guardar_o_modificar_justificante(justificante_data)
 
-    if(int(justificante_data["idTipo"]) == 7): #Vacaciones
-        listadias = request.form.get("listaDias").split(',')
-        listaperiodo = request.form.get("listaPeriodo").split(',')
-        listafecha = request.form.get("listaFecha").split(',')
-        restar_diaspersona(justificante_data["idPersona"], listadias, listaperiodo, listafecha, dias)
+    if guardado:
+        if(int(justificante_data["idTipo"]) == 7): #Vacaciones
+            listadias = request.form.get("listaDias").split(',')
+            listaperiodo = request.form.get("listaPeriodo").split(',')
+            listafecha = request.form.get("listaFecha").split(',')
+            restar_diaspersona(justificante_data["idPersona"], listadias, listaperiodo, listafecha, dias)
 
     if(int(justificante_data["idTipo"]) == 3): #Incapacidad
         print("Es incapacidad") 
@@ -165,7 +166,7 @@ def guardar_o_modificar_justificante(justificante_data):
     # Realizar cambios en la base de datos
     db.session.commit()
 
-    return mensaje
+    return mensaje, guardado
 
 def restar_diaspersona(idPersona, listadias, listaperiodo, listafecha, dias):
     for indice, tupla in enumerate(zip(listadias, listaperiodo, listafecha)):

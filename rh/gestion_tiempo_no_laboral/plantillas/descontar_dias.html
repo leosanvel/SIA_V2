@@ -68,18 +68,18 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
+                            <label id="lblDescontarDias" for="lblDescontarDias">Dias a descontar<span id="ADescontarDias" class="form-text"></span></label>
+                            <input type="text" id="DescontarDias" name="DescontarDias" class="form-control obligatorio">
+                            <small id="EDescontarDias" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
                             <label id="lblPorcentaje" for="lblPorcentaje">Porcentaje<span id="APorcentaje" class="form-text"></span>:</label>
                             <select id="Porcentaje" name="Porcentaje" class="obligatorio form-control">
                                 <option value="{{Porcentaje.idPorcentaje}}">{{Porcentaje.Porcentaje}}%</option>
                             </select>
                             <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label id="lblDescontarDias" for="lblDescontarDias">Dias a descontar<span id="ADescontarDias" class="form-text"></span></label>
-                            <input type="text" id="DescontarDias" name="DescontarDias" class="form-control obligatorio">
-                            <small id="EDescontarDias" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
                 </div>

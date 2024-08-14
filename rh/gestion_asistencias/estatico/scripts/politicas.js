@@ -50,30 +50,33 @@ function BuscaPolitica(){
             url: "/rh/gestion-asistencias/buscar-politica",
             data: $("#formularioBuscaPolitica, #idPersona").serialize(),
             success: function (data) {
-                $("#EResultado").text("");
-                // Limpiar la tabla existente
-                $("#tablaResultadosPolitica tbody").empty();
+                if(data.respuesta == "1"){                                    
+                    $("#EResultado").text("");
+                    // Limpiar la tabla existente
+                    $("#tablaResultadosPolitica tbody").empty();
 
-                $("#tablaResultadosPolitica").show();
+                    $("#tablaResultadosPolitica").show();
 
-                $("#btnGuardaPoliticaPersona").show();
+                    $("#btnGuardaPoliticaPersona").show();
 
-                // Iterar sobre los elementos
-                data.politicas.forEach(function (politica) {
-                    $("#tablaResultadosPolitica tbody").append(`
-                    <tr>  
-                        <td>${politica.idPolitica}</td>  
-                        <td>${politica.Politica}</td>  
-                        <td><input type="checkbox" id="check${politica.idPolitica}" class="desactiva-empleado"></td>  
-                    </tr>
-                    `);
-                });
+                    // Iterar sobre los elementos
+                    data.politicas.forEach(function (politica) {
+                        $("#tablaResultadosPolitica tbody").append(`
+                        <tr>  
+                            <td>${politica.idPolitica}</td>  
+                            <td>${politica.Politica}</td>  
+                            <td><input type="checkbox" id="check${politica.idPolitica}" class="desactiva-empleado"></td>  
+                        </tr>
+                        `);
+                    });
 
-                // Iterar sobre los elementos
-                data.politicas_persona.forEach(function (politica_persona) {
-                    $(`#check${politica_persona.idPolitica}`).prop("checked", true);
-                });
-
+                    // Iterar sobre los elementos
+                    data.politicas_persona.forEach(function (politica_persona) {
+                        $(`#check${politica_persona.idPolitica}`).prop("checked", true);
+                    });
+                }else{
+                    abrirModal("Politicas", "Las políticas solo son para personal de plaza", "recargar");                   
+                }
             }
         });
     }

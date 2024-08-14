@@ -55,8 +55,8 @@ $gmx(document).ready(function () {
         if ($("#TipoJustificante").val() == 7) {
 
             if ($("#checkFechasConsecutivas").prop("checked")) {
-                var FechaInicio_string = $("#fechaInicio").val();
-                var FechaFin_string = $("#fechaFin").val();
+                var FechaInicio_string = $("#FechaInicio").val();
+                var FechaFin_string = $("#FechaFin").val();
 
                 var FechaInicio_format = convertirFechaParaEnvio(FechaInicio_string);
                 var FechaFin_format = convertirFechaParaEnvio(FechaFin_string);
@@ -99,6 +99,7 @@ $gmx(document).ready(function () {
     
                 if (dias > dias_total) {
                     dias_adecuados = false;
+                    abrirModal("Justificante no creado", "Los días ganados seleccionados son menores a los días a justificar.", "");
                 }
                 datos.append("listaDias", arrayDias);
                 datos.append("listaPeriodo", arrayidPeriodo);
@@ -336,7 +337,7 @@ function obtener_periodos() {
         $.ajax({
             async: false,
             type: "POST",
-            url: "/RH/obtenerDiasPersona",
+            url: "/rh/gestion-tiempo-no-laboral/buscar-dias-persona-por-empleado",
             data: {
                 "idPersona": $("#idPersona").val()
             },

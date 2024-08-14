@@ -14,8 +14,10 @@ class rEmpleadoConcepto(db.Model):
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     PagoUnico = db.Column(db.Integer, nullable = True)
+    FechaAlta = db.Column(db.Date, nullable = True)
+    FechaModificacion = db.Column(db.Date, nullable = True)
 
-    def __init__(self, idPersona, idTipoConcepto, idConcepto, Porcentaje, Monto, NumeroContrato, FechaInicio, FechaFin, PagoUnico):
+    def __init__(self, idPersona, idTipoConcepto, idConcepto, Porcentaje, Monto, NumeroContrato, FechaInicio, FechaFin, PagoUnico, FechaAlta, FechaModificacion):
         self.idPersona = idPersona
         self.idTipoConcepto = idTipoConcepto
         self.idConcepto = idConcepto
@@ -25,6 +27,8 @@ class rEmpleadoConcepto(db.Model):
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.PagoUnico = PagoUnico
+        self.FechaAlta = FechaAlta
+        self.FehcaModificacion = FechaModificacion
         
     def update(self, **kwargs):
         for attr, value in kwargs.items():

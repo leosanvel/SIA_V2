@@ -49,7 +49,7 @@ def consultar_curp(CURP):
 
     try:
         # Obtención del HTML de respuesta a la consulta
-        page = requests.get(url, verify=False, timeout = 2)
+        page = requests.get(url, verify=False, timeout = 2.5)
 
         # Si la respuesta es correcta
         if page.status_code == 200:

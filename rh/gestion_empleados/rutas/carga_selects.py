@@ -99,3 +99,16 @@ def cargar_FormacionEducativa():
     for entry in formaciones:
         ret += '<option value="{}">{}</option>'.format(entry.idFormacionEducativa, entry.FormacionEducativa)
     return ret
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-nacionalidad", methods = ["POST"])
+def cargar_Nacionalidad():
+    Nacionalidad = request.form.get("Nacionalidad")
+    print(Nacionalidad)
+    ret = '<option value="0">-- Seleccione --</option>'
+    Nacionalidades = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.Nacionalidad).all()
+    for entry in Nacionalidades:
+        if entry.Nacionalidad == Nacionalidad:
+            ret += '<option selected="true" value="{}">{}</option>'.format(entry.idNacionalidad, entry.Nacionalidad)
+        else:
+            ret += '<option value="{}">{}</option>'.format(entry.idNacionalidad, entry.Nacionalidad)
+    return ret

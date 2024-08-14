@@ -46,7 +46,7 @@ def modificar_empleado():
     # Catalogos para el empleado
     TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1,idTipoPersona = 1).order_by(kTipoPersona.idTipoPersona).all()
     EstCiv_datos = db.session.query(kEstadoCivil).filter_by(Activo = 1).order_by(kEstadoCivil.idEstadoCivil).all()
-    Nacionalidad_datos = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.idNacionalidad).all()
+    Nacionalidad_datos = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.Nacionalidad).all()
     TipoEmpleado_datos = db.session.query(kTipoEmpleado).filter_by(Activo = 1).order_by(kTipoEmpleado.idTipoEmpleado).all()
     CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
     Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
@@ -551,6 +551,8 @@ def guardar_conceptos():
                     datos_conceptos["FechaInicio"] = None
                     datos_conceptos["FechaFin"] = None
                     datos_conceptos["PagoUnico"] = 0
+                    datos_conceptos["FechaAlta"] = datetime.now().date()
+                    datos_conceptos["FechaModificacion"] = datetime.now().date()
                     nuevo_concepto = rEmpleadoConcepto(**datos_conceptos)
                     db.session.add(nuevo_concepto)
         
@@ -583,7 +585,7 @@ def agregar_documentos():
 
         # Inicializar resultados
         expediente_data = {}
-        resultado["NoArchivo"] = True
+        resultado["NoArchivo"] = False
         resultado["ExpedienteNombre"] = False
         expediente_data["idPersona"] = idPersona
 
@@ -594,7 +596,7 @@ def agregar_documentos():
         NombreCompleto = Nombre + " " + ApPaterno + " " + ApMaterno
         filename = str(NumEmpleado) + "_" + NombreCompleto + ".pdf"
 
-        if Expediente. filename != "":
+        if Expediente.filename != "":
             # Directorio para almacenar los expedientes
             dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes")
 
@@ -635,6 +637,14 @@ def agregar_documentos():
 
             dir = os.path.join("rh", "gestion_empleados", "archivos", "expedientes", filename)
             merger.write(dir)
+
+            reg_expediente = db.session.query(rPersonaExpediente).filter_by(idPersona = idPersona, Expediente = 1).first()
+            print(reg_expediente)
+            if reg_expediente is None:
+                nuevo_expediente = rPersonaExpediente(idPersona=idPersona,
+                                                      Expediente=1)
+                db.session.add(nuevo_expediente)
+                db.session.commit()
 
     else:
         resultado["NoArchivo"] = True
@@ -739,7 +749,6 @@ def seleccionar_empleado():
     return jsonify(empleado)
 
 @gestion_empleados.route('/rh/gestion-empleados/obtener-banco', methods = ['POST'])
-@permisos_de_consulta
 def obtener_Banco():
     subClabe = request.form.get("subClabe")
     try:
@@ -750,3 +759,27 @@ def obtener_Banco():
     
     except NoResultFound:
         return jsonify({"Nombre": "Banco no encontrado"})
+    
+@gestion_empleados.route("/rh/gestion-empleados/guardar-nacionalidad", methods = ["POST", "GET"])
+def guardar_nacionalidad():
+    NuevaNacionalidad = request.form.get("NuevaNacionalidad")
+
+    Nacionalidad_existente = db.session.query(kNacionalidad).filter_by(Nacionalidad = NuevaNacionalidad).first()
+
+    if Nacionalidad_existente is None:
+        ultimo_id_nacionalidad = db.session.query(func.max(kNacionalidad.idNacionalidad)).scalar()
+        if ultimo_id_nacionalidad is None:
+            idNacionalidad = 1
+        else:
+            idNacionalidad = ultimo_id_nacionalidad + 1
+
+        nueva_Nacionalidad = kNacionalidad(idNacionalidad=idNacionalidad,
+                                           Nacionalidad=NuevaNacionalidad,
+                                           idNacionalidadFP=None,
+                                           idPaisFP=None,
+                                           Activo=1)
+        db.session.add(nueva_Nacionalidad)
+        db.session.commit()
+        return jsonify({"guardado": True})
+    else:
+        return jsonify({"guardado": False})

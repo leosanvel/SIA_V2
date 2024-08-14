@@ -33,7 +33,7 @@ function guardar_descontar_dias(event){
                 data: $("#formularioDescontarDias, #idPersona").serialize(),
                 success: function(data){
                     if(data){
-
+                        abrirModal("Días a descontar", "Los días a descontar se han guardado de manera correcta.", "recargar");
                     }
                 }
             });
