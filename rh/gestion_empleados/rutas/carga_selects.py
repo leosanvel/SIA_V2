@@ -92,7 +92,7 @@ def cargar_Escuela():
     return ret
 
 @gestion_empleados.route('/cargar_FormacionEducativa', methods = ['POST'])
-def cargar_FormacionEducativa():
+def cargar_Formacion_Educativa():
     institucionEscolar = request.form.get('idInstitucionEscolar')
     ret = '<option value="0">-- Seleccione --</option>'
     formaciones = db.session.query(kFormacionEducativa).outerjoin(rInstitucionFormacion, kFormacionEducativa.idFormacionEducativa == rInstitucionFormacion.idFormacionEducativa).filter(rInstitucionFormacion.idInstitucionEscolar == institucionEscolar, kFormacionEducativa.Activo == 1).order_by(kFormacionEducativa.FormacionEducativa).all()
@@ -103,7 +103,6 @@ def cargar_FormacionEducativa():
 @gestion_empleados.route("/rh/gestion-empleados/obtener-nacionalidad", methods = ["POST"])
 def cargar_Nacionalidad():
     Nacionalidad = request.form.get("Nacionalidad")
-    print(Nacionalidad)
     ret = '<option value="0">-- Seleccione --</option>'
     Nacionalidades = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.Nacionalidad).all()
     for entry in Nacionalidades:
@@ -111,4 +110,30 @@ def cargar_Nacionalidad():
             ret += '<option selected="true" value="{}">{}</option>'.format(entry.idNacionalidad, entry.Nacionalidad)
         else:
             ret += '<option value="{}">{}</option>'.format(entry.idNacionalidad, entry.Nacionalidad)
+    return ret
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-formacion-educativa", methods = ["POST"])
+def cargar_FormacionEducativa():
+    FormacionEducativa = request.form.get("FormacionEducativa")
+    ret = '<option value="0">-- Seleccione --</option>'
+    FormacionesEducativas = db.session.query(kFormacionEducativa).filter_by(Activo = 1).order_by(kFormacionEducativa.FormacionEducativa).all()
+    for entry in FormacionesEducativas:
+        if entry.FormacionEducativa == FormacionEducativa:
+            ret += '<option selected="true" value="{}">{}</option>'.format(entry.idFormacionEducativa, entry.FormacionEducativa)
+        else:
+            ret += '<option value="{}">{}</option>'.format(entry.idFormacionEducativa, entry.FormacionEducativa)
+
+    return ret
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-institucion-escolar", methods = ["POST"])
+def cargar_InstitucionEscolar():
+    InstitucionEscolar = request.form.get("InstitucionEscolar")
+    ret = '<option value="0">-- Seleccione --</option>'
+    InstitucionesEscolares = db.session.query(kInstitucionEscolar).filter_by(Activo = 1).order_by(kInstitucionEscolar.InstitucionEscolar).all()
+    for entry in InstitucionesEscolares:
+        if entry.InstitucionEscolar == InstitucionEscolar:
+            ret += '<option selected="true" value="{}">{}</option>'.format(entry.idInstitucionEscolar, entry.InstitucionEscolar)
+        else:
+            ret += '<option value="{}">{}</option>'.format(entry.idInstitucionEscolar, entry.InstitucionEscolar)
+
     return ret

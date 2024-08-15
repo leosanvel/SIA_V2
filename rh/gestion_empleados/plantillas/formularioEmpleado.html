@@ -379,7 +379,7 @@
                     </div>
                     -->
                 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblUniversidad">Escuela<span id="AUniversidad" class="form-text">*</span>:</label>
                             <select id="idInstitucionEscolar" name="idInstitucionEscolar" class="opcional form-control" value="{{empleado.Escuela}}">
@@ -388,10 +388,33 @@
                                     <option value="{{row.idInstitucionEscolar}}">{{row.InstitucionEscolar}}</option>
                                 {% endfor %}
                             </select>
-                            <small id="EUniversidad" class="etiquetaError form-text form-text-error"  > </small>
+                            <small id="EUniversidad" class="etiquetaError form-text form-text-error"> </small>
+                        </div>
+                        <div class="row" id="FilaAgregarInstitucionEscolar" style="display: none;">
+                            <div class="col-md-8">
+                                <input type="text" id="AgregarInstitucionEscolar" name="AgregarInstitucionEscolar" class="form-control" oninput="this.value = this.value.toUpperCase()" disabled>
+                                <small id="EAgregarInstitucionEscolar" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="btnGuardarInstitucionEscolar">
+                                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="btnOcultarFilaInstitucionEscolar">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary btn-sm" id="btnMostrarFilaInstitucionEscolar">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="lblEstudios">Estudios<span id="AEstudios" class="form-text">*</span>:</label>
                             <select id="idFormacionEducativa" name="idFormacionEducativa" class="opcional form-control">
@@ -401,6 +424,29 @@
                                 {% endfor %}
                             </select>
                             <small id="EEstudios" class="etiquetaError form-text form-text-error"> </small>
+                        </div>
+                        <div class="row" id="FilaAgregarFormacionEducativa" style="display: none;">
+                            <div class="col-md-8">
+                                <input type="text" id="AgregarFormacionEducativa" name="AgregarFormacionEducativa" class="form-control" oninput="this.value = this.value.toUpperCase()" disabled>
+                                <small id="EAgregarFormacionEducativa" class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="btnGuardarFormacionEducativa">
+                                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="btnOcultarFilaFormacionEducativa">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary btn-sm" id="btnMostrarFilaFormacionEducativa">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </button>
                         </div>
                     </div>
                     <div class="col-md-8">

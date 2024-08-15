@@ -783,3 +783,48 @@ def guardar_nacionalidad():
         return jsonify({"guardado": True})
     else:
         return jsonify({"guardado": False})
+    
+@gestion_empleados.route("/rh/gestion-empleados/guardar-formacion-educativa", methods = ["POST", "GET"])
+def guardar_formacion_educativa():
+    NuevaFormacionEducativa = request.form.get("NuevaFormacionEducativa")
+
+    FormacionEducativa_existente = db.session.query(kFormacionEducativa).filter_by(FormacionEducativa = NuevaFormacionEducativa).first()
+
+    if FormacionEducativa_existente is None:
+        ultimo_id_formacion_educativa = db.session.query(func.max(kFormacionEducativa.idFormacionEducativa)).filter(kFormacionEducativa.idFormacionEducativa < 9999).scalar()
+        if ultimo_id_formacion_educativa is None:
+            idFormacionEducativa = 1
+        else:
+            idFormacionEducativa = ultimo_id_formacion_educativa + 1
+        
+        nueva_FormacionEducativa = kFormacionEducativa(idFormacionEducativa=idFormacionEducativa,
+                                                       FormacionEducativa=NuevaFormacionEducativa,
+                                                       Activo=1)
+        
+        db.session.add(nueva_FormacionEducativa)
+        db.session.commit()
+        return jsonify({"guardado": True})
+    else:
+        return jsonify({"guardado": False})
+
+@gestion_empleados.route("/rh/gestion-empleados/guardar-institucion-escolar", methods = ["POST"])
+def guardar_institucion_escolar():
+    NuevaInstitucionEscolar = request.form.get("NuevaInstitucionEscolar")
+
+    InstitucionEscolar_existente = db.session.query(kInstitucionEscolar).filter_by(InstitucionEscolar = NuevaInstitucionEscolar).first()
+
+    if InstitucionEscolar_existente is None:
+        ultimo_id_institucion_escolar = db.session.query(func.max(kInstitucionEscolar.idInstitucionEscolar)).filter(kInstitucionEscolar.idInstitucionEscolar < 9999).scalar()
+        if ultimo_id_institucion_escolar is None:
+            idInstitucionEscolar = 1
+        else:
+            idInstitucionEscolar = ultimo_id_institucion_escolar + 1
+        
+        nuevo_InstitucionEscolar = kInstitucionEscolar(idInstitucionEscolar=idInstitucionEscolar,
+                                                       InstitucionEscolar=NuevaInstitucionEscolar,
+                                                       Activo=1)
+        db.session.add(nuevo_InstitucionEscolar)
+        db.session.commit()
+        return jsonify({"guardado": True})
+    else:
+        return jsonify({"guardado": False})

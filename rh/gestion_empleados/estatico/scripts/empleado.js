@@ -488,6 +488,13 @@ $gmx(document).ready(function () {
     $("#btnAgregarNacionalidad").click(mostrarFilaAgregarNacionalidad);
     $("#btnOcultarFila").click(ocultarFilaAgregarNacionalidad);
     $("#btnGuardarNacionalidad").click(guardarNacionalidad);
+    $("#btnMostrarFilaFormacionEducativa").click(mostrarFilaAgregarFormacionEducativa);
+    $("#btnOcultarFilaFormacionEducativa").click(ocultarFilaAgregarFormacionEducativa);
+    $("#btnGuardarFormacionEducativa").click(guardarFormacionEducativa);
+    $("#btnMostrarFilaInstitucionEscolar").click(mostrarFilaAgregarInstitucionEscolar);
+    $("#btnOcultarFilaInstitucionEscolar").click(ocultarFilaAgregarInstitucionEscolar);
+    $("#btnGuardarInstitucionEscolar").click(guardarInstitucionEscolar);
+    
 });
 
 function mostrarFilaAgregarNacionalidad(){
@@ -499,6 +506,31 @@ function ocultarFilaAgregarNacionalidad(){
     $("#FilaAgregarNacionalidad").hide();
     $("#AgregarNacionalidad").val("");
     $("#AgregarNacionalidad").prop("disabled", true);
+    $("#EAgregarNacionalidad").text("");
+}
+
+function mostrarFilaAgregarFormacionEducativa(){
+    $("#FilaAgregarFormacionEducativa").show();
+    $("#AgregarFormacionEducativa").prop("disabled", false);
+}
+
+function ocultarFilaAgregarFormacionEducativa(){
+    $("#FilaAgregarFormacionEducativa").hide();
+    $("#AgregarFormacionEducativa").val("");
+    $("#AgregarFormacionEducativa").prop("disabled", true);
+    $("#EAgregarFormacionEducativa").text("");
+}
+
+function mostrarFilaAgregarInstitucionEscolar(){
+    $("#FilaAgregarInstitucionEscolar").show();
+    $("#AgregarInstitucionEscolar").prop("disabled", false);
+}
+
+function ocultarFilaAgregarInstitucionEscolar(){
+    $("#FilaAgregarInstitucionEscolar").hide();
+    $("#AgregarInstitucionEscolar").val("");
+    $("#AgregarInstitucionEscolar").prop("disabled", true);
+    $("#EAgregarInstitucionEscolar").text("");
 }
 
 function guardarNacionalidad(){
@@ -542,6 +574,92 @@ function obtenerNacionalidad(Nacionalidad){
                 $("#AgregarNacionalidad").val("");
                 $("#AgregarNacionalidad").prop("disabled", true);
             }
+        }
+    });
+}
+
+function guardarFormacionEducativa(){
+    if($("#AgregarFormacionEducativa").val() != ""){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/guardar-formacion-educativa",
+            data: {
+                "NuevaFormacionEducativa": $("#AgregarFormacionEducativa").val()
+            },
+            success: function(data){
+                if(data){
+                    if(data.guardado){
+                        abrirModal("Estudio guardado", "El estudio se agregó correctamente", "");
+                        obtenerFormacionEducativa($("#AgregarFormacionEducativa").val());
+                    }else{
+                        abrirModal("Estudio no guardado", "El estudio ya existe.", "");
+                    }
+                }
+            }
+        });
+    }else{
+        $("#EAgregarFormacionEducativa").text("Campo vacío.");
+    }
+}
+
+function obtenerFormacionEducativa(FormacionEducativa){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-formacion-educativa",
+        data: {
+            FormacionEducativa: FormacionEducativa
+        },
+        success: function(data){
+            if(data){
+                $("#idFormacionEducativa option").remove();
+                $("#idFormacionEducativa").html(data);
+                $("#FilaAgregarFormacionEducativa").hide();
+                $("#AgregarFormacionEducativa").val("");
+                $("#AgregarFormacionEducativa").prop("disabled", true);
+            }
+        }
+    });
+}
+
+function guardarInstitucionEscolar(){
+    if($("#AgregarInstitucionEscolar").val() != ""){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/guardar-institucion-escolar",
+            data: {
+                NuevaInstitucionEscolar: $("#AgregarInstitucionEscolar").val()
+            },
+            success: function(data){
+                if(data){
+                    if(data.guardado){
+                        abrirModal("Escuela guardada", "La escuela se agregó correctamente", "");
+                        obtenerInstitucionEscolar($("#AgregarInstitucionEscolar").val());
+                    }else{
+                        abrirModal("Escuela no guardada", "La escuela ya existe.", "");
+                    }
+                }
+            }
+        });
+    }
+}
+
+function obtenerInstitucionEscolar(InstitucionEscolar){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-institucion-escolar",
+        data: {
+            InstitucionEscolar: InstitucionEscolar
+        },
+        success: function(data){
+            $("#idInstitucionEscolar option").remove();
+            $("#idInstitucionEscolar").html(data);
+            $("#FilaAgregarInstitucionEscolar").hide();
+            $("#AgregarInstitucionEscolar").val("");
+            $("#AgregarInstitucionEscolar").prop("disabled", true);
         }
     });
 }
