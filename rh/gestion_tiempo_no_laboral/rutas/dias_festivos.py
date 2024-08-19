@@ -60,3 +60,30 @@ def busca_festividad():
         return jsonify(festividad_existente)
     else:
         return jsonify({"Encontrado": False})
+    
+@gestion_tiempo_no_laboral.route("/rh/gestion-tiempo-no-laboral/cancelar-dia-festivo", methods = ["POST"])
+def cancelar_dia_festivo():
+    idDiaFestivo = request.form.get("idDiaFestivo")
+
+    if idDiaFestivo != "":
+        DiaFestivo_existente = db.session.query(kDiasFestivos).filter_by(idDiaFestivo = idDiaFestivo).first()
+        if DiaFestivo_existente is not None:
+            DiaFestivo_existente = DiaFestivo_existente.__dict__
+            DiaFestivo_existente.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
+        
+        return jsonify(DiaFestivo_existente)
+    else:
+        return jsonify({"Encontrado": False})
+    
+@gestion_tiempo_no_laboral.route("/rh/gestion-tiempo-no-laboral/eliminar-dia-festivo", methods = ["POST"])
+def eliminar_dia_festivo():
+    idDiaFestivo = request.form.get("idDiaFestivo")
+
+    DiaFestivo_existente = db.session.query(kDiasFestivos).filter_by(idDiaFestivo = idDiaFestivo).delete()
+
+    db.session.commit()
+    
+    if DiaFestivo_existente:
+        return jsonify({"eliminado": True})
+    else:
+        return jsonify({"eliminado": False})

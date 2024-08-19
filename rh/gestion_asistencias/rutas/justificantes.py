@@ -54,7 +54,7 @@ def guarda_Justificante():
         dias = np.busday_count(justificante_data["FechaInicio"].date(), justificante_data["FechaFin"].date(), weekmask='1111100')
         if(justificante_data["FechaFin"].weekday() < 5):
             dias = dias + 1
-        mensaje, guardado = guardar_o_modificar_justificante(justificante_data)
+        mensaje = guardar_o_modificar_justificante(justificante_data)
     else:
         FechasFlatpickr = request.form.get("FechasFlatpickr")
         fechas = FechasFlatpickr.split(',')  # Separa las fechas por comas
@@ -63,14 +63,13 @@ def guarda_Justificante():
             fecha = fecha.strip()
             justificante_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
             justificante_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
-            mensaje, guardado = guardar_o_modificar_justificante(justificante_data)
+            mensaje = guardar_o_modificar_justificante(justificante_data)
 
-    if guardado:
-        if(int(justificante_data["idTipo"]) == 7): #Vacaciones
-            listadias = request.form.get("listaDias").split(',')
-            listaperiodo = request.form.get("listaPeriodo").split(',')
-            listafecha = request.form.get("listaFecha").split(',')
-            restar_diaspersona(justificante_data["idPersona"], listadias, listaperiodo, listafecha, dias)
+    if(int(justificante_data["idTipo"]) == 7): #Vacaciones
+        listadias = request.form.get("listaDias").split(',')
+        listaperiodo = request.form.get("listaPeriodo").split(',')
+        listafecha = request.form.get("listaFecha").split(',')
+        restar_diaspersona(justificante_data["idPersona"], listadias, listaperiodo, listafecha, dias)
 
     if(int(justificante_data["idTipo"]) == 3): #Incapacidad
         print("Es incapacidad") 
@@ -80,7 +79,6 @@ def guarda_Justificante():
 def guardar_o_modificar_justificante(justificante_data):
     nuevo_justificante = None
     mensaje = ""
-    guardado = True
 
     try:
         justificante_a_modificar = db.session.query(tJustificante).filter(tJustificante.idJustificante == justificante_data["idJustificante"]).one()
@@ -124,49 +122,30 @@ def guardar_o_modificar_justificante(justificante_data):
 
         elif(request.form.get('TipoProceso') == '1'): # Proceso individual
 
-            incidencia_existente = db.session.query(tIncidencia).filter_by(idPersona = justificante_data["idPersona"], FechaInicio = justificante_data["FechaInicio"], FechaFin = justificante_data["FechaFin"]).first()
-            if incidencia_existente is not None:
-                print("Existe Incidencia")
-                se_puede_crear = False
-                if incidencia_existente.idTipo == 1:
-                    if int(justificante_data["idTipo"]) == 1 or int(justificante_data["idTipo"]) == 3 or int(justificante_data["idTipo"]) == 5 or int(justificante_data["idTipo"]) == 7 or int(justificante_data["idTipo"]) == 8:
-                        se_puede_crear = True
-
-                if incidencia_existente.idTipo == int(justificante_data["idTipo"]) or se_puede_crear:
-                    print("Existe tipo de incidencia")
-                    nuevo_justificante = tJustificante(**justificante_data)
-                    # if (int(justificante_data["idTipo"]) == 7):
-                    # restar_diaspersona(int(justificante_data["idPersona"]), fecha_inicio, fecha_fin)
-                    db.session.add(nuevo_justificante)
-                    guardado = True
-                else:
-                    print("Existe la incidencia, pero no coincide el tipo")
-                    mensaje += "La incidencia existe pero no coincide el tipo de justificante para el empleado.\n"
-                    guardado = False
-            else:
-                print("No existe incidencia")
-                mensaje += "No existe incidencia en estas fechas para este empleado.\n"
-                guardado = False
+            nuevo_justificante = tJustificante(**justificante_data)
+            # if (int(justificante_data["idTipo"]) == 7):
+            # restar_diaspersona(int(justificante_data["idPersona"]), fecha_inicio, fecha_fin)
+            db.session.add(nuevo_justificante)
+            guardado = True
 
         guardar_modificar_justificante = 10
 
-    if guardado:
-        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
-        if ultimo_idBitacora is None:
-            idBitacora = 1
-        else:
-            idBitacora = ultimo_idBitacora + 1
+    ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+    if ultimo_idBitacora is None:
+        idBitacora = 1
+    else:
+        idBitacora = ultimo_idBitacora + 1
 
-        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+    nueva_bitacora = tBitacora(idBitacora=idBitacora,
                                idTipoMovimiento=guardar_modificar_justificante,
                                idUsuario=current_user.idPersona)
     
-        db.session.add(nueva_bitacora)
+    db.session.add(nueva_bitacora)
 
     # Realizar cambios en la base de datos
     db.session.commit()
 
-    return mensaje, guardado
+    return mensaje
 
 def restar_diaspersona(idPersona, listadias, listaperiodo, listafecha, dias):
     for indice, tupla in enumerate(zip(listadias, listaperiodo, listafecha)):

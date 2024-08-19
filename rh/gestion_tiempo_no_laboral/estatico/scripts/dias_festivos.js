@@ -80,9 +80,32 @@ function cargarFestividades() {
                     $("#tablaResultadosFestividad tbody").append(`
                             <tr>
                                 <td>${festividad.idDiaFestivo}</td>
-                                <td>${FechaFormateada}</td>
-                                <td>${festividad.Descripcion}</td>
-                                <td>${FechaCreacionFormateada}</td>
+                                <td>
+                                    <div class="form-group datepicker-group" style="z-index: 10;">
+                                        <input type="text" id="Fecha${festividad.idDiaFestivo}"
+                                        class="form-control" value="${FechaFormateada}" readonly>
+                                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                        <small id="EFecha" class="etiquetaError form-text form-text-error"></small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" id="Descripcion${festividad.idDiaFestivo}" value="${festividad.Descripcion}" style="width: 300px;" readonly>
+                                </td>
+                                <td>
+                                    <div style="display: block;">
+                                        <button type="button" class="btn btn-primary" id="Eliminar${festividad.idDiaFestivo}" onclick="eliminar(${festividad.idDiaFestivo})">Eliminar</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display: block;">
+                                        <button type="button" class="btn btn-primary" id="Editar_Aceptar${festividad.idDiaFestivo}" onclick="editar_aceptar(${festividad.idDiaFestivo})">Editar</button>
+                                    </div>
+                                </td>
+                                <td>
+                                <div style="display: block;">
+                                    <button type="button" class="btn btn-secondary" id="Cancelar${festividad.idDiaFestivo}" onclick="cancelar('${festividad.idDiaFestivo}')" style="display: none">Cancelar</button>
+                                </div>
+                            </td>
                             </tr>
                         `);
                 });
@@ -93,5 +116,67 @@ function cargarFestividades() {
             }
     
         }
+    });
+}
+
+function editar_aceptar(idDiaFestivo){
+    if($("#Editar_Aceptar" + idDiaFestivo).text() == "Editar"){
+        $("#Fecha" + idDiaFestivo).prop("readonly", false);
+        $("#Fecha" + idDiaFestivo).datepicker("option", "disabled", false);
+        $("#Descripcion" + idDiaFestivo).prop("readonly", false);
+        configuraDatepickers("Fecha", idDiaFestivo);
+
+        $("#Editar_Aceptar" + idDiaFestivo).text("Aceptar");
+        $("#Cancelar" + idDiaFestivo).show();
+    }else{
+        guardar_modificar_dia_festivo(idDiaFestivo);
+    }
+}
+
+function cancelar(idDiaFestivo){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-tiempo-no-laboral/cancelar-dia-festivo",
+        data: {
+            idDiaFestivo: idDiaFestivo
+        },
+        success: function(DiaFestivo){
+            Fecha = convertirFechaParaVisualizacion(DiaFestivo.Fecha);
+
+            $("#Fecha" + idDiaFestivo).attr("readonly", true);
+            $("#Fecha" + idDiaFestivo).datepicker("option", "disabled", true);
+            $("#Descripcion" + idDiaFestivo).attr("readonly", true);
+
+            $("#Fecha" + idDiaFestivo).val(Fecha);
+            $("#Descripcion" + idDiaFestivo).val(DiaFestivo.Descripcion);
+
+            $("#Editar_Aceptar" + idDiaFestivo).text("Editar");
+            $("#Cancelar" + idDiaFestivo).hide();
+        }
+    });
+}
+
+function eliminar(idDiaFestivo){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-tiempo-no-laboral/eliminar-dia-festivo",
+        data: {
+            idDiaFestivo: idDiaFestivo
+        },
+        success: function(data){
+            if(data.eliminado){
+                abrirModal("Día festivo eliminado", "El día festivo se ha eliminado de manera correcta", "recargar");
+            }
+        }
+    });
+}
+
+function configuraDatepickers(idFecha, data){
+    $(`#${idFecha}${data}`).datepicker({
+        dateFormat: "dd/mm/yy",
+        changeYear: true,
+        changeMonth: true
     });
 }
