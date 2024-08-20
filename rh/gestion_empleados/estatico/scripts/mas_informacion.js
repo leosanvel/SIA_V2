@@ -53,4 +53,137 @@ $gmx(document).ready(function(){
             $("#LenguaIndigena option").clone().appendTo(`#IdiomaIndigena${cont}`);
         }
     });
+
+    $("#btnAgregarIdioma").click(mostrarFilaAgregarIdioma);
+    $("#btnOcultarFilaAgregarIdioma").click(ocultarFilaAgregarIdioma);
+
+    $("#btnAgregarIndigena").click(mostrarFilaAgregarIndigena);
+    $("#btnOcultarFilaAgregarIndigena").click(ocultarFilaAgregarIndigena);
+
+    $("#btnGuardarIdioma").click(guardarIdioma);
+    $("#btnGuardarIndigena").click(guardarIndigena);
 });
+
+function mostrarFilaAgregarIdioma(){
+    $("#FilaAgregarIdioma").show();
+    $("#AgregarIdioma").prop("disabled", false);
+}
+
+function ocultarFilaAgregarIdioma(){
+    $("#FilaAgregarIdioma").hide();
+    $("#AgregarIdioma").val("");
+    $("#AgregarIdioma").prop("disabled", true);
+    $("#EAgregarIdioma").text("");
+}
+
+function mostrarFilaAgregarIndigena(){
+    $("#FilaAgregarIndigena").show();
+    $("#AgregarIndigena").prop("disabled", false);
+}
+
+function ocultarFilaAgregarIndigena(){
+    $("#FilaAgregarIndigena").hide();
+    $("#AgregarIndigena").val("");
+    $("#AgregarIndigena").prop("disabled", true);
+    $("#EAgregarIndigena").text("");
+}
+
+function guardarIdioma(){
+    if($("#AgregarIdioma").val() != ""){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/guardar-idioma",
+            data: {
+                NuevoIdioma: $("#AgregarIdioma").val()
+            },
+            success: function(data){
+                if(data){
+                    if(data.guardado){
+                        abrirModal("Idioma guardado", "El idioma se agregó correctamente.", "");
+                        obtenerIdiomas(data.idIdioma);
+                    }else{
+                        abrirModal("Idioma no guardado", "El idioma ya existe.", "");
+                    }
+                }
+            }
+        });
+    }else{
+        $("#EAgregarIdioma").text("Campo vacío.");
+    }
+}
+
+function obtenerIdiomas(Idioma){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-idiomas",
+        success: function(data){
+            if(data){
+                $(".idioma").each(function(){
+                    val_aux = $(this).val();
+                    $(this).find("option").remove();
+                    $(this).html(data);
+                    if(val_aux == 0){
+                        $(this).val(Idioma);
+                    }else{
+                        $(this).val(val_aux);
+                    }
+                });
+                $("#FilaAgregarIdioma").hide();
+                $("#AgregarIdioma").val("");
+                $("#AgregarIdioma").prop("disabled", true);
+            }
+        }
+    });
+}
+
+function guardarIndigena(){
+    if($("#AgregarIndigena").val() != ""){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-empleados/guardar-indigena",
+            data: {
+                NuevoIndigena: $("#AgregarIndigena").val()
+            },
+            success: function(data){
+                if(data){
+                    if(data.guardado){
+                        abrirModal("Lengua indigena guardada", "La lengua indigena se agregó correctamente.", "");
+                        obtenerLenguasIndigenas(data.idLenguaIndigena);
+                    }else{
+                        abrirModal("Lengua indigena no guardada", "La lengua indigena ya existe.", "");
+                    }
+                }
+            }
+        });
+    }else{
+        $("#EAgregarIndigena").text("Campo vacío.");
+    }
+}
+
+function obtenerLenguasIndigenas(idLenguaIndigena){
+    $.ajax({
+        async: false,
+        type: "POST",
+        url: "/rh/gestion-empleados/obtener-lenguas-indigenas",
+        success: function(data){
+            if(data){
+                $(".indigena").each(function(){
+                    val_aux = $(this).val();
+                    $(this).find("option").remove();
+                    $(this).html(data);
+                    if(val_aux == 0){
+                        $(this).val(idLenguaIndigena);
+                    }else{
+                        $(this).val(val_aux);
+                    }
+                });
+                $("#FilaAgregarIndigena").hide();
+                $("#AgregarIndigena").val("");
+                $("#AgregarIndigena").prop("disabled", true);
+            }
+        }
+    });
+}

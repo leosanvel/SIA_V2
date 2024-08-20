@@ -35,18 +35,31 @@
         </div>
         <br>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <button type="button" class="btn btn-primary btn-sm" id="btnCrearIdioma">
                     Crear idioma
                 </button>
             </div>
             <div class="col-md-2">
+                <button type="button" class="btn btn-primary btn-sm" id="btnAgregarIdioma">
+                    Agregar idioma
+                </button>
+            </div>
+            <div class="col-md-2">
 
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
                 <button type="button" class="btn btn-primary btn-sm" id="btnCrearIdiomaIndigena">
                     Crear idioma indigena
                 </button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary btn-sm" id="btnAgregarIndigena">
+                    Agregar idioma indigena
+                </button>
+            </div>
+            <div class="col-md-2">
+
             </div>
         </div>
         <br>
@@ -62,10 +75,30 @@
                     </select>
                     <small id="EIdioma" class="etiquetaError form-text form-text-error"></small>
                 </div>
+
+                <div class="row" id="FilaAgregarIdioma" style="display: none;">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <input type="text" id="AgregarIdioma" name="AgregarIdioma" class="form-control" oninput="this.value = this.value.toUpperCase()" disabled>
+                            <small id="EAgregarIdioma" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnGuardarIdioma">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnOcultarFilaAgregarIdioma">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="col-md-2">
                 
             </div>
+
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="lblIndigena">Lengua indígena<span id="AIndigena" class="form-text">*</span>:</label>
@@ -76,10 +109,28 @@
                     </select>
                     <small id="EIndigena" class="etiquetaError form-text form-text-error"></small>
                 </div>
+                <div class="row" id="FilaAgregarIndigena" style="display: none;">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <input type="text" id="AgregarIndigena" name="AgregarIndigena" class="form-control" oninput="this.value = this.value.toUpperCase()" disabled>
+                            <small id="EAgregarIndigena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnGuardarIndigena">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnOcultarFilaAgregarIndigena">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
-                    <select id="LenguaIndigena" name="LenguaIndigena" class="opcional form-control" style="display: none;">
+                    <select id="LenguaIndigena" name="LenguaIndigena" class="opcional form-control indigena" style="display: none;">
                         <option value="0">-- Seleccione --</option>
                         {% for row in LenguasIndigenas %}
                             <option value="{{row.idLenguaIndigena}}">{{row.LenguaIndigena}}</option>

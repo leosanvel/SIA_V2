@@ -828,3 +828,49 @@ def guardar_institucion_escolar():
         return jsonify({"guardado": True})
     else:
         return jsonify({"guardado": False})
+
+@gestion_empleados.route("/rh/gestion-empleados/guardar-idioma", methods = ["POST"])
+def guardar_idioma():
+    NuevoIdioma = request.form.get("NuevoIdioma")
+
+    Idioma_existente = db.session.query(kIdiomas).filter_by(Idioma = NuevoIdioma).first()
+
+    if Idioma_existente is None:
+        ultimo_id_idioma = db.session.query(func.max(kIdiomas.idIdioma)).scalar()
+        if ultimo_id_idioma is None:
+            idIdioma = 1
+        else:
+            idIdioma = ultimo_id_idioma + 1
+        
+        nuevo_Idioma = kIdiomas(idIdioma=idIdioma,
+                                Idioma=NuevoIdioma,
+                                Activo = 1)
+        
+        db.session.add(nuevo_Idioma)
+        db.session.commit()
+        return jsonify({"guardado": True, "idIdioma": idIdioma})
+    else:
+        return jsonify({"guardado": False})
+    
+@gestion_empleados.route("/rh/gestion-empleados/guardar-indigena", methods = ["POST"])
+def guardar_lengua_indigena():
+    NuevoIndigena = request.form.get("NuevoIndigena")
+
+    LenguaIndigena_existente = db.session.query(kLenguasIndigenas).filter_by(LenguaIndigena = NuevoIndigena).first()
+
+    if LenguaIndigena_existente is None:
+        ultimo_id_indigena = db.session.query(func.max(kLenguasIndigenas.idLenguaIndigena)).scalar()
+        if ultimo_id_indigena is None:
+            idLenguaIndigena = 1
+        else:
+            idLenguaIndigena = ultimo_id_indigena + 1
+        
+        nuevo_LenguaIndigena = kLenguasIndigenas(idLenguaIndigena=idLenguaIndigena,
+                                                 LenguaIndigena=NuevoIndigena,
+                                                 Activo=1)
+        
+        db.session.add(nuevo_LenguaIndigena)
+        db.session.commit()
+        return jsonify({"guardado": True, "idLenguaIndigena": idLenguaIndigena})
+    else:
+        return jsonify({"guardado": False})

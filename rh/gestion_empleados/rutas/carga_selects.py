@@ -137,3 +137,29 @@ def cargar_InstitucionEscolar():
             ret += '<option value="{}">{}</option>'.format(entry.idInstitucionEscolar, entry.InstitucionEscolar)
 
     return ret
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-idiomas", methods = ["POST"])
+def obtener_idiomas():
+    ret = '<option value="0">-- Seleccione --</option>'
+
+    Idiomas = db.session.query(kIdiomas).filter_by(Activo = 1).order_by(kIdiomas.Idioma).all()
+
+    for entry in Idiomas:
+        ret += '<option value="{}">{}</option>'.format(entry.idIdioma, entry.Idioma)
+
+    return ret
+
+@gestion_empleados.route("/rh/gestion-empleados/obtener-lenguas-indigenas", methods = ["POST"])
+def obtener_lenguas_indigenas():
+    LenguaIndigena = request.form.get("LenguaIndigena")
+    ret = '<option value="0">-- Seleccione --</option>'
+
+    LenguasIndigenas = db.session.query(kLenguasIndigenas).filter_by(Activo = 1).order_by(kLenguasIndigenas.LenguaIndigena).all()
+
+    for entry in LenguasIndigenas:
+        if entry.LenguaIndigena == LenguaIndigena:
+            ret += '<option selected="true" value="{}">{}</option>'.format(entry.idLenguaIndigena, entry.LenguaIndigena)
+        else:
+            ret += '<option value="{}">{}</option>'.format(entry.idLenguaIndigena, entry.LenguaIndigena)
+    
+    return ret
