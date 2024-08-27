@@ -15,7 +15,7 @@ import smtplib
 from email.message import EmailMessage
 
 from catalogos.modelos.modelos import kQuincena,kConcepto
-from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador, rSancionPersona
+from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador, rSancionPersona, tIncidenciasPasadas
 from rh.gestion_empleados.modelos.empleado import rEmpleado, rEmpleadoPuesto
 from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina
@@ -257,6 +257,7 @@ def procesar_nomina(nomina_data, VistaPrevia = None):
 
         # Se agregará información a lista_nomina solo si hay días con HoraEntrada o HoraSalida como None
         if Checadores:
+            respuesta["NoIncidencias"] = False
             nomina_data["N"] = contador
             nomina_data["idPersona"] = Persona.idPersona
             nomina_data["ADSCRIP"] = "000"
@@ -351,11 +352,11 @@ def serialize_datetime(obj):
         return obj.isoformat() 
     raise TypeError("Type not serializable")
 
-def calcular_quincena():
-    hoy = datetime.now()
-    mes = hoy.month
+def calcular_quincena(fecha):
+    # hoy = datetime.now()
+    mes = fecha.month
     quincena = mes*2
-    if((hoy.day//16) == 0):
+    if((fecha.day//16) == 0):
         quincena = quincena - 1
 
     return quincena

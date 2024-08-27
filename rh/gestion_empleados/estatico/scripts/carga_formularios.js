@@ -126,6 +126,11 @@ function obtenerInfoEmpleado() {
                     $("#idTipoEmpleo").prop("disabled", true);
                     $("#idTipoAlta").prop("disabled", true);
                     $("#idGrupo").prop("disabled", true);
+                    if(data.idTipoEmpleado == 1){
+                        $("#FecIngresoGob").prop("disabled", true);
+                        $("#FecIngreso").prop("disabled", true);
+                        $("#MesesServicio").prop("disabled", true);
+                    }
                 }
 
             }

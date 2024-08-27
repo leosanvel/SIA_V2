@@ -2,6 +2,7 @@ from .gestion_tiempo_no_laboral import gestion_tiempo_no_laboral
 from flask import render_template, request, session, jsonify
 from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
+from datetime import datetime
 
 from app import db
 from rh.gestion_tiempo_no_laboral.modelos.modelos import rDiasPorciento
@@ -10,7 +11,8 @@ from general.herramientas.funciones import calcular_quincena
 
 @gestion_tiempo_no_laboral.route('/rh/gestion-tiempo-no-laboral/descontar-dias', methods = ['GET', 'POST'])
 def descontar_dias():
-    quincena = calcular_quincena()
+    hoy = datetime.now()
+    quincena = calcular_quincena(hoy)
     Quincenas = db.session.query(kQuincena).all()
     #Quincenas = db.session.query(kQuincena).filter(kQuincena.idQuincena.in_([quincena, quincena + 1, quincena + 2])).order_by(kQuincena.idQuincena).all()
     Porcentaje = db.session.query(kPorcentajes).get(100)
@@ -88,6 +90,4 @@ def eliminar_descontar_dias():
         return jsonify({"eliminado": True})
     else: 
         print("No se elimnaron los días a descontar.")
-        return jsonify({"eliminado": False})
-
-    
+        return jsonify({"eliminado": False}) 

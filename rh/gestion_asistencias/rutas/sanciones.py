@@ -393,12 +393,12 @@ def reparte_dias_totales(fechas, licencia, descuentos):
 
 
 def calcula_fecha_consecutiva_puestos(idPersona):
-    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
+    # puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).all()
     empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
 
     if empleado is not None:
         # Obtener y ordenar los puestos del empleado
-        puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=idPersona).order_by(rEmpleadoPuesto.FechaTermino).all()
+        puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona=idPersona).order_by(rEmpleadoPuesto.FechaTermino.desc()).all()
 
         # Encontrar el puesto activo
         puesto_activo = next((puesto for puesto in puestos_empleado if puesto.idEstatusEP == 1), None)
@@ -408,7 +408,7 @@ def calcula_fecha_consecutiva_puestos(idPersona):
                 fecha_inicio_consecutiva_mas_antigua = puesto_activo.FechaInicio
                # Verificar la continuidad de los puestos
                 for puesto in puestos_empleado:
-                    if puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1):
+                    if (puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua - timedelta(days=1) or puesto.FechaTermino == fecha_inicio_consecutiva_mas_antigua) and puesto.FechaTermino is not None:
                         fecha_inicio_consecutiva_mas_antigua = puesto.FechaInicio
             else:
                 fecha_inicio_consecutiva_mas_antigua = None
