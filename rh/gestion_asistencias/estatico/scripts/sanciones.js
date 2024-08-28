@@ -35,7 +35,7 @@ function verifica_seleccion() {
     var licencia = $("#idSancion").val()
     var empleado = $("#idPersona").val()
 
-    if (licencia == "2") { //ARTÍCULO 37
+    if (licencia == "2" || licencia == "4") { //ARTÍCULO 37
         $("#idPorcentaje").removeClass("obligatorio");
 
         $("#DiasPagados1").addClass("obligatorio");
@@ -64,7 +64,6 @@ function verifica_seleccion() {
                         $("#DiasDisponibles2").val('');
                         abrirModal("Error", "No se pudieron calcular los descuentos del empleado.", "");
                     } else {
-
                         var fecha = convertirFechaParaVisualizacion(respuesta.FechaInicioPuesto);
                         $("#FechaInicioPuesto").val(fecha);
                         $("#DiasPagados1").val(respuesta.DiasPagados1);
@@ -73,6 +72,14 @@ function verifica_seleccion() {
                         $("#DiasPagados2").val(respuesta.DiasPagados2);
                         $("#PorcentajePagado2").val(respuesta.PorcentajePagado2);
                         $("#DiasDisponibles2").val(respuesta.DiasDisponibles2);
+                        if(licencia == "2" && $("#DiasPagados1").val() > 0){
+                            abrirModal("Opción errónea", "Se ha seleccionado Artículo 37 como opción pero hay días de licencia disponibles. Se ha cambiando la opción a Licencia.", "");
+                            $("#idSancion").val("4");
+                        }
+                        if(licencia == "4" && $("#DiasPagados1").val() == 0){
+                            abrirModal("Opción errónea", "Se ha seleccionado Licencia como opción y ya no hay días de licencia disponibles. Se ha cambiando la opción a Artículo 97.", "");
+                            $("#idSancion").val("2");
+                        }
                     }
                 }
             });
@@ -155,7 +162,7 @@ function guardar_sancion() {
             data: $("#formularioCreaSancion, #idPersona").serialize(),
             success: function (data) {
                 if (data.idPersona) {
-                    abrirModal("Información guardada", "La sanción se creó con éxito", "recargar");
+                    abrirModal("Información guardada", "La licencia se creó con éxito", "recargar");
                 }
             }
         });

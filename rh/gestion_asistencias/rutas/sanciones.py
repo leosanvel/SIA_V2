@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rEmpleado
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
 from general.modelos.modelos import tBitacora
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from datetime import date, datetime, timedelta
 
 
@@ -48,7 +48,7 @@ def guarda_Sancion():
     if fechasConsecutivas:
         sancion_data['FechaInicio'] = datetime.strptime(sancion_data['FechaInicio'], '%d/%m/%Y')
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
-        if sancion_data['idSancion'] == '2': #Artículo 37
+        if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
             calcula_periodo_art37(sancion_data, descuentos_data)
         else:
             guardar_o_modificar_sancion(sancion_data)
@@ -60,7 +60,7 @@ def guarda_Sancion():
             sancion_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
             sancion_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
             
-            if sancion_data['idSancion'] == '2': #Artículo 37
+            if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
                 calcula_periodo_art37(sancion_data, descuentos_data)
             else:
                 guardar_o_modificar_sancion(sancion_data)
@@ -254,7 +254,7 @@ def calculo_dias_articulo_37():
         # Buscar licencias que se solapan con el periodo de interés
         licencias_anuales = db.session.query(rSancionPersona).filter(
             rSancionPersona.idPersona == idPersona,
-            rSancionPersona.idSancion == 2,
+            or_(rSancionPersona.idSancion == 2, rSancionPersona.idSancion == 4),
             (rSancionPersona.FechaInicio <= próximo_aniversario) &
             (rSancionPersona.FechaFin >= aniversario_anterior)
         ).order_by(rSancionPersona.FechaFin.desc()).all()
