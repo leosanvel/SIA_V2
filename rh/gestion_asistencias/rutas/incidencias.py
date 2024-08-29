@@ -7,7 +7,7 @@ from datetime import datetime, time, timedelta
 
 from app import db
 from catalogos.modelos.modelos import kQuincena, kTipoIncidencia, kPeriodoVacacional
-from rh.gestion_asistencias.modelos.modelos import rPoliticaPersona, tIncidencia, tChecador, tIncidenciasPasadas
+from rh.gestion_asistencias.modelos.modelos import rPoliticaPersona, tIncidencia, tChecador
 from rh.gestion_empleados.modelos.empleado import rEmpleado
 from general.modelos.modelos import tBitacora
 from general.herramientas.funciones import calcular_quincena
@@ -74,7 +74,7 @@ def guarda_Incidencia():
         if fechasConsecutivas:
             incidencia_data['FechaInicio'] = datetime.strptime(incidencia_data['FechaInicio'], '%d/%m/%Y')
             incidencia_data['FechaFin'] = datetime.strptime(incidencia_data['FechaFin'], '%d/%m/%Y')
-            incidencias_pasadas(incidencia_data)
+            # incidencias_pasadas(incidencia_data)
             guardar_o_modificar_incidencia(incidencia_data)
         else:
             FechasFlatpickr = request.form.get("FechasFlatpickr")
@@ -83,7 +83,7 @@ def guarda_Incidencia():
                 fecha = fecha.strip()
                 incidencia_data['FechaInicio'] = datetime.strptime(fecha, '%d/%m/%Y')
                 incidencia_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
-                incidencias_pasadas(incidencia_data)
+                # incidencias_pasadas(incidencia_data)
                 guardar_o_modificar_incidencia(incidencia_data)
         return jsonify(incidencia_data)
     else:
@@ -268,52 +268,52 @@ def cancela_incidencia():
     else:
         return jsonify(False)
     
-def incidencias_pasadas(datos_incidencia):
-    print(datos_incidencia)
-    if datos_incidencia["FechaInicio"] == datos_incidencia["FechaFin"]:
-        incidencia_pasada_datos = {"idIncidenciaPasada": None,
-                                   "idPersona": datos_incidencia["idPersona"],
-                                   "Fecha": datos_incidencia["FechaInicio"],
-                                   "idQuincena": None,
-                                   "Activo": 1}
-        if datos_incidencia["FechaInicio"].weekday() < 5:
-            guardar_incidencias_pasadas(incidencia_pasada_datos)
+# def incidencias_pasadas(datos_incidencia):
+#     print(datos_incidencia)
+#     if datos_incidencia["FechaInicio"] == datos_incidencia["FechaFin"]:
+#         incidencia_pasada_datos = {"idIncidenciaPasada": None,
+#                                    "idPersona": datos_incidencia["idPersona"],
+#                                    "Fecha": datos_incidencia["FechaInicio"],
+#                                    "idQuincena": None,
+#                                    "Activo": 1}
+#         if datos_incidencia["FechaInicio"].weekday() < 5:
+#             guardar_incidencias_pasadas(incidencia_pasada_datos)
 
-    else:
-        fecha = datos_incidencia["FechaInicio"]
-        while fecha <= datos_incidencia["FechaFin"]:
-            incidencia_pasada_datos = {"idIncidenciaPasada": None,
-                                       "idPersona": datos_incidencia["idPersona"],
-                                       "Fecha": fecha,
-                                       "idQuincena": None,
-                                       "Activo": 1}
+#     else:
+#         fecha = datos_incidencia["FechaInicio"]
+#         while fecha <= datos_incidencia["FechaFin"]:
+#             incidencia_pasada_datos = {"idIncidenciaPasada": None,
+#                                        "idPersona": datos_incidencia["idPersona"],
+#                                        "Fecha": fecha,
+#                                        "idQuincena": None,
+#                                        "Activo": 1}
             
-            if fecha.weekday() < 5:
-                guardar_incidencias_pasadas(incidencia_pasada_datos)
+#             if fecha.weekday() < 5:
+#                 guardar_incidencias_pasadas(incidencia_pasada_datos)
             
-            fecha += timedelta(days=1)
+#             fecha += timedelta(days=1)
 
-def guardar_incidencias_pasadas(datos_incidencia_pasada):
-    incidencias = db.session.query(tIncidenciasPasadas).filter_by(idPersona = datos_incidencia_pasada["idPersona"], Activo = 1).order_by(tIncidenciasPasadas.idQuincena.asc()).all()
+# def guardar_incidencias_pasadas(datos_incidencia_pasada):
+#     incidencias = db.session.query(tIncidenciasPasadas).filter_by(idPersona = datos_incidencia_pasada["idPersona"], Activo = 1).order_by(tIncidenciasPasadas.idQuincena.asc()).all()
 
-    if len(incidencias) >= 3:
-        tam = len(incidencias)
-        aux = tam//3
-        datos_incidencia_pasada["idQuincena"] = incidencias[0].idQuincena + aux
+#     if len(incidencias) >= 3:
+#         tam = len(incidencias)
+#         aux = tam//3
+#         datos_incidencia_pasada["idQuincena"] = incidencias[0].idQuincena + aux
 
-    else:
-        datos_incidencia_pasada["idQuincena"] = calcular_quincena(datos_incidencia_pasada["Fecha"])
+#     else:
+#         datos_incidencia_pasada["idQuincena"] = calcular_quincena(datos_incidencia_pasada["Fecha"])
 
-    idIncidenciaPasada_existente = db.session.query(func.max(tIncidenciasPasadas.idIncidenciaPasada)).scalar()
+#     idIncidenciaPasada_existente = db.session.query(func.max(tIncidenciasPasadas.idIncidenciaPasada)).scalar()
 
-    if idIncidenciaPasada_existente is None:
-        idIncidenciaPasada = 1
-    else:
-        idIncidenciaPasada = idIncidenciaPasada_existente + 1
+#     if idIncidenciaPasada_existente is None:
+#         idIncidenciaPasada = 1
+#     else:
+#         idIncidenciaPasada = idIncidenciaPasada_existente + 1
 
-    datos_incidencia_pasada["idIncidenciaPasada"] = idIncidenciaPasada
+#     datos_incidencia_pasada["idIncidenciaPasada"] = idIncidenciaPasada
 
-    incidencia_pasada_nuevo = tIncidenciasPasadas(**datos_incidencia_pasada)
+#     incidencia_pasada_nuevo = tIncidenciasPasadas(**datos_incidencia_pasada)
 
-    db.session.add(incidencia_pasada_nuevo)
-    db.session.commit()
+#     db.session.add(incidencia_pasada_nuevo)
+#     db.session.commit()

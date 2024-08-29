@@ -15,7 +15,7 @@ import smtplib
 from email.message import EmailMessage
 
 from catalogos.modelos.modelos import kQuincena,kConcepto
-from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador, rSancionPersona, tIncidenciasPasadas
+from rh.gestion_asistencias.modelos.modelos import tIncidencia, tJustificante, tChecador, rSancionPersona
 from rh.gestion_empleados.modelos.empleado import rEmpleado, rEmpleadoPuesto
 from informatica.modelos.modelos import rSolicitudEstado
 from nomina.modelos.modelos import tNomina

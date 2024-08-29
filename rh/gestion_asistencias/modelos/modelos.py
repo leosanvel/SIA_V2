@@ -128,25 +128,25 @@ class tJustificante(db.Model):
             if hasattr(self, attr):
                 setattr(self, attr, value)
 
-class tIncidenciasPasadas(db.Model):
-    __tablename__ = "tincidenciaspasadas"
-    __bind_key__ = 'db2'
-    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+# class tIncidenciasPasadas(db.Model):
+#     __tablename__ = "tincidenciaspasadas"
+#     __bind_key__ = 'db2'
+#     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idIncidenciaPasada = db.Column(db.Integer, primary_key = True)
-    idPersona = db.Column(db.Integer, nullable = False)
-    Fecha = db.Column(db.Date, nullable = False)
-    idQuincena = db.Column(db.Integer, nullable = False)
-    Activo = db.Column(db.Integer, nullable = False)
+#     idIncidenciaPasada = db.Column(db.Integer, primary_key = True)
+#     idPersona = db.Column(db.Integer, nullable = False)
+#     Fecha = db.Column(db.Date, nullable = False)
+#     idQuincena = db.Column(db.Integer, nullable = False)
+#     Activo = db.Column(db.Integer, nullable = False)
 
-    def __init__(self, idIncidenciaPasada, idPersona, Fecha, idQuincena, Activo):
-        self.idIncidenciaPasada = idIncidenciaPasada
-        self.idPersona = idPersona
-        self.Fecha = Fecha
-        self.idQuincena = idQuincena
-        self.Activo = Activo
+#     def __init__(self, idIncidenciaPasada, idPersona, Fecha, idQuincena, Activo):
+#         self.idIncidenciaPasada = idIncidenciaPasada
+#         self.idPersona = idPersona
+#         self.Fecha = Fecha
+#         self.idQuincena = idQuincena
+#         self.Activo = Activo
     
-    def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            if hasattr(self, attr):
-                setattr(self, attr, value)
+#     def update(self, **kwargs):
+#         for attr, value in kwargs.items():
+#             if hasattr(self, attr):
+#                 setattr(self, attr, value)

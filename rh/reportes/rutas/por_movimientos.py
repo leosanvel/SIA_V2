@@ -9,20 +9,25 @@ from .reportes import reportes
 from app import db
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rMovimientoEmpleado, tPuestoHonorarios
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
-from catalogos.modelos.modelos import kCentroCostos, kQuincena
+from catalogos.modelos.modelos import kCentroCostos, kQuincena, kTipoEmpleado
 from general.herramientas.funciones import calcular_quincena
 
 @reportes.route("/rh/reportes/por-movimientos", methods = ["POST", "GET"])
 def por_movimientos():
     Quincenas = db.session.query(kQuincena).all()
+    TipoEmpleado = db.session.query(kTipoEmpleado).filter_by(Activo = 1).all()
 
     return render_template("/por_movimientos.html", title = "Por movimientos",
-                           Quincenas = Quincenas)
+                           Quincenas = Quincenas,
+                           TipoEmpleado = TipoEmpleado)
 
 @reportes.route("/rh/reportes/generar_reporte_por_movimiento", methods = ["POST"])
 def generar_reporte():
     movimiento = request.form.get("Movimiento")
     quincena = request.form.get("Quincena")
+    TipoEmpleado = request.form.get("TipoEmpleado")
+    idPersona = request.form.get("idPersona")
+
     wb = openpyxl.Workbook()
     archivo_generado = None
     datos_a_escribir = {}
@@ -35,10 +40,12 @@ def generar_reporte():
         print("Directorio %s ya existe" % dir)
     
     if movimiento == "1":
-        altas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento.in_([1, 2]), rMovimientoEmpleado.idQuincena == quincena).all()
-        for empleado_alta in altas:
+        empleado_alta = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento.in_([1, 2]), rMovimientoEmpleado.idQuincena == quincena, rMovimientoEmpleado.idTipoEmpleado == TipoEmpleado, rMovimientoEmpleado.idPersonaMod == idPersona).first()
+        print(empleado_alta)
+        if empleado_alta:
             ws = openpyxl.load_workbook(filename="rh/reportes/archivos/PLANTILLA NOMBRAMIENTO ADMINISTRATIVO.xlsx")
             plantilla = ws.active
+            respuesta = True
 
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_alta.idPersonaMod).first()
             domicilio = db.session.query(rDomicilio).filter_by(idPersona = empleado_alta.idPersonaMod, idTipoDomicilio = 1).first()
@@ -107,15 +114,13 @@ def generar_reporte():
                 nombre_archivo = "Nombramiento_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx"
                 ws.save("rh/reportes/archivos/movimientos/Nombramiento_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx")
 
-        if len(altas) > 0:
-            respuesta = True
         else:
             respuesta = False
 
     if movimiento == "2":
-        bajas = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento == 3, rMovimientoEmpleado.idQuincena == quincena).all()
-        print(bajas)
-        for empleado_baja in bajas:
+        empleado_baja = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idTipoMovimiento == 3, rMovimientoEmpleado.idQuincena == quincena, rMovimientoEmpleado.idTipoEmpleado == TipoEmpleado, rMovimientoEmpleado.idPersonaMod == idPersona).first()
+
+        if empleado_baja:
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_baja.idPersonaMod).first()
             ws = openpyxl.load_workbook(filename="rh/reportes/archivos/PLANTILLA FORMATO AVISO DE BAJA.xlsx")
             plantilla = ws.active
@@ -158,14 +163,13 @@ def generar_reporte():
                                 cell.value = cell.value.replace(f"%{key}%", str(value))
 
                 ws.save("rh/reportes/archivos/movimientos/Baja_" + str(empleado.Empleado.NumeroEmpleado) + ".xlsx")
+                respuesta= True
 
-        if len(bajas) > 0:
-            respuesta = True
         else:
             respuesta = False
 
     if movimiento == "3":
-        todos = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idQuincena == quincena).all()
+        todos = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idQuincena == quincena, rMovimientoEmpleado.idTipoEmpleado == TipoEmpleado).all()
         cont = 1
         #quincena = calcular_quincena()
         hoja = wb.active
@@ -195,7 +199,7 @@ def generar_reporte():
         plantilla = ws.active
         for empleado_comb in todos:
             empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_comb.idPersonaMod).first()
-            TipoEmpleado = empleado.Empleado.idTipoEmpleado
+            idTipoEmpleado = empleado.Empleado.idTipoEmpleado
             if empleado:
                 plantilla["A" + str(6 + cont)] = cont
                 plantilla["B" + str(6 + cont)] = str(datetime.now().year) +  str(quincena)
@@ -204,8 +208,11 @@ def generar_reporte():
                 plantilla["E" + str(6 + cont)] = empleado.Empleado.Persona.CURP
                 plantilla["F" + str(6 + cont)] = empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona.ApMaterno + " " + empleado.Empleado.Persona.Nombre
                 plantilla["G" + str(6 + cont)] = empleado_comb.idMovimientoEmpleado
-                plantilla["H" + str(6 + cont)] = empleado_comb.idTipoMovimiento
-                if TipoEmpleado == 2:
+                if empleado_comb.idTipoMovimiento == 1 or empleado_comb.idTipoMovimiento == 2:
+                    plantilla["H" + str(6 + cont)] = "A"
+                elif empleado_comb.idTipoMovimiento == 3:
+                    plantilla["H" + str(6 + cont)] = "B"
+                if idTipoEmpleado == 2:
                     plantilla["I" + str(6 + cont)] = ""
                     plantilla["J" + str(6 + cont)] = ""
                     plantilla["K" + str(6 + cont)] = empleado.Puesto.NivelSalarial
@@ -232,9 +239,12 @@ def generar_reporte():
                 plantilla["T" + str(6 + cont)] = empleado.Observaciones
                 cont = cont + 1
 
-        ws.save("rh/reportes/archivos/movimientos/Movimientos_" + str(datetime.now().year) +  str(quincena) + ".xlsx")
+        if TipoEmpleado == "1":
+            nombre_archivo = "Movimientos_Honorarios_" + str(datetime.now().year) +  str(quincena) + ".xlsx"
+        elif TipoEmpleado == "2":
+            nombre_archivo = "Movimientos_Plaza_Federal_" + str(datetime.now().year) +  str(quincena) + ".xlsx"
 
-        nombre_archivo = "Movimientos_" + str(datetime.now().year) +  str(quincena) + ".xlsx"
+        ws.save("rh/reportes/archivos/movimientos/" + nombre_archivo)
 
         if len(todos) > 0:
             respuesta = True
