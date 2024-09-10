@@ -87,8 +87,6 @@ def dar_baja_empleado():
     Observaciones = request.form.get('Observaciones')
     FechaEfecto = request.form.get('FechaEfecto')
     FechaEfectoFormateado = datetime.strptime(FechaEfecto, '%d/%m/%Y')
-    quincena = calcular_quincena(FechaEfectoFormateado)
-    print(quincena)
 
     checkboxConservarVacaciones = request.form.get("checkboxConservarVacaciones")
     
@@ -142,7 +140,7 @@ def dar_baja_empleado():
                                                idPersonaMod=idPersona,
                                                idTipoEmpleado=TipoEmpleado,
                                                idUsuario=current_user.idPersona,
-                                               idQuincena=quincena,
+                                               idQuincena=NumQuincena,
                                                Periodo=Periodo)
     
         db.session.add(nuevo_movimiento)
@@ -157,9 +155,9 @@ def dar_baja_empleado():
         respuesta["Guardado"] = True
         hoy = hoy = datetime.today().date()
 
-        if empleadoPuesto.FechaEfecto == hoy:
+        if empleadoPuesto.FechaEfecto <= hoy:
             print("ES HOY!")
-            revision_baja_empleados(idPersona)
+            revision_baja_empleados(idPersona = idPersona, hoy = empleadoPuesto.FechaEfecto)
             respuesta["DadoBaja"] = True
         
     except NoResultFound:

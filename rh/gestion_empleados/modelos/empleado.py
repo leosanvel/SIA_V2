@@ -461,3 +461,56 @@ class tPuestoHonorarios(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class rEmpleadoContrato(db.Model):
+    _tablename_ = "rempleadocontrato"
+    _bind_key_ = 'db2'
+    _table_arg_ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idPersona = db.Column(db.Integer, primary_key = True)
+    NumeroContrato = db.Column(db.Integer, primary_key = True)
+    FechaInicio = db.Column(db.Date, nullable = True)
+    FechaFin = db.Column(db.Date, nullable = True)
+    FechaFirma = db.Column(db.Date, nullable = True)
+    idEstado = db.Column(db.Integer, nullable = True)
+    idMunicipio = db.Column(db.Integer, nullable = True)
+    ImporteBruto = db.Column(db.Numeric(11, 2), nullable = True)
+    NumeroExhibicion = db.Column(db.Integer, nullable = True)
+    MontoPactado = db.Column(db.Numeric(11, 2), nullable = True)
+    Proyecto = db.Column(db.Integer, nullable = True)
+    Partida = db.Column(db.Integer, nullable = True)
+    Origen = db.Column(db.Integer, nullable = True)
+    ConocimientoPrestador = db.Column(db.String(500), nullable = True)
+    OficioDictamen = db.Column(db.String(100), nullable = True)
+    OficioDGHO = db.Column(db.String(100), nullable = True)
+    ConocimientoExperiencia = db.Column(db.String(500), nullable = True)
+    Actividades = db.Column(db.String(500), nullable = True)
+    CURPEntrega = db.Column(db.String(18), nullable = True)
+    CURPFirma = db.Column(db.String(18), nullable = True)
+
+    def _init_(self, idPersona, NumeroContrato, FechaInicio, FechaFin, FechaFirma, idEstado, idMunicipio, ImporteBruto, NumeroExhibicion, MontoPactado, Proyecto, Partida, Origen, ConocimientoPrestador, OficioDictamen, OficioDGHO, ConocimientoExperiencia, Actividades, CURPEntrega, CURPFirma):
+        self.idPersona = idPersona
+        self.NumeroContrato = NumeroContrato
+        self.FechaInicio = FechaInicio
+        self.FechaFin = FechaFin
+        self.FechaFirma = FechaFirma
+        self.idEstado = idEstado
+        self.idMunicipio = idMunicipio
+        self.ImporteBruto = ImporteBruto
+        self.NumeroExhibicion = NumeroExhibicion
+        self.MontoPactado = MontoPactado
+        self.Proyecto = Proyecto
+        self.Partida = Partida
+        self.Origen = Origen
+        self.ConocimientoPrestador = ConocimientoPrestador
+        self.OficioDictamen = OficioDictamen
+        self.OficioDGHO = OficioDGHO
+        self.ConocimientoExperiencia = ConocimientoExperiencia
+        self.Actividades = Actividades
+        self.CURPEntrega = CURPEntrega
+        self.CURPFirma = CURPFirma
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

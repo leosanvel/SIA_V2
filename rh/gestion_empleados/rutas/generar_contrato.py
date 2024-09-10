@@ -26,9 +26,8 @@ def generar_contratoshonorarios():
 #Generar Contratos de Honorarios
 @gestion_empleados.route("/RH/generarContrato", methods = ['POST'])
 def generar_contrato():
-    idPersona = request.form.get("Empleado")
+    idPersona = request.form.get("idPersona")
     empleado = db.session.query(tPersona).filter_by(idPersona = idPersona).first()
-    print(empleado)
     Domicilio = db.session.query(rDomicilio).filter_by(idPersona = idPersona, idTipoDomicilio = 1).first()
     Asentamiento = db.session.query(kCodigoPostal).filter(kCodigoPostal.CodigoPostal == Domicilio.idCP).order_by(kCodigoPostal.Consecutivo.desc()).first()
     TipoAsentamiento = db.session.query(kTipoAsentamiento).filter_by(idTipoAsentamiento = Domicilio.idTipoAsentamiento).first()

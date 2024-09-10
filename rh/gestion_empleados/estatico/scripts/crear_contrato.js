@@ -1,71 +1,14 @@
 $gmx(document).ready(function(){
-    //$("#btnGenerarContrato").click(generar_contrato);
-    $("#btnConfirmarContrato").click(modal_modificar_contrato);
-    $("#btnGuardarContrato").click(Guardar);
-    $("#btnGenerarContrato").click(ProcesandoGenerarContrato);
-});
-
-function generar_contrato(){
-    //event.preventDefault();
-    window.document.getElementById("btnGenerarContrato").disabled = "";
-    $.ajax({
-        async: false,
-        type: "POST",
-        url: "/RH/generarContrato",
-        data: $("#idPersona, #formularioModificarContrato").serialize(),
-        success: function(data){
-            window.document.getElementById("ImgModal").style.display = "none";
-            if(data.generado){
-                abrirModal("Contrato Generado", "Contrato generado de forma correcta", "");
-            }
-            
-            var urlDescarga = data.url_descarga;
-            $("#btnDescargaContrato").show();
-            $("#btnDescargaContrato").wrap('<a href="' + urlDescarga + '"download></a>');
-        }
-    });
-}
-
-function ProcesandoGenerarContrato(){
-    $("#btnDescargaContrato").hide();
-    $("#ModalModificarContrato").modal("hide");
-    window.document.getElementById("btnGenerarContrato").disabled = "disabled";
-    window.document.getElementById("ImgModal").style.display = "block";
-    setTimeout(generar_contrato, 2000);
-}
-
-function modal_modificar_contrato(){
-    $("#ModalModificarContrato").modal("show");
+    $("#Estado option[value = 9]").attr("selected",true);
+    $("#Municipio option[value = 3]").attr("selected",true);
     $("#FechaInicio").blur(ValidarContratos)
-    $("#FechaInicio").datepicker({ dateFormat: 'dd/mm/yy',
-        changeYear: true,
-        changeMonth: true,
-        beforeShow: function(){
-            setTimeout(function(){
-                $(".ui-datepicker").css("z-index", 99999);
-            }, 0);
-        }
-    });
-    $("#FechaFin").datepicker({ dateFormat: 'dd/mm/yy',
-        changeYear: true,
-        changeMonth: true,
-        beforeShow: function(){
-            setTimeout(function(){
-                $(".ui-datepicker").css("z-index", 99999);
-            }, 0);
-        }
-    });
-    $("#FechaFirma").datepicker({ dateFormat: 'dd/mm/yy',
-        changeYear: true,
-        changeMonth: true,
-        beforeShow: function(){
-            setTimeout(function(){
-                $(".ui-datepicker").css("z-index", 99999);
-            }, 0);
-        }
-    });
-    obtenerDatosContrato();
-}
+    $("#FechaInicio").datepicker({ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true });
+    $("#FechaFin").datepicker({ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true });
+    $("#FechaFirma").datepicker({ dateFormat: 'dd/mm/yy', changeYear: true, changeMonth: true });
+    $("#btnCrearContrato").click(Guardar);
+   // $("#btnCrearContrato").click(function (event) {Guardar()});
+    
+});
 
 function Guardar(){
     if (validarFormulario($("#frmCrearContrato")).valido){
@@ -80,23 +23,20 @@ function Guardar(){
         });
     }
 }
-
 function ValidarContratos(){
     $("#FechaFirma").val($("#FechaInicio").val());
 }
 
 function funcionSeleccionar() {
-    obtenerDatosContrato();
+    filtrar_formulario();
 }
-
-function obtenerDatosContrato(){
+function filtrar_formulario(){
     $.ajax({
         async: false,
         type: "POST",
         url: "/rh/gestion-empleados/validar_empleado_contrato",
         data: $("#frmBE").serialize(),
         success: function(data){
-            console.log(data);
             if(data.respuesta == 0){
                 resultadobusqueda("alert alert-danger","El empleado no existe.<br />No se puede generar contrato.");
             }else{

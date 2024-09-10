@@ -230,7 +230,7 @@ def guardar_empleado():
                 empleado_puesto_data['CodigoPuestoSIA'] = None
                 empleado_puesto_data['RHNETSIA'] = None
                 empleado_puesto_data['idNivel'] = None
-                empleado_puesto_data['idCentroCosto'] = None
+                empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
 
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
@@ -259,7 +259,7 @@ def guardar_empleado():
         idPersona = nuevo_id_persona
         
         # Obtener el último número de empleado o 
-        ultimo_Numero_Empleado = db.session.query(func.max(rEmpleado.NumeroEmpleado)).scalar()
+        ultimo_Numero_Empleado = db.session.query(func.max(rEmpleado.NumeroEmpleado)).filter(rEmpleado.NumeroEmpleado < 8554).scalar()
         if ultimo_Numero_Empleado is None:
             nuevo_Numero_Empleado = 1
         else:
@@ -306,7 +306,7 @@ def guardar_empleado():
             empleado_puesto_data['CodigoPuestoSIA'] = None
             empleado_puesto_data['RHNETSIA'] = None
             empleado_puesto_data['idNivel'] = None
-            empleado_puesto_data['idCentroCosto'] = None
+            empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
 
         nueva_persona = tPersona(**persona_data)
         db.session.add(nueva_persona)
@@ -424,8 +424,9 @@ def guardar_direccion():
         direccion['Descripcion'] = None
         #direccion['idDomicilio'] = idPersona
 
-        try:
-            direcciones_existentes = db.session.query(rDomicilio).filter_by(idPersona = idPersona).all()
+        
+        direcciones_existentes = db.session.query(rDomicilio).filter_by(idPersona = idPersona).all()
+        if len(direcciones_existentes) > 0:
             direccion_encontrada = None
             for direccion_existente in direcciones_existentes:
                 if direccion_existente.idTipoDomicilio == int(direccion['idTipoDomicilio']):
@@ -433,12 +434,21 @@ def guardar_direccion():
 
             if direccion_encontrada is None:
                 # Si no se encontró ninguna dirección que coincida, crea una nueva
+                if len(direcciones_existentes) > 0:
+                    direccion['idDomicilio'] = direcciones_existentes[0].idDomicilio
+                    
                 nueva_direccion = rDomicilio(**direccion)
                 db.session.add(nueva_direccion)
             else:
                 direccion_encontrada.update(**direccion)
 
-        except NoResultFound:
+        else:
+            idDomicilio_max = db.session.query(func.max(rDomicilio.idDomicilio)).scalar()
+            if idDomicilio_max is None:
+                direccion['idDomicilio'] = 1
+            else:
+                direccion['idDomicilio'] = idDomicilio_max + 1
+
             nueva_direccion = rDomicilio(**direccion)
             db.session.add(nueva_direccion)
 

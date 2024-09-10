@@ -9,6 +9,7 @@ from rh.gestion_asistencias.modelos.modelos import rSancionPersona
 from general.modelos.modelos import tBitacora
 from sqlalchemy import and_, or_
 from datetime import date, datetime, timedelta
+import numpy as np
 
 
 @gestion_asistencias.route('/rh/gestion-asistencias/sanciones', methods = ['POST', 'GET'])
@@ -215,6 +216,9 @@ def calculo_dias_articulo_37():
 
         # Calcular la diferencia en días
         diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
+        dias_festivos = db.session.query(kDiasFestivos.Fecha).all()
+        dias_festivos_lista = [item[0] for item in dias_festivos]
+        print(dias_festivos_lista)
 
         # # Convertir la diferencia en semanas
         # diferencia_semanas = diferencia_dias / 7
@@ -266,9 +270,12 @@ def calculo_dias_articulo_37():
             
             fecha_fin = min(licencia.FechaFin, próximo_aniversario)
            
-            dias_licencia = (fecha_fin - fecha_inicio).days + 1  # +1 para incluir ambos días
+            dias_licencia = (fecha_fin - fecha_inicio).days + 1  # +1 para incluir ambos días *Cambiar para no tomar fin de semana y días festivos
+            dias_licencia = np.busday_count(fecha_inicio, fecha_fin) + 1
+            print("Días Licencia")
+            print(dias_licencia)
 
-            total_dias += dias_licencia
+            total_dias += int(dias_licencia)
         print("total_dias")
         print(total_dias)
         resta = resultado["DiasPagados1"] - total_dias
@@ -347,7 +354,7 @@ def reparte_dias_totales(fechas, licencia, descuentos):
 
     elimina = db.session.query(rSancionPersona).filter(
         rSancionPersona.idPersona == licencia["idPersona"],
-        rSancionPersona.idSancion == 2,
+        or_(rSancionPersona.idSancion == 2, rSancionPersona.idSancion == 4),
         rSancionPersona.FechaInicio <= fechas["fin_periodo"],
         rSancionPersona.FechaFin >= fechas["inicio_periodo"]
     ).delete()
@@ -357,6 +364,8 @@ def reparte_dias_totales(fechas, licencia, descuentos):
     dias_desc2 = int(descuentos["DiasDisponibles2"])
 
     dias_periodo = (fechas["fin_periodo"] - fechas["inicio_periodo"]).days + 1
+    print("Días Periodo")
+    print(dias_periodo)
     dias_permitidos = dias_desc1 + dias_desc2
 
     licencia["FechaInicio"] = fechas["inicio_periodo"]

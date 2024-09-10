@@ -1,0 +1,237 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <form id="frmBE">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group  datepicker-group" id="NumEmpGrupo">
+                    <label for="lblNumEmp">Buscar empleado</label>
+                    <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                    class="form-control botonModalBuscaEmpleado obligatorio" type="text" readonly>
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="strMensaje" style="display: none;" >Error:</div>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+            <tr>
+                <th colspan="3">EMPLEADO SELECCIONADO</th>
+                <th>
+                    <button type="button" class="close" aria-label="Close" onclick="cerrarTabla()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </th>
+            </tr>
+            <tr>
+                <th>No. Empleado:</th>
+                <th>CURP:</th>
+                <th>Nombre(s):</th>
+                <th>Apellidos</th>
+            </tr>
+            <tr>
+                <input type="hidden" id="idPersona" name="idPersona" value="">
+                <td id="NumeroEmpleado"></td>
+                <td id="CurpEmpleado"></td>
+                <td id="NombreEmpleado"></td>
+                <td id="ApellidosEmpleado"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <form id="frmCrearContrato" name="frmCrearContrato" style="display: none;">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaInicio">Fecha de inicio<span id="AFechaInicio"
+                            class="form-text">*</span>:</label>
+                    <input type="text" id="FechaInicio" name="FechaInicio" class="form-control obligatorio fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaInicio" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaFin">Fecha de fin<span id="AFechaFin"
+                            class="form-text">*</span>:</label>
+                    <input type="text" id="FechaFin" name="FechaFin" class="opcional form-control fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaFin" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaFirma">Fecha firma<span id="AFechaFirma"
+                            class="form-text">*</span>:</label>
+                    <input type="text" id="FechaFirma" name="FechaFirma" class="opcional form-control fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaFirma" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblEstado">Estado<span id="AEstado" class="form-text">*</span>:</label>
+                    <select id="Estado" name="Estado" class="opcional form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Entidad%}
+                        <option value="{{row.idEntidad}}">{{row.Entidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EEstado" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblMunicipio">Municipio<span id="AMunicipio" class="form-text">*</span>:</label>
+                    <select id="Municipio" name="Municipio" class="opcional form-control">
+                        <option value="0">-- Seleccione --</option>
+                        {% for row in Municipio%}
+                        <option value="{{row.idMunicipio}}">{{row.Municipio}}</option>
+                        {% endfor %}
+                    </select>
+                    <small id="EMunicipio" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="lblConocimientoExperiencia">Conocimineto y experiencia<span id="AConocimientoExperiencia" class="form-text">*</span>:</label>
+                    <textarea id="ConocimientoExperiencia" name="ConocimientoExperiencia" rows="5" class="form-control"></textarea>
+                    <small id="EConocimientoExperiencia" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblImporteBruto">Importe total bruto<span id="AImporteBruto" class="form-text">*</span>:</label>
+                    <input type="text" id="ImporteBruto" name="ImporteBruto" class="opcional form-control">
+                    <small id="EImporteBruto" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblNumeroExhibiciones">Número de exhibiciones<span id="ANumeroExhibiciones" class="form-text">*</span>:</label>
+                    <input type="text" id="NumeroExhibiciones" name="NumeroExhibiciones" class="opcional form-control">
+                    <small id="ENumeroExhibiciones" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblMontoPactado">Monto pactado<span id="AMontoPactado" class="form-text">*</span>:</label>
+                    <input type="text" id="MontoPactado" name="MontoPactado" class="opcional form-control">
+                    <small id="EMontoPactado" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">            
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblProyecto">Proyecto<span id="AProyecto" class="form-text">*</span>:</label>
+                    <input type="text" id="Proyecto" name="Proyecto" class="obligatorio form-control">
+                    <small id="EProyecto" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblPartida">Partida:</label>
+                    <input type="text" id="Partida" name="Partida" value="12101" readonly class="form-control">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblOrigen">Origen:</label>
+                    <input type="text" id="Origen" name="Origen" value="1" readonly class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="lblConocimientoPrestador">Conocimiento del prestador<span id="AConocimientoPrestador" class="form-text">*</span>:</label>
+                    <textarea id="ConocimientoPrestador" name="ConocimientoPrestador" rows="5" class="form-control"></textarea>
+                    <small id="EConocimientoPrestador" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label ffor="lblOficioDictamen">Oficio dictamen<span id="AOficioDictamen" class="form-text">*</span>:</label>
+                    <input type="text" id="OficioDictamen" name="OficioDictamen" class="obligatorio form-control">
+                    <small id="EOficioDictamen" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="lblActividades">Actividades<span id="AActividades" class="form-text">*</span>:</label>
+                    <textarea id="Actividades" name="Actividades" rows="5" class="form-control"></textarea>
+                    <small id="EActividades" class="etiquetaError form-text form-text-error"> </small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">            
+                <div class="form-group">
+                    <label for="lblCURPEntregable">CURP Entregable<span id="ACURPEntregable" class="form-text">*</span>:</label>
+                    <input type="text" id="CURPEntregable" name="CURPEntregable" class="opcional form-control">
+                    <small id="ECURPEntregable" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">          
+                <div class="form-group">  
+                    <label for="lblCURPFirma">CURP Firma<span id="ACURPFirma" class="form-text">*</span>:</label>
+                    <input type="text" id="CURPFirma" name="CURPFirma" class="opcional form-control">
+                    <small id="ECURPFirma" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-8">
+                <div class="pull-right form-group">
+                    <button class="btn btn-danger" type="button" id="btnCancelar">
+                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="pull-right form-group">
+                    <button class="btn btn-primary" type="button" id="btnCrearContrato">
+                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                        Crear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <br />
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/crear_contrato.js') }}"></script>
+{% endblock %}
