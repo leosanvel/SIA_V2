@@ -86,8 +86,9 @@ class rSancionPersona(db.Model):
     FechaFin = db.Column(db.Date, nullable = True)
     FechaCreacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     Descripcion = db.Column(db.Text, nullable = True)
+    idQuincena = db.Column(db.Integer, nullable = False)
 
-    def __init__(self, idSancionPersona, idPersona, idSancion, idPorcentaje, FechaInicio, FechaFin, Descripcion):
+    def __init__(self, idSancionPersona, idPersona, idSancion, idPorcentaje, FechaInicio, FechaFin, Descripcion, idQuincena):
         self.idSancionPersona = idSancionPersona
         self.idPersona = idPersona
         self.idSancion = idSancion
@@ -96,6 +97,7 @@ class rSancionPersona(db.Model):
         self.FechaFin = FechaFin
         # self.FechaCreacion = FechaCreacion
         self.Descripcion = Descripcion
+        self.idQuincena = idQuincena
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

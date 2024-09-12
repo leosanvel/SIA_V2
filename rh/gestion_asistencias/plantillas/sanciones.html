@@ -132,7 +132,19 @@
                             </div>
                         </div>
                     </div>
-
+                    
+                    <div class="col-md-3 pull-right">
+                        <div class="form-group">
+                            <label for="lblQuincena">Quincena<span id="AQuincena" class="form-text">*</span>:</label>
+                            <select id="NumQuincena" name="NumQuincena" class="obligatorio form-control">
+                                <option value="0">-- Seleccione --</option>
+                                {% for quincena in Quincenas %}
+                                <option value="{{quincena.idQuincena}}">{{quincena.Descripcion}}</option>
+                                {% endfor %}
+                            </select>
+                            <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -323,6 +335,7 @@
                                     <th>Fecha de fin</th>
                                     <th>Porcentaje</th>
                                     <th>Descripcion</th>
+                                    <th>Quincena de pago</th>
                                     <th></th>
                                     <th></th>
                                 </tr>

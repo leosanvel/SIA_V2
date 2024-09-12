@@ -10,17 +10,52 @@ from general.modelos.modelos import tBitacora
 from sqlalchemy import and_, or_
 from datetime import date, datetime, timedelta
 import numpy as np
+import pandas as pd
 
 
 @gestion_asistencias.route('/rh/gestion-asistencias/sanciones', methods = ['POST', 'GET'])
 def gestiona_sanciones():
     TipoSancion = db.session.query(kTipoSancion).filter_by(Activo = 1).all()
     Porcentajes = db.session.query(kPorcentajes).filter_by(Activo = 1).order_by(kPorcentajes.idPorcentaje.asc()).all()
+    Quincenas = quincenas = db.session.query(kQuincena).all()
     return render_template('/Sanciones.html', title='Licencias',
                            current_user = current_user,
                            TipoSancion = TipoSancion,
-                           Porcentajes = Porcentajes)
+                           Porcentajes = Porcentajes,
+                           Quincenas = Quincenas)
 
+@gestion_asistencias.route("/rh/gestion-asistencias/verificar-dias", methods = ["POST"])
+def verficar_dias():
+    mapeo_nombres = { #NombreEnFormulario : nombreEnBase
+        'idSancionPersona' : 'idSancionPersona',
+        'idPersona' : 'idPersona',
+        'idSancion' : 'idSancion',
+        'idPorcentaje' : 'idPorcentaje',
+        'FechaInicio' : 'FechaInicio',
+        'FechaFin' : 'FechaFin',
+        'Descripcion' : 'Descripcion',
+        'Quincena': 'idQuincena',
+    }
+    sancion_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
+
+    mapeo_descuentos = { #NombreEnFormulario : nombreEnBase
+                    'DiasPagados1' : 'DiasPagados1',
+                    'PorcentajePagado1' : 'PorcentajePagado1',
+                    'DiasDisponibles1' : 'DiasDisponibles1',
+                    'DiasPagados2' : 'DiasPagados2',
+                    'PorcentajePagado2' : 'PorcentajePagado2',
+                    'DiasDisponibles2' : 'DiasDisponibles2',
+                }
+    descuentos_data = {mapeo_descuentos[key]: request.form.get(key) for key in mapeo_descuentos.keys()}
+
+    fechasConsecutivas = request.form.get("checkFechasConsecutivas") # (True or None)
+    if fechasConsecutivas:
+        sancion_data['FechaInicio'] = datetime.strptime(sancion_data['FechaInicio'], '%d/%m/%Y')
+        sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
+        if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
+            print("Articulo37")
+
+    return jsonify({"guardado": True})
 
 @gestion_asistencias.route('/rh/gestion-asistencias/guardar-sancion', methods = ['POST'])
 def guarda_Sancion():
@@ -32,6 +67,7 @@ def guarda_Sancion():
         'FechaInicio' : 'FechaInicio',
         'FechaFin' : 'FechaFin',
         'Descripcion' : 'Descripcion',
+        'NumQuincena': 'idQuincena',
     }
     sancion_data = {mapeo_nombres[key]: request.form.get(key) for key in mapeo_nombres.keys()}
 
@@ -50,7 +86,9 @@ def guarda_Sancion():
         sancion_data['FechaInicio'] = datetime.strptime(sancion_data['FechaInicio'], '%d/%m/%Y')
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
         if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
-            calcula_periodo_art37(sancion_data, descuentos_data)
+            #calcula_periodo_art37(sancion_data, descuentos_data)
+            reparte_dias(sancion_data, descuentos_data)
+            print("Artículo 37")
         else:
             guardar_o_modificar_sancion(sancion_data)
     else:
@@ -62,7 +100,9 @@ def guarda_Sancion():
             sancion_data['FechaFin'] = datetime.strptime(fecha, '%d/%m/%Y')
             
             if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
-                calcula_periodo_art37(sancion_data, descuentos_data)
+                #calcula_periodo_art37(sancion_data, descuentos_data)
+                reparte_dias(sancion_data, descuentos_data)
+                print("Artículo 37")
             else:
                 guardar_o_modificar_sancion(sancion_data)
     return jsonify(sancion_data)
@@ -134,11 +174,18 @@ def busca_Sancion():
             except NoResultFound:
                 print("Empleado no encontrado")
 
+            quincena = db.session.query(kQuincena).filter_by(idQuincena = sancion.idQuincena).first()
+
             sancion_dict = sancion.__dict__
             sancion_dict.pop("_sa_instance_state", None)  # Eliminar atributo de SQLAlchemy
             sancion_dict["NumeroEmpleado"] = empleado.NumeroEmpleado
             sancion_dict["TipoSancion"] = "SANCION"
             sancion_dict["Porcentaje"] = 1
+
+            if quincena is not None:
+                sancion_dict["Quincena"] = quincena.Descripcion
+            else:
+                sancion_dict["Quincena"] = ""
             
             
             lista_sanciones.append(sancion_dict)
@@ -216,9 +263,6 @@ def calculo_dias_articulo_37():
 
         # Calcular la diferencia en días
         diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
-        dias_festivos = db.session.query(kDiasFestivos.Fecha).all()
-        dias_festivos_lista = [item[0] for item in dias_festivos]
-        print(dias_festivos_lista)
 
         # # Convertir la diferencia en semanas
         # diferencia_semanas = diferencia_dias / 7
@@ -262,6 +306,10 @@ def calculo_dias_articulo_37():
             (rSancionPersona.FechaInicio <= próximo_aniversario) &
             (rSancionPersona.FechaFin >= aniversario_anterior)
         ).order_by(rSancionPersona.FechaFin.desc()).all()
+
+        # Obtener los días festivos
+        dias_festivos = db.session.query(kDiasFestivos.Fecha).all()
+        dias_festivos_lista = [item[0] for item in dias_festivos]
         
         # Calcular los días de las licencias dentro del periodo correcto
         total_dias = 0
@@ -270,8 +318,7 @@ def calculo_dias_articulo_37():
             
             fecha_fin = min(licencia.FechaFin, próximo_aniversario)
            
-            dias_licencia = (fecha_fin - fecha_inicio).days + 1  # +1 para incluir ambos días *Cambiar para no tomar fin de semana y días festivos
-            dias_licencia = np.busday_count(fecha_inicio, fecha_fin) + 1
+            dias_licencia = np.busday_count(fecha_inicio, fecha_fin, holidays=dias_festivos_lista) + 1 # +1 para incluir ambos días, ignora días festivos y fines de semana
             print("Días Licencia")
             print(dias_licencia)
 
@@ -347,6 +394,63 @@ def calcula_periodo_art37(licencia, descuentos):
     return 0
 
 
+def reparte_dias(licencia, descuentos):
+    idPersona = licencia["idPersona"]
+    # Obtener los días festivos
+    dias_festivos = db.session.query(kDiasFestivos.Fecha).all()
+    dias_festivos_lista = [item[0] for item in dias_festivos]
+    print(dias_festivos_lista)
+
+    dias = np.busday_count(licencia["FechaInicio"].date(), licencia["FechaFin"].date(), holidays=dias_festivos_lista) + 1
+    print("Días")
+
+    dias_desc1 = int(descuentos["DiasDisponibles1"])
+    dias_desc2 = int(descuentos["DiasDisponibles2"])
+    dias_permitidos = dias_desc1 + dias_desc2
+
+    if dias_permitidos == 0:
+        licencia["idPorcentaje"] = 1
+        guardar_o_modificar_sancion(licencia)
+    else:
+        if dias_desc1 > 0:
+            if dias <= dias_desc1:
+                print(type(licencia))
+                licencia["idSancion"] = 4
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
+                guardar_o_modificar_sancion(licencia)
+            else:
+                dias_extra = dias - dias_desc1
+                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_desc1, holidays=dias_festivos_lista, freq="C")
+                licencia["FechaFin"] = fecha_aux[-1]
+                licencia["idSancion"] = 4
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
+                guardar_o_modificar_sancion(licencia)
+
+                licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
+                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_extra, holidays=dias_festivos_lista, freq="C")
+                licencia["FechaFin"] = fecha_aux[-1]
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                guardar_o_modificar_sancion(licencia)
+        else:
+            if dias <= dias_desc2:
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                guardar_o_modificar_sancion(licencia)
+            else:
+                dias_extra = dias - dias_desc2
+                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_desc2, holidays=dias_festivos_lista, freq="C")
+                licencia["FechaFin"] = fecha_aux[-1]
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                guardar_o_modificar_sancion(licencia)
+
+                licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
+                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_extra, holidays=dias_festivos_lista, freq="C")
+                licencia["FechaFin"] = fecha_aux[-1]
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = 1
+                guardar_o_modificar_sancion(licencia)
 
 
 def reparte_dias_totales(fechas, licencia, descuentos):
@@ -363,9 +467,12 @@ def reparte_dias_totales(fechas, licencia, descuentos):
     dias_desc1 = int(descuentos["DiasDisponibles1"])
     dias_desc2 = int(descuentos["DiasDisponibles2"])
 
-    dias_periodo = (fechas["fin_periodo"] - fechas["inicio_periodo"]).days + 1
-    print("Días Periodo")
-    print(dias_periodo)
+    # Obtener los días festivos
+    dias_festivos = db.session.query(kDiasFestivos.Fecha).all()
+    dias_festivos_lista = [item[0] for item in dias_festivos]
+
+    dias_periodo = np.busday_count(fechas["inicio_periodo"], fechas["fin_periodo"], holidays=dias_festivos_lista) + 1 # +1 para incluir ambos días, ignora días festivos y fines de semana
+
     dias_permitidos = dias_desc1 + dias_desc2
 
     licencia["FechaInicio"] = fechas["inicio_periodo"]
@@ -377,27 +484,43 @@ def reparte_dias_totales(fechas, licencia, descuentos):
     else:
         if dias_periodo <= dias_desc1:
             licencia["FechaFin"] = fechas["fin_periodo"]
+            licencia["idSancion"] = 4
             guardar_o_modificar_sancion(licencia)
         else:
-            licencia["FechaFin"] = fechas["inicio_periodo"] + timedelta(days=dias_desc1 - 1)
+            #licencia["FechaFin"] = fechas["inicio_periodo"] + timedelta(days=dias_desc1 - 1)
+            fechas_aux = pd.bdate_range(start=fechas["inicio_periodo"], periods=int(descuentos["DiasPagados1"]), holidays=dias_festivos_lista, freq="C")
+            licencia["FechaFin"] = fechas_aux[-1]
+            print("Fecha Fin Dias 100")
+            print(licencia["FechaFin"])
+            licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
+            licencia["idSancion"] = 4
             guardar_o_modificar_sancion(licencia)
 
-            licencia["FechaInicio"] = licencia["FechaFin"] +  timedelta(days=1)
+            licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
             if dias_periodo > dias_permitidos:
-                licencia["FechaFin"] =  licencia["FechaInicio"] + timedelta(days=dias_desc2)
+                #licencia["FechaFin"] =  licencia["FechaInicio"] + timedelta(days=dias_desc2)
+                fechas_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=int(descuentos["DiasPagados2"]), holidays=dias_festivos_lista, freq="C")
+                licencia["FechaFin"] = fechas_aux[-1]
+                print("Fecha Fin Dias 50")
+                print(licencia["FechaFin"])
                 licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                licencia["idSancion"] = 2
                 guardar_o_modificar_sancion(licencia)
 
 
                 licencia["FechaInicio"] = licencia["FechaFin"] +  timedelta(days=1)
                 licencia["FechaFin"] = fechas["fin_periodo"]
+                print("Fecha Fin Dias 0")
+                print(licencia["FechaFin"])
                 licencia["idPorcentaje"] = 0 # Sin pago
+                licencia["idSancion"] = 2
                 guardar_o_modificar_sancion(licencia)
 
 
             else:
                 licencia["FechaFin"] =  fechas["fin_periodo"]
                 licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                licencia["idSancion"] = 2
                 guardar_o_modificar_sancion(licencia)
 
 

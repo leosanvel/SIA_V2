@@ -72,12 +72,12 @@ function verifica_seleccion() {
                         $("#DiasPagados2").val(respuesta.DiasPagados2);
                         $("#PorcentajePagado2").val(respuesta.PorcentajePagado2);
                         $("#DiasDisponibles2").val(respuesta.DiasDisponibles2);
-                        if(licencia == "2" && $("#DiasPagados1").val() > 0){
+                        if(licencia == "2" && parseInt($("#DiasDisponibles1").val()) > 0){
                             abrirModal("Opción errónea", "Se ha seleccionado Artículo 37 como opción pero hay días de licencia disponibles. Se ha cambiando la opción a Licencia.", "");
                             $("#idSancion").val("4");
                         }
-                        if(licencia == "4" && $("#DiasPagados1").val() == 0){
-                            abrirModal("Opción errónea", "Se ha seleccionado Licencia como opción y ya no hay días de licencia disponibles. Se ha cambiando la opción a Artículo 97.", "");
+                        if(licencia == "4" && parseInt($("#DiasDisponibles1").val()) == 0){
+                            abrirModal("Opción errónea", "Se ha seleccionado Licencia como opción y ya no hay días de licencia disponibles. Se ha cambiando la opción a Artículo 37.", "");
                             $("#idSancion").val("2");
                         }
                     }
@@ -129,6 +129,21 @@ function verifica_seleccion() {
 
 }
 
+function VerificarDias(){
+    var tipo_licencia = $("#idSancion").val();
+
+    if(tipo_licencia == 2 || tipo_licencia == 4){
+        $.ajax({
+            async: false,
+            type: "POST",
+            url: "/rh/gestion-asistencias/verificar-dias",
+            data: $("#formularioCreaSancion, #idPersona").serialize(),
+            success: function(data){
+
+            }
+        })
+    }
+}
 
 function guardar_sancion() {
 
@@ -252,6 +267,12 @@ function busca_sancion() {
                                 id="descripcion${sancion.idSancionPersona}"
                                 style="resize: none; width: 300px;"
                                 readonly>${sancion.Descripcion}</textarea></td>
+
+                        <td>
+                            <input type="text" class="form-control"
+                                id="Quincena${sancion.idSancionPersona}"
+                                value="${sancion.Quincena}" style="width: 250px;" readonly>
+                        </td>
 
                         <td>
                             <div style="display: block;">
