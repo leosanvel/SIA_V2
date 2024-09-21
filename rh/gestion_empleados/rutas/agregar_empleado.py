@@ -220,7 +220,11 @@ def guardar_empleado():
                 empleado_puesto_data['CodigoPlazaSIA'] = None
                 empleado_puesto_data['CodigoPuestoSIA'] = None
                 empleado_puesto_data['RHNETSIA'] = None
-                empleado_puesto_data['idNivel'] = None
+                Nivel = db.session.query(tPuestoHonorarios.idPlazaHomologadaNivel).filter_by(idPuestoHonorarios = empleado_puesto_data["idPuesto"]).scalar()
+                if Nivel is not None:
+                    empleado_puesto_data['idNivel'] = Nivel
+                else:
+                    empleado_puesto_data['idNivel'] = None
                 empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
                 
 
@@ -229,7 +233,11 @@ def guardar_empleado():
                 empleado_puesto_data['CodigoPlazaSIA'] = None
                 empleado_puesto_data['CodigoPuestoSIA'] = None
                 empleado_puesto_data['RHNETSIA'] = None
-                empleado_puesto_data['idNivel'] = None
+                Nivel = db.session.query(tPuesto.idNivel).filter_by(ConsecutivoPuesto = empleado_puesto_data["idPuesto"]).scalar()
+                if Nivel is not None:
+                    empleado_puesto_data['idNivel'] = Nivel
+                else:
+                    empleado_puesto_data['idNivel'] = None
                 empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
 
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
@@ -293,7 +301,11 @@ def guardar_empleado():
             empleado_puesto_data['CodigoPlazaSIA'] = None
             empleado_puesto_data['CodigoPuestoSIA'] = None
             empleado_puesto_data['RHNETSIA'] = None
-            empleado_puesto_data['idNivel'] = None
+            Nivel = db.session.query(tPuestoHonorarios.idPlazaHomologadaNivel).filter_by(idPuestoHonorarios = empleado_puesto_data["idPuesto"]).scalar()
+            if Nivel is not None:
+                empleado_puesto_data['idNivel'] = Nivel
+            else:
+                empleado_puesto_data['idNivel'] = None
             empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
 
 
@@ -305,7 +317,11 @@ def guardar_empleado():
             empleado_puesto_data['CodigoPlazaSIA'] = None
             empleado_puesto_data['CodigoPuestoSIA'] = None
             empleado_puesto_data['RHNETSIA'] = None
-            empleado_puesto_data['idNivel'] = None
+            Nivel = db.session.query(tPuesto.idNivel).filter_by(ConsecutivoPuesto = empleado_puesto_data["idPuesto"]).scalar()
+            if Nivel is not None:
+                empleado_puesto_data['idNivel'] = Nivel
+            else:
+                empleado_puesto_data['idNivel'] = None
             empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
 
         nueva_persona = tPersona(**persona_data)
@@ -545,6 +561,13 @@ def guardar_conceptos():
         if anios >=25:
             lista_idconceptos.insert(1, 'A5')
             lista_idtipo.insert(1, 'P')
+
+        if Empleado.idTipoEmpleado == 2:
+            lista_idconceptos_aux = ['77', '95', '40', '34']
+            lista_idtipo_aux = ['P', 'P', 'P', 'P']
+
+            lista_idconceptos = lista_idconceptos + lista_idconceptos_aux
+            lista_idtipo = lista_idtipo + lista_idtipo_aux
 
         nuevo_concepto = None
         datos_conceptos = {}

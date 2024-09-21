@@ -87,7 +87,7 @@ def guarda_Sancion():
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
         if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
             #calcula_periodo_art37(sancion_data, descuentos_data)
-            reparte_dias(sancion_data, descuentos_data)
+            calcular_periodo_artículo_37(sancion_data, descuentos_data)
             print("Artículo 37")
         else:
             guardar_o_modificar_sancion(sancion_data)
@@ -318,9 +318,8 @@ def calculo_dias_articulo_37():
             
             fecha_fin = min(licencia.FechaFin, próximo_aniversario)
            
-            dias_licencia = np.busday_count(fecha_inicio, fecha_fin, holidays=dias_festivos_lista) + 1 # +1 para incluir ambos días, ignora días festivos y fines de semana
-            print("Días Licencia")
-            print(dias_licencia)
+            #dias_licencia = np.busday_count(fecha_inicio, fecha_fin, holidays=dias_festivos_lista) + 1 # +1 para incluir ambos días, ignora días festivos y fines de semana
+            dias_licencia = (fecha_fin - fecha_inicio).days + 1  # +1 para incluir ambos días
 
             total_dias += int(dias_licencia)
         print("total_dias")
@@ -393,16 +392,107 @@ def calcula_periodo_art37(licencia, descuentos):
     reparte_dias_totales(fechas, licencia, descuentos)
     return 0
 
+def calcular_periodo_artículo_37(licencia, descuentos):
+    idPersona = licencia["idPersona"]
+    fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva_puestos(idPersona)
+    hoy = datetime.now()
+    FechasInicio = []
+    FechasFin = []
+    FechasLimiteInf = []
+    FechasLimiteSup = []
+
+    # Calcular el aniversario anterior y el próximo aniversario
+    año_actual = hoy.year
+    aniversario = fecha_inicio_consecutiva_mas_antigua.replace(year=año_actual)
+
+    if licencia["FechaFin"].date() < aniversario:
+        print("Antes")
+        aniversario_anterior = aniversario.replace(year=año_actual - 1)
+        FechasLimiteInf.append(aniversario_anterior)
+        FechasLimiteSup.append(aniversario)
+        FechasInicio.append(licencia["FechaInicio"])
+        FechasFin.append(licencia["FechaFin"])
+
+    elif licencia["FechaInicio"].date() > aniversario:
+        print("Despues")
+        aniversario_siguiente = aniversario.replace(year=año_actual + 1)
+        FechasLimiteInf.append(aniversario)
+        FechasLimiteSup.append(aniversario_siguiente)
+        FechasInicio.append(licencia["FechaInicio"])
+        FechasFin.append(licencia["FechaFin"])
+
+    else:
+        if licencia["FechaInicio"].date() <= aniversario <= licencia["FechaFin"].date():
+            print("Entre")
+            aniversario_anterior = aniversario.replace(year=año_actual - 1)
+            aniversario_siguiente = aniversario.replace(year=año_actual + 1)
+            FechasLimiteInf.append(aniversario_anterior)
+            FechasLimiteSup.append(aniversario)
+            FechasInicio.append(licencia["FechaInicio"])
+            FechasFin.append(datetime.combine(aniversario, datetime.min.time()) - timedelta(days=1))
+
+            FechasLimiteInf.append(aniversario)
+            FechasLimiteSup.append(aniversario_siguiente)
+            FechasInicio.append(datetime.combine(aniversario, datetime.min.time()))
+            FechasFin.append(licencia["FechaFin"])
+            
+
+    for FechaLimiteInf, FechaLimiteSup, FechaInicio, FechaFin in zip(FechasLimiteInf, FechasLimiteSup,FechasInicio, FechasFin):
+        # Buscar licencias que se solapan con el periodo de interés
+        licencias_anuales = db.session.query(rSancionPersona).filter(
+            rSancionPersona.idPersona == idPersona,
+            or_(rSancionPersona.idSancion == 2, rSancionPersona.idSancion == 4),
+            (rSancionPersona.FechaInicio >= FechaLimiteInf) &
+            (rSancionPersona.FechaFin < FechaLimiteSup)
+        ).order_by(rSancionPersona.FechaFin.desc()).all()
+
+        total_dias = 0
+        for licencia_1 in licencias_anuales:
+            fecha_inicio = max(licencia_1.FechaInicio, aniversario_anterior)
+            fecha_fin = min(licencia_1.FechaFin, aniversario)
+            dias_licencia = (fecha_fin - fecha_inicio).days + 1
+
+            total_dias += int(dias_licencia)
+
+        print("Total dias")
+        print(total_dias)
+
+        resta = int(descuentos["DiasPagados1"]) - total_dias
+        if resta > 0:
+            DiasDisponibles1 = resta
+            total_dias = 0
+        else:
+            DiasDisponibles1 = 0
+            total_dias = total_dias - int(descuentos["DiasPagados1"])
+
+        resta = int(descuentos["DiasPagados2"]) - total_dias
+        if resta > 0:
+            DiasDisponibles2 = resta
+            total_dias = 0
+        else:
+            DiasDisponibles2 = 0
+            total_dias = total_dias - int(descuentos["DiasPagados2"])
+
+        print(DiasDisponibles1, DiasDisponibles2)
+        licencia["FechaInicio"] = FechaInicio
+        licencia["FechaFin"] = FechaFin
+        descuentos["DiasDisponibles1"] = DiasDisponibles1
+        descuentos["DiasDisponibles2"] = DiasDisponibles2
+        reparte_dias(licencia, descuentos)
+
 
 def reparte_dias(licencia, descuentos):
     idPersona = licencia["idPersona"]
     # Obtener los días festivos
     dias_festivos = db.session.query(kDiasFestivos.Fecha).all()
     dias_festivos_lista = [item[0] for item in dias_festivos]
-    print(dias_festivos_lista)
 
-    dias = np.busday_count(licencia["FechaInicio"].date(), licencia["FechaFin"].date(), holidays=dias_festivos_lista) + 1
+    #dias = np.busday_count(licencia["FechaInicio"].date(), licencia["FechaFin"].date(), holidays=dias_festivos_lista) + 1
+    dias = (licencia["FechaFin"]  - licencia["FechaInicio"]).days + 1
     print("Días")
+    print(dias)
+
+    #aniversario = aniversario_anterior.replace(year=aniversario_anterior.year + 1)
 
     dias_desc1 = int(descuentos["DiasDisponibles1"])
     dias_desc2 = int(descuentos["DiasDisponibles2"])
@@ -420,15 +510,21 @@ def reparte_dias(licencia, descuentos):
                 guardar_o_modificar_sancion(licencia)
             else:
                 dias_extra = dias - dias_desc1
-                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_desc1, holidays=dias_festivos_lista, freq="C")
-                licencia["FechaFin"] = fecha_aux[-1]
+                print("Días extra")
+                print(dias_extra)
+                #fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_desc1, holidays=dias_festivos_lista, freq="C")
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_desc1 - 1)
+                print("Fecha aux")
+                print(fecha_aux)
+                licencia["FechaFin"] = fecha_aux
                 licencia["idSancion"] = 4
                 licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
                 guardar_o_modificar_sancion(licencia)
 
                 licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
-                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_extra, holidays=dias_festivos_lista, freq="C")
-                licencia["FechaFin"] = fecha_aux[-1]
+                #fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_extra, holidays=dias_festivos_lista, freq="C")
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_extra - 1)
+                licencia["FechaFin"] = fecha_aux
                 licencia["idSancion"] = 2
                 licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
                 guardar_o_modificar_sancion(licencia)
@@ -439,15 +535,17 @@ def reparte_dias(licencia, descuentos):
                 guardar_o_modificar_sancion(licencia)
             else:
                 dias_extra = dias - dias_desc2
-                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_desc2, holidays=dias_festivos_lista, freq="C")
-                licencia["FechaFin"] = fecha_aux[-1]
+                #fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_desc2, holidays=dias_festivos_lista, freq="C")
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_desc2 - 1)
+                licencia["FechaFin"] = fecha_aux
                 licencia["idSancion"] = 2
                 licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
                 guardar_o_modificar_sancion(licencia)
 
                 licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
-                fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_extra, holidays=dias_festivos_lista, freq="C")
-                licencia["FechaFin"] = fecha_aux[-1]
+                #fecha_aux = pd.bdate_range(start=licencia["FechaInicio"], periods=dias_extra, holidays=dias_festivos_lista, freq="C")
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_extra - 1)
+                licencia["FechaFin"] = fecha_aux
                 licencia["idSancion"] = 2
                 licencia["idPorcentaje"] = 1
                 guardar_o_modificar_sancion(licencia)

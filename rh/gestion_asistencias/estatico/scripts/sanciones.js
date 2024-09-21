@@ -2,8 +2,12 @@ $gmx(document).ready(function () {
 
     $("#btnGuardaSancion").click(function (event) {
         event.preventDefault();
-        guardar_sancion();
+        validar_dias();
     });
+    $("#btnConfirmarGuardarLicencia").click(function(event){
+        event.preventDefault();
+        guardar_sancion();
+    })
     // --------------------
     $("#btnBuscaSancion").click(function (event) {
         event.preventDefault();
@@ -91,8 +95,10 @@ function verifica_seleccion() {
         
         $("#DiasPagados1").removeClass("obligatorio");
         $("#PorcentajePagado1").removeClass("obligatorio");
+        $("#DiasDisponibles1").removeClass("obligatorio");
         $("#DiasPagados2").removeClass("obligatorio");
         $("#PorcentajePagado2").removeClass("obligatorio");
+        $("#DiasDisponibles2").removeClass("obligatorio");
 
         $("#contenedorPorcentaje").show();
     }
@@ -127,22 +133,6 @@ function verifica_seleccion() {
         $("#idPorcentaje").val("0");
     }
 
-}
-
-function VerificarDias(){
-    var tipo_licencia = $("#idSancion").val();
-
-    if(tipo_licencia == 2 || tipo_licencia == 4){
-        $.ajax({
-            async: false,
-            type: "POST",
-            url: "/rh/gestion-asistencias/verificar-dias",
-            data: $("#formularioCreaSancion, #idPersona").serialize(),
-            success: function(data){
-
-            }
-        })
-    }
 }
 
 function guardar_sancion() {
@@ -183,6 +173,68 @@ function guardar_sancion() {
         });
     }
 
+}
+
+function validar_dias(){
+    var validaEmpleado = true;
+    var existeNumeroEmpleado = $("#idPersona").length > 0;
+    if (!existeNumeroEmpleado || $("#idPersona").val() === "") {
+        var validaEmpleado = false;
+        // campo.removeClass("form-control-error");
+        $("#NumeroEmpleadoSeleccionado").addClass("form-control-error");
+        $("#ENumEmp").text("Seleccione un empleado");
+    }
+
+    if (validarFormulario($("#formularioCreaSancion")).valido && validaEmpleado){
+        var licencia = $("#idSancion").val()
+        if(licencia == 2 || licencia == 4){
+            dias = calcularDias($("#FechaInicio").val(), $("#FechaFin").val());
+            dias_disponibles_1 = parseInt($("#DiasDisponibles1").val());
+            dias_disponibles_2 = parseInt($("#DiasDisponibles2").val());
+            if(dias_disponibles_1 > 0){
+                if(dias > dias_disponibles_1){
+                    dias_extra = dias - dias_disponibles_1;
+                    $("#MensajeVerificarDiasAdModal").html(`Se van a guardar ${dias_disponibles_1} día(s) como Licencias y ${dias_extra} día(s) como Artículo 37 con el 50%. <br> ¿Desea continuar?`);
+                    $("#VerificarDiasModal").modal("show");
+                }else{
+                    guardar_sancion();
+                }
+            }else{
+                if(dias_disponibles_2 > 0){
+                    if(dias > dias_disponibles_2){
+                        dias_extra = dias - dias_disponibles_2;
+                        console.log(dias_extra);
+                        console.log(dias_disponibles_2);
+                        $("#MensajeVerificarDiasAdModal").html(`Se van a guardar ${dias_disponibles_2} día(s) como Artículo 37 al 50%  y ${dias_extra} día(s) como Artículo 37 con el 0%. <br> ¿Desea continuar?`);
+                        $("#VerificarDiasModal").modal("show");
+                    }else{
+                        guardar_sancion();
+                    }
+                }else{
+                    guardar_sancion();
+                }
+            }
+        }else{
+            guardar_sancion();
+        }
+    }
+}
+
+function calcularDias(Fecha1, Fecha2){
+    fechainicio = convertirFechaParaEnvio(Fecha1);
+    fechafin = convertirFechaParaEnvio(Fecha2);
+
+    // Convertir fechas en objetos Date
+    const FechaInicio = new Date(fechainicio + "T00:00:00");
+    const FechaFin = new Date(fechafin + "T00:00:00");
+
+    // Calcular tiempo en milisegundos
+    const dif = FechaFin - FechaInicio;
+
+    // Convertir milisegundos a días
+    const dias = Math.ceil(dif/(1000 * 60 * 60 * 24)) + 1;
+
+    return dias;
 }
 
 function busca_sancion() {

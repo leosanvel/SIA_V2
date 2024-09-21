@@ -70,7 +70,7 @@ function obtenerInfoEmpleado() {
                     var FechaNacimientoFormateada = convertirFechaParaVisualizacion(data.FechaNacimiento);
                 }else
                     var FechaNacimientoFormateada = "";
-                if(data.fechaIngGob){
+                if(data.FecIngGobierno){
                     var FecIngresoGobFormateada = convertirFechaParaVisualizacion(data.FecIngGobierno);
                 }else{
                     var FecIngresoGobFormateada = "";
