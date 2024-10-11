@@ -84,17 +84,23 @@ class rSancionPersona(db.Model):
     idPorcentaje = db.Column(db.Integer, nullable = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
+    FechaInicioDescuento = db.Column(db.Date, nullable = True)
+    FechaFinDescuento = db.Column(db.Date, nullable = True)
+    Dias = db.Column(db.Integer, nullable = True)
     FechaCreacion = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     Descripcion = db.Column(db.Text, nullable = True)
     idQuincena = db.Column(db.Integer, nullable = False)
 
-    def __init__(self, idSancionPersona, idPersona, idSancion, idPorcentaje, FechaInicio, FechaFin, Descripcion, idQuincena):
+    def __init__(self, idSancionPersona = None, idPersona = None, idSancion = None, idPorcentaje = None, FechaInicio = None, FechaFin = None, FechaInicioDescuento = None, FechaFinDescuento = None, Dias= None, Descripcion = None, idQuincena = None):
         self.idSancionPersona = idSancionPersona
         self.idPersona = idPersona
         self.idSancion = idSancion
         self.idPorcentaje = idPorcentaje
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
+        self.FechaInicioDescuento = FechaInicioDescuento
+        self.FechaFinDescuento = FechaFinDescuento
+        self.Dias = Dias
         # self.FechaCreacion = FechaCreacion
         self.Descripcion = Descripcion
         self.idQuincena = idQuincena
@@ -152,3 +158,26 @@ class tJustificante(db.Model):
 #         for attr, value in kwargs.items():
 #             if hasattr(self, attr):
 #                 setattr(self, attr, value)
+
+class rSepararDiasLicencia(db.Model):
+    __tablename__ = "rseparardiaslicencia"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idSancionPersona = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, primary_key = True)
+    Dias = db.Column(db.Integer, nullable = False)
+    idQuincena = db.Column(db.Integer, primary_key = True)
+    idPorcentaje = db.Column(db.Integer, primary_key = True)
+
+    def __init__(self, idSancionPersona, idPersona, Dias, idQuincena, idPorcentaje):
+        self.idSancionPersona = idSancionPersona
+        self.idPersona = idPersona
+        self.Dias = Dias
+        self.idQuincena = idQuincena
+        self.idPorcentaje = idPorcentaje
+
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

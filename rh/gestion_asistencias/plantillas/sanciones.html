@@ -132,6 +132,16 @@
                             </div>
                         </div>
                     </div>
+
+                    <!--
+                    <div class="col-md-3">
+                        <div class="form-group datepicker-group" style="z-index: 1;">
+                            <label for="lblPeriodo">Periodo<span id="APeriodo" class="form-text">*</span>:</label>
+                            <input type="text" id="Periodo" name="Periodo" class="form-control">
+                            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                            <small id="EPeriodo" class="etiquetaError form-text form-text-error"></small>
+                        </div>
+                    </div>
                     
                     <div class="col-md-3 pull-right">
                         <div class="form-group">
@@ -145,6 +155,7 @@
                             <small id="EQuincena" class="etiquetaError form-text form-text-error"></small>
                         </div>
                     </div>
+                    -->
                 </div>
 
                 <div class="row">
@@ -245,7 +256,7 @@
                         <div class="col-md-1">
                             <label>(</label>
                         </div>
-                        <div class=" col-md-1">
+                        <div class="col-md-1">
                             <div class="form-group">
                                 <input type="text" id="DiasDisponibles2" name="DiasDisponibles2"
                                     class="form-control obligatorio" readonly>
@@ -374,6 +385,16 @@
     <div class="alert alert-danger" id="AlertaError" style="display: none;" role="alert"><strong>Error:</strong>
         Verificar los campos capturados.</div>
 </div>
+
+<script type="text/javascript">
+    var Quincenas = "{{Quincenas}}";
+</script>
+
+<style>
+    #Periodo.datepicker.ui-datepicker-calendar {
+    display: none; /* Oculta los días */
+  }
+</style>
 {% endblock %}
 
 {% block scripts %}

@@ -212,6 +212,7 @@ class rEmpleadoPuesto(db.Model):
     RHNETSIA = db.Column(db.String(25), nullable = True)
     idNivel = db.Column(db.Integer, nullable = True)
     idCentroCosto = db.Column(db.Integer, nullable = True)
+    idUbicacion = db.Column(db.Integer, nullable = False)
     FechaInicio = db.Column(db.Date, primary_key = True)
     FechaTermino = db.Column(db.Date, nullable = True)
     idCausaBaja = db.Column(db.Integer, nullable = False)
@@ -225,7 +226,7 @@ class rEmpleadoPuesto(db.Model):
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, idUbicacion, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.ClavePresupuestaSIA = ClavePresupuestaSIA
@@ -234,6 +235,7 @@ class rEmpleadoPuesto(db.Model):
         self.RHNETSIA = RHNETSIA
         self.idNivel = idNivel
         self.idCentroCosto = idCentroCosto
+        self.idUbicacion = idUbicacion
         self.FechaInicio = FechaInicio
         self.FechaTermino = FechaTermino
         self.idCausaBaja = idCausaBaja

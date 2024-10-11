@@ -15,11 +15,21 @@ $gmx(document).ready(function () {
     });
 
     $("#idSancion").on("change ", function () { verifica_seleccion(); });
-    
-
 
     $("#BuscaFechaInicio").datepicker({ changeYear: true, changeMonth: true });
     $("#BuscaFechaFin").datepicker({ changeYear: true, changeMonth: true });
+
+    $("#Periodo").datepicker({
+        changeYear: true,
+        dateFormat: "yy",
+        onClose: function(dateText, inst){
+            var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+            $(this).val(year);
+        },
+        beforeShow: function(input, inst) {
+            $(inst.dpDiv).addClass('year-only');
+          }
+    });
 
     configuraDatepickers("FechaInicio", "FechaFin", "");
 
@@ -194,7 +204,7 @@ function validar_dias(){
             if(dias_disponibles_1 > 0){
                 if(dias > dias_disponibles_1){
                     dias_extra = dias - dias_disponibles_1;
-                    $("#MensajeVerificarDiasAdModal").html(`Se van a guardar ${dias_disponibles_1} día(s) como Licencias y ${dias_extra} día(s) como Artículo 37 con el 50%. <br> ¿Desea continuar?`);
+                    $("#MensajeVerificarDiasAdModal").html(`Se van a guardar ${dias_disponibles_1} día(s) como  Licencias y ${dias_extra} día(s) como Artículo 37 con el 50%. <br> ¿Desea continuar?`);
                     $("#VerificarDiasModal").modal("show");
                 }else{
                     guardar_sancion();
@@ -205,7 +215,7 @@ function validar_dias(){
                         dias_extra = dias - dias_disponibles_2;
                         console.log(dias_extra);
                         console.log(dias_disponibles_2);
-                        $("#MensajeVerificarDiasAdModal").html(`Se van a guardar ${dias_disponibles_2} día(s) como Artículo 37 al 50%  y ${dias_extra} día(s) como Artículo 37 con el 0%. <br> ¿Desea continuar?`);
+                        $("#MensajeVerificarDiasAdModal").html(`Se van a guardar ${dias_disponibles_2} día(s) como  Artículo 37 al 50%  y ${dias_extra} día(s) como Artículo 37 con el 0%. <br> ¿Desea continuar?`);
                         $("#VerificarDiasModal").modal("show");
                     }else{
                         guardar_sancion();

@@ -6,6 +6,7 @@ from flask_login import current_user
 from sqlalchemy.orm.exc import NoResultFound
 from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rEmpleado
 from rh.gestion_asistencias.modelos.modelos import rSancionPersona
+from nomina.modelos.modelos import tNomina
 from general.modelos.modelos import tBitacora
 from sqlalchemy import and_, or_
 from datetime import date, datetime, timedelta
@@ -87,7 +88,7 @@ def guarda_Sancion():
         sancion_data['FechaFin'] = datetime.strptime(sancion_data['FechaFin'], '%d/%m/%Y')
         if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
             #calcula_periodo_art37(sancion_data, descuentos_data)
-            calcular_periodo_artículo_37(sancion_data, descuentos_data)
+            calcular_periodo_articulo_37(sancion_data, descuentos_data)
             print("Artículo 37")
         else:
             guardar_o_modificar_sancion(sancion_data)
@@ -101,7 +102,7 @@ def guarda_Sancion():
             
             if sancion_data['idSancion'] == '2' or sancion_data["idSancion"] == '4': #Artículo 37
                 #calcula_periodo_art37(sancion_data, descuentos_data)
-                reparte_dias(sancion_data, descuentos_data)
+                #reparte_dias(sancion_data, descuentos_data)
                 print("Artículo 37")
             else:
                 guardar_o_modificar_sancion(sancion_data)
@@ -120,6 +121,11 @@ def guardar_o_modificar_sancion(sancion_data):
         guardar_modificar_licencia = 5
                 
     except NoResultFound:
+        ultimo_id_sancion_persona = db.session.query(func.max(rSancionPersona.idSancionPersona)).scalar()
+        if ultimo_id_sancion_persona is None:
+            sancion_data["idSancionPersona"] = 1
+        else:
+            sancion_data["idSancionPersona"] = ultimo_id_sancion_persona + 1
         nueva_sancion = rSancionPersona(**sancion_data)
         db.session.add(nueva_sancion)
 
@@ -139,6 +145,7 @@ def guardar_o_modificar_sancion(sancion_data):
         
     # Realizar cambios en la base de datos
     db.session.commit()
+    print("Fecha fin descuento guardado: ", nueva_sancion.FechaFinDescuento)
 
 @gestion_asistencias.route('/rh/gestion-asistencias/buscar-sancion', methods = ['POST'])
 def busca_Sancion():
@@ -314,9 +321,9 @@ def calculo_dias_articulo_37():
         # Calcular los días de las licencias dentro del periodo correcto
         total_dias = 0
         for licencia in licencias_anuales:
-            fecha_inicio = max(licencia.FechaInicio, aniversario_anterior)
+            fecha_inicio = licencia.FechaInicioDescuento #max(licencia.FechaInicio, aniversario_anterior)
             
-            fecha_fin = min(licencia.FechaFin, próximo_aniversario)
+            fecha_fin = licencia.FechaFinDescuento #min(licencia.FechaFin, próximo_aniversario)
            
             #dias_licencia = np.busday_count(fecha_inicio, fecha_fin, holidays=dias_festivos_lista) + 1 # +1 para incluir ambos días, ignora días festivos y fines de semana
             dias_licencia = (fecha_fin - fecha_inicio).days + 1  # +1 para incluir ambos días
@@ -392,7 +399,72 @@ def calcula_periodo_art37(licencia, descuentos):
     reparte_dias_totales(fechas, licencia, descuentos)
     return 0
 
-def calcular_periodo_artículo_37(licencia, descuentos):
+def calcular_periodo_articulo_37(licencia, descuentos):
+    idPersona = licencia["idPersona"]
+    Periodo = request.form.get("Periodo")
+    print(Periodo)
+    fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva_puestos(idPersona)
+    hoy = datetime.now()
+    FechaLimiteInf = None
+    FechaLimiteSup = None
+
+    # Calcular el aniversario anterior y el próximo aniversario
+    año_actual = hoy.year
+    aniversario = fecha_inicio_consecutiva_mas_antigua.replace(year=año_actual)
+
+    if licencia["FechaInicio"].date() < aniversario:
+        print("Antes")
+        aniversario_anterior = aniversario.replace(year=año_actual - 1)
+        FechaLimiteInf = aniversario_anterior
+        FechaLimiteSup = aniversario
+
+    elif licencia["FechaInicio"].date() > aniversario:
+        print("Despues")
+        aniversario_siguiente = aniversario.replace(year=año_actual + 1)
+        FechaLimiteInf = aniversario
+        FechaLimiteSup = aniversario_siguiente
+
+    # Buscar licencias que se solapan con el periodo de interés
+    licencias_anuales = db.session.query(rSancionPersona).filter(
+        rSancionPersona.idPersona == idPersona,
+        or_(rSancionPersona.idSancion == 2, rSancionPersona.idSancion == 4),
+        (rSancionPersona.FechaInicio >= FechaLimiteInf) &
+        (rSancionPersona.FechaFin < FechaLimiteSup)
+    ).order_by(rSancionPersona.FechaFin.desc()).all()
+
+    total_dias = 0
+    for licencia_anual in licencias_anuales:
+        fecha_inicio = licencia_anual.FechaInicioDescuento
+        fecha_fin = licencia_anual.FechaFinDescuento
+        dias_licencia = (fecha_fin - fecha_inicio).days + 1
+
+        total_dias += int(dias_licencia)
+
+    print("Total dias")
+    print(total_dias)
+
+    resta = int(descuentos["DiasPagados1"]) - total_dias
+    if resta > 0:
+        DiasDisponibles1 = resta
+        total_dias = 0
+    else:
+        DiasDisponibles1 = 0
+        total_dias = total_dias - int(descuentos["DiasPagados1"])
+
+    resta = int(descuentos["DiasPagados2"]) - total_dias
+    if resta > 0:
+        DiasDisponibles2 = resta
+        total_dias = 0
+    else:
+        DiasDisponibles2 = 0
+        total_dias = total_dias - int(descuentos["DiasPagados2"])
+
+    print(DiasDisponibles1, DiasDisponibles2)
+    descuentos["DiasDisponibles1"] = DiasDisponibles1
+    descuentos["DiasDisponibles2"] = DiasDisponibles2
+    reparte_dias(licencia, descuentos)
+
+def calcular_periodo_artículo_37_1(licencia, descuentos):
     idPersona = licencia["idPersona"]
     fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva_puestos(idPersona)
     hoy = datetime.now()
@@ -402,7 +474,7 @@ def calcular_periodo_artículo_37(licencia, descuentos):
     FechasLimiteSup = []
 
     # Calcular el aniversario anterior y el próximo aniversario
-    año_actual = hoy.year
+    año_actual = hoy.year               
     aniversario = fecha_inicio_consecutiva_mas_antigua.replace(year=año_actual)
 
     if licencia["FechaFin"].date() < aniversario:
@@ -480,8 +552,181 @@ def calcular_periodo_artículo_37(licencia, descuentos):
         descuentos["DiasDisponibles2"] = DiasDisponibles2
         reparte_dias(licencia, descuentos)
 
-
 def reparte_dias(licencia, descuentos):
+    dias = (licencia["FechaFin"]  - licencia["FechaInicio"]).days + 1
+    print("Días")
+    print(dias)
+
+    dias_desc1 = int(descuentos["DiasDisponibles1"])
+    dias_desc2 = int(descuentos["DiasDisponibles2"])
+    dias_permitidos = dias_desc1 + dias_desc2
+
+    if dias_permitidos == 0:
+        licencia["idPorcentaje"] = 1
+        reparte_quincenas(licencia, descuentos)
+    else:
+        if dias_desc1 > 0:
+            if dias <= dias_desc1:
+                licencia["idSancion"] = 4
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
+                print(licencia)
+                reparte_quincenas(licencia, descuentos)
+            else:
+                dias_extra = dias - dias_desc1
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_desc1 - 1)
+                licencia["FechaFin"] = fecha_aux
+                licencia["idSancion"] = 4
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado1"]
+                print(licencia)
+                reparte_quincenas(licencia, descuentos)
+
+                licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_extra - 1)
+                licencia["FechaFin"] = fecha_aux
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                print(licencia)
+                reparte_quincenas(licencia, descuentos)
+        else:
+            if dias <= dias_desc2:
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                print(licencia)
+                reparte_quincenas(licencia, descuentos)
+            else:
+                dias_extra = dias - dias_desc2
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_desc2 - 1)
+                licencia["FechaFin"] = fecha_aux
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = descuentos["PorcentajePagado2"]
+                print(licencia)
+                reparte_quincenas(licencia, descuentos)
+
+                licencia["FechaInicio"] = licencia["FechaFin"] + timedelta(days=1)
+                fecha_aux = licencia["FechaInicio"] + timedelta(days=dias_extra - 1)
+                licencia["FechaFin"] = fecha_aux
+                licencia["idSancion"] = 2
+                licencia["idPorcentaje"] = 1
+                print(licencia)
+                reparte_quincenas(licencia, descuentos)
+
+def reparte_quincenas(licencia, descuentos):
+    dias = (licencia["FechaFin"] - licencia["FechaInicio"]).days + 1
+    print("Días: ", dias)
+
+    quincena_inicio = licencia["idQuincena"]
+    Quincena_licencia = False
+
+    ultima_licencia = db.session.query(rSancionPersona).filter(
+        rSancionPersona.idPersona == licencia["idPersona"],
+        or_(rSancionPersona.idSancion == 2, rSancionPersona.idSancion == 4)
+    ).order_by(rSancionPersona.idSancionPersona.desc()).first()
+
+    nomina_disponible = db.session.query(tNomina).filter_by(Estatus = 1).order_by(tNomina.FechaInicial.asc()).first()
+    if nomina_disponible is None:
+        nomina_disponible = db.session.query(tNomina).filter_by(Estatus = 2).order_by(tNomina.FechaInicial.desc()).first()
+        Nomina_procesada = True
+    else:
+        Nomina_procesada = False
+
+    if ultima_licencia is not None:
+        if nomina_disponible.FechaFinal <= ultima_licencia.FechaFinDescuento:
+            Quincena_licencia = True
+
+    if Quincena_licencia is True:
+        quincena_inicio = db.session.query(kQuincena).filter(kQuincena.FechaInicio <= ultima_licencia.FechaFinDescuento, kQuincena.FechaFin >= ultima_licencia.FechaFinDescuento).first()
+        if ultima_licencia.FechaFinDescuento == quincena_inicio.FechaFin:
+            quincena_inicio = db.session.query(kQuincena).get(quincena_inicio.idQuincena + 1)
+        
+    else:
+        if Nomina_procesada is False:
+            quincena_inicio = db.session.query(kQuincena).filter_by(FechaInicio = nomina_disponible.FechaInicial, FechaFin = nomina_disponible.FechaFinal).first()
+        else:
+            quincena_inicio = db.session.query(kQuincena).filter(kQuincena.FechaInicio > nomina_disponible.FechaInicial, kQuincena.FechaFin > nomina_disponible.FechaFinal).order_by(kQuincena.idQuincena.asc()).first()
+
+    cont = 0
+
+    print("Quincena inicio: ", quincena_inicio)
+    print("Ultima Licencia: ", ultima_licencia)
+
+    while dias > 0 and cont < 366:
+        print("cont")
+        print(cont)
+
+        if cont == 0:
+            if Quincena_licencia is True:
+                licencia["FechaInicioDescuento"] = ultima_licencia.FechaFinDescuento + timedelta(days=1)
+            else:
+                if quincena_inicio.FechaInicio <= licencia["FechaInicio"].date() <= quincena_inicio.FechaFin:
+                    licencia["FechaInicioDescuento"] = licencia["FechaInicio"].date()
+                else:
+                    licencia["FechaInicioDescuento"] = quincena_inicio.FechaInicio
+        else:
+            licencia["FechaInicioDescuento"] = quincena_inicio.FechaInicio
+
+        # if Quincena_licencia is True:
+        #     print("Es de licencia")
+        #     if quincena_inicio.FechaInicio <= ultima_licencia.FechaFinDescuento < quincena_inicio.FechaFin:
+        #         if cont == 0:
+        #             print("Ultima fecha es de licencia y entra por primera vez")
+        #             print(ultima_licencia)
+        #             licencia["FechaInicioDescuento"] = ultima_licencia.FechaFinDescuento + timedelta(days=1)
+        #     else:
+        #         if ultima_licencia.FechaFinDescuento == quincena_inicio.FechaFin:
+        #             print("Ultima fecha de licencia es igual a ultimo día de quincena")
+        #             quincena_inicio = db.session.query(kQuincena).get(quincena_inicio.idQuincena + 1)
+        #             licencia["FechaInicioDescuento"] = quincena_inicio.FechaInicio
+        #         elif "FechaFinDescuento" in licencia:
+        #             if quincena_inicio.FechaInicio <= licencia["FechaFinDescuento"] <= quincena_inicio.FechaFin:
+        #                 print("Tomando la fecha fin descuento anterior")
+        #                 licencia["FechaInicioDescuento"] = licencia["FechaFinDescuento"] + timedelta(days=1)
+        #         else:
+        #             print("Tomando la fecha inicio de la quincena")
+        #             licencia["FechaInicioDescuento"] = quincena_inicio.FechaInicio
+
+        # else:
+        #     print("Es de nómina")
+        #     if quincena_inicio.FechaInicio <= licencia["FechaInicio"].date() <= quincena_inicio.FechaFin:
+        #         print("La Fecha Inicio de la licencia está dentro de la quincena de nómina")
+        #         licencia["FechaInicioDescuento"] = licencia["FechaInicio"].date()
+        #     else:
+        #         if "FechaFinDescuento" in licencia:
+        #             if quincena_inicio.FechaInicio <= licencia["FechaFinDescuento"] <= quincena_inicio.FechaFin:
+        #                 licencia["FechaInicioDescuento"] = licencia["FechaFinDescuento"] + timedelta(days=1)
+        #         else:
+        #             print("Fecha inicio es fecha inicio de quincena")
+        #             licencia["FechaInicioDescuento"] = quincena_inicio.FechaInicio
+
+        # if Quincena_licencia is True and cont == 0:
+        #     if quincena_inicio.FechaFin == ultima_licencia.FechaFinDescuento:
+        #         quincena_inicio = db.session.query(kQuincena).get(quincena_inicio.idQuincena + 1)
+        #     else:
+        #         licencia["FechaInicioDescuento"] = ultima_licencia.FechaFinDescuento + timedelta(days=1)
+
+        dias_quincena = (quincena_inicio.FechaFin - licencia["FechaInicioDescuento"]).days + 1
+        if (dias_quincena < dias):
+            licencia["FechaFinDescuento"] = quincena_inicio.FechaFin
+        else:
+            licencia["FechaFinDescuento"] = licencia["FechaInicioDescuento"] + timedelta(days=dias - 1)
+
+        licencia["idQuincena"] = quincena_inicio.idQuincena
+        licencia["idSancionPersona"] = None
+        licencia["Dias"] = (licencia["FechaFinDescuento"] - licencia["FechaInicioDescuento"]).days + 1
+        print(licencia)
+
+        guardar_o_modificar_sancion(licencia)
+
+        dias = dias - ((licencia["FechaFinDescuento"] - licencia["FechaInicioDescuento"]).days + 1)
+
+        if licencia["FechaFinDescuento"] == quincena_inicio.FechaFin:
+            quincena_inicio = db.session.query(kQuincena).filter_by(idQuincena = quincena_inicio.idQuincena + 1).first()
+
+        cont = cont + 1
+        print("cont")
+        print(cont)
+
+
+def reparte_dias_1(licencia, descuentos):
     idPersona = licencia["idPersona"]
     # Obtener los días festivos
     dias_festivos = db.session.query(kDiasFestivos.Fecha).all()

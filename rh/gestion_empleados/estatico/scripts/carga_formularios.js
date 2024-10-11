@@ -108,7 +108,7 @@ function obtenerInfoEmpleado() {
                     cargarPlaza();
                     $("#idPlazaHom").append(`<option value = ${data.idPuesto}>${data.Puesto}</option>`);
                     $("#idPlazaHom").val(data.idPuesto);
-                    $("#idUbicacion").val(data.idCentroCosto);
+                    $("#idUbicacion").val(data.idUbicacion);
                 }
                 $("#HoraEntrada").val(data.HoraEntrada);
                 $("#HoraSalida").val(data.HoraSalida);

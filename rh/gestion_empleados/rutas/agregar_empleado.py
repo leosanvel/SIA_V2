@@ -136,7 +136,8 @@ def guardar_empleado():
     }
 
     mapeo_nombres_empleado_puesto = { #NombreEnFormulario : nombreEnBase
-        'idPlazaHom' : 'idPuesto'
+        'idPlazaHom' : 'idPuesto',
+        'idUbicacion' : 'idUbicacion'
     }
 
     mapeo_nombres_escolaridad = { #NombreEnFormulario : nombreEnBase
@@ -245,6 +246,8 @@ def guardar_empleado():
         
             db.session.commit()
             #nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
+        else:
+            empleado_puesto_existente.idUbicacion = empleado_puesto_data["idUbicacion"]
 
         # Actualizar los atributos de 'empleado_existente' con los valores de 'empleado_data'
         #for attr, value in persona_data.items():
