@@ -1,0 +1,45 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <form id="formularioAltaMasivoHonorarios">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-left form-group">
+                    <button class="btn btn-primary" type="button" id="btnSeleccionarTodo">
+                        Seleccionar todos
+                    </button>
+                </div>
+                <div class="pull-right form-group">
+                    <button class="btn btn-primary" type="button" id="btnGenerarAltas">
+                        Generar altas
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-striped" id="tablaEmpleadosHonorariosInactivos" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <th>Seleccionar</th>
+                            <th>Num. Empleado</th>
+                            <th>Nombre</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/alta_masiva_honorarios.js') }}"></script>
+{% endblock %}

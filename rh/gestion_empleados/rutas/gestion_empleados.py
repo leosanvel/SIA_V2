@@ -9,3 +9,4 @@ from . import carga_selects
 from . import generar_contrato
 from . import clabe_interbancaria
 from . import crear_contrato
+from . import alta_masiva_honorarios

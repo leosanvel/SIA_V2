@@ -206,6 +206,7 @@ class rEmpleadoPuesto(db.Model):
 
     idPersona = db.Column(db.Integer, db.ForeignKey(rEmpleado.idPersona), primary_key = True)
     idPuesto = db.Column(db.Integer, db.ForeignKey(tPuesto.ConsecutivoPuesto), primary_key = True)
+    CodigoPuesto = db.Column(db.String(50), nullable = True)
     ClavePresupuestaSIA = db.Column(db.String(50), nullable = True)
     CodigoPlazaSia = db.Column(db.String(50), nullable = True)
     CodigoPuestoSIA = db.Column(db.String(25), nullable = True)
@@ -226,9 +227,10 @@ class rEmpleadoPuesto(db.Model):
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, idUbicacion, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, CodigoPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, idUbicacion, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
+        self.CodigoPuesto = CodigoPuesto
         self.ClavePresupuestaSIA = ClavePresupuestaSIA
         self.CodigoPlazaSia = CodigoPlazaSIA
         self.CodigoPuestoSIA = CodigoPuestoSIA

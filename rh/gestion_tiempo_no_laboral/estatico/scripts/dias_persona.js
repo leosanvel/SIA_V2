@@ -75,12 +75,12 @@ function cargarDiasPersona(){
                     <td><button type="button" class="btn btn-primary oculta-empleado" id="Editar_Aceptar${cont}" onclick="editar_aceptar('${cont}')">Editar</button></td>
                     <td><button type="button" class="btn btn-primary oculta-empleado" id="Cancelar${cont}" onclick="cancelar('${cont}', '${diaPersona.Activo}')" style="display: none;">Cancelar</button></td>
                     </tr>
-                    `
+                    `;
                     $("#tablaResultadosDiasPersona tbody").append(text);
                     if(dias >= 180){
                         $("#eliminar" + cont).attr("disabled", false);
                     }
-                    cont++;0
+                    cont++;
                 });
             }else{
                 $("#tablaResultadosDiasPersona tbody").empty();

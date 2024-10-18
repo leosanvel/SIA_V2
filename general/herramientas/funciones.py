@@ -382,13 +382,13 @@ def ejecutar_tareas_diarias():
     verificar_antiguedad_prima_quinquenal()
     verificar_antiguedad_articulo_37_todos()
     elimina_vacaciones_vencidas()
-    print("FUNCION AUTOMATICA EJEUTADA AL INICIAR EL DÍA:")
+    print("FUNCION AUTOMATICA EJECUTADA AL INICIAR EL DÍA:")
     print(hoy)
 
 
 def revision_baja_empleados(idPersona = None, hoy = None):
     # hoy = datetime.today().date()
-    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona,FechaEfecto=hoy, idEstatusEP = 1).all()
+    puestos_empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona, FechaEfecto=hoy, idEstatusEP = 1).all()
     print("Dando de baja a los siguientes puestos:")
     print(puestos_empleado)
     if puestos_empleado:
