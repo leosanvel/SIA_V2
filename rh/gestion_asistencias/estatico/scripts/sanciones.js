@@ -281,6 +281,8 @@ function busca_sancion() {
 
                         var fechaInicioFormateada = convertirFechaParaVisualizacion(sancion.FechaInicio);
                         var fechaFinFormateada = convertirFechaParaVisualizacion(sancion.FechaFin);
+                        var fechaInicioDescuento = convertirFechaParaVisualizacion(sancion.FechaInicioDescuento);
+                        var fechaFinDescuento = convertirFechaParaVisualizacion(sancion.FechaFinDescuento);
 
                         // Agregar filas a la tabla con fechas formateadas
                         $("#tablaResultadosSanciones tbody").append(`
@@ -315,6 +317,24 @@ function busca_sancion() {
                                      value="${fechaFinFormateada}" class="form-control" style="width: 170px;" readonly>
                                 <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
                                 <small id="EFechaInicio"
+                                    class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <input type="text" id="fechaInicioDescuento${sancion.idSancionPersona}"
+                                     value="${fechaInicioDescuento}" class="form-control" style="width: 170px;" readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaInicioDescuento"
+                                    class="etiquetaError form-text form-text-error"></small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group datepicker-group" style="z-index: 1;">
+                                <input type="text" id="fechaFinDescuento${sancion.idSancionPersona}"
+                                     value="${fechaFinDescuento}" class="form-control" style="width: 170px;" readonly>
+                                <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                                <small id="EFechaFinDescuento"
                                     class="etiquetaError form-text form-text-error"></small>
                             </div>
                         </td>

@@ -33,40 +33,117 @@
 </div>
 
 <div class="container">
-    <form id="frmBE">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group  datepicker-group" id="NumEmpGrupo">
-                    <label for="lblNumEmp">Buscar empleado</label>
-                    <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
-                    class="form-control botonModalBuscaEmpleado obligatorio" type="text" readonly>
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                    <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+    <div class="row">
+        <form id="frmBE">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="lblBusqueda">Ingrese nombre, número de empleado o centro de costos<span id="ABusqueda">*</span>:</label>
+                        <input type="text" id="Busqueda" name="Busqueda" class="form-control obligatorio">
+                        <small id="EBusqueda" class="etiquetaError form-text form-text-error"></small>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="strMensaje" style="display: none;" >Error:</div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group datepicker-group" style="z-index: 1;">
+                        <label for="lblFechaInicio">Fecha de inicio<span id="AFechaInicio"
+                            class="form-text">*</span>:</label>
+                        <input type="text" id="FechaInicioBusqueda" name="FechaInicio" class="form-control obligatorio fecha">
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                        <small id="EFechaInicio" class="etiquetaError form-text form-text-error"> </small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group datepicker-group" style="z-index: 1;">
+                        <label for="lblFechaFin">Fecha de fin<span id="AFechaFin"
+                                class="form-text">*</span>:</label>
+                        <input type="text" id="FechaFinBusqueda" name="FechaFin" class="opcional form-control fecha">
+                        <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                        <small id="EFechaFin" class="etiquetaError form-text form-text-error"> </small>
+                    </div>
+                </div>
             </div>
+            <div class="row pull-right">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="btnBusqueda">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group pull-left">
+                        <button class="btn btn-primary" type="button" id="btnConfirmarContrato" style="display: none;">
+                            <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                            Confirmar
+                        </button>
+                    </div>
+                    <div class="form-group pull-right">
+                        <button class="btn btn-primary" type="button" id="btnDescargaContrato" style="display: none;">
+                            <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                            Descargar Contrato
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group pull-left">
+                        <button class="btn btn-primary" type="button" id="btnSeleccionarTodo" style="display: none;">
+                            <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
+                            Seleccionar todos
+                        </button>
+                    </div>
+                    <div class="pull-right form-group">
+                        <button class="btn btn-primary" type="button" id="btnGenerarContratosMasivos" style="display: none;">
+                            Generar contratos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div id="strMensaje" style="display: none;" >Error:</div>
         </div>
+    </div>
+    
+    <div class="form-group">
+        <small id="EResultado" class="etiquetaError form-text form-text-error"></small>
+    </div>
+    <form id="formularioGenerarContratoMasivo">
         <div class="row">
-            <div class="col-md-12">
-                <div class="form-group pull-left">
-                    <button class="btn btn-primary" type="button" id="btnConfirmarContrato">
-                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
-                        Confirmar
-                    </button>
-                </div>
-                <div class="form-group pull-right">
-                    <button class="btn btn-primary" type="button" id="btnDescargaContrato" style="display: none;">
-                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span>
-                        Descargar Contrato
-                    </button>
-                </div>
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-striped" id="tablaEmpleadosHonorariosActivos" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                        </tr>
+                        <tr>
+                            <th>Seleccionar</th>
+                            <th>Modificar</th>
+                            <th>Num. Empleado</th>
+                            <th>Nombre</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Centro Costos</th>
+                            <th>Descarga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se agregarán las filas de resultados de empleados -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </form>
+
     <div class="row">
         <div class="col-md-12">
             <div id="ImgModal" name="ImgModal" style="display: none;" class="text-center">
@@ -174,7 +251,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="lblMontoPactado">Monto pactado<span id="AMontoPactado" class="form-text">*</span>:</label>
-                                        <input type="text" id="MontoPactado" name="MontoPactado" class="opcional form-control">
+                                        <input type="number" id="MontoPactado" name="MontoPactado" class="opcional form-control">
                                         <small id="EMontoPactado" class="etiquetaError form-text form-text-error"></small>
                                     </div>
                                 </div>
@@ -248,7 +325,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <input type="hidden" id="NumeroContrato" name="NumeroContrato">
                             
                         </form>
                     </div>

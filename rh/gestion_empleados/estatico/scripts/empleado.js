@@ -118,6 +118,7 @@ function guardarDomicilio(idTipoDomicilio, formulario) {
 
 function guardarDatosBancarios(formulario){
     var formData = new FormData(formulario[0]);
+    formData.append('idBanco', $("#idBanco").val());
     $.ajax({
         async: false,
         type: "POST",
@@ -167,6 +168,21 @@ function guardarMasInformacion(formulario){
     
     formData.append("NumIdiomas", num_idiomas);
     formData.append("NumIndigenas", num_indigenas);
+
+    var idPersonaIdiomaArray = [];
+    var idPersonaIndigenaArray = [];
+
+    $('.idPersonaIdioma').each(function(){
+        idPersonaIdiomaArray.push($(this).val());
+    });
+
+    $('.idPersonaIndigena').each(function(){
+        idPersonaIndigenaArray.push($(this).val());
+    });
+
+    formData.append("idPersonaIdiomaArray", JSON.stringify(idPersonaIdiomaArray));
+    formData.append("idPersonaIndigenaArray", JSON.stringify(idPersonaIndigenaArray));
+
     $.ajax({
         async: false,
         type: "POST",

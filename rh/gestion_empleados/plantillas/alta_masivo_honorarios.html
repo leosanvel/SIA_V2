@@ -3,14 +3,31 @@
 <div class="container">
     <form id="formularioAltaMasivoHonorarios">
         <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblBusqueda">Ingrese nombre, número de empleado o centro de costos<span id="ABusqueda">*</span>:</label>
+                    <input type="text" id="Busqueda" name="Busqueda" class="form-control obligatorio">
+                    <small id="EBusqueda" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" id="btnBusqueda">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-12">
                 <div class="pull-left form-group">
-                    <button class="btn btn-primary" type="button" id="btnSeleccionarTodo">
+                    <button class="btn btn-primary" type="button" id="btnSeleccionarTodo" style="display: none;">
                         Seleccionar todos
                     </button>
                 </div>
                 <div class="pull-right form-group">
-                    <button class="btn btn-primary" type="button" id="btnGenerarAltas">
+                    <button class="btn btn-primary" type="button" id="btnGenerarAltas" style="display: none;">
                         Generar altas
                     </button>
                 </div>

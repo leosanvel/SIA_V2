@@ -380,8 +380,9 @@ class rPersonaIdioma(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idPersona = db.Column(db.Integer, primary_key = True)
-    idIdioma = db.Column(db.Integer, primary_key = True)
+    idPersonaIdioma = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, nullable = True)
+    idIdioma = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idPersona, idIdioma):
         self.idPersona = idPersona
@@ -397,8 +398,9 @@ class rPersonaIndigena(db.Model):
     __bind_key__ = 'db2'
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
-    idPersona = db.Column(db.Integer, primary_key = True)
-    idIndigena = db.Column(db.Integer, primary_key = True)
+    idPersonaIndigena = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, nullable = True)
+    idIndigena = db.Column(db.Integer, nullable = True)
 
     def __init__(self, idPersona, idIndigena):
         self.idPersona = idPersona
@@ -467,12 +469,13 @@ class tPuestoHonorarios(db.Model):
                 setattr(self, attr, value)
 
 class rEmpleadoContrato(db.Model):
-    _tablename_ = "rempleadocontrato"
-    _bind_key_ = 'db2'
-    _table_arg_ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+    __tablename__ = "rempleadocontrato"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idPersona = db.Column(db.Integer, primary_key = True)
     NumeroContrato = db.Column(db.Integer, primary_key = True)
+    AnioFiscal = db.Column(db.Integer, primary_key = True)
     FechaInicio = db.Column(db.Date, nullable = True)
     FechaFin = db.Column(db.Date, nullable = True)
     FechaFirma = db.Column(db.Date, nullable = True)
@@ -491,10 +494,12 @@ class rEmpleadoContrato(db.Model):
     Actividades = db.Column(db.String(500), nullable = True)
     CURPEntrega = db.Column(db.String(18), nullable = True)
     CURPFirma = db.Column(db.String(18), nullable = True)
+    ContratoGenerado = db.Column(db.Integer, nullable = True)
 
-    def _init_(self, idPersona, NumeroContrato, FechaInicio, FechaFin, FechaFirma, idEstado, idMunicipio, ImporteBruto, NumeroExhibicion, MontoPactado, Proyecto, Partida, Origen, ConocimientoPrestador, OficioDictamen, OficioDGHO, ConocimientoExperiencia, Actividades, CURPEntrega, CURPFirma):
+    def _init_(self, idPersona, NumeroContrato, AnioFiscal, FechaInicio, FechaFin, FechaFirma, idEstado, idMunicipio, ImporteBruto, NumeroExhibicion, MontoPactado, Proyecto, Partida, Origen, ConocimientoPrestador, OficioDictamen, OficioDGHO, ConocimientoExperiencia, Actividades, CURPEntrega, CURPFirma, ContratoGenerado):
         self.idPersona = idPersona
         self.NumeroContrato = NumeroContrato
+        self.AnioFiscal = AnioFiscal
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.FechaFirma = FechaFirma
@@ -513,6 +518,7 @@ class rEmpleadoContrato(db.Model):
         self.Actividades = Actividades
         self.CURPEntrega = CURPEntrega
         self.CURPFirma = CURPFirma
+        self.ContratoGenerado = ContratoGenerado
 
     def update(self, **kwargs):
         for attr, value in kwargs.items():

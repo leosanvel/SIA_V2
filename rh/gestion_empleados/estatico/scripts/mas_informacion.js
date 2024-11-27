@@ -6,6 +6,7 @@ $gmx(document).ready(function(){
             <div class="row fila-idioma">
                 <div class="col-md-8">
                     <div class="form-group">
+                        <input type="hidden" id="idPersonaIdioma${cont}" name="idPersonaIdioma${cont}" class="idPersonaIdioma">
                         <select id="Idioma${cont}" name="Idioma${cont}" class="opcional form-control idioma">
                             
                         </select>
@@ -22,6 +23,7 @@ $gmx(document).ready(function(){
         $(`#ColIdiomas`).append(text);
 
         $("#Idioma1 option").clone().appendTo(`#Idioma${cont}`);
+        $(`#idPersonaIdioma${cont}`).val(0);
     });
 
     $(document).on("click", ".remover", function(){
@@ -35,6 +37,7 @@ $gmx(document).ready(function(){
                 <div class="row fila-idioma">
                     <div class="col-md-8">
                         <div class="form-group">
+                            <input type="hidden" id="idPersonaIndigena${cont}" name="idPersonaIndigena${cont}" class="idPersonaIndigena">
                             <select id="IdiomaIndigena${cont}" name="IdiomaIndigena${cont}" class="opcional form-control indigena">
                                 
                             </select>
@@ -51,6 +54,7 @@ $gmx(document).ready(function(){
             $("#ColIdiomasIndigenas").append(text);
 
             $("#LenguaIndigena option").clone().appendTo(`#IdiomaIndigena${cont}`);
+            $(`#idPersonaIndigena${cont}`).val(0);
         }
     });
 

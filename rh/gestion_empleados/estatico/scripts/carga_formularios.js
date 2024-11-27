@@ -200,11 +200,13 @@ function obtenerMasInformacion(){
                     data.Idiomas.forEach(function(Idioma, index){
                         if(index == 0){
                             $("#Idioma1").val(Idioma.idIdioma);
+                            $("#idPersonaIdioma1").val(Idioma.idPersonaIdioma);
                         }else{
                             text = `
                                 <div class="row fila-idioma">
                                     <div class="col-md-8">
                                         <div class="form-group">
+                                            <input type="hidden" id="idPersonaIdioma${cont}" name="idPersonaIdioma${cont}" class="idPersonaIdioma">
                                             <select id="Idioma${cont}" name="Idioma${cont}" class="opcional form-control idioma">
 
                                             </select>
@@ -221,18 +223,20 @@ function obtenerMasInformacion(){
                             $(`#ColIdiomas`).append(text);
                             $("#Idioma1 option").clone().appendTo(`#Idioma${cont}`);
                             $("#Idioma" + cont).val(Idioma.idIdioma);
+                            $("#idPersonaIdioma" + cont).val(Idioma.idPersonaIdioma);
                             cont++;
                         }
                     });
                 }
 
-                if(data.Indigena){
+                if(data.Indigenas){
                     var cont = 1;
                     data.Indigenas.forEach(function(Indigena){
                         text = `
                             <div class="row fila-idioma">
                                 <div class="col-md-8">
                                     <div class="form-group">
+                                        <input type="hidden" id="idPersonaIndigena${cont}" name="idPersonaIndigena${cont}" class="idPersonaIndigena">
                                         <select id="IdiomaIndigena${cont}" name="IdiomaIndigena${cont}" class="opcional form-control indigena">
                                             <option value="0">-- Seleccione --</option>
                                         </select>
@@ -247,7 +251,9 @@ function obtenerMasInformacion(){
                             </div>
                         `;
                         $("#ColIdiomasIndigenas").append(text);
+                        $("#LenguaIndigena option").clone().appendTo(`#IdiomaIndigena${cont}`);
                         $("#IdiomaIndigena" + cont).val(Indigena.idIndigena);
+                        $("#idPersonaIndigena" + cont).val(Indigena.idPersonaIndigena);
                         cont++;
                     });
                 }

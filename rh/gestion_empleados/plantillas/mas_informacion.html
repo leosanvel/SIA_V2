@@ -67,6 +67,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="lblIdioma">Idioma<span id="AIdioma" class="form-text">*</span>:</label>
+                    <input type="hidden" id="idPersonaIdioma1" name="idPersonaIdioma1" class="idPersonaIdioma">
                     <select id="Idioma1" name="Idioma1" class="idioma opcional form-control">
                         <option value="0">-- Seleccione --</option>
                         {% for row in Idiomas %}
@@ -102,6 +103,7 @@
             <div class="col-md-4">
                 <div class="form-group">
                     <label for="lblIndigena">Lengua indígena<span id="AIndigena" class="form-text">*</span>:</label>
+                    <input type="hidden" id="idPersonaIndigena" name="idPersonaIndigena">
                     <select id="Indigena" name="Indigena" class="opcional form-control">
                         <option value="0">-- Seleccione --</option>
                         <option value="1">Si</option>
@@ -130,7 +132,7 @@
             </div>
             <div class="col-md-2">
                 <div class="form-group">
-                    <select id="LenguaIndigena" name="LenguaIndigena" class="opcional form-control indigena" style="display: none;">
+                    <select id="LenguaIndigena" name="LenguaIndigena" class="opcional form-control" style="display: none;">
                         <option value="0">-- Seleccione --</option>
                         {% for row in LenguasIndigenas %}
                             <option value="{{row.idLenguaIndigena}}">{{row.LenguaIndigena}}</option>

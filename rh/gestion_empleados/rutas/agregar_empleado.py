@@ -11,6 +11,7 @@ import pythoncom
 from PyPDF2 import PdfMerger
 import os
 from dateutil.relativedelta import relativedelta
+import json
 
 from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
@@ -702,26 +703,37 @@ def agregar_mas_informacion():
     NumIdiomas = int(request.form.get("NumIdiomas"))
     NumIndigenas = int(request.form.get("NumIndigenas"))
 
-
+    idPersonaIdioma_lista = json.loads(request.form.get('idPersonaIdiomaArray'))
+    idPersonaIndigena_lista = json.loads(request.form.get('idPersonaIndigenaArray'))
+    print(idPersonaIndigena_lista)
 
     mas_informacion_existente = db.session.query(rPersonaMasInformacion).filter_by(idPersona = idPersona).first()
     if mas_informacion_existente is not None:
         mas_informacion_existente.update(**mas_informacion_data)
 
-        if NumIdiomas > 0:
-            for i in range(1, NumIdiomas + 1):
-                idIdioma = request.form.get("Idioma" + str(i))
-                if db.session.query(rPersonaIdioma).filter_by(idPersona = idPersona, idIdioma = idIdioma).first() is None:
+        if len(idPersonaIdioma_lista) > 0:
+            for i in range(0, len(idPersonaIdioma_lista)):
+                idIdioma = request.form.get("Idioma" + str(i + 1))
+                idPersonaIdioma_aux = int(idPersonaIdioma_lista[i])
+                PersonaIdioma_existente = db.session.query(rPersonaIdioma).filter_by(idPersonaIdioma = idPersonaIdioma_aux).first()
+                if PersonaIdioma_existente is None:
                     nuevo_idioma = rPersonaIdioma(idPersona = idPersona, idIdioma = idIdioma)
-                    print(nuevo_idioma)
                     db.session.add(nuevo_idioma)
+                else:
+                    if int(idIdioma) != PersonaIdioma_existente.idIdioma:
+                        PersonaIdioma_existente.idIdioma = idIdioma
 
-        if mas_informacion_data["idIdiomaIndigena"] == 1 and NumIndigenas > 0:
-            for i in range(1, NumIndigenas + 1):
-                idIndigena = request.form.get("Indigena" + str(i))
-                if db.session.query(rPersonaIndigena).filter_by(idPersona = idPersona, idIndigena = idIndigena).first is None:
+        if mas_informacion_data["idIdiomaIndigena"] == '1' and len(idPersonaIndigena_lista) > 0:
+            for i in range(0, len(idPersonaIndigena_lista)):
+                idIndigena = request.form.get("IdiomaIndigena" + str(i + 1))
+                idPersonaIndigena_aux = int(idPersonaIndigena_lista[i])
+                PersonaIndigena_existente = db.session.query(rPersonaIndigena).filter_by(idPersonaIndigena = idPersonaIndigena_aux).first()
+                if PersonaIndigena_existente is None:
                     nuevo_indigena = rPersonaIndigena(idPersona=idPersona, idIndigena=idIndigena)
                     db.session.add(nuevo_indigena)
+                else:
+                    if int(idIndigena) != PersonaIndigena_existente.idIndigena:
+                        PersonaIndigena_existente.idIndigena = idIndigena
     else:
         nuevo_mas_informacion = rPersonaMasInformacion(**mas_informacion_data)
         db.session.add(nuevo_mas_informacion)

@@ -1,5 +1,6 @@
 from flask import render_template, request, jsonify, session
-from sqlalchemy import or_, cast, String, func
+from flask_login import current_user
+from sqlalchemy import or_, cast, String, func, and_
 from datetime import date
 
 from app import db
@@ -7,6 +8,7 @@ from .gestion_empleados import gestion_empleados
 from rh.gestion_empleados.modelos.empleado import *
 from general.herramientas.funciones import revision_baja_empleados
 from rh.gestion_empleados.rutas.agregar_empleado import guardar_conceptos
+from general.modelos.modelos import tBitacora
 
 @gestion_empleados.route('/rh/gestion-empleados/baja-alta-masiva-honorarios', methods = ['GET', 'POST'])
 def alta_masiva_honorarios():
@@ -18,7 +20,7 @@ def alta_masiva_honorarios():
 @gestion_empleados.route('/rh/gestion-empleados/buscar-empleados-honorarios', methods = ['GET', 'POST'])
 def buscar_empleados_honorarios_inactivos():
 
-    #Empleados_Honorarios_Inactivos = db.session.query(rEmpleadoPuesto).join(rEmpleado).join(tPersona).filter(rEmpleado.idTipoEmpleado == 1).order_by(tPersona.Nombre).all()
+    Busqueda = request.form.get("Busqueda")
 
     # Subconsulta para obtener el idPersona con la FechaInicio más reciente
     subquery = (
@@ -35,13 +37,50 @@ def buscar_empleados_honorarios_inactivos():
         db.session.query(rEmpleadoPuesto)
         .join(subquery, 
             (rEmpleadoPuesto.idPersona == subquery.c.idPersona) & 
-            (rEmpleadoPuesto.FechaInicio == subquery.c.max_fecha_inicio))
-        .join(rEmpleado)
-        .join(tPersona)
-        .filter(rEmpleado.idTipoEmpleado == 1)
+            (rEmpleadoPuesto.FechaInicio == subquery.c.max_fecha_inicio), isouter=False
+        )
+        .join(rEmpleado, rEmpleado.idPersona == rEmpleadoPuesto.idPersona, isouter=False)
+        .join(tPersona, tPersona.idPersona == rEmpleado.idPersona, isouter=False)
+        .filter(
+            rEmpleado.Activo == 1,
+            rEmpleado.idTipoEmpleado == 1,
+            or_(
+                tPersona.Nombre.contains(Busqueda),
+                tPersona.ApPaterno.contains(Busqueda),
+                tPersona.ApMaterno.contains(Busqueda),
+                rEmpleado.NumeroEmpleado.contains(Busqueda)
+            )  
+        )
         .order_by(tPersona.Nombre)
         .all()
     )
+
+    if len(Empleados_Honorarios) == 0:
+        resultado_centro_costos = (
+            db.session.query(kCentroCostos)
+            .filter(
+                or_(
+                    kCentroCostos.CentroCosto.contains(Busqueda),
+                    kCentroCostos.Clave.contains(Busqueda)
+                )
+            ).all()
+        )
+
+        Empleados_Honorarios = []
+
+        for centro_costo in resultado_centro_costos:
+            Empleados_Honorarios.extend(
+                db.session.query(rEmpleadoPuesto)
+                .join(subquery, 
+                    (rEmpleadoPuesto.idPersona == subquery.c.idPersona) & 
+                    (rEmpleadoPuesto.FechaInicio == subquery.c.max_fecha_inicio)
+                )
+                .join(rEmpleado)
+                .join(tPersona)
+                .filter(rEmpleadoPuesto.idCentroCosto == centro_costo.idCentroCosto, rEmpleado.idTipoEmpleado == 1, rEmpleado.Activo == 1)
+                .order_by(tPersona.Nombre)
+                .all()
+            )
 
     lista_empleados = []
     empleado_data = {}
@@ -52,7 +91,9 @@ def buscar_empleados_honorarios_inactivos():
 
         empleado_data["NumEmpleado"] = Empleado.Empleado.NumeroEmpleado
         empleado_data["idPersona"] = Empleado.idPersona
-        #print(empleado_data)
+        
+        centro_costo = db.session.query(kCentroCostos).filter_by(idCentroCosto = Empleado.idCentroCosto).first()
+        empleado_data["CentroCosto"] = centro_costo.Clave
 
         lista_empleados.append(empleado_data.copy())
     
@@ -77,8 +118,6 @@ def generar_altas_bajas_masivo_honorarios():
         NumQuincena = quincena.idQuincena
     else:
         NumQuincena = None
-
-    print(quincena)
 
     for idPersona in ListaEmpleados:
         reg_EmpleadoPuesto = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == int(idPersona)).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
@@ -120,12 +159,43 @@ def generar_altas_bajas_masivo_honorarios():
             "ConservaVacaciones": None,
             "idEstatusEP": 1
         }
-        print(EmpleadoPuesto_data)
 
         nuevo_EmpleadoPuesto = rEmpleadoPuesto(**EmpleadoPuesto_data)
         db.session.add(nuevo_EmpleadoPuesto)
 
         reg_EmpleadoPuesto.Empleado.Activo = 1
+
+        # Calcular último id guardado para el movimiento de baja de empleado
+        ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento=3).scalar()
+        if ultimo_id_movimiento is None:
+            idMovimientoEmpleado = 1
+        else:
+            idMovimientoEmpleado = ultimo_id_movimiento + 1
+
+        # Calcular último id guardado para la bitacora de baja de empleado
+        ultimo_idBitacora = db.session.query(func.max(tBitacora.idBitacora)).scalar()
+        if ultimo_idBitacora is None:
+            idBitacora = 1
+        else:
+            idBitacora = ultimo_idBitacora + 1
+
+        Periodo = datetime.now().year
+
+        nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
+                                               idTipoMovimiento=3,
+                                               idPersonaMod=idPersona,
+                                               idTipoEmpleado=1,
+                                               idUsuario=current_user.idPersona,
+                                               idQuincena=NumQuincena,
+                                               Periodo=Periodo)
+        
+        db.session.add(nuevo_movimiento)
+        
+        nueva_bitacora = tBitacora(idBitacora=idBitacora,
+                               idTipoMovimiento=3,
+                               idUsuario=current_user.idPersona)
+        
+        db.session.add(nueva_bitacora)
 
         db.session.commit()
 
