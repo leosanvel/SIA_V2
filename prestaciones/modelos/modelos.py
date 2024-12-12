@@ -76,3 +76,29 @@ class rUsuarioConcepto(db.Model):
         for attr, value in kwargs.items():
             if hasattr(self, attr):
                 setattr(self, attr, value)
+
+class rEmpleadoPensiones(db.Model):
+    __tablename__ = "rempleadopensiones"
+    __bind_key__ = 'db2'
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    idEmpleadoPensiones = db.Column(db.Integer, primary_key = True)
+    idPersona = db.Column(db.Integer, nullable = False)
+    NombreBeneficiario = db.Column(db.String(150), nullable = False)
+    RFC = db.Column(db.String(13), nullable = False)
+    ClabeBancaria = db.Column(db.String(18), nullable = False)
+    Observaciones = db.Column(db.Text, nullable = False)
+
+    def __init__(self, idEmpleadoPensiones, idPersona, NombreBeneficiario, RFC, ClabeBancaria, Observaciones):
+        self.idEmpleadoPensiones = idEmpleadoPensiones
+        self.idPersona = idPersona
+        self.NombreBeneficiario = NombreBeneficiario
+        self.RFC = RFC
+        self.ClabeBancaria = ClabeBancaria
+        self.Observaciones = Observaciones
+
+    # Actualizar Registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)

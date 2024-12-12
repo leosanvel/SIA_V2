@@ -1,0 +1,131 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+
+<form id="frmBuscarPensionesEmpleado">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group datepicker-group" id="NumEmpGrupo">
+                <label for="lblNumEmp">No. Empleado</label>
+                <input id="NumeroBuscarEmpleado" name="NumeroBuscarEmpleado"
+                    class="form-control botonModalBuscaEmpleado obligatorio" type="text" readonly>
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="row">
+    <table class="table table-striped" id="tablaEmpleadoSeleccionado" style="display: none;">
+        <tr>
+            <th colspan="3">EMPLEADO SELECCIONADO</th> 
+            <th>
+                <button type="button" class="close" aria-label="Close" onclick="cerrarTabla()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </th>
+        </tr>
+        <tr>
+            <th>No. Empleado:</th>
+            <th>CURP:</th>
+            <th>Nombre(s):</th>
+            <th>Apellidos</th>
+        </tr>
+        <tr>
+            <input type="hidden" id="idPersona" name="idPersona" value="">
+            <td id="NumeroEmpleado"></td>
+            <td id="CurpEmpleado"></td>
+            <td id="NombreEmpleado"></td>
+            <td id="ApellidosEmpleado"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+
+<form id="formularioPension" style="display: none;">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="lblNombreBeneficiario">Nombre del beneficiario<span id="ANombreBeneficiario"class="form-text">*</span>:</label>
+                <input type="text" id="NombreBeneficiario" name="NombreBeneficiario" class="obligatorio form-control">
+                <small id="ENombreBeneficiario" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="lblRFC">RFC<span id="ARFC"class="form-text">*</span>:</label>
+                <input type="text" id="RFC" name="RFC" class="obligatorio form-control RFC">
+                <small id="ERFC" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="lblClabeBancaria">Clabe bancaria<span id="AClabeBancaria"class="form-text">*</span>:</label>
+                <input type="text" id="ClabeBancaria" name="ClabeBancaria" class="obligatorio form-control" maxlength="18">
+                <small id="EClabeBancaria" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="lblObservaciones">Observaciones<span id="AObservaciones"class="form-text">*</span>:</label>
+                <textarea id="Observaciones" name="Observaciones" class="form-control obligatorio" rows="3" style="resize: none;"></textarea>
+                <small id="ECObservaciones" class="etiquetaError form-text form-text-error"></small>
+            </div>
+        </div>
+    </div>
+    <div class="row pull-right">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button class="btn btn-primary" type="button" id="btnGuardaPension">
+                    Guardar
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-floppy"></i></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="form-group">
+    <small id="EResultadoPensiones" class="etiquetaError form-text form-text-error"></small>
+</div>
+<div class="row">
+    <div class="table-responsive" style="width: 100%;">
+        <table class="table table-striped" id="tablaResultadosPensiones" style="display: none;">
+            <thead>
+                <tr>
+                    <th colspan="7">RESULTADOS DE LA BÚSQUEDA:</th>
+                </tr>
+
+                <tr>
+                    <th>Núm. Empleado</th>
+                    <th>Nombre Beneficiario</th>
+                    <th>RFC</th>
+                    <th>Clabe</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se agregarán las filas de resultados de empleados -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('gestion_empleados.static', filename='scripts/empleado.js') }}"></script>
+<script src="{{ url_for('prestaciones.static', filename='scripts/pensiones.js') }}"></script>
+{% endblock %}
