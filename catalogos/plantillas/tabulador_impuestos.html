@@ -1,0 +1,70 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <form id="formularioTabuladorImpuestos">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblNAnioFiscal">Año<span id="AAnioFiscal" class="form-text">*</span>:</label>
+                    <select id="AnioFiscal" name="AnioFiscal" class="obligatorio form-control">
+                        {% for row in AnioFiscal %}
+                            <option value="{{row.idAnioFiscal}}">{{row.AnioFiscal}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive" style="width: 100%;">
+                <table class="table table-striped" id="tablaTabuladorImpuestos">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Límite Inferior</th>
+                            <th>Límite Superior</th>
+                            <th>Cuota Fija</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in range(11) %}
+                        <tr>
+                            <td>{{fila + 1}}</td>
+                            <td>
+                                <div class="form-group">
+                                    <input type="number" step="0.01" class="form-control obligatorio" id="LimiteInferior{{fila + 1}}" name="LimiteInferior{{fila + 1}}" style="width: 200px;">
+                                </div>
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" class="form-control" id="LimiteSuperior{{fila + 1}}" name="LimiteSuperior{{fila + 1}}" style="width: 200px;">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" class="form-control" id="CuotaFija{{fila + 1}}" name="CuotaFija{{fila + 1}}" style="width: 200px;">
+                            </td>
+                            <td>
+                                <input type="number" step="0.01" class="form-control" id="Porcentaje{{fila + 1}}" name="Porcentaje{{fila + 1}}" style="width: 200px;">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="pull-right form-group">
+                    <button class="btn btn-primary" type="button" id="btnGuardarTabuladorImpuestos">
+                        Guardar
+                        <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-floppy"></i></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/tabulador_impuestos.js')}}"></script>
+{% endblock %}

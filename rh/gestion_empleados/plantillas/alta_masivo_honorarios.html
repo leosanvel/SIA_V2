@@ -5,13 +5,42 @@
         <div class="row">
             <div class="col-md-4">
                 <div class="form-group">
-                    <label for="lblBusqueda">Ingrese nombre, número de empleado o centro de costos<span id="ABusqueda">*</span>:</label>
+                    <label for="lblOpcion">Seleccione una opción<span id="AOpcion">*</span>:</label>
+                    <select id="Opcion" name="Opcion" class="obligatorio form-control">
+                        <option value="1">Alta</option>
+                        <option value="2">Baja</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="lblBusqueda">Nombre, número de empleado o centro de costos<span id="ABusqueda">*</span>:</label>
                     <input type="text" id="Busqueda" name="Busqueda" class="form-control obligatorio">
                     <small id="EBusqueda" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="form-group">
+        </div>
+        <div class="row" id="Fechas" style="display: none;">
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaInicio">Fecha Inicio<span id="AFechaInicio" class="form-text">*</span>:</label>
+                    <input type="text" id="FechaInicio" name="FechaInicio" class="form-control fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaInicio" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblFechaFin">Fecha Fin<span id="AFechaFin" class="form-text">*</span>:</label>
+                    <input type="text" id="FechaFin" name="FechaFin" class="form-control fecha">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EFechaFin" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group pull-right">
                     <button type="button" class="btn btn-primary" id="btnBusqueda">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                         Buscar
@@ -28,31 +57,35 @@
                 </div>
                 <div class="pull-right form-group">
                     <button class="btn btn-primary" type="button" id="btnGenerarAltas" style="display: none;">
-                        Generar altas
+                        Generar
                     </button>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="table-responsive" style="width: 100%;">
-                <table class="table table-striped" id="tablaEmpleadosHonorariosInactivos" style="display: none;">
-                    <thead>
-                        <tr>
-                            <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
-                        </tr>
-                        <tr>
-                            <th>Seleccionar</th>
-                            <th>Num. Empleado</th>
-                            <th>Nombre</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Aquí se agregarán las filas de resultados de empleados -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </form>
+    <div class="form-group">
+        <small id="EResultadoEmpleadosHonorarios" class="etiquetaError form-text form-text-error"></small>
+    </div>
+    <div class="row">
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table table-striped" id="tablaEmpleadosHonorariosInactivos" style="display: none;">
+                <thead>
+                    <tr>
+                        <th colspan="6">RESULTADOS DE LA BÚSQUEDA:</th>
+                    </tr>
+                    <tr>
+                        <th>Seleccionar</th>
+                        <th>Num. Empleado</th>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán las filas de resultados de empleados -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
 </div>
 {% endblock %}
 

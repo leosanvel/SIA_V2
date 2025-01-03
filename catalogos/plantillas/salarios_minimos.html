@@ -1,0 +1,55 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <form id="formularioSalariosMinimos">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblNAnioFiscal">Año<span id="AAnioFiscal" class="form-text">*</span>:</label>
+                    <select id="AnioFiscal" name="AnioFiscal" class="obligatorio form-control">
+                        {% for row in AnioFiscal %}
+                            <option value="{{row.idAnioFiscal}}">{{row.AnioFiscal}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblMontoDiario">Monto diario<span id="AMontoDiario" class="form-text">*</span>:</label>
+                    <input type="Number" step="0.01" id="MontoDiario" name="MontoDiario" class="form-control">
+                    <small id="EMontoDiario" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblMontoMensual">Monto mensual<span id="AMontoMensual" class="form-text">*</span>:</label>
+                    <input type="Number" step="0.01" id="MontoMensual" name="MontoMensual" class="form-control">
+                    <small id="EMontoMensual" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblMontoAnual">Monto anual<span id="AMontoAnual" class="form-text">*</span>:</label>
+                    <input type="Number" step="0.01" id="MontoAnual" name="MontoAnual" class="form-control">
+                    <small id="EMontoAnual" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="pull-right form-group">
+                <button class="btn btn-primary" type="button" id="btnGuardarSalariosMinimos">
+                    <!-- <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span> -->
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/salarios_minimos.js')}}"></script>
+{% endblock %}

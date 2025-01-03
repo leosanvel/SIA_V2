@@ -14,3 +14,7 @@ from . import dias_festivos
 from . import escuela
 from . import puestos
 from . import estado_civil
+from . import quincenas
+from . import anio_fiscal
+from . import tabulador_impuestos
+from . import salarios_minimos

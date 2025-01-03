@@ -821,7 +821,7 @@ class kQuincena(db.Model):
 
     def __init__(self, idQuincena, Quincena, FechaInicio, FechaFin, Descripcion):
         self.idQuincena = idQuincena
-        self,Quincena = Quincena
+        self.Quincena = Quincena
         self.FechaInicio = FechaInicio
         self.FechaFin = FechaFin
         self.Descripcion = Descripcion
@@ -1364,6 +1364,27 @@ class kLenguasIndigenas(db.Model):
         self.idLenguaIndigena = idLenguaIndigena
         self.LenguaIndigena = LenguaIndigena
         self.Activo = Activo
+
+    # Actualizar registro
+    def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            if hasattr(self, attr):
+                setattr(self, attr, value)
+
+class kuma(db.Model):
+    __tablename__ = "kuma"
+    __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
+
+    EjercicioFiscal = db.Column(db.Integer, primary_key = True)
+    MontoDiario = db.Column(db.Numeric(11, 2), nullable = False)
+    MontoMensual = db.Column(db.Numeric(11, 2), nullable = False)
+    MontoAnual = db.Column(db.Numeric(11, 2), nullable = False)
+
+    def __init__(self, EjercicioFiscal, MontoDiario, MontoMensual, MontoAnual):
+        self.EjercicioFiscal = EjercicioFiscal
+        self.MontoDiario = MontoDiario
+        self.MontoMensual = MontoMensual
+        self.MontoAnual = MontoAnual
 
     # Actualizar registro
     def update(self, **kwargs):

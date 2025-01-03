@@ -409,7 +409,7 @@ def revision_baja_empleados(idPersona = None, hoy = None):
             puesto.Empleado.Activo = 0
 
             # vaciar: rconcepto empleado
-            elimina_conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = puesto.idPersona).delete()
+            #elimina_conceptos_empleado = db.session.query(rEmpleadoConcepto).filter_by(idPersona = puesto.idPersona).delete()
 
             #Eliminar o conservar vacaciones
             if puesto.ConservaVacaciones != 1:

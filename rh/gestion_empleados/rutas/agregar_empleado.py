@@ -536,42 +536,46 @@ def guardar_conceptos():
         return jsonify({"guardado": False})
     else:
         Empleado = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
-        if Empleado.FecIngGobierno is not None:
-            FechaIngGob = Empleado.FecIngGobierno
-            FechaIngGob = datetime.combine(FechaIngGob, time())
-            FechaActual = datetime.today()
-
-            print(FechaIngGob, FechaActual)
-
-            anios = relativedelta(FechaActual, FechaIngGob).years
+        if Empleado.idTipoEmpleado == 1:
+            lista_idconceptos = ['1', '5']
+            lista_idtipo = ['D', 'P']
         else:
-            anios = 0
+            if Empleado.FecIngGobierno is not None:
+                FechaIngGob = Empleado.FecIngGobierno
+                FechaIngGob = datetime.combine(FechaIngGob, time())
+                FechaActual = datetime.today()
 
-        lista_idconceptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
-        lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
+                print(FechaIngGob, FechaActual)
 
-        if anios >= 5 and anios < 10:
-            lista_idconceptos.insert(1, 'A1')
-            lista_idtipo.insert(1, 'P')
-        if anios >=10 and anios < 15:
-            lista_idconceptos.insert(1, 'A2')
-            lista_idtipo.insert(1, 'P')
-        if anios >=15 and anios < 20:
-            lista_idconceptos.insert(1, 'A3')
-            lista_idtipo.insert(1, 'P')
-        if anios >=20 and anios < 25:
-            lista_idconceptos.insert(1, 'A4')
-            lista_idtipo.insert(1, 'P')
-        if anios >=25:
-            lista_idconceptos.insert(1, 'A5')
-            lista_idtipo.insert(1, 'P')
+                anios = relativedelta(FechaActual, FechaIngGob).years
+            else:
+                anios = 0
 
-        if Empleado.idTipoEmpleado == 2:
-            lista_idconceptos_aux = ['77', '95', '40', '34']
-            lista_idtipo_aux = ['P', 'P', 'P', 'P']
+            lista_idconceptos = ['7', 'CG', '38', '77D', '42A', '42B', '140', '199', '102', '1']
+            lista_idtipo = ['P', 'P', 'P', 'D', 'D', 'D', 'D', 'D', 'D', 'D']
 
-            lista_idconceptos = lista_idconceptos + lista_idconceptos_aux
-            lista_idtipo = lista_idtipo + lista_idtipo_aux
+            if anios >= 5 and anios < 10:
+                lista_idconceptos.insert(1, 'A1')
+                lista_idtipo.insert(1, 'P')
+            if anios >=10 and anios < 15:
+                lista_idconceptos.insert(1, 'A2')
+                lista_idtipo.insert(1, 'P')
+            if anios >=15 and anios < 20:
+                lista_idconceptos.insert(1, 'A3')
+                lista_idtipo.insert(1, 'P')
+            if anios >=20 and anios < 25:
+                lista_idconceptos.insert(1, 'A4')
+                lista_idtipo.insert(1, 'P')
+            if anios >=25:
+                lista_idconceptos.insert(1, 'A5')
+                lista_idtipo.insert(1, 'P')
+
+            if Empleado.idTipoEmpleado == 2:
+                lista_idconceptos_aux = ['77', '95', '40', '34']
+                lista_idtipo_aux = ['P', 'P', 'P', 'P']
+
+                lista_idconceptos = lista_idconceptos + lista_idconceptos_aux
+                lista_idtipo = lista_idtipo + lista_idtipo_aux
 
         nuevo_concepto = None
         datos_conceptos = {}

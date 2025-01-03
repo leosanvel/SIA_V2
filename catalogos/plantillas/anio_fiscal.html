@@ -1,0 +1,32 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <form id="formularioAnioFiscal">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group datepicker-group" style="z-index: 1;">
+                    <label for="lblAnioFiscal">Año<span id="AAnioFiscal" class="form-text">*</span>:</label>
+                    <input type="text" id="AnioFiscal" name="AnioFiscal" class="form-control obligatorio">
+                    <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>
+                    <small id="EAnioFiscal" class="etiquetaError form-text form-text-error"></small>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group pull-right">
+                <button class="btn btn-primary" type="button" id="btnGuardarAnioFiscal">
+                    <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-floppy"></i></span>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/anio_fiscal.js')}}"></script>
+{% endblock %}

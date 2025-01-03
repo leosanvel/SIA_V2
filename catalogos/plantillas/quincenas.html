@@ -1,0 +1,58 @@
+{% extends "plantilla_base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <form id="formularioQuincenas">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="lblNAnioFiscal">Año<span id="AAnioFiscal" class="form-text">*</span>:</label>
+                    <select id="AnioFiscal" name="AnioFiscal" class="obligatorio form-control">
+                        {% for row in AnioFiscal %}
+                            <option value="{{row.idAnioFiscal}}">{{row.AnioFiscal}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="pull-right form-group">
+                <button class="btn btn-primary" type="button" id="btnGenerarQuincenas">
+                    <!-- <span class="bootstrap-icons" aria-hidden="true"><i class="bi bi-search"></i></span> -->
+                    Generar
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <small id="EResultadosQuincenas" class="etiquetaError form-text form-text-error"></small>
+    </div>
+    <div class="row">
+        <div class="table-responsive" style="width: 100%;">
+            <table class="table table-striped" id="tablaResultadosQuincenas" style="display: none;">
+                <caption>
+                    RESULTADOS DE LA BÚSQUEDA:
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Quincena</th>
+                        <th>Fechas</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Final</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('catalogos.static', filename='scripts/quincenas.js')}}"></script>
+{% endblock %}
