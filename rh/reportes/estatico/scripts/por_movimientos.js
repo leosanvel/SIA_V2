@@ -1,7 +1,42 @@
 $gmx(document).ready(function(){
+    inicializar_anio();
+    obtener_quincenas();
     $("#btnGenerarReporte").click(generar_reporte);
     $("#Movimiento").change(function(){ sel_alta_o_baja(); });
+    $("#Periodo").change(function(){
+        obtener_quincenas();
+    });
 });
+
+function inicializar_anio(){
+    var hoy = new Date();
+    var anio = hoy.getFullYear();
+    $("#Periodo").val(anio);
+}
+
+function obtener_quincenas(){
+    AnioFiscal = $("#Periodo").val();
+    if($("#Periodo").val != ""){
+        $.ajax({
+            type: "POST",
+            url: "/rh/reportes/por-movimientos/obtener-quincenas",
+            data: {
+                AnioFiscal: AnioFiscal
+            },
+            success: function(data){
+                if(data.length > 0){
+                    $("EQuincena").text("");
+                    $("#Quincena").find('option').not(':first').remove();
+                    data.forEach(function(Quincena){
+                        $("#Quincena").append(new Option(Quincena.Descripcion, Quincena.idQuincena));
+                    });
+                }else{
+                    $("EQuincena").text("No hay quincenas disponibles.");
+                }
+            }
+        });
+    }
+}
 
 function generar_reporte(){
     if(validarFormulario($("#formularioPorMovimientos")).valido){
@@ -31,10 +66,8 @@ function sel_alta_o_baja(){
     if($("#Movimiento").val() == "1" || $("#Movimiento").val() == "2"){
         $("#NumEmpleado").show();
         $("#NumEmpleado").val("");
-        $("#NumeroBuscarEmpleado").addClass("obligatorio");
     }else{
         $("#NumEmpleado").hide();
         $("#NumEmpleado").val("");
-        $("#NumeroBuscarEmpleado").removeClass("obligatorio");
     }
 }
