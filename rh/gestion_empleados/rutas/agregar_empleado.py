@@ -44,13 +44,16 @@ def modificar_empleado():
             titulo = "Agrega empleado"
     empleado  = db.session.query(tPersona).filter_by(idPersona = idSelec).first()
 
+    hoy = datetime.now()
+
     # Catalogos para el empleado
     TipoPersona_datos = db.session.query(kTipoPersona).filter_by(Activo = 1,idTipoPersona = 1).order_by(kTipoPersona.idTipoPersona).all()
     EstCiv_datos = db.session.query(kEstadoCivil).filter_by(Activo = 1).order_by(kEstadoCivil.idEstadoCivil).all()
     Nacionalidad_datos = db.session.query(kNacionalidad).filter_by(Activo = 1).order_by(kNacionalidad.Nacionalidad).all()
     TipoEmpleado_datos = db.session.query(kTipoEmpleado).filter_by(Activo = 1).order_by(kTipoEmpleado.idTipoEmpleado).all()
     CentroCostos_datos = db.session.query(kCentroCostos).order_by(kCentroCostos.idCentroCosto).all()
-    Quincena_datos = db.session.query(kQuincena).order_by(kQuincena.idQuincena).all()
+    AnioFiscal = db.session.query(kAnioFiscal).all()
+    Quincena_datos = db.session.query(kQuincena).filter(func.extract('year', kQuincena.FechaInicio) == hoy.year).order_by(kQuincena.idQuincena).all()
     Escolaridad_datos = db.session.query(kEscolaridad).filter_by(Activo = 1).order_by(kEscolaridad.idEscolaridad).all()
     InstitucionEscolar = db.session.query(kInstitucionEscolar).filter_by(Activo = 1).order_by(kInstitucionEscolar.InstitucionEscolar).all()
     NivelEscolar = db.session.query(kNivelEscolar).filter_by(Activo = 1).order_by(kNivelEscolar.idNivel).all()
@@ -71,6 +74,7 @@ def modificar_empleado():
                            Nacionalidad = Nacionalidad_datos,
                            TipoEmpleado = TipoEmpleado_datos,
                            CentroCostos = CentroCostos_datos,
+                           AnioFiscal = AnioFiscal,
                            Quincena = Quincena_datos,
                            Escolaridad = Escolaridad_datos,
                            NivelEscolar = NivelEscolar,
@@ -86,6 +90,7 @@ def modificar_empleado():
 
 @gestion_empleados.route('/rh/gestion-empleados/guarda-empleado', methods = ['POST'])
 def guardar_empleado():
+    # Datos de formulario para guardar registro en tPersona
     mapeo_nombres_persona = { #NombreEnFormulario : nombreEnBase
         'CURP': 'CURP',
         'Nombre': 'Nombre',
@@ -124,6 +129,7 @@ def guardar_empleado():
         #'idEstatus': 'Activo',
     }
 
+    # Datos de formulario para guardar registro en rEmpleado
     mapeo_nombres_empleado = { #NombreEnFormulario : nombreEnBase
         'idTipoEmpleo': 'idTipoEmpleado',
         'idTipoAlta': 'idTipoAlta',
@@ -136,11 +142,14 @@ def guardar_empleado():
         'CorreoInstitucional': 'CorreoInstitucional'
     }
 
+    # Datos de formulario para guardar registro en rEmpleadoPuesto
     mapeo_nombres_empleado_puesto = { #NombreEnFormulario : nombreEnBase
         'idPlazaHom' : 'idPuesto',
-        'idUbicacion' : 'idUbicacion'
+        'idUbicacion' : 'idUbicacion',
+        'NumQuincena' : 'idQuincenaInicio'
     }
 
+    # Datos de formulario para guardar registro en rPersonaEscolaridad
     mapeo_nombres_escolaridad = { #NombreEnFormulario : nombreEnBase
         'idEscolaridad': 'idEscolaridad',
         'idNivelEscolaridad': 'idNivelEscolaridad',
@@ -181,13 +190,13 @@ def guardar_empleado():
         empleado_data['FecIngFonaes'] = None
 
     try:
+        # Existe el empleado en la DB
         persona_existente = db.session.query(tPersona).filter_by(idPersona = idPersona).one()
         empleado_existente = db.session.query(rEmpleado).filter_by(idPersona = idPersona).first()
         escolaridad_existente = db.session.query(rPersonaEscolaridad).filter_by(idPersona = idPersona).first()
         empleado_puesto_existente = db.session.query(rEmpleadoPuesto).filter_by(idPersona = idPersona).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
         existe = 1
-        TipoEmpleado = empleado_existente.idTipoEmpleado
-        # Si llegamos aquí, significa que ya existe un empleado
+
         # Envía correo correspondiente
         if not(empleado_existente.Activo == int(empleado_data["Activo"])):
             if(int(empleado_data["Activo"]) == 1):
@@ -196,10 +205,6 @@ def guardar_empleado():
                 correo_enviado = True
             
         print("Actualiza")
-
-        empleado_data["idTipoEmpleado"] = empleado_existente.idTipoEmpleado
-        empleado_data["idTipoAlta"] = empleado_existente.idTipoAlta
-        empleado_data["idGrupo"] = empleado_existente.idGrupo
 
         persona_data["idPersona"] = idPersona
         persona_existente.update(**persona_data)
@@ -214,7 +219,7 @@ def guardar_empleado():
             empleado_puesto_data['idCausaBaja'] = None
             empleado_puesto_data['Observaciones'] = None
             empleado_puesto_data['FechaEfecto'] = None
-            empleado_puesto_data['idQuincena'] = None
+            empleado_puesto_data['idQuincenaFinal'] = None
             empleado_puesto_data['ConservaVacaciones'] = 1
 
             if TipoEmpleado == 1:
@@ -223,6 +228,7 @@ def guardar_empleado():
                 empleado_puesto_data['CodigoPuestoSIA'] = None
                 empleado_puesto_data['RHNETSIA'] = None
                 Nivel = db.session.query(tPuestoHonorarios.idPlazaHomologadaNivel).filter_by(idPuestoHonorarios = empleado_puesto_data["idPuesto"]).scalar()
+                empleado_puesto_data["CodigoPuesto"] = None
                 if Nivel is not None:
                     empleado_puesto_data['idNivel'] = Nivel
                 else:
@@ -236,28 +242,35 @@ def guardar_empleado():
                 empleado_puesto_data['CodigoPuestoSIA'] = None
                 empleado_puesto_data['RHNETSIA'] = None
                 Nivel = db.session.query(tPuesto.idNivel).filter_by(ConsecutivoPuesto = empleado_puesto_data["idPuesto"]).scalar()
+                CodigoPuesto = db.session.query(tPuesto.CodigoPuesto).filter_by(ConsecutivoPuesto = empleado_puesto_data["idPuesto"]).scalar()
                 if Nivel is not None:
                     empleado_puesto_data['idNivel'] = Nivel
                 else:
                     empleado_puesto_data['idNivel'] = None
+
+                if CodigoPuesto is not None:
+                    empleado_puesto_data["CodigoPuesto"] = CodigoPuesto
+                else:
+                    empleado_puesto_data["CodigoPuesto"] = None
+
                 empleado_puesto_data['idCentroCosto'] = request.form.get("idCC")
 
+            print(empleado_puesto_data)
             nuevo_empleado_puesto = rEmpleadoPuesto(**empleado_puesto_data)
             db.session.add(nuevo_empleado_puesto)
         
             db.session.commit()
             #nuevo_empleado_puesto.Puesto.idEstatusPuesto = 1
+            TipoMovimiento = 1
         else:
             empleado_puesto_existente.idUbicacion = empleado_puesto_data["idUbicacion"]
+            TipoMovimiento = 2
 
         # Actualizar los atributos de 'empleado_existente' con los valores de 'empleado_data'
         #for attr, value in persona_data.items():
         #    if not attr.startswith('_') and hasattr(empleado_existente, attr):
         #        setattr(empleado_existente, attr, value)
         respuesta["NumeroEmpleado"] = None
-
-        TipoMovimiento = 2
-    
 
     except NoResultFound:
         # Obtener el último valor de idPersona de la tabla de empleados y sumarle 1
@@ -345,19 +358,35 @@ def guardar_empleado():
     print(empleado_data)
     print(empleado_puesto_data)
 
-    ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento = TipoMovimiento).scalar()
-    if ultimo_id_movimiento is None:
-        idMovimientoEmpleado = 1
+    # Calcular el último id Movimiento de la quincena
+    ultimo_id_movimiento_quincena = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter(rMovimientoEmpleado.idQuincena == empleado_puesto_data["idQuincenaInicio"]).scalar()
+    # Si no hay movimiento previo de la quincena seleccionada
+    if ultimo_id_movimiento_quincena is None:
+        # Se inicia en 1
+        idMovimientoEmpleadoQuincena = 1
     else:
-        idMovimientoEmpleado = ultimo_id_movimiento + 1
+        # Se toma el último movimiento de quincena y se agrega 1
+        idMovimientoEmpleadoQuincena = ultimo_id_movimiento_quincena + 1
 
-    nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleado,
-                                           idTipoMovimiento=TipoMovimiento,
-                                           idPersonaMod=idPersona,
-                                           idTipoEmpleado=TipoEmpleado,
-                                           idUsuario=current_user.idPersona,
-                                           idQuincena=empleado_data["idQuincena"],
-                                           Periodo=Periodo)
+    # Calcular el último id Movimimiento del año
+    ultimo_id_movimiento_anual = db.session.query(func.max(rMovimientoEmpleado.idMovimientoAnual)).filter(rMovimientoEmpleado.Periodo == request.form.get["AnioFiscal"]).scalar()
+    # Si no hay movimiento previo del año seleccionado
+    if ultimo_id_movimiento_anual is None:
+        # Se inicia en 1
+        idMovimientoAnual = 1
+    else:
+        # Se toma el último movimiento del año y se agrega 1
+        idMovimientoAnual = ultimo_id_movimiento_anual + 1
+
+    if TipoMovimiento != 2:
+        nuevo_movimiento = rMovimientoEmpleado(idMovimientoEmpleado=idMovimientoEmpleadoQuincena,
+                                               idMovimientoAnual=idMovimientoAnual,
+                                               idTipoMovimiento=TipoMovimiento,
+                                               idPersonaMod=idPersona,
+                                               idTipoEmpleado=TipoEmpleado,
+                                               idUsuario=current_user.idPersona,
+                                               idQuincena=empleado_data["idQuincena"],
+                                               Periodo=Periodo)
     
     db.session.add(nuevo_movimiento)
 

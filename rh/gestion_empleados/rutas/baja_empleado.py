@@ -112,7 +112,7 @@ def dar_baja_empleado():
         empleadoPuesto.Observaciones = Observaciones
         empleadoPuesto.FechaEfecto = FechaEfectoFormateado
 
-        empleadoPuesto.idQuincena = NumQuincena
+        empleadoPuesto.idQuincenaFinal = NumQuincena
 
         if checkboxConservarVacaciones is not None:
             empleadoPuesto.ConservaVacaciones = 1
@@ -120,7 +120,8 @@ def dar_baja_empleado():
             empleadoPuesto.ConservaVacaciones = 0
 
 
-        ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).filter_by(idTipoMovimiento=3).scalar()
+        ultimo_id_movimiento = db.session.query(func.max(rMovimientoEmpleado.idMovimientoEmpleado)).scalar()
+        print(ultimo_id_movimiento)
         if ultimo_id_movimiento is None:
             idMovimientoEmpleado = 1
         else:

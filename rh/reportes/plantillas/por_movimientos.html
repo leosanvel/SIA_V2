@@ -94,6 +94,15 @@
                     <small id="ENumEmp" class="etiquetaError form-text form-text-error"></small>
                 </div>
             </div>
+            <div class="col-md-4" id="TipoArchivo">
+                <div class="form-group">
+                    <label for="lblTipoArchivo">Tipo archivo a generar<span id="ATipoArchivo" class="form-text"></span>:</label>
+                    <select id="TipoArchivo" name="TipoArchivo" class="obligatorio form-control">
+                        <option value="1">Excel</option>
+                        <option value="2">PDF</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -106,6 +115,61 @@
             </div>
         </div>
     </form>
+
+    <div class="form-group">
+        <small id="EResultadoInformacionPrevia" class="etiquetaError form-text form-text-error"></small>
+    </div>
+    <div class="row">
+        <div class="table-responsive" style="width: 100;">
+            <table class="table table-striped" id="TablaResultadosMovimientos" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>No. Empleado</th>
+                        <th>RFC</th>
+                        <th>CURP</th>
+                        <th>Nombre</th>
+                        <th>No. Mov.</th>
+                        <th>Mov.</th>
+                        <th>Plaza</th>
+                        <th>No. Plaza</th>
+                        <th>Nivel</th>
+                        <th>C.C. Origen</th>
+                        <th>Tipo Plaza</th>
+                        <th>Puesto</th>
+                        <th>Efectos a partir de:</th>
+                        <th>C.C. Propuesto</th>
+                        <th>Centro de Costos</th>
+                        <th>Causa de Baja</th>
+                        <th>Grupo</th>
+                        <th>Observaciones</th>
+                    </tr>
+                    <tr>
+                        <th><input type="text" class="form-control filtro-col" data-col="0" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="1" style="width: 170px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="2" style="width: 230px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="3" style="width: 370px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="4" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="5" style="width: 50px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="6" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="7" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="8" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="9" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="10" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="11" style="width: 300px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="12" style="width: 130px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="13" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="14" style="width: 300px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="15" style="width: 300px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="16" style="width: 75px;"></th>
+                        <th><input type="text" class="form-control filtro-col" data-col="17" style="width: 150px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--Agregar información por script-->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

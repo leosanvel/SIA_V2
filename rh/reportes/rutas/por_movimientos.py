@@ -4,16 +4,16 @@ import openpyxl.workbook
 from datetime import datetime, date, time
 import os
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import func
+from sqlalchemy import func, and_
 import zipfile
 from io import BytesIO
 import xlwings as xw
 
 from .reportes import reportes
 from app import db
-from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rMovimientoEmpleado, tPuestoHonorarios
+from rh.gestion_empleados.modelos.empleado import rEmpleadoPuesto, rMovimientoEmpleado, tPuestoHonorarios, tPuesto
 from rh.gestion_empleados.modelos.domicilio import rDomicilio
-from catalogos.modelos.modelos import kCentroCostos, kQuincena, kTipoEmpleado, kAnioFiscal, kEntidad, kMunicipio
+from catalogos.modelos.modelos import kCentroCostos, kQuincena, kTipoEmpleado, kAnioFiscal, kEntidad, kMunicipio, kCausaBaja
 from general.herramientas.funciones import calcular_quincena
 
 @reportes.route("/rh/reportes/por-movimientos", methods = ["POST", "GET"])
@@ -41,6 +41,110 @@ def obtener_quincenas():
 
     return jsonify(lista_quincenas)
 
+@reportes.route("/rh/reportes/por-movimientos/obtener-informacion-movimientos", methods = ["POST"])
+def obtener_informacion_movimientos():
+    TipoMovimiento = request.form.get("Movimiento")
+    quincena = request.form.get("Quincena")
+    TipoEmpleado = request.form.get("TipoEmpleado")
+    idPersona = request.form.get("idPersona")
+    Periodo = request.form.get("Periodo")
+
+    lista_informacion = []
+    informacion = {}
+
+    todos = db.session.query(rMovimientoEmpleado).filter(rMovimientoEmpleado.idQuincena == quincena, rMovimientoEmpleado.idTipoEmpleado == TipoEmpleado)
+
+    if int(TipoMovimiento) == 1:
+        todos = todos.filter(rMovimientoEmpleado.idTipoMovimiento == 1)
+    elif int(TipoMovimiento) == 2:
+        todos = todos.filter(rMovimientoEmpleado.idTipoMovimiento == 3)
+
+    todos = todos.all()
+
+    for movimiento in todos:
+        empleado = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == movimiento.idPersonaMod)
+        if movimiento.idTipoMovimiento == 1:
+            empleado = empleado.filter(rEmpleadoPuesto.idQuincenaInicio == movimiento.idQuincena)
+        elif movimiento.idTipoMovimiento == 3:
+            empleado = empleado.filter(rEmpleadoPuesto.idQuincenaFinal == movimiento.idQuincena)
+        empleado = empleado.first()
+        if empleado:
+            if empleado.Empleado:
+                idTipoEmpleado = empleado.Empleado.idTipoEmpleado
+                informacion["NumEmpleado"] = empleado.Empleado.NumeroEmpleado
+                informacion["RFC"] = empleado.Empleado.Persona.RFC
+                informacion["CURP"] = empleado.Empleado.Persona.CURP
+                informacion["Nombre"] = empleado.Empleado.Persona.ApPaterno + " " + empleado.Empleado.Persona. ApMaterno + " " +    empleado.Empleado.Persona.Nombre
+                informacion["NumMovimiento"] = movimiento.idMovimientoEmpleado
+
+                if movimiento.idTipoMovimiento == 1 or movimiento.idTipoMovimiento == 2:
+                    informacion["Movimiento"] = "A"
+                elif movimiento.idTipoMovimiento == 3:
+                    informacion["Movimiento"] = "B"
+
+                if idTipoEmpleado == 2:
+                    filtros = [tPuesto.ConsecutivoPuesto == empleado.idPuesto]
+                    if empleado.CodigoPuesto != "":
+                        filtros.append(tPuesto.CodigoPuesto == empleado.CodigoPuesto)
+                    Puesto = db.session.query(tPuesto).filter(and_(*filtros)).first()
+                    if Puesto:                        
+                        informacion["Plaza"] = ""
+                        informacion["NumPlaza"] = ""
+                        informacion["NivelSalarial"] = Puesto.NivelSalarial
+                        informacion["CCOrigen"] = ""
+                        informacion["TipoPlaza"] = Puesto.idTipoPlazaPuesto
+                        informacion["Puesto"] = Puesto.Puesto
+
+                        if movimiento.idTipoMovimiento == 1 or movimiento.idTipoMovimiento == 2:
+                            informacion["FechaEfecto"] = empleado.FechaInicio
+                        elif movimiento.idTipoMovimiento == 3:
+                            informacion["FechaEfecto"] = empleado.FechaEfecto
+
+                        informacion["CCPropuesto"] = ""
+                        informacion["CentroCosto"] = Puesto.CentroCostos.CentroCosto
+                        informacion["Grupo"] = Puesto.idGrupo
+                    else:
+                        print(f"No hay registro en tPuesto, idPersona: {empleado.idPersona}, Puesto: {empleado.Puesto}")
+                else:
+                    Puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleado.idPuesto).first()
+                    if Puesto:
+                        CentroCosto = db.session.query(kCentroCostos).filter_by(idCentroCosto = empleado.idCentroCosto).first   ()
+                        informacion["Plaza"] = ""
+                        informacion["NumPlaza"] = ""
+                        informacion["NivelSalarial"] = Puesto.Nivel
+                        informacion["CCOrigen"] = ""
+                        informacion["TipoPlaza"] = ""
+                        informacion["Puesto"] = Puesto.PuestoHonorarios
+
+                        if movimiento.idTipoMovimiento == 1 or movimiento.idTipoMovimiento == 2:            
+                            informacion["FechaEfecto"] = empleado.FechaInicio
+                        elif movimiento.idTipoMovimiento == 3:
+                            informacion["FechaEfecto"] = empleado.FechaEfecto
+
+                        informacion["CCPropuesto"] = ""
+                        informacion["CentroCosto"] = CentroCosto.CentroCosto
+                        informacion["Grupo"] = ""
+                    else:
+                        print(f"No hay registro en tPuestoHonorarios, idPersona: {empleado.idPersona}, Puesto: {empleado.Puesto}")
+
+            else:
+                print("No hay registro en rEmpleado, idPersona: ", empleado.idPersona)
+
+            CausaBaja = db.session.query(kCausaBaja).filter_by(idCausaBaja = empleado.idCausaBaja).first()
+            if CausaBaja:
+                informacion["CausaBaja"] = CausaBaja.CausaBaja
+            else:
+                informacion["CausaBaja"] = ""
+
+            informacion["Observaciones"] = empleado.Observaciones
+
+            lista_informacion.append(informacion.copy())
+
+        else:
+            print("No hay registro en rEmpleadoPuesto, idPersona: ", movimiento.idPersonaMod)
+        
+    return jsonify(lista_informacion)
+
 @reportes.route("/rh/reportes/generar_reporte_por_movimiento", methods = ["POST"])
 def generar_reporte():
     movimiento = request.form.get("Movimiento")
@@ -48,6 +152,7 @@ def generar_reporte():
     TipoEmpleado = request.form.get("TipoEmpleado")
     idPersona = request.form.get("idPersona")
     Periodo = request.form.get("Periodo")
+    TipoArchivo = request.form.get("TipoArchivo")
 
     respuesta = True
     lista_archivos = []
@@ -77,7 +182,7 @@ def generar_reporte():
         #empleado_alta = None
         for empleado_alta in lista_empleados:
             if empleado_alta:
-                empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_alta.idPersonaMod).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
+                empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_alta.idPersonaMod, idQuincenaInicio = quincena).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
                 domicilio = db.session.query(rDomicilio).filter_by(idPersona = empleado_alta.idPersonaMod, idTipoDomicilio = 1).first()
 
                 nombre_archivo = "Nombramiento_" + str(empleado.Empleado.NumeroEmpleado)+ '_' + str(quincena) + ".xlsx"
@@ -174,7 +279,7 @@ def generar_reporte():
                                     plantilla[i, j + 1].value = datos_a_escribir[celda]
 
                         #nombre_archivo = "Nombramiento_" + str(empleado.Empleado.NumeroEmpleado)+ '_' + str(quincena) + ".xlsx"
-                        
+
                         plantilla.api.ExportAsFixedFormat(0, ruta_pdf)
                         wb.save("rh/reportes/archivos/movimientos/" + nombre_archivo)
                         wb.close()
@@ -182,8 +287,11 @@ def generar_reporte():
 
                 else:
                     print("El archivo existe")
-
-                lista_archivos.append(nombre_archivo_pdf)
+                
+                if TipoArchivo == "1":
+                    lista_archivos.append(nombre_archivo)
+                elif TipoArchivo == "2":
+                    lista_archivos.append(nombre_archivo_pdf)
 
             else:
                 respuesta = False
@@ -196,7 +304,7 @@ def generar_reporte():
 
         for empleado_baja in lista_empleados:
             if empleado_baja:
-                empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_baja.idPersonaMod).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
+                empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_baja.idPersonaMod, idQuincenaFinal = quincena).order_by(rEmpleadoPuesto.FechaInicio.desc()).first()
 
                 nombre_archivo = "Baja_" + str(empleado.Empleado.NumeroEmpleado) + "_" + str(quincena) + ".xlsx"
                 nombre_archivo_pdf = "Baja_" + str(empleado.Empleado.NumeroEmpleado) + "_" + str(quincena) + ".pdf"
@@ -262,7 +370,10 @@ def generar_reporte():
                 else:
                     print("El archivo existe")
             
-                lista_archivos.append(nombre_archivo_pdf)
+                if TipoArchivo == "1":
+                    lista_archivos.append(nombre_archivo)
+                elif TipoArchivo == "2":
+                    lista_archivos.append(nombre_archivo_pdf)
 
             else:
                 respuesta = False
@@ -313,7 +424,13 @@ def generar_reporte():
             plantilla_wb = xw.Book("rh/reportes/archivos/PLANTILLA REPORTE DE MOVIMIENTOS.xlsx")
             plantilla = plantilla_wb.sheets[0]  
             for empleado_comb in todos:
-                empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_comb.idPersonaMod).first()
+                empleado = db.session.query(rEmpleadoPuesto).filter(rEmpleadoPuesto.idPersona == empleado_comb.idPersonaMod)
+                if empleado_comb.idTipoMovimiento == 1:
+                    empleado = empleado.filter(rEmpleadoPuesto.idQuincenaInicio == empleado_comb.idQuincena)
+                elif empleado_comb.idTipoMovimiento == 3:
+                    empleado = empleado.filter(rEmpleadoPuesto.idQuincenaFinal == empleado_comb.idQuincena)
+                empleado = empleado.first()
+                #empleado = db.session.query(rEmpleadoPuesto).filter_by(idPersona = empleado_comb.idPersonaMod).first()
                 idTipoEmpleado = empleado.Empleado.idTipoEmpleado
                 if empleado:
                     plantilla["A" + str(6 + cont)].value = cont
@@ -328,6 +445,7 @@ def generar_reporte():
                     elif empleado_comb.idTipoMovimiento == 3:
                         plantilla["H" + str(6 + cont)].value = "B"
                     if idTipoEmpleado == 2:
+                        print(empleado)
                         plantilla["I" + str(6 + cont)].value = ""
                         plantilla["J" + str(6 + cont)].value = ""
                         plantilla["K" + str(6 + cont)].value = empleado.Puesto.NivelSalarial
@@ -339,7 +457,7 @@ def generar_reporte():
                         plantilla["Q" + str(6 + cont)].value = empleado.Puesto.CentroCostos.CentroCosto
                     else:
                         Puesto = db.session.query(tPuestoHonorarios).filter_by(idPuestoHonorarios = empleado.idPuesto).first()
-                        CentroCosto = db.session.query(kCentroCostos).filter_by(idCentroCosto = empleado.idCentroCosto).first   ()
+                        CentroCosto = db.session.query(kCentroCostos).filter_by(idCentroCosto = empleado.idCentroCosto).first()
                         plantilla["I" + str(6 + cont)].value = ""
                         plantilla["J" + str(6 + cont)].value = ""
                         plantilla["K" + str(6 + cont)].value = Puesto.Nivel
@@ -367,7 +485,10 @@ def generar_reporte():
         else:
             print("El archivo ya existe")
 
-        lista_archivos.append(nombre_archivo_pdf)
+        if TipoArchivo == "1":
+            lista_archivos.append(nombre_archivo)
+        elif TipoArchivo == "2":
+            lista_archivos.append(nombre_archivo_pdf)
 
     if len(lista_archivos) > 1:
         print("Es > 1")
@@ -388,7 +509,7 @@ def generar_reporte():
         archivo_generado = ""
 
     else:
-        print("Es < 1")
+        print("Es == 1")
         archivo_generado = lista_archivos[0]
 
     return jsonify({"url_descarga": url_for("reportes.descargar_reporte", nombre_archivo=archivo_generado), "respuesta": respuesta})

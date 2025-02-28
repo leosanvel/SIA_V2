@@ -33,7 +33,15 @@ def obtener_info_empleado():
             idCentroCosto = empleadopuesto_datos.idCentroCosto
             Puesto = Puesto.PuestoHonorarios
 
-        idQuincena = empleadopuesto_datos.Empleado.idQuincena
+        if empleadopuesto_datos.idQuincenaInicio is not None:
+            idQuincena = empleadopuesto_datos.idQuincenaInicio
+        else:
+            idQuincena = 0
+        if idQuincena != 0:
+            Quincena = db.session.query(kQuincena).filter(kQuincena.idQuincena == idQuincena).first()
+            AnioFiscal = Quincena.FechaInicio.year
+        else:
+            AnioFiscal = datetime.now().year
         persona_data = empleadopuesto_datos.Empleado.Persona
         empleado_data = empleadopuesto_datos.Empleado
         puesto_data = empleadopuesto_datos.Puesto
@@ -51,6 +59,7 @@ def obtener_info_empleado():
             puesto_data_dict.pop("_sa_instance_state", None)
         empleado_datos = {**persona_data_dict, **empleado_data_dict, **empleadopuesto_datos_dict, 'idCentroCosto': idCentroCosto, 'Puesto': Puesto}
         empleado_datos["idQuincena"] = idQuincena
+        empleado_datos["AnioFiscal"] = AnioFiscal
 
         print(empleado_datos)
     return jsonify(empleado_datos)

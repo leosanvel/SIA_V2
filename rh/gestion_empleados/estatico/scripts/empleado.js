@@ -510,8 +510,20 @@ $gmx(document).ready(function () {
     $("#btnMostrarFilaInstitucionEscolar").click(mostrarFilaAgregarInstitucionEscolar);
     $("#btnOcultarFilaInstitucionEscolar").click(ocultarFilaAgregarInstitucionEscolar);
     $("#btnGuardarInstitucionEscolar").click(guardarInstitucionEscolar);
+
+    inicializar_anio();
+
+    $("#AnioFiscal").change(function(){
+        obtener_quincenas();;
+    });
     
 });
+
+function inicializar_anio(){
+    var hoy = new Date();
+    var anio = hoy.getFullYear();
+    $("#AnioFiscal").val(anio);
+}
 
 function mostrarFilaAgregarNacionalidad(){
     $("#FilaAgregarNacionalidad").show();
@@ -616,6 +628,30 @@ function guardarFormacionEducativa(){
         });
     }else{
         $("#EAgregarFormacionEducativa").text("Campo vacío.");
+    }
+}
+
+function obtener_quincenas(){
+    AnioFiscal = $("#AnioFiscal").val();
+    if($("#AnioFiscal").val != ""){
+        $.ajax({
+            type: "POST",
+            url: "/rh/reportes/por-movimientos/obtener-quincenas",
+            data: {
+                AnioFiscal: AnioFiscal
+            },
+            success: function(data){
+                if(data.length > 0){
+                    $("EQuincena").text("");
+                    $("#NumQuincena").find('option').not(':first').remove();
+                    data.forEach(function(Quincena){
+                        $("#NumQuincena").append(new Option(Quincena.Descripcion, Quincena.idQuincena));
+                    });
+                }else{
+                    $("EQuincena").text("No hay quincenas disponibles.");
+                }
+            }
+        });
     }
 }
 

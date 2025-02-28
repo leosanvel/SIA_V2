@@ -219,7 +219,8 @@ class rEmpleadoPuesto(db.Model):
     idCausaBaja = db.Column(db.Integer, nullable = False)
     Observaciones = db.Column(db.String(300), nullable = False)
     FechaEfecto = db.Column(db.Date, nullable = False)
-    idQuincena = db.Column(db.Integer, nullable = False)
+    idQuincenaInicio = db.Column(db.Integer, nullable = True)
+    idQuincenaFinal = db.Column(db.Integer, nullable = True)
     ConservaVacaciones = db.Column(db.Integer, nullable = True)
     idEstatusEP = db.Column(db.Integer, primary_key = True) # ACTIVO o INACTIVO
 
@@ -227,7 +228,7 @@ class rEmpleadoPuesto(db.Model):
     Empleado = db.relationship("rEmpleado", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
     Puesto = db.relationship("tPuesto", back_populates = "EmpleadoPuestos", uselist = False, single_parent = True)
 
-    def __init__(self, idPersona, idPuesto, CodigoPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, idUbicacion, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincena, ConservaVacaciones, idEstatusEP):
+    def __init__(self, idPersona, idPuesto, CodigoPuesto, ClavePresupuestaSIA, CodigoPlazaSIA, CodigoPuestoSIA, RHNETSIA, idNivel, idCentroCosto, idUbicacion, FechaInicio, FechaTermino, idCausaBaja, Observaciones, FechaEfecto, idQuincenaInicio, idQuincenaFinal, ConservaVacaciones, idEstatusEP):
         self.idPersona = idPersona
         self.idPuesto = idPuesto
         self.CodigoPuesto = CodigoPuesto
@@ -243,7 +244,8 @@ class rEmpleadoPuesto(db.Model):
         self.idCausaBaja = idCausaBaja
         self.Observaciones = Observaciones
         self.FechaEfecto = FechaEfecto
-        self.idQuincena = idQuincena
+        self.idQuincenaInicio = idQuincenaInicio
+        self.idQuincenaFinal = idQuincenaFinal
         self.ConservaVacaciones = ConservaVacaciones
         self.idEstatusEP = idEstatusEP
 
@@ -417,16 +419,18 @@ class rMovimientoEmpleado(db.Model):
     __table_arg__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_spanish_ci"}
 
     idMovimientoEmpleado = db.Column(db.Integer, primary_key = True)
+    idMovimientoAnual = db.Column(db.Integer, primary_key = True)
     idTipoMovimiento = db.Column(db.Integer, primary_key = True)
     idPersonaMod = db.Column(db.Integer, nullable = True)
     idTipoEmpleado = db.Column(db.Integer, nullable = True)
     idUsuario = db.Column(db.Integer, nullable = True)
     idQuincena = db.Column(db.Integer, nullable = True)
-    Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
+    Fecha = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp(), primary_key = True)
     Periodo = db.Column(db.Integer, nullable = True)
 
-    def __init__(self, idMovimientoEmpleado, idTipoMovimiento, idPersonaMod, idTipoEmpleado, idUsuario, idQuincena, Periodo):
+    def __init__(self, idMovimientoEmpleado, idMovimientoAnual, idTipoMovimiento, idPersonaMod, idTipoEmpleado, idUsuario, idQuincena, Periodo):
         self.idMovimientoEmpleado = idMovimientoEmpleado
+        self.idMovimientoAnual = idMovimientoAnual
         self.idTipoMovimiento = idTipoMovimiento
         self.idPersonaMod = idPersonaMod
         self.idTipoEmpleado = idTipoEmpleado

@@ -261,15 +261,18 @@ def cancela_sancion():
 @gestion_asistencias.route('/rh/gestion-asistencias/calculo-dias-articulo-37', methods = ['POST'])
 def calculo_dias_articulo_37():
     idPersona = request.form.get("idPersona")
+    print("Aquí se calcula los días para el artículo 37")
 
     fecha_inicio_consecutiva_mas_antigua = calcula_fecha_consecutiva_puestos(idPersona)
     resultado = {}
     if fecha_inicio_consecutiva_mas_antigua is not None:
     
         hoy = date.today()
+        print(f"Fecha inicio: {fecha_inicio_consecutiva_mas_antigua}, Hoy: {hoy}")
 
         # Calcular la diferencia en días
         diferencia_dias = (hoy - fecha_inicio_consecutiva_mas_antigua).days
+        print(f"Diferencia de días: {diferencia_dias}")
 
         # # Convertir la diferencia en semanas
         # diferencia_semanas = diferencia_dias / 7
@@ -361,11 +364,6 @@ def calculo_dias_articulo_37():
             total_dias = total_dias - resultado["DiasPagados2"]
 
         print(resultado)
-
-
-
-
-
 
     else:
         resultado["Error"] = True
@@ -593,7 +591,7 @@ def reparte_dias(licencia, descuentos):
 
     if dias_permitidos == 0:
         licencia["idPorcentaje"] = 1
-        reparte_quincenas(licencia, descuentos)
+        reparte_quincenas(licencia, descuentos, fechas_originales)
     else:
         if dias_desc1 > 0:
             if dias <= dias_desc1:
@@ -794,10 +792,12 @@ def reparte_quincenas(licencia, descuentos, fechas_originales):
             quincena_inicio = db.session.query(kQuincena).filter_by(idQuincena = quincena_inicio.idQuincena + 1).first()
 
         dias = dias - ((licencia["FechaFinDescuento"].day - licencia["FechaInicioDescuento"].day) + 1)
+        print(f"Dias restantes al crear licencias: {dias}")
         licencia["Dias"] = (licencia["FechaFinDescuento"].day - licencia["FechaInicioDescuento"].day) + 1
         if licencia["FechaFinDescuento"].day == 31:
             #licencia["FechaFinDescuento"] = licencia["FechaFinDescuento"] - timedelta(days=1)
             licencia["Dias"] = licencia["Dias"] - 1
+            dias = dias + 1
         if quincena_inicio.Quincena == 4:
             if licencia["FechaFinDescuento"] == quincena_inicio.FechaFin:
                 dias_licencia_quinena_4 = db.session.query(func.sum(rSancionPersona.Dias)).filter(

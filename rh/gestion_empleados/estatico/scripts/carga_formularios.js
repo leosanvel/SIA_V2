@@ -109,6 +109,7 @@ function obtenerInfoEmpleado() {
                     $("#idPlazaHom").append(`<option value = ${data.idPuesto}>${data.Puesto}</option>`);
                     $("#idPlazaHom").val(data.idPuesto);
                     $("#idUbicacion").val(data.idUbicacion);
+                    $("#AnioFiscal").val(data.AnioFiscal);
                 }
                 $("#HoraEntrada").val(data.HoraEntrada);
                 $("#HoraSalida").val(data.HoraSalida);
