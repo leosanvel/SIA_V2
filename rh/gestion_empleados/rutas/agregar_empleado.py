@@ -19,7 +19,7 @@ from rh.gestion_empleados.modelos.domicilio import *
 from prestaciones.modelos.modelos import rEmpleadoConcepto
 from general.modelos.modelos import tBitacora
 #from catalogos.modelos.modelos import *
-from app import db
+from general.herramientas.bd import db
 from general.herramientas.funciones import *
 
 @gestion_empleados.route('/rh/gestion-empleados/busqueda-empleado', methods = ['POST', 'GET'])
